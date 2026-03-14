@@ -15,15 +15,15 @@ ALTER TABLE user_quotas  ENABLE ROW LEVEL SECURITY;
 -- ============================================================
 -- Read: public discoveries visible to all; own private ones visible to owner only
 CREATE POLICY discoveries_select ON discoveries FOR SELECT
-  USING (is_public = true OR user_id = auth.uid()::text);
+  USING (is_public = true OR user_id = auth.uid());
 
 -- Write: users can only insert their own discoveries
 CREATE POLICY discoveries_insert ON discoveries FOR INSERT
-  WITH CHECK (user_id = auth.uid()::text);
+  WITH CHECK (user_id = auth.uid());
 
 -- Update: only own discoveries (e.g. toggle is_public, add note)
 CREATE POLICY discoveries_update ON discoveries FOR UPDATE
-  USING (user_id = auth.uid()::text);
+  USING (user_id = auth.uid());
 
 -- ============================================================
 -- collections
@@ -95,7 +95,7 @@ RETURNS TABLE(
   created_at     TIMESTAMPTZ
 ) AS $$
   -- IMPORTANT: `location` (exact GPS) is intentionally excluded
-  SELECT d.id, d.user_id::UUID, d.plant_id, d.pixel_url,
+  SELECT d.id, d.user_id, d.plant_id, d.pixel_url,
          d.location_fuzzy, d.city, d.user_note,
          d.is_public, d.created_at
   FROM discoveries d
