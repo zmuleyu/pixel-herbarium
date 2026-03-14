@@ -15,6 +15,19 @@ jest.mock('@/services/auth', () => ({
   signOut: jest.fn(),
 }));
 
+// Mock supabase — profiles table returns null so hook falls back to user_metadata
+jest.mock('@/services/supabase', () => ({
+  supabase: {
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          single: () => Promise.resolve({ data: null, error: null }),
+        }),
+      }),
+    }),
+  },
+}));
+
 import { renderHook, act } from '@testing-library/react-hooks';
 import { useAuthStore } from '@/stores/auth-store';
 import { checkQuota } from '@/services/antiCheat';

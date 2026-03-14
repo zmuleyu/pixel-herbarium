@@ -2,18 +2,22 @@ import {
   View,
   Text,
   Image,
+  TextInput,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   Platform,
 } from 'react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useProfile } from '@/hooks/useProfile';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
-  const { email, displayName, avatarUrl, quotaUsed, quotaTotal, loading, handleSignOut } = useProfile();
+  const { email, displayName, avatarUrl, quotaUsed, quotaTotal, loading, updating, handleSignOut, updateDisplayName } = useProfile();
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState('');
 
   if (loading) {
     return (
@@ -37,7 +41,37 @@ export default function ProfileScreen() {
             <Text style={styles.avatarInitial}>{initial}</Text>
           </View>
         )}
-        <Text style={styles.displayName}>{displayName}</Text>
+        {editing ? (
+          <View style={styles.editRow}>
+            <TextInput
+              style={styles.nameInput}
+              value={draft}
+              onChangeText={setDraft}
+              autoFocus
+              maxLength={30}
+              onSubmitEditing={async () => {
+                await updateDisplayName(draft);
+                setEditing(false);
+              }}
+            />
+            <TouchableOpacity
+              onPress={async () => { await updateDisplayName(draft); setEditing(false); }}
+              disabled={updating || !draft.trim()}
+            >
+              {updating
+                ? <ActivityIndicator size="small" color={colors.plantPrimary} />
+                : <Text style={styles.saveText}>保存</Text>}
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={styles.editRow}
+            onPress={() => { setDraft(displayName); setEditing(true); }}
+          >
+            <Text style={styles.displayName}>{displayName}</Text>
+            <Text style={styles.editIcon}>✎</Text>
+          </TouchableOpacity>
+        )}
         <Text style={styles.email}>{email}</Text>
       </View>
 
@@ -70,7 +104,11 @@ const styles = StyleSheet.create({
   avatarImage:    { width: 80, height: 80, borderRadius: 40 },
   avatarCircle:   { width: 80, height: 80, borderRadius: 40, backgroundColor: colors.plantPrimary, alignItems: 'center', justifyContent: 'center' },
   avatarInitial:  { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.xxl, color: colors.white },
+  editRow:        { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   displayName:    { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.xl, color: colors.text },
+  editIcon:       { fontSize: typography.fontSize.sm, color: colors.textSecondary },
+  nameInput:      { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.xl, color: colors.text, borderBottomWidth: 1.5, borderBottomColor: colors.plantPrimary, minWidth: 120, paddingVertical: 2 },
+  saveText:       { color: colors.plantPrimary, fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.sm },
   email:          { fontSize: typography.fontSize.sm, color: colors.textSecondary },
 
   // Quota card
