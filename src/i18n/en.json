@@ -1,0 +1,87 @@
+{
+  "tabs": {
+    "discover": "Discover",
+    "herbarium": "Herbarium",
+    "cityMap": "City Map",
+    "profile": "Profile"
+  },
+  "discover": {
+    "capture": "Take Photo",
+    "gpsRequired": "Please enable location services",
+    "quotaRemaining": "{{count}} captures remaining this month",
+    "processing": "Pixelating...",
+    "success": "Added to Herbarium!",
+    "cityRank": "You are the {{rank}}th person to find {{plant}} in {{city}}!",
+    "notAPlant": "Could not identify a plant",
+    "cooldown": "You cannot rediscover at this location for 7 days"
+  },
+  "herbarium": {
+    "title": "Herbarium",
+    "progress": "{{count}}/60 species discovered",
+    "locked": "Undiscovered",
+    "hanakotoba": "Flower Language",
+    "sharePoster": "Share Herbarium",
+    "discoveredOn": "Discovered on",
+    "yourNote": "Add a note..."
+  },
+  "rarity": {
+    "1": "★",
+    "2": "★★",
+    "3": "★★★ Limited"
+  },
+  "auth": {
+    "signInApple": "Sign in with Apple",
+    "signInEmail": "Sign in with Email",
+    "signUpEmail": "Sign up with Email",
+    "email": "Email",
+    "password": "Password",
+    "welcomeTitle": "Welcome to Pixel Herbarium",
+    "welcomeSubtitle": "Discover plants and transform them into pixel art"
+  },
+  "map": {
+    "title": "City Map",
+    "nearbyDiscoveries": "Nearby Discoveries",
+    "noDiscoveries": "No discoveries in this area yet"
+  },
+  "profile": {
+    "title": "Profile",
+    "friends": "Friends",
+    "settings": "Settings",
+    "privacySettings": "Privacy Settings",
+    "signOut": "Sign Out"
+  },
+  "social": {
+    "sendBouquet": "Send Bouquet",
+    "bouquetReceived": "Bouquet received",
+    "bouquetExpires": "Expires in {{days}} days",
+    "addFriend": "Add Friend",
+    "friendRequest": "Friend Request",
+    "accept": "Accept",
+    "decline": "Decline",
+    "visitHerbarium": "View Herbarium"
+  },
+  "privacy": {
+    "mapVisibility": "Show discoveries on City Map",
+    "mapVisibilityDesc": "When off, your discoveries won't appear on the map",
+    "exportData": "Export My Data",
+    "deleteAccount": "Delete Account",
+    "deleteConfirm": "Your account will be deleted in 30 days. This can be cancelled."
+  },
+  "events": {
+    "sakuraMatsuri": "Cherry Blossom Festival",
+    "tsuyuNoHana": "Rainy Season Flowers",
+    "momojiGari": "Autumn Leaf Viewing",
+    "eventActive": "Event Active",
+    "limitedPlant": "Limited Time"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Try Again",
+    "cancel": "Cancel",
+    "save": "Save",
+    "share": "Share",
+    "close": "Close",
+    "ok": "OK"
+  }
+}

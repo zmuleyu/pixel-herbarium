@@ -1,0 +1,87 @@
+{
+  "tabs": {
+    "discover": "発見",
+    "herbarium": "花図鉴",
+    "cityMap": "同城マップ",
+    "profile": "マイページ"
+  },
+  "discover": {
+    "capture": "撮影する",
+    "gpsRequired": "位置情報をオンにしてください",
+    "quotaRemaining": "今月残り {{count}} 回",
+    "processing": "ピクセル化中...",
+    "success": "図鉴に登録しました！",
+    "cityRank": "あなたは{{city}}で{{rank}}番目に{{plant}}を見つけました！",
+    "notAPlant": "植物が認識できませんでした",
+    "cooldown": "この場所では7日間は再発見できません"
+  },
+  "herbarium": {
+    "title": "花図鉑",
+    "progress": "{{count}}/60 種を発見",
+    "locked": "未発見",
+    "hanakotoba": "花言葉",
+    "sharePoster": "図鉑を共有",
+    "discoveredOn": "発見日",
+    "yourNote": "メモを追加..."
+  },
+  "rarity": {
+    "1": "★",
+    "2": "★★",
+    "3": "★★★ 限定"
+  },
+  "auth": {
+    "signInApple": "Appleでサインイン",
+    "signInEmail": "メールでサインイン",
+    "signUpEmail": "メールで登録",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "welcomeTitle": "花図鉑へようこそ",
+    "welcomeSubtitle": "植物を発見して、ピクセルアートに変換しよう"
+  },
+  "map": {
+    "title": "同城マップ",
+    "nearbyDiscoveries": "近くの発見",
+    "noDiscoveries": "この周辺にはまだ発見がありません"
+  },
+  "profile": {
+    "title": "マイページ",
+    "friends": "フレンド",
+    "settings": "設定",
+    "privacySettings": "プライバシー設定",
+    "signOut": "サインアウト"
+  },
+  "social": {
+    "sendBouquet": "花束を贈る",
+    "bouquetReceived": "花束が届きました",
+    "bouquetExpires": "{{days}}日後に期限切れ",
+    "addFriend": "フレンド追加",
+    "friendRequest": "フレンド申請",
+    "accept": "承認",
+    "decline": "拒否",
+    "visitHerbarium": "図鉑を見る"
+  },
+  "privacy": {
+    "mapVisibility": "同城マップに発見を公開",
+    "mapVisibilityDesc": "オフにすると、あなたの発見は地図に表示されません",
+    "exportData": "データをエクスポート",
+    "deleteAccount": "アカウント削除",
+    "deleteConfirm": "30日後にアカウントが削除されます。この操作は取り消せます。"
+  },
+  "events": {
+    "sakuraMatsuri": "桜まつり",
+    "tsuyuNoHana": "梅雨の花",
+    "momojiGari": "もみじ狩り",
+    "eventActive": "イベント開催中",
+    "limitedPlant": "期間限定"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "retry": "もう一度",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "share": "共有",
+    "close": "閉じる",
+    "ok": "OK"
+  }
+}
