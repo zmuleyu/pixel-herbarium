@@ -61,7 +61,7 @@ export default function DiscoverScreen() {
 
     const photo = await cameraRef.current.takePictureAsync({ quality: 0.85 });
     if (photo) {
-      await discovery.runDiscovery(photo.uri, capture.location, user.id);
+      await discovery.runDiscovery(photo.uri, capture.location);
     }
   }
 

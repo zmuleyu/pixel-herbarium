@@ -1,45 +1,29 @@
 /**
- * Tests for useDiscovery hook — the full capture→identify→save pipeline.
- * All external services are mocked.
+ * Tests for useDiscovery hook — calls /verify and /identify edge functions.
+ * External calls are mocked via supabase.functions.invoke and expo-file-system.
  */
-
-jest.mock('@/services/plantId', () => ({
-  identifyPlant: jest.fn(),
-}));
-
-jest.mock('@/services/antiCheat', () => ({
-  checkCooldown: jest.fn(),
-  checkQuota: jest.fn(),
-}));
 
 jest.mock('@/services/supabase', () => ({
   supabase: {
-    from: jest.fn(),
-    rpc: jest.fn(),
+    functions: {
+      invoke: jest.fn(),
+    },
   },
 }));
 
-jest.mock('@/utils/geo', () => ({
-  fuzzCoordinate: jest.fn((c) => ({ latitude: c.latitude + 0.0001, longitude: c.longitude + 0.0001 })),
+jest.mock('expo-file-system', () => ({
+  readAsStringAsync: jest.fn().mockResolvedValue('base64imagedata=='),
 }));
 
 import { renderHook, act } from '@testing-library/react-hooks';
-import { identifyPlant } from '@/services/plantId';
-import { checkCooldown, checkQuota } from '@/services/antiCheat';
 import { supabase } from '@/services/supabase';
 import { useDiscovery, DiscoveryStatus } from '@/hooks/useDiscovery';
 
-const mockIdentify = identifyPlant as jest.Mock;
-const mockCooldown = checkCooldown as jest.Mock;
-const mockQuota = checkQuota as jest.Mock;
-const mockRpc = supabase.rpc as jest.Mock;
-const mockFrom = supabase.from as jest.Mock;
+const mockInvoke = supabase.functions.invoke as jest.Mock;
 
 const PHOTO_URI = 'file:///photo.jpg';
 const COORD = { latitude: 35.6762, longitude: 139.6503 };
-const USER_ID = 'user-123';
 
-// A matching plant in the DB
 const MOCK_PLANT = {
   id: 7,
   name_ja: 'タンポポ',
@@ -50,52 +34,78 @@ const MOCK_PLANT = {
   flower_meaning: 'Oracle of Love',
 };
 
-function setupFromChain(data: any[], error: any = null) {
-  const terminal = jest.fn().mockResolvedValue({ data, error });
-  const chain: any = {
-    select: jest.fn().mockReturnThis(),
-    ilike: jest.fn().mockReturnThis(),
-    or: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockReturnThis(),
-    limit: jest.fn(function () { return terminal(); }),
-    insert: jest.fn().mockReturnThis(),
-    single: jest.fn(function () { return terminal(); }),
-  };
-  mockFrom.mockReturnValue(chain);
-  return chain;
+function mockVerifyAllowed() {
+  mockInvoke.mockResolvedValueOnce({ data: { allowed: true }, error: null });
+}
+
+function mockVerifyCooldown(daysRemaining = 5) {
+  mockInvoke.mockResolvedValueOnce({
+    data: { allowed: false, reason: 'cooldown', daysRemaining },
+    error: null,
+  });
+}
+
+function mockVerifyQuotaExceeded() {
+  mockInvoke.mockResolvedValueOnce({
+    data: { allowed: false, reason: 'quota_exceeded' },
+    error: null,
+  });
+}
+
+function mockIdentifySuccess() {
+  mockInvoke.mockResolvedValueOnce({
+    data: { status: 'success', plant: MOCK_PLANT, discoveryId: 'disc-uuid-1' },
+    error: null,
+  });
+}
+
+function mockIdentifyNotAPlant() {
+  mockInvoke.mockResolvedValueOnce({
+    data: { status: 'not_a_plant' },
+    error: null,
+  });
+}
+
+function mockIdentifyNoMatch() {
+  mockInvoke.mockResolvedValueOnce({
+    data: { status: 'no_match' },
+    error: null,
+  });
+}
+
+function mockPixelateSuccess() {
+  // Pixelate is fire-and-forget; mock it to resolve cleanly
+  mockInvoke.mockResolvedValueOnce({
+    data: { pixelUrl: 'https://example.com/pixel.png' },
+    error: null,
+  });
 }
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockCooldown.mockResolvedValue({ allowed: true });
-  mockQuota.mockResolvedValue({ allowed: true, remaining: 4 });
-  mockIdentify.mockResolvedValue({
-    matched: true,
-    plantName: 'Taraxacum officinale',
-    confidence: 0.85,
-    isPlant: true,
-  });
-  mockRpc.mockResolvedValue({ data: true, error: null });
 });
 
+// ---------------------------------------------------------------------------
+
 describe('useDiscovery – initial state', () => {
-  it('starts with idle status', () => {
+  it('starts with idle status and no plant', () => {
     const { result } = renderHook(() => useDiscovery());
     expect(result.current.status).toBe<DiscoveryStatus>('idle');
     expect(result.current.discoveredPlant).toBeNull();
   });
 });
 
+// ---------------------------------------------------------------------------
+
 describe('useDiscovery – successful pipeline', () => {
-  it('sets status = success and returns plant data', async () => {
-    // Plant lookup returns a match
-    const chain = setupFromChain([MOCK_PLANT]);
-    // Insert discovery returns new row id
-    chain.single.mockResolvedValue({ data: { id: 'disc-uuid-1' }, error: null });
+  it('calls /verify then /identify and returns plant on success', async () => {
+    mockVerifyAllowed();
+    mockIdentifySuccess();
+    mockPixelateSuccess();
 
     const { result } = renderHook(() => useDiscovery());
     await act(async () => {
-      await result.current.runDiscovery(PHOTO_URI, COORD, USER_ID);
+      await result.current.runDiscovery(PHOTO_URI, COORD);
     });
 
     expect(result.current.status).toBe<DiscoveryStatus>('success');
@@ -103,126 +113,170 @@ describe('useDiscovery – successful pipeline', () => {
     expect(result.current.discoveredPlant?.hanakotoba).toBe('愛の神託');
   });
 
-  it('calls checkCooldown and checkQuota before identifying', async () => {
-    setupFromChain([MOCK_PLANT]);
+  it('calls /verify first with correct coordinates', async () => {
+    mockVerifyAllowed();
+    mockIdentifySuccess();
+    mockPixelateSuccess();
 
     const { result } = renderHook(() => useDiscovery());
     await act(async () => {
-      await result.current.runDiscovery(PHOTO_URI, COORD, USER_ID);
+      await result.current.runDiscovery(PHOTO_URI, COORD);
     });
 
-    expect(mockCooldown).toHaveBeenCalledWith(USER_ID, COORD);
-    expect(mockQuota).toHaveBeenCalledWith(USER_ID);
-    expect(mockIdentify).toHaveBeenCalledWith(PHOTO_URI);
+    expect(mockInvoke).toHaveBeenNthCalledWith(1, 'verify', {
+      body: { lat: COORD.latitude, lon: COORD.longitude },
+    });
   });
 
-  it('calls deduct_quota RPC after successful discovery', async () => {
-    setupFromChain([MOCK_PLANT]);
+  it('calls /identify second with imageBase64 and coords', async () => {
+    mockVerifyAllowed();
+    mockIdentifySuccess();
+    mockPixelateSuccess();
 
     const { result } = renderHook(() => useDiscovery());
     await act(async () => {
-      await result.current.runDiscovery(PHOTO_URI, COORD, USER_ID);
+      await result.current.runDiscovery(PHOTO_URI, COORD);
     });
 
-    expect(mockRpc).toHaveBeenCalledWith(
-      'deduct_quota',
-      expect.objectContaining({ p_user_id: USER_ID }),
-    );
+    expect(mockInvoke).toHaveBeenNthCalledWith(2, 'identify', {
+      body: {
+        imageBase64: 'base64imagedata==',
+        lat: COORD.latitude,
+        lon: COORD.longitude,
+      },
+    });
   });
 
-  it('stores fuzzed coordinate (not exact GPS) in discovery', async () => {
-    const insertMock = jest.fn().mockReturnValue({
-      single: jest.fn().mockResolvedValue({ data: { id: 'x' }, error: null }),
-    });
-    mockFrom.mockReturnValueOnce({ ilike: jest.fn().mockReturnThis(), or: jest.fn().mockReturnThis(), select: jest.fn().mockReturnThis(), limit: jest.fn().mockResolvedValue({ data: [MOCK_PLANT], error: null }) });
-    mockFrom.mockReturnValueOnce({ insert: insertMock });
+  it('fires /pixelate without awaiting (fire-and-forget)', async () => {
+    mockVerifyAllowed();
+    mockIdentifySuccess();
+    mockPixelateSuccess();
 
     const { result } = renderHook(() => useDiscovery());
     await act(async () => {
-      await result.current.runDiscovery(PHOTO_URI, COORD, USER_ID);
+      await result.current.runDiscovery(PHOTO_URI, COORD);
     });
 
-    const insertedRow = insertMock.mock.calls[0][0];
-    // Exact coord is stored as-is; fuzzy coord must differ
-    expect(insertedRow.location_lat).toBe(COORD.latitude);
-    expect(insertedRow.location_fuzzy_lat).not.toBe(COORD.latitude);
+    // pixelate is the third invocation
+    expect(mockInvoke).toHaveBeenNthCalledWith(3, 'pixelate', {
+      body: { discoveryId: 'disc-uuid-1' },
+    });
   });
 });
 
-describe('useDiscovery – blocked by anti-cheat', () => {
-  it('sets status = cooldown when GPS cooldown active', async () => {
-    mockCooldown.mockResolvedValue({ allowed: false, daysRemaining: 5 });
+// ---------------------------------------------------------------------------
+
+describe('useDiscovery – blocked by /verify', () => {
+  it('sets status = cooldown with daysRemaining when GPS cooldown active', async () => {
+    mockVerifyCooldown(5);
 
     const { result } = renderHook(() => useDiscovery());
     await act(async () => {
-      await result.current.runDiscovery(PHOTO_URI, COORD, USER_ID);
+      await result.current.runDiscovery(PHOTO_URI, COORD);
     });
 
     expect(result.current.status).toBe<DiscoveryStatus>('cooldown');
     expect(result.current.daysRemaining).toBe(5);
-    expect(mockIdentify).not.toHaveBeenCalled();
+    // /identify must NOT have been called
+    expect(mockInvoke).toHaveBeenCalledTimes(1);
   });
 
   it('sets status = quota_exceeded when monthly quota exhausted', async () => {
-    mockQuota.mockResolvedValue({ allowed: false, remaining: 0 });
+    mockVerifyQuotaExceeded();
 
     const { result } = renderHook(() => useDiscovery());
     await act(async () => {
-      await result.current.runDiscovery(PHOTO_URI, COORD, USER_ID);
+      await result.current.runDiscovery(PHOTO_URI, COORD);
     });
 
     expect(result.current.status).toBe<DiscoveryStatus>('quota_exceeded');
-    expect(mockIdentify).not.toHaveBeenCalled();
+    expect(mockInvoke).toHaveBeenCalledTimes(1);
   });
 });
 
-describe('useDiscovery – no match', () => {
-  it('sets status = not_a_plant when isPlant=false', async () => {
-    mockIdentify.mockResolvedValue({ matched: false, isPlant: false, confidence: 0.02, plantName: null });
+// ---------------------------------------------------------------------------
+
+describe('useDiscovery – plant not identified', () => {
+  it('sets status = not_a_plant when /identify returns not_a_plant', async () => {
+    mockVerifyAllowed();
+    mockIdentifyNotAPlant();
 
     const { result } = renderHook(() => useDiscovery());
     await act(async () => {
-      await result.current.runDiscovery(PHOTO_URI, COORD, USER_ID);
+      await result.current.runDiscovery(PHOTO_URI, COORD);
     });
 
     expect(result.current.status).toBe<DiscoveryStatus>('not_a_plant');
+    // pixelate must NOT have been called
+    expect(mockInvoke).toHaveBeenCalledTimes(2);
   });
 
-  it('sets status = no_match when plant not in local database', async () => {
-    // identifyPlant returns a name but DB lookup returns empty
-    setupFromChain([]);
+  it('sets status = no_match when /identify returns no_match', async () => {
+    mockVerifyAllowed();
+    mockIdentifyNoMatch();
 
     const { result } = renderHook(() => useDiscovery());
     await act(async () => {
-      await result.current.runDiscovery(PHOTO_URI, COORD, USER_ID);
+      await result.current.runDiscovery(PHOTO_URI, COORD);
     });
 
     expect(result.current.status).toBe<DiscoveryStatus>('no_match');
+    expect(mockInvoke).toHaveBeenCalledTimes(2);
   });
 });
 
+// ---------------------------------------------------------------------------
+
 describe('useDiscovery – error handling', () => {
-  it('sets status = error on identifyPlant failure', async () => {
-    mockIdentify.mockRejectedValue(new Error('Network error'));
+  it('sets status = error when /verify throws', async () => {
+    mockInvoke.mockResolvedValueOnce({ data: null, error: new Error('Network error') });
 
     const { result } = renderHook(() => useDiscovery());
     await act(async () => {
-      await result.current.runDiscovery(PHOTO_URI, COORD, USER_ID);
+      await result.current.runDiscovery(PHOTO_URI, COORD);
     });
 
     expect(result.current.status).toBe<DiscoveryStatus>('error');
   });
 
-  it('resets to idle on reset()', async () => {
-    mockIdentify.mockRejectedValue(new Error('fail'));
+  it('sets status = error when /identify throws', async () => {
+    mockVerifyAllowed();
+    mockInvoke.mockResolvedValueOnce({ data: null, error: new Error('Identify failed') });
 
     const { result } = renderHook(() => useDiscovery());
     await act(async () => {
-      await result.current.runDiscovery(PHOTO_URI, COORD, USER_ID);
+      await result.current.runDiscovery(PHOTO_URI, COORD);
+    });
+
+    expect(result.current.status).toBe<DiscoveryStatus>('error');
+  });
+
+  it('does NOT set status = error when /pixelate fails (non-fatal)', async () => {
+    mockVerifyAllowed();
+    mockIdentifySuccess();
+    // pixelate fails
+    mockInvoke.mockRejectedValueOnce(new Error('Replicate timeout'));
+
+    const { result } = renderHook(() => useDiscovery());
+    await act(async () => {
+      await result.current.runDiscovery(PHOTO_URI, COORD);
+    });
+
+    // success because pixelate failure is swallowed
+    expect(result.current.status).toBe<DiscoveryStatus>('success');
+  });
+
+  it('resets to idle on reset()', async () => {
+    mockInvoke.mockResolvedValueOnce({ data: null, error: new Error('fail') });
+
+    const { result } = renderHook(() => useDiscovery());
+    await act(async () => {
+      await result.current.runDiscovery(PHOTO_URI, COORD);
     });
     expect(result.current.status).toBe('error');
 
     act(() => result.current.reset());
     expect(result.current.status).toBe<DiscoveryStatus>('idle');
+    expect(result.current.discoveredPlant).toBeNull();
   });
 });
