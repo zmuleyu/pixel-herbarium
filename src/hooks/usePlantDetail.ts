@@ -1,0 +1,80 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/services/supabase';
+
+export interface PlantDetail {
+  id: number;
+  name_ja: string;
+  name_en: string;
+  name_latin: string;
+  rarity: number;
+  hanakotoba: string | null;
+  flower_meaning: string | null;
+  bloom_months: number[];
+  prefectures: string[];
+  pixel_sprite_url: string | null;
+  available_window: string | null;
+}
+
+export interface DiscoveryRecord {
+  id: string;
+  created_at: string;
+  pixel_url: string | null;
+  user_note: string | null;
+}
+
+interface UsePlantDetailReturn {
+  plant: PlantDetail | null;
+  discoveries: DiscoveryRecord[];
+  loading: boolean;
+  error: string | null;
+}
+
+export function usePlantDetail(plantId: number, userId: string): UsePlantDetailReturn {
+  const [plant, setPlant] = useState<PlantDetail | null>(null);
+  const [discoveries, setDiscoveries] = useState<DiscoveryRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!plantId || !userId) return;
+
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
+    async function load() {
+      const [plantRes, discRes] = await Promise.all([
+        (supabase as any)
+          .from('plants')
+          .select(
+            'id, name_ja, name_en, name_latin, rarity, hanakotoba, flower_meaning, bloom_months, prefectures, pixel_sprite_url, available_window',
+          )
+          .eq('id', plantId)
+          .single(),
+        (supabase as any)
+          .from('discoveries')
+          .select('id, created_at, pixel_url, user_note')
+          .eq('user_id', userId)
+          .eq('plant_id', plantId)
+          .order('created_at', { ascending: false }),
+      ]);
+
+      if (cancelled) return;
+
+      if (plantRes.error) {
+        setError(plantRes.error.message);
+        setLoading(false);
+        return;
+      }
+
+      setPlant(plantRes.data);
+      setDiscoveries(discRes.data ?? []);
+      setLoading(false);
+    }
+
+    load();
+    return () => { cancelled = true; };
+  }, [plantId, userId]);
+
+  return { plant, discoveries, loading, error };
+}

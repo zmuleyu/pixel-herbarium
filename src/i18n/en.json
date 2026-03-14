@@ -74,6 +74,11 @@
     "eventActive": "Event Active",
     "limitedPlant": "Limited Time"
   },
+  "plant": {
+    "bloomCalendar": "Bloom Season",
+    "prefectures": "Found In",
+    "myDiscoveries": "My Discoveries"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",
@@ -82,6 +87,8 @@
     "save": "Save",
     "share": "Share",
     "close": "Close",
-    "ok": "OK"
+    "ok": "OK",
+    "back": "Back",
+    "notFound": "Not found"
   }
 }
