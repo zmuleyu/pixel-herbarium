@@ -16,6 +16,7 @@ const TAB_CONFIG: TabConfig[] = [
   { name: 'discover',  labelKey: 'tabs.discover',  icon: 'camera-outline',  iconActive: 'camera' },
   { name: 'herbarium', labelKey: 'tabs.herbarium', icon: 'leaf-outline',    iconActive: 'leaf' },
   { name: 'map',       labelKey: 'tabs.cityMap',   icon: 'map-outline',     iconActive: 'map' },
+  { name: 'social',    labelKey: 'tabs.social',    icon: 'people-outline',  iconActive: 'people' },
   { name: 'profile',   labelKey: 'tabs.profile',   icon: 'person-outline',  iconActive: 'person' },
 ];
 

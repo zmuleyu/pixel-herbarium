@@ -8,8 +8,11 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
+import { useRef, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 import { usePlantDetail } from '@/hooks/usePlantDetail';
 import { useAuthStore } from '@/stores/auth-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
@@ -31,6 +34,23 @@ export default function PlantDetailScreen() {
 
   const plantId = Number(id);
   const { plant, discoveries, loading, error } = usePlantDetail(plantId, user?.id ?? '');
+  const posterRef = useRef<View>(null);
+  const [sharing, setSharing] = useState(false);
+
+  async function handleShare() {
+    if (!posterRef.current || sharing) return;
+    setSharing(true);
+    try {
+      const uri = await captureRef(posterRef, { format: 'png', quality: 1 });
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: plant?.name_ja });
+      }
+    } catch (_) {
+      // Sharing cancelled or unavailable — silent
+    } finally {
+      setSharing(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -59,13 +79,20 @@ export default function PlantDetailScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Back button */}
-      <TouchableOpacity style={styles.backRow} onPress={() => router.back()}>
-        <Text style={styles.backBtnText}>← {t('common.back')}</Text>
-      </TouchableOpacity>
+      {/* Back + Share row */}
+      <View style={styles.topRow}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Text style={styles.backBtnText}>← {t('common.back')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.shareBtn} onPress={handleShare} disabled={sharing}>
+          {sharing
+            ? <ActivityIndicator size="small" color={colors.plantPrimary} />
+            : <Text style={styles.shareBtnText}>🌸 シェア</Text>}
+        </TouchableOpacity>
+      </View>
 
-      {/* Hero image */}
-      <View style={[styles.heroContainer, { borderColor: rarityColor }]}>
+      {/* Hero image (poster capture area) */}
+      <View ref={posterRef} style={[styles.posterArea, { borderColor: rarityColor, backgroundColor: colors.white }]}>
         {heroImageUri ? (
           <Image source={{ uri: heroImageUri }} style={styles.heroImage} resizeMode="contain" />
         ) : (
@@ -73,6 +100,8 @@ export default function PlantDetailScreen() {
             <Text style={styles.heroPlaceholderText}>🌸</Text>
           </View>
         )}
+        <Text style={styles.posterName}>{plant.name_ja}</Text>
+        <Text style={styles.posterHanakotoba}>{plant.hanakotoba}</Text>
       </View>
 
       {/* Rarity badge */}
@@ -183,12 +212,15 @@ const styles = StyleSheet.create({
   content:   { padding: spacing.md, paddingBottom: Platform.OS === 'ios' ? 40 : spacing.xl, alignItems: 'center' },
   center:    { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
 
-  backRow:       { alignSelf: 'flex-start', marginBottom: spacing.sm },
-  backBtn:       { backgroundColor: colors.plantPrimary, borderRadius: borderRadius.md, paddingVertical: spacing.xs, paddingHorizontal: spacing.md },
+  topRow:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', marginBottom: spacing.sm },
   backBtnText:   { color: colors.plantPrimary, fontSize: typography.fontSize.sm },
+  shareBtn:      { flexDirection: 'row', alignItems: 'center', gap: 4, borderWidth: 1, borderColor: colors.plantPrimary, borderRadius: borderRadius.sm, paddingHorizontal: spacing.sm, paddingVertical: 4 },
+  shareBtnText:  { color: colors.plantPrimary, fontSize: typography.fontSize.xs, fontFamily: typography.fontFamily.display },
 
-  heroContainer: { width: 200, height: 200, borderWidth: 2, borderRadius: borderRadius.md, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm, backgroundColor: colors.white },
+  posterArea:    { width: 220, alignItems: 'center', borderWidth: 2, borderRadius: borderRadius.md, padding: spacing.sm, marginBottom: spacing.sm, gap: 4 },
   heroImage:     { width: 192, height: 192 },
+  posterName:    { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.lg, color: colors.text },
+  posterHanakotoba: { fontSize: typography.fontSize.xs, color: colors.textSecondary, fontStyle: 'italic' },
   heroPlaceholder: { width: 192, height: 192, borderRadius: borderRadius.sm, alignItems: 'center', justifyContent: 'center' },
   heroPlaceholderText: { fontSize: 80 },
 
