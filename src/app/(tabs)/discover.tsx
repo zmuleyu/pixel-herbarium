@@ -9,6 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { CameraView } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { useCapture } from '@/hooks/useCapture';
@@ -63,6 +64,17 @@ export default function DiscoverScreen() {
     if (photo) {
       await discovery.runDiscovery(photo.uri, capture.location);
     }
+  }
+
+  async function handleGalleryPick() {
+    if (!capture.location || !user) return;
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.85,
+      allowsEditing: false,
+    });
+    if (result.canceled || !result.assets[0]) return;
+    await discovery.runDiscovery(result.assets[0].uri, capture.location);
   }
 
   function handleRetry() {
@@ -142,6 +154,16 @@ export default function DiscoverScreen() {
 
         {isProcessing && (
           <Text style={styles.processingHint}>{processingLabel(discovery.status)}</Text>
+        )}
+
+        {__DEV__ && capture.status === 'ready' && !isProcessing && (
+          <TouchableOpacity
+            style={styles.devBtn}
+            onPress={handleGalleryPick}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.devBtnText}>DEV: 相册选图</Text>
+          </TouchableOpacity>
         )}
       </View>
 
@@ -273,6 +295,10 @@ const styles = StyleSheet.create({
   buttonSecondary:    { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.border },
   buttonText:         { color: colors.white, fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.md },
   buttonTextSecondary:{ color: colors.text },
+
+  // Dev-only gallery button
+  devBtn:             { marginTop: 8, backgroundColor: 'rgba(0,0,0,0.55)', paddingHorizontal: 16, paddingVertical: 6, borderRadius: borderRadius.sm, borderWidth: 1, borderColor: 'rgba(255,255,255,0.4)' },
+  devBtnText:         { color: '#fff', fontSize: typography.fontSize.xs },
 
   // Modal
   modalBackdrop:      { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },

@@ -41,7 +41,13 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "花図鉴では発見場所の記録に使用します。"
+          "locationWhenInUsePermission": "花図鉑では発見場所の記録に使用します。"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "花図鉑の開発テスト用にフォトライブラリへのアクセスを許可します。"
         }
       ]
     ],
