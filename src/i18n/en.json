@@ -14,7 +14,15 @@
     "success": "Added to Herbarium!",
     "cityRank": "You are the {{rank}}th person to find {{plant}} in {{city}}!",
     "notAPlant": "Could not identify a plant",
-    "cooldown": "You cannot rediscover at this location for 7 days"
+    "cooldown": "You cannot rediscover at this location for 7 days",
+    "checking": "Checking…",
+    "identifying": "Identifying…",
+    "saving": "Saving…",
+    "processingDefault": "Processing…",
+    "gpsAcquiring": "Acquiring GPS…",
+    "noMatch": "Not found in database",
+    "allowPermission": "Allow",
+    "identifyError": "An error occurred. Please try again."
   },
   "herbarium": {
     "title": "Herbarium",
@@ -42,7 +50,10 @@
   "map": {
     "title": "City Map",
     "nearbyDiscoveries": "Nearby Discoveries",
-    "noDiscoveries": "No discoveries in this area yet"
+    "noDiscoveries": "No discoveries in this area yet",
+    "loading": "Loading map…",
+    "discoveryCount": "{{count}} found",
+    "refresh": "Refresh"
   },
   "profile": {
     "title": "Profile",

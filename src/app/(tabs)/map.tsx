@@ -22,7 +22,7 @@ export default function MapScreen() {
     return (
       <View style={styles.center}>
         <ActivityIndicator color={colors.plantPrimary} size="large" />
-        <Text style={styles.loadingText}>地図を読み込み中…</Text>
+        <Text style={styles.loadingText}>{t('map.loading')}</Text>
       </View>
     );
   }
@@ -47,9 +47,9 @@ export default function MapScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>{t('tabs.cityMap')}</Text>
-        <Text style={styles.headerCount}>{discoveries.length} 件</Text>
+        <Text style={styles.headerCount}>{t('map.discoveryCount', { count: discoveries.length })}</Text>
         <TouchableOpacity onPress={refresh} style={styles.refreshButton}>
-          <Text style={styles.refreshText}>更新</Text>
+          <Text style={styles.refreshText}>{t('map.refresh')}</Text>
         </TouchableOpacity>
       </View>
 

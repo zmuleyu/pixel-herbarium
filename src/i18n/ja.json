@@ -14,7 +14,15 @@
     "success": "図鉴に登録しました！",
     "cityRank": "あなたは{{city}}で{{rank}}番目に{{plant}}を見つけました！",
     "notAPlant": "植物が認識できませんでした",
-    "cooldown": "この場所では7日間は再発見できません"
+    "cooldown": "この場所では7日間は再発見できません",
+    "checking": "チェック中…",
+    "identifying": "識別中…",
+    "saving": "保存中…",
+    "processingDefault": "処理中…",
+    "gpsAcquiring": "GPS 取得中…",
+    "noMatch": "データベースに見つかりません",
+    "allowPermission": "許可する",
+    "identifyError": "エラーが発生しました。もう一度お試しください。"
   },
   "herbarium": {
     "title": "花図鉑",
@@ -42,7 +50,10 @@
   "map": {
     "title": "同城マップ",
     "nearbyDiscoveries": "近くの発見",
-    "noDiscoveries": "この周辺にはまだ発見がありません"
+    "noDiscoveries": "この周辺にはまだ発見がありません",
+    "loading": "地図を読み込み中…",
+    "discoveryCount": "{{count}} 件",
+    "refresh": "更新"
   },
   "profile": {
     "title": "マイページ",

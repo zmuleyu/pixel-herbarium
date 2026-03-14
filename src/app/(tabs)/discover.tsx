@@ -26,12 +26,12 @@ const RESULT_STATUSES = new Set([
   'success', 'not_a_plant', 'no_match', 'cooldown', 'quota_exceeded', 'error',
 ]);
 
-function processingLabel(status: string): string {
+function processingLabel(status: string, t: (key: string) => string): string {
   switch (status) {
-    case 'checking':    return 'チェック中…';
-    case 'identifying': return '識別中…';
-    case 'saving':      return '保存中…';
-    default:            return '処理中…';
+    case 'checking':    return t('discover.checking');
+    case 'identifying': return t('discover.identifying');
+    case 'saving':      return t('discover.saving');
+    default:            return t('discover.processingDefault');
   }
 }
 
@@ -89,7 +89,7 @@ export default function DiscoverScreen() {
       <View style={styles.center}>
         <Text style={styles.message}>{t('discover.gpsRequired')}</Text>
         <TouchableOpacity style={styles.button} onPress={capture.requestPermissions}>
-          <Text style={styles.buttonText}>許可する</Text>
+          <Text style={styles.buttonText}>{t('discover.allowPermission')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -101,7 +101,7 @@ export default function DiscoverScreen() {
       <View style={styles.center}>
         <Text style={styles.message}>{capture.errorMessage}</Text>
         <TouchableOpacity style={styles.button} onPress={() => { capture.reset(); capture.acquireLocation(); }}>
-          <Text style={styles.buttonText}>再試行</Text>
+          <Text style={styles.buttonText}>{t('common.retry')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -123,7 +123,7 @@ export default function DiscoverScreen() {
               📍 {capture.location?.latitude.toFixed(4)}, {capture.location?.longitude.toFixed(4)}
             </Text>
           ) : (
-            <Text style={styles.gpsText}>📡 GPS 取得中…</Text>
+            <Text style={styles.gpsText}>📡 {t('discover.gpsAcquiring')}</Text>
           )}
         </View>
 
@@ -131,7 +131,7 @@ export default function DiscoverScreen() {
         {isProcessing && (
           <View style={styles.processingOverlay}>
             <ActivityIndicator size="large" color={colors.plantPrimary} />
-            <Text style={styles.processingText}>{processingLabel(discovery.status)}</Text>
+            <Text style={styles.processingText}>{processingLabel(discovery.status, t)}</Text>
           </View>
         )}
       </CameraView>
@@ -153,7 +153,7 @@ export default function DiscoverScreen() {
         )}
 
         {isProcessing && (
-          <Text style={styles.processingHint}>{processingLabel(discovery.status)}</Text>
+          <Text style={styles.processingHint}>{processingLabel(discovery.status, t)}</Text>
         )}
 
         {__DEV__ && capture.status === 'ready' && !isProcessing && (
@@ -162,7 +162,7 @@ export default function DiscoverScreen() {
             onPress={handleGalleryPick}
             activeOpacity={0.7}
           >
-            <Text style={styles.devBtnText}>DEV: 相册选图</Text>
+            <Text style={styles.devBtnText}>DEV: Pick from Gallery</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -220,7 +220,7 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
         <Text style={styles.hanakotobaValue}>{plant.hanakotoba}</Text>
         <Text style={styles.flowerMeaning}>{plant.flower_meaning}</Text>
         <TouchableOpacity style={styles.button} onPress={onClose}>
-          <Text style={styles.buttonText}>閉じる</Text>
+          <Text style={styles.buttonText}>{t('common.close')}</Text>
         </TouchableOpacity>
       </>
     );
@@ -234,10 +234,10 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
       message = t('discover.notAPlant');
       break;
     case 'no_match':
-      message = 'データベースに見つかりません';
+      message = t('discover.noMatch');
       break;
     case 'cooldown':
-      message = `${t('discover.cooldown')}\n残り ${daysRemaining ?? '?'} 日`;
+      message = `${t('discover.cooldown')}\n${daysRemaining ?? '?'}`;
       showRetry = false;
       break;
     case 'quota_exceeded':
@@ -245,7 +245,7 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
       showRetry = false;
       break;
     case 'error':
-      message = 'エラーが発生しました。もう一度お試しください。';
+      message = t('discover.identifyError');
       break;
     default:
       message = status;
@@ -256,11 +256,11 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
       <Text style={styles.message}>{message}</Text>
       {showRetry ? (
         <TouchableOpacity style={styles.button} onPress={onRetry}>
-          <Text style={styles.buttonText}>再試行</Text>
+          <Text style={styles.buttonText}>{t('common.retry')}</Text>
         </TouchableOpacity>
       ) : (
         <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={onClose}>
-          <Text style={[styles.buttonText, styles.buttonTextSecondary]}>閉じる</Text>
+          <Text style={[styles.buttonText, styles.buttonTextSecondary]}>{t('common.close')}</Text>
         </TouchableOpacity>
       )}
     </>
