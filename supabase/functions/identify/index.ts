@@ -24,7 +24,7 @@ interface IdentifyResponse {
 
 const METERS_PER_LAT_DEGREE = 111_320;
 const FUZZ_RADIUS_METERS = 100;
-const PLANTID_CONFIDENCE_THRESHOLD = 0.4;
+const PLANTNET_CONFIDENCE_THRESHOLD = 0.20; // PlantNet scores are lower than Plant.id; 0.20 is a reasonable floor
 
 function fuzzCoordinate(lat: number, lon: number): { lat: number; lon: number } {
   const maxLatDelta = FUZZ_RADIUS_METERS / METERS_PER_LAT_DEGREE;
@@ -36,35 +36,36 @@ function fuzzCoordinate(lat: number, lon: number): { lat: number; lon: number } 
   };
 }
 
-async function callPlantId(imageBase64: string, apiKey: string): Promise<{
+async function callPlantNet(imageBase64: string, apiKey: string): Promise<{
   isPlant: boolean;
   plantName: string | null;
   confidence: number;
 }> {
-  const res = await fetch('https://plant.id/api/v3/identification', {
-    method: 'POST',
-    headers: { 'Api-Key': apiKey, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      images: [imageBase64],
-      classification_level: 'species',
-      similar_images: false,
-    }),
-  });
+  // PlantNet requires multipart/form-data with an image file blob
+  const imageBytes = Uint8Array.from(atob(imageBase64), (c) => c.charCodeAt(0));
+  const imageBlob = new Blob([imageBytes], { type: 'image/jpeg' });
 
-  if (!res.ok) {
-    throw new Error(`Plant.id API error: ${res.status}`);
-  }
+  const formData = new FormData();
+  formData.append('images', imageBlob, 'plant.jpg');
+  formData.append('organs', 'auto'); // let PlantNet infer: flower / leaf / fruit / bark
+
+  const url = `https://my-api.plantnet.org/v2/identify/all?api-key=${apiKey}&lang=ja&include-related-images=false`;
+  const res = await fetch(url, { method: 'POST', body: formData });
+
+  // PlantNet returns 404 when it cannot identify any plant in the image
+  if (res.status === 404) return { isPlant: false, plantName: null, confidence: 0 };
+  if (!res.ok) throw new Error(`PlantNet API error: ${res.status}`);
 
   const json = await res.json();
-  const result = json?.result;
-  const isPlant = result?.is_plant?.binary === true;
+  const results: Array<{ score: number; species: { scientificNameWithoutAuthor: string } }> =
+    json?.results ?? [];
 
-  if (!isPlant) return { isPlant: false, plantName: null, confidence: 0 };
+  if (results.length === 0) return { isPlant: true, plantName: null, confidence: 0 };
 
-  const topSuggestion = result?.classification?.suggestions?.[0];
-  const confidence: number = topSuggestion?.probability ?? 0;
-  const plantName: string | null = confidence >= PLANTID_CONFIDENCE_THRESHOLD
-    ? (topSuggestion?.name ?? null)
+  const top = results[0];
+  const confidence = top.score ?? 0;
+  const plantName = confidence >= PLANTNET_CONFIDENCE_THRESHOLD
+    ? (top.species?.scientificNameWithoutAuthor ?? null)
     : null;
 
   return { isPlant: true, plantName, confidence };
@@ -79,29 +80,29 @@ Deno.serve(async (req: Request) => {
     const { userId, supabaseAdmin } = await requireAuth(req);
     const { imageBase64, lat, lon }: IdentifyRequest = await req.json();
 
-    const apiKey = Deno.env.get('PLANTID_API_KEY');
-    if (!apiKey) throw new Error('PLANTID_API_KEY secret not set');
+    const apiKey = Deno.env.get('PLANTNET_API_KEY');
+    if (!apiKey) throw new Error('PLANTNET_API_KEY secret not set');
 
-    // --- Upload photo and call Plant.id in parallel ---
+    // --- Upload photo and call PlantNet in parallel ---
     const timestamp = Date.now();
     const storagePath = `${userId}/${timestamp}.jpg`;
     const imageBytes = Uint8Array.from(atob(imageBase64), (c) => c.charCodeAt(0));
 
-    const [uploadResult, plantIdResult] = await Promise.all([
+    const [uploadResult, plantNetResult] = await Promise.all([
       supabaseAdmin.storage
         .from('discoveries-raw')
         .upload(storagePath, imageBytes, { contentType: 'image/jpeg', upsert: false }),
-      callPlantId(imageBase64, apiKey),
+      callPlantNet(imageBase64, apiKey),
     ]);
 
     if (uploadResult.error) throw uploadResult.error;
     const photoUrl = uploadResult.data.path;
 
-    // --- Handle Plant.id result ---
-    if (!plantIdResult.isPlant) {
+    // --- Handle PlantNet result ---
+    if (!plantNetResult.isPlant) {
       return jsonResponse({ status: 'not_a_plant' } as IdentifyResponse);
     }
-    if (!plantIdResult.plantName) {
+    if (!plantNetResult.plantName) {
       return jsonResponse({ status: 'no_match' } as IdentifyResponse);
     }
 
@@ -109,7 +110,7 @@ Deno.serve(async (req: Request) => {
     const { data: plants, error: plantError } = await supabaseAdmin
       .from('plants')
       .select('id, name_ja, name_en, name_latin, rarity, hanakotoba, flower_meaning')
-      .or(`name_latin.ilike.${plantIdResult.plantName},name_en.ilike.${plantIdResult.plantName}`)
+      .or(`name_latin.ilike.${plantNetResult.plantName},name_en.ilike.${plantNetResult.plantName}`)
       .limit(1);
 
     if (plantError) throw plantError;
