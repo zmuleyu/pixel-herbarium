@@ -20,6 +20,7 @@ import type { TFunction } from 'i18next';
 import { useCapture } from '@/hooks/useCapture';
 import { useDiscovery } from '@/hooks/useDiscovery';
 import { useAuthStore } from '@/stores/auth-store';
+import { checkQuota } from '@/services/antiCheat';
 import { useHerbariumStore } from '@/stores/herbarium-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { RARITY_LABELS } from '@/constants/plants';
@@ -50,6 +51,7 @@ export default function DiscoverScreen() {
   const capture = useCapture();
   const discovery = useDiscovery();
   const triggerHerbariumRefresh = useHerbariumStore((s) => s.triggerRefresh);
+  const [quotaRemaining, setQuotaRemaining] = useState<number | null>(null);
 
   const cameraRef = useRef<CameraView>(null);
 
@@ -65,12 +67,19 @@ export default function DiscoverScreen() {
     }
   }, [capture.cameraGranted, capture.locationGranted]);
 
-  // Notify herbarium to refresh when a discovery succeeds
+  // Notify herbarium to refresh when a discovery succeeds; re-fetch quota
   useEffect(() => {
     if (discovery.status === 'success') {
       triggerHerbariumRefresh();
+      if (user?.id) checkQuota(user.id).then(({ remaining }) => setQuotaRemaining(remaining));
     }
   }, [discovery.status]);
+
+  // Fetch quota on mount (once user is known)
+  useEffect(() => {
+    if (!user?.id) return;
+    checkQuota(user.id).then(({ remaining }) => setQuotaRemaining(remaining));
+  }, [user?.id]);
 
   async function handleCapture() {
     if (!cameraRef.current || capture.status !== 'ready') return;
@@ -160,13 +169,20 @@ export default function DiscoverScreen() {
         )}
 
         {capture.status === 'ready' && !isProcessing && (
-          <TouchableOpacity
-            style={styles.captureButton}
-            onPress={handleCapture}
-            activeOpacity={0.8}
-          >
-            <View style={styles.captureInner} />
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity
+              style={styles.captureButton}
+              onPress={handleCapture}
+              activeOpacity={0.8}
+            >
+              <View style={styles.captureInner} />
+            </TouchableOpacity>
+            {quotaRemaining !== null && quotaRemaining > 0 && (
+              <Text style={[styles.quotaHint, quotaRemaining <= 2 && styles.quotaHintLow]}>
+                {t('discover.quotaRemaining', { count: quotaRemaining })}
+              </Text>
+            )}
+          </>
         )}
 
         {isProcessing && (
@@ -381,8 +397,10 @@ const styles = StyleSheet.create({
   processingText:     { color: '#fff', fontSize: typography.fontSize.md, fontFamily: typography.fontFamily.display },
 
   // Controls bar
-  controls:           { height: 120, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' },
+  controls:           { height: 120, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', gap: 6 },
   processingHint:     { color: colors.textSecondary, fontSize: typography.fontSize.sm },
+  quotaHint:          { fontSize: typography.fontSize.xs, color: colors.textSecondary },
+  quotaHintLow:       { color: colors.plantPrimary },
 
   // Shutter button
   captureButton:      { width: 72, height: 72, borderRadius: 36, borderWidth: 4, borderColor: colors.plantPrimary, alignItems: 'center', justifyContent: 'center' },
