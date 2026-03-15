@@ -206,6 +206,7 @@ interface ResultContentProps {
     hanakotoba: string;
     flower_meaning: string;
     pixel_sprite_url: string | null;
+    cityRank: number | null;
   } | null;
   daysRemaining?: number;
   onClose: () => void;
@@ -243,6 +244,11 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
         <Text style={styles.rarityLabel}>{rarityLabel}</Text>
         <Text style={styles.plantNameJa}>{plant.name_ja}</Text>
         <Text style={styles.plantNameEn}>{plant.name_en}</Text>
+        {plant.cityRank != null && (
+          <Text style={styles.cityRank}>
+            {t('discover.cityRank', { city: '全国', rank: plant.cityRank, plant: plant.name_ja })}
+          </Text>
+        )}
         <View style={styles.divider} />
         <Text style={styles.hanakotobaLabel}>{t('herbarium.hanakotoba')}</Text>
         <Text style={styles.hanakotobaValue}>{plant.hanakotoba}</Text>
@@ -344,6 +350,7 @@ const styles = StyleSheet.create({
 
   // Plant card
   rarityLabel:        { fontSize: typography.fontSize.lg, color: colors.plantPrimary },
+  cityRank:           { fontSize: typography.fontSize.xs, color: colors.textSecondary, textAlign: 'center', fontStyle: 'italic' },
   plantNameJa:        { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.xl, color: colors.text },
   plantNameEn:        { fontSize: typography.fontSize.sm, color: colors.textSecondary, fontStyle: 'italic' },
   divider:            { width: '60%', height: 1, backgroundColor: colors.border },

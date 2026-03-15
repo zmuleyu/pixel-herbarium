@@ -29,6 +29,7 @@ export interface DiscoveredPlant {
   hanakotoba: string;
   flower_meaning: string;
   pixel_sprite_url: string | null;
+  cityRank: number | null;
 }
 
 interface UseDiscoveryReturn {
@@ -91,7 +92,10 @@ export function useDiscovery(): UseDiscoveryReturn {
         return;
       }
 
-      setDiscoveredPlant(identifyData.plant);
+      setDiscoveredPlant({
+        ...identifyData.plant,
+        cityRank: identifyData.cityRank ?? null,
+      });
       setStatus('success');
 
       // 3. Kick off async pixel art generation (fire-and-forget, don't await)

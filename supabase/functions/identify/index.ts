@@ -22,6 +22,7 @@ interface IdentifyResponse {
   status: 'success' | 'not_a_plant' | 'no_match';
   plant?: Omit<DiscoveredPlant, 'available_window'>;
   discoveryId?: string;
+  cityRank?: number;
 }
 
 const METERS_PER_LAT_DEGREE = 111_320;
@@ -171,12 +172,22 @@ Deno.serve(async (req: Request) => {
       return jsonResponse({ status: 'no_match' } as IdentifyResponse, 429);
     }
 
+    // Compute global rank: how many distinct users discovered this plant before (excluding current user)
+    const { count: othersCount } = await supabaseAdmin
+      .from('discoveries')
+      .select('user_id', { count: 'exact', head: true })
+      .eq('plant_id', plant.id)
+      .neq('user_id', userId)
+      .then((r) => ({ count: r.count ?? 0 }));
+    const cityRank = (othersCount as number) + 1;
+
     // Strip available_window before returning to client
     const { available_window: _aw, ...plantForClient } = plant;
     return jsonResponse({
       status: 'success',
       plant: plantForClient,
       discoveryId: discovery.id,
+      cityRank,
     } as IdentifyResponse);
   } catch (err) {
     if (err instanceof Response) return err;
