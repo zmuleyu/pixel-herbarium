@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -32,9 +32,14 @@ export default function HerbariumScreen() {
   const { user } = useAuthStore();
   const router = useRouter();
   const { plants, collected, loading } = useHerbarium(user?.id ?? '');
+  const [hintPlant, setHintPlant] = useState<PlantSlot | null>(null);
 
   function handleCellPress(plant: PlantSlot) {
-    router.push(`/plant/${plant.id}`);
+    if (collected.has(plant.id)) {
+      router.push(`/plant/${plant.id}`);
+    } else {
+      setHintPlant(plant);
+    }
   }
 
   if (loading) {
@@ -80,6 +85,50 @@ export default function HerbariumScreen() {
         contentContainerStyle={styles.grid}
         showsVerticalScrollIndicator={false}
       />
+
+      {/* Bloom hint bottom sheet for locked cells */}
+      {hintPlant && (
+        <BloomHintSheet
+          plant={hintPlant}
+          onClose={() => setHintPlant(null)}
+          onDetail={() => {
+            setHintPlant(null);
+            router.push(`/plant/${hintPlant.id}`);
+          }}
+        />
+      )}
+    </View>
+  );
+}
+
+// ── Bloom Hint Sheet ───────────────────────────────────────────────────────
+
+interface BloomHintSheetProps {
+  plant: PlantSlot;
+  onClose: () => void;
+  onDetail: () => void;
+}
+
+function BloomHintSheet({ plant, onClose, onDetail }: BloomHintSheetProps) {
+  const { t } = useTranslation();
+  const isCurrentMonth = plant.bloom_months.includes(CURRENT_MONTH);
+  const monthStr = plant.bloom_months.map((m) => `${m}月`).join('・');
+
+  return (
+    <View style={sheet.overlay}>
+      <TouchableOpacity style={sheet.backdrop} onPress={onClose} activeOpacity={1} />
+      <View style={sheet.card}>
+        <Text style={sheet.seasonIcon}>{isCurrentMonth ? '🌱' : '🌿'}</Text>
+        <Text style={sheet.status}>
+          {isCurrentMonth ? t('discover.checkingHint') : t('discover.outOfSeason')}
+        </Text>
+        {monthStr.length > 0 && (
+          <Text style={sheet.months}>{monthStr}</Text>
+        )}
+        <TouchableOpacity style={sheet.detailBtn} onPress={onDetail}>
+          <Text style={sheet.detailBtnText}>詳しく見る →</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -169,4 +218,15 @@ const styles = StyleSheet.create({
 
   rarityBadge:     { position: 'absolute', top: 2, right: 2, borderRadius: 3, paddingHorizontal: 2, paddingVertical: 1 },
   rarityBadgeText: { fontSize: 7, color: colors.text },
+});
+
+const sheet = StyleSheet.create({
+  overlay:      { ...StyleSheet.absoluteFillObject, justifyContent: 'flex-end', zIndex: 10 },
+  backdrop:     { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.35)' },
+  card:         { backgroundColor: colors.white, borderTopLeftRadius: borderRadius.lg, borderTopRightRadius: borderRadius.lg, paddingHorizontal: spacing.xl, paddingTop: spacing.lg, paddingBottom: spacing.xl, alignItems: 'center', gap: spacing.sm },
+  seasonIcon:   { fontSize: 48 },
+  status:       { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.md, color: colors.text, textAlign: 'center' },
+  months:       { fontSize: typography.fontSize.sm, color: colors.textSecondary, textAlign: 'center' },
+  detailBtn:    { backgroundColor: colors.plantPrimary, borderRadius: borderRadius.md, paddingVertical: spacing.sm, paddingHorizontal: spacing.xl, marginTop: spacing.xs },
+  detailBtnText:{ color: colors.white, fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.md },
 });

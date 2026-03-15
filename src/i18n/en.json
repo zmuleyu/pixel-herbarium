@@ -25,7 +25,9 @@
     "identifyError": "An error occurred. Please try again.",
     "cameraError": "Failed to load camera",
     "outOfRegion": "Plant discovery is only available in Japan",
-    "viewHerbarium": "View Herbarium"
+    "viewHerbarium": "View Herbarium",
+    "checkingHint": "Discoverable this month",
+    "outOfSeason": "Out of season"
   },
   "herbarium": {
     "title": "Herbarium",

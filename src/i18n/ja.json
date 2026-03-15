@@ -25,7 +25,9 @@
     "identifyError": "エラーが発生しました。もう一度お試しください。",
     "cameraError": "カメラの読み込みに失敗しました",
     "outOfRegion": "日本国内でのみ発見できます",
-    "viewHerbarium": "花図鑑を見る"
+    "viewHerbarium": "花図鑑を見る",
+    "checkingHint": "今月は発見できます",
+    "outOfSeason": "今月は見つかりません"
   },
   "herbarium": {
     "title": "花図鉑",
