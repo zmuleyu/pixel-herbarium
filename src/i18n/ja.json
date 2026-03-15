@@ -27,7 +27,8 @@
     "outOfRegion": "日本国内でのみ発見できます",
     "viewHerbarium": "花図鑑を見る",
     "checkingHint": "今月は発見できます",
-    "outOfSeason": "今月は見つかりません"
+    "outOfSeason": "今月は見つかりません",
+    "quotaExhausted": "今月の撮影はここまで。来月また咲きます 🌿"
   },
   "herbarium": {
     "title": "花図鉑",

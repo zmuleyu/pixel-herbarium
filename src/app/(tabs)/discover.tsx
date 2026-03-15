@@ -171,13 +171,15 @@ export default function DiscoverScreen() {
         {capture.status === 'ready' && !isProcessing && (
           <>
             <TouchableOpacity
-              style={styles.captureButton}
-              onPress={handleCapture}
-              activeOpacity={0.8}
+              style={[styles.captureButton, quotaRemaining === 0 && styles.captureButtonDimmed]}
+              onPress={quotaRemaining === 0 ? undefined : handleCapture}
+              activeOpacity={quotaRemaining === 0 ? 1 : 0.8}
             >
-              <View style={styles.captureInner} />
+              <View style={[styles.captureInner, quotaRemaining === 0 && styles.captureInnerDimmed]} />
             </TouchableOpacity>
-            {quotaRemaining !== null && quotaRemaining > 0 && (
+            {quotaRemaining === 0 ? (
+              <Text style={styles.quotaExhausted}>{t('discover.quotaExhausted')}</Text>
+            ) : quotaRemaining !== null && (
               <Text style={[styles.quotaHint, quotaRemaining <= 2 && styles.quotaHintLow]}>
                 {t('discover.quotaRemaining', { count: quotaRemaining })}
               </Text>
@@ -401,6 +403,9 @@ const styles = StyleSheet.create({
   processingHint:     { color: colors.textSecondary, fontSize: typography.fontSize.sm },
   quotaHint:          { fontSize: typography.fontSize.xs, color: colors.textSecondary },
   quotaHintLow:       { color: colors.plantPrimary },
+  quotaExhausted:     { fontSize: typography.fontSize.xs, color: colors.textSecondary, textAlign: 'center', paddingHorizontal: spacing.md },
+  captureButtonDimmed:{ borderColor: colors.border, opacity: 0.4 },
+  captureInnerDimmed: { backgroundColor: colors.border },
 
   // Shutter button
   captureButton:      { width: 72, height: 72, borderRadius: 36, borderWidth: 4, borderColor: colors.plantPrimary, alignItems: 'center', justifyContent: 'center' },

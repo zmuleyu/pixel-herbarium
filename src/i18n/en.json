@@ -27,7 +27,8 @@
     "outOfRegion": "Plant discovery is only available in Japan",
     "viewHerbarium": "View Herbarium",
     "checkingHint": "Discoverable this month",
-    "outOfSeason": "Out of season"
+    "outOfSeason": "Out of season",
+    "quotaExhausted": "See you next month 🌿"
   },
   "herbarium": {
     "title": "Herbarium",
