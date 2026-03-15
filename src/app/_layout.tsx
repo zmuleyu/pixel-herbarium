@@ -7,6 +7,8 @@ import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/services/supabase';
 import { colors } from '@/constants/theme';
 import { usePushToken } from '@/hooks/usePushToken';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { OfflineBanner } from '@/components/OfflineBanner';
 
 // Show notifications as banners when the app is in the foreground
 Notifications.setNotificationHandler({
@@ -62,7 +64,12 @@ export default function RootLayout() {
     );
   }
 
-  return <Slot />;
+  return (
+    <ErrorBoundary>
+      <OfflineBanner />
+      <Slot />
+    </ErrorBoundary>
+  );
 }
 
 const styles = StyleSheet.create({
