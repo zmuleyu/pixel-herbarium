@@ -27,6 +27,7 @@ interface UsePlantDetailReturn {
   discoveries: DiscoveryRecord[];
   loading: boolean;
   error: string | null;
+  updateNote: (discoveryId: string, note: string) => Promise<void>;
 }
 
 export function usePlantDetail(plantId: number, userId: string): UsePlantDetailReturn {
@@ -76,5 +77,17 @@ export function usePlantDetail(plantId: number, userId: string): UsePlantDetailR
     return () => { cancelled = true; };
   }, [plantId, userId]);
 
-  return { plant, discoveries, loading, error };
+  async function updateNote(discoveryId: string, note: string) {
+    const trimmed = note.trim();
+    await (supabase as any)
+      .from('discoveries')
+      .update({ user_note: trimmed || null })
+      .eq('id', discoveryId);
+    // Optimistically update local state
+    setDiscoveries((prev) =>
+      prev.map((d) => d.id === discoveryId ? { ...d, user_note: trimmed || null } : d)
+    );
+  }
+
+  return { plant, discoveries, loading, error, updateNote };
 }

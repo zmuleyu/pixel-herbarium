@@ -3,6 +3,7 @@ import {
   Text,
   Image,
   ScrollView,
+  TextInput,
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
@@ -33,7 +34,7 @@ export default function PlantDetailScreen() {
   const { user } = useAuthStore();
 
   const plantId = Number(id);
-  const { plant, discoveries, loading, error } = usePlantDetail(plantId, user?.id ?? '');
+  const { plant, discoveries, loading, error, updateNote } = usePlantDetail(plantId, user?.id ?? '');
   const posterRef = useRef<View>(null);
   const [sharing, setSharing] = useState(false);
 
@@ -171,7 +172,7 @@ export default function PlantDetailScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>{t('plant.myDiscoveries')}</Text>
           {discoveries.map((disc) => (
-            <DiscoveryRow key={disc.id} record={disc} />
+            <DiscoveryRow key={disc.id} record={disc} onSaveNote={updateNote} t={t} />
           ))}
         </View>
       )}
@@ -183,14 +184,26 @@ export default function PlantDetailScreen() {
 
 interface DiscoveryRowProps {
   record: { id: string; created_at: string; pixel_url: string | null; user_note: string | null };
+  onSaveNote: (discoveryId: string, note: string) => Promise<void>;
+  t: (key: string) => string;
 }
 
-function DiscoveryRow({ record }: DiscoveryRowProps) {
+function DiscoveryRow({ record, onSaveNote, t }: DiscoveryRowProps) {
+  const [draft, setDraft] = useState(record.user_note ?? '');
+  const [saving, setSaving] = useState(false);
+
   const dateStr = new Date(record.created_at).toLocaleDateString('ja-JP', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
+
+  async function handleBlur() {
+    if (draft === (record.user_note ?? '')) return; // no change
+    setSaving(true);
+    await onSaveNote(record.id, draft);
+    setSaving(false);
+  }
 
   return (
     <View style={styles.discRow}>
@@ -198,8 +211,22 @@ function DiscoveryRow({ record }: DiscoveryRowProps) {
         <Image source={{ uri: record.pixel_url }} style={styles.discPixelArt} resizeMode="contain" />
       )}
       <View style={styles.discInfo}>
-        <Text style={styles.discDate}>{dateStr}</Text>
-        {record.user_note && <Text style={styles.discNote}>{record.user_note}</Text>}
+        <View style={styles.discDateRow}>
+          <Text style={styles.discDate}>{dateStr}</Text>
+          {saving && <ActivityIndicator size="small" color={colors.plantPrimary} style={{ marginLeft: 6 }} />}
+        </View>
+        <TextInput
+          style={styles.discNoteInput}
+          value={draft}
+          onChangeText={setDraft}
+          onBlur={handleBlur}
+          placeholder={t('herbarium.yourNote')}
+          placeholderTextColor={colors.textSecondary}
+          multiline
+          maxLength={200}
+          returnKeyType="done"
+          blurOnSubmit
+        />
       </View>
     </View>
   );
@@ -249,11 +276,12 @@ const styles = StyleSheet.create({
   chip:    { backgroundColor: colors.plantSecondary, borderRadius: borderRadius.full, paddingHorizontal: spacing.sm, paddingVertical: 3 },
   chipText: { fontSize: typography.fontSize.xs, color: colors.text },
 
-  discRow:      { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.sm },
-  discPixelArt: { width: 64, height: 64, borderRadius: borderRadius.sm },
-  discInfo:     { flex: 1 },
-  discDate:     { fontSize: typography.fontSize.sm, color: colors.text, fontFamily: typography.fontFamily.display },
-  discNote:     { fontSize: typography.fontSize.xs, color: colors.textSecondary, marginTop: 2 },
+  discRow:       { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, marginBottom: spacing.sm, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.sm },
+  discPixelArt:  { width: 64, height: 64, borderRadius: borderRadius.sm },
+  discInfo:      { flex: 1 },
+  discDateRow:   { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
+  discDate:      { fontSize: typography.fontSize.sm, color: colors.text, fontFamily: typography.fontFamily.display },
+  discNoteInput: { fontSize: typography.fontSize.xs, color: colors.text, fontStyle: 'italic', paddingVertical: 2, minHeight: 20 },
 
   errorText: { color: colors.textSecondary, fontSize: typography.fontSize.md, textAlign: 'center', marginHorizontal: spacing.xl },
 });
