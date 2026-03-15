@@ -44,7 +44,14 @@
     "recapEmpty": "No discoveries this season yet",
     "recapCollected": "{{count}} species found",
     "recapRarest": "Rarest find",
-    "viewDetail": "View details →"
+    "viewDetail": "View details →",
+    "filterAll": "All",
+    "filterCommon": "★",
+    "filterUncommon": "★★",
+    "filterRare": "★★★",
+    "filterCollected": "Collected",
+    "filterUncollected": "Not yet",
+    "noResults": "No matches"
   },
   "rarity": {
     "1": "★",
