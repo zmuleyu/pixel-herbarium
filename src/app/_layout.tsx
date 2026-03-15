@@ -2,14 +2,27 @@ import '../i18n'; // initialize i18n before any screen renders
 import { useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Slot, useRouter, useSegments } from 'expo-router';
+import * as Notifications from 'expo-notifications';
 import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/services/supabase';
 import { colors } from '@/constants/theme';
+import { usePushToken } from '@/hooks/usePushToken';
+
+// Show notifications as banners when the app is in the foreground
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
   const { session, loading, setSession, setUser, setLoading } = useAuthStore();
+  usePushToken();
 
   // Bootstrap auth session from Supabase on first load
   useEffect(() => {

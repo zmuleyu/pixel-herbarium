@@ -49,6 +49,14 @@
         {
           "photosPermission": "花図鉑の開発テスト用にフォトライブラリへのアクセスを許可します。"
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#ffffff",
+          "sounds": []
+        }
       ]
     ],
     "experiments": {
