@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import {
   View,
   Text,
+  Image,
+  Animated,
   TouchableOpacity,
   StyleSheet,
   Modal,
@@ -17,6 +19,7 @@ import { useDiscovery } from '@/hooks/useDiscovery';
 import { useAuthStore } from '@/stores/auth-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { RARITY_LABELS } from '@/constants/plants';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // Statuses that show the processing overlay on the viewfinder
 const PROCESSING_STATUSES = new Set(['checking', 'identifying', 'saving']);
@@ -111,6 +114,7 @@ export default function DiscoverScreen() {
   const isProcessing = PROCESSING_STATUSES.has(discovery.status);
 
   return (
+    <ErrorBoundary fallbackLabel={t('discover.cameraError')}>
     <View style={styles.container}>
 
       {/* ── Camera viewfinder ─────────────────────────────────────── */}
@@ -188,6 +192,7 @@ export default function DiscoverScreen() {
         </View>
       </Modal>
     </View>
+    </ErrorBoundary>
   );
 }
 
@@ -200,6 +205,7 @@ interface ResultContentProps {
     rarity: number;
     hanakotoba: string;
     flower_meaning: string;
+    pixel_sprite_url: string | null;
   } | null;
   daysRemaining?: number;
   onClose: () => void;
@@ -208,10 +214,32 @@ interface ResultContentProps {
 }
 
 function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: ResultContentProps) {
+  const cardScale = useRef(new Animated.Value(0.85)).current;
+  const cardOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (status === 'success') {
+      Animated.parallel([
+        Animated.spring(cardScale, { toValue: 1, useNativeDriver: true, tension: 100, friction: 8 }),
+        Animated.timing(cardOpacity, { toValue: 1, duration: 250, useNativeDriver: true }),
+      ]).start();
+    }
+  }, [status]);
+
   if (status === 'success' && plant) {
     const rarityLabel = RARITY_LABELS[plant.rarity as keyof typeof RARITY_LABELS] ?? '★';
+    const rarityEmoji = plant.rarity === 3 ? '⭐⭐⭐' : plant.rarity === 2 ? '⭐⭐' : '⭐';
     return (
-      <>
+      <Animated.View style={{ width: '100%', alignItems: 'center', gap: spacing.sm, transform: [{ scale: cardScale }], opacity: cardOpacity }}>
+        {/* Plant image or rarity emoji card */}
+        {plant.pixel_sprite_url ? (
+          <Image source={{ uri: plant.pixel_sprite_url }} style={styles.spriteImage} resizeMode="contain" />
+        ) : (
+          <View style={[styles.spriteEmoji, { borderColor: plant.rarity === 3 ? colors.rarity.rare : plant.rarity === 2 ? colors.rarity.uncommon : colors.rarity.common }]}>
+            <Text style={styles.spriteEmojiText}>🌸</Text>
+            <Text style={styles.spriteEmojiRarity}>{rarityEmoji}</Text>
+          </View>
+        )}
         <Text style={styles.rarityLabel}>{rarityLabel}</Text>
         <Text style={styles.plantNameJa}>{plant.name_ja}</Text>
         <Text style={styles.plantNameEn}>{plant.name_en}</Text>
@@ -222,7 +250,7 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
         <TouchableOpacity style={styles.button} onPress={onClose}>
           <Text style={styles.buttonText}>{t('common.close')}</Text>
         </TouchableOpacity>
-      </>
+      </Animated.View>
     );
   }
 
@@ -303,6 +331,12 @@ const styles = StyleSheet.create({
   // Modal
   modalBackdrop:      { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalCard:          { backgroundColor: colors.background, borderTopLeftRadius: borderRadius.lg, borderTopRightRadius: borderRadius.lg, padding: spacing.xl, gap: spacing.md, alignItems: 'center', paddingBottom: Platform.OS === 'ios' ? 40 : spacing.xl },
+
+  // Plant card image
+  spriteImage:        { width: 120, height: 120, borderRadius: borderRadius.md },
+  spriteEmoji:        { width: 120, height: 120, borderRadius: borderRadius.md, borderWidth: 2, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center', gap: 4 },
+  spriteEmojiText:    { fontSize: 48 },
+  spriteEmojiRarity:  { fontSize: typography.fontSize.xs, color: colors.textSecondary },
 
   // Plant card
   rarityLabel:        { fontSize: typography.fontSize.lg, color: colors.plantPrimary },

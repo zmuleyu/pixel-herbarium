@@ -1,9 +1,11 @@
+import { useEffect, useRef } from 'react';
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
   Image,
+  Animated,
   StyleSheet,
   Dimensions,
   ActivityIndicator,
@@ -83,6 +85,16 @@ interface PlantCellProps {
 
 function PlantCell({ plant, isCollected, onPress }: PlantCellProps) {
   const rarityColor = RARITY_COLORS[plant.rarity] ?? colors.rarity.common;
+  const scale = useRef(new Animated.Value(isCollected ? 0.8 : 1)).current;
+  const opacity = useRef(new Animated.Value(isCollected ? 0 : 1)).current;
+
+  useEffect(() => {
+    if (!isCollected) return;
+    Animated.parallel([
+      Animated.spring(scale, { toValue: 1, useNativeDriver: true, tension: 120, friction: 8 }),
+      Animated.timing(opacity, { toValue: 1, duration: 300, useNativeDriver: true }),
+    ]).start();
+  }, [isCollected]);
 
   return (
     <TouchableOpacity
@@ -91,7 +103,7 @@ function PlantCell({ plant, isCollected, onPress }: PlantCellProps) {
       activeOpacity={isCollected ? 0.7 : 1}
     >
       {isCollected ? (
-        <>
+        <Animated.View style={{ alignItems: 'center', transform: [{ scale }], opacity }}>
           {plant.pixel_sprite_url ? (
             <Image
               source={{ uri: plant.pixel_sprite_url }}
@@ -106,7 +118,7 @@ function PlantCell({ plant, isCollected, onPress }: PlantCellProps) {
           <View style={[styles.rarityBadge, { backgroundColor: rarityColor }]}>
             <Text style={styles.rarityBadgeText}>{'★'.repeat(plant.rarity)}</Text>
           </View>
-        </>
+        </Animated.View>
       ) : (
         <View style={styles.lockedInner}>
           <Text style={styles.lockedIcon}>🌿</Text>

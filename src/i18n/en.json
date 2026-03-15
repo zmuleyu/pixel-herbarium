@@ -22,7 +22,8 @@
     "gpsAcquiring": "Acquiring GPS…",
     "noMatch": "Not found in database",
     "allowPermission": "Allow",
-    "identifyError": "An error occurred. Please try again."
+    "identifyError": "An error occurred. Please try again.",
+    "cameraError": "Failed to load camera"
   },
   "herbarium": {
     "title": "Herbarium",
@@ -53,7 +54,8 @@
     "noDiscoveries": "No discoveries in this area yet",
     "loading": "Loading map…",
     "discoveryCount": "{{count}} found",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "loadError": "Failed to load map"
   },
   "profile": {
     "title": "Profile",

@@ -27,6 +27,7 @@ export interface DiscoveredPlant {
   rarity: number;
   hanakotoba: string;
   flower_meaning: string;
+  pixel_sprite_url: string | null;
 }
 
 interface UseDiscoveryReturn {

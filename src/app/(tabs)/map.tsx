@@ -10,6 +10,7 @@ import MapView, { Marker, Callout, PROVIDER_DEFAULT } from 'react-native-maps';
 import { useTranslation } from 'react-i18next';
 import { useNearbyDiscoveries, type NearbyDiscovery } from '@/hooks/useNearbyDiscoveries';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // ~5km view delta
 const REGION_DELTA = 0.09;
@@ -43,29 +44,31 @@ export default function MapScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('tabs.cityMap')}</Text>
-        <Text style={styles.headerCount}>{t('map.discoveryCount', { count: discoveries.length })}</Text>
-        <TouchableOpacity onPress={refresh} style={styles.refreshButton}>
-          <Text style={styles.refreshText}>{t('map.refresh')}</Text>
-        </TouchableOpacity>
-      </View>
+    <ErrorBoundary fallbackLabel={t('map.loadError')}>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>{t('tabs.cityMap')}</Text>
+          <Text style={styles.headerCount}>{t('map.discoveryCount', { count: discoveries.length })}</Text>
+          <TouchableOpacity onPress={refresh} style={styles.refreshButton}>
+            <Text style={styles.refreshText}>{t('map.refresh')}</Text>
+          </TouchableOpacity>
+        </View>
 
-      {/* Map */}
-      <MapView
-        style={styles.map}
-        provider={PROVIDER_DEFAULT}
-        initialRegion={region}
-        showsUserLocation
-        showsMyLocationButton={false}
-      >
-        {discoveries.map((d) => (
-          <PlantMarker key={d.id} discovery={d} />
-        ))}
-      </MapView>
-    </View>
+        {/* Map */}
+        <MapView
+          style={styles.map}
+          provider={PROVIDER_DEFAULT}
+          initialRegion={region}
+          showsUserLocation
+          showsMyLocationButton={false}
+        >
+          {discoveries.map((d) => (
+            <PlantMarker key={d.id} discovery={d} />
+          ))}
+        </MapView>
+      </View>
+    </ErrorBoundary>
   );
 }
 

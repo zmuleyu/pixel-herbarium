@@ -22,7 +22,8 @@
     "gpsAcquiring": "GPS 取得中…",
     "noMatch": "データベースに見つかりません",
     "allowPermission": "許可する",
-    "identifyError": "エラーが発生しました。もう一度お試しください。"
+    "identifyError": "エラーが発生しました。もう一度お試しください。",
+    "cameraError": "カメラの読み込みに失敗しました"
   },
   "herbarium": {
     "title": "花図鉑",
@@ -53,7 +54,8 @@
     "noDiscoveries": "この周辺にはまだ発見がありません",
     "loading": "地図を読み込み中…",
     "discoveryCount": "{{count}} 件",
-    "refresh": "更新"
+    "refresh": "更新",
+    "loadError": "地図の読み込みに失敗しました"
   },
   "profile": {
     "title": "マイページ",

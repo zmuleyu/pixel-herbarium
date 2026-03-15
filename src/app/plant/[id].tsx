@@ -213,6 +213,7 @@ const styles = StyleSheet.create({
   center:    { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
 
   topRow:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', marginBottom: spacing.sm },
+  backBtn:       { paddingVertical: 4, paddingHorizontal: spacing.xs },
   backBtnText:   { color: colors.plantPrimary, fontSize: typography.fontSize.sm },
   shareBtn:      { flexDirection: 'row', alignItems: 'center', gap: 4, borderWidth: 1, borderColor: colors.plantPrimary, borderRadius: borderRadius.sm, paddingHorizontal: spacing.sm, paddingVertical: 4 },
   shareBtnText:  { color: colors.plantPrimary, fontSize: typography.fontSize.xs, fontFamily: typography.fontFamily.display },
