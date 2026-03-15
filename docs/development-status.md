@@ -100,20 +100,21 @@ pixel-herbarium/
 
 ---
 
-## 三、屏幕与路由（11条路由）
+## 三、屏幕与路由（12条路由）
 
 | 路由 | 文件路径 | 行数 | 主要功能 |
 |------|----------|------|---------|
 | `/(tabs)/discover` | app/(tabs)/discover.tsx | ~310 | 相机取景 → 拍照 → GPS获取 → 反作弊 → AI识别 → 像素化 → 入图鉑；首次发现特效；冷却提示；**月度剩余配额显示**；配额耗尽时按钮变暗+温柔提示「来月また咲きます 🌿」 |
 | `/(tabs)/herbarium` | app/(tabs)/herbarium.tsx | ~190 | 6×10植物网格（已发现/未发现）；锁定格点击显示开花提示；季节回顾按钮 |
-| `/(tabs)/map` | app/(tabs)/map.tsx | ~155 | GPS定位 + MapView；周边5km发现标记（**稀有度彩色圆点**：★绿/★★蓝/★★★紫）；点击标记显示植物信息浮层；右下角图例；刷新按钮 |
-| `/(tabs)/social` | app/(tabs)/social.tsx | ~445 | 好友标签（搜索/申请/接受/拒绝）；花束标签（收件箱/已发送/撰写花束）；植物选择3-5种 |
-| `/(tabs)/profile` | app/(tabs)/profile.tsx | ~170 | 显示名编辑；收集进度条；当季回顾卡片（→recap）；月度配额卡片；**Friends快捷入口**（→social）；隐私设置入口；退出登录 |
+| `/(tabs)/map` | app/(tabs)/map.tsx | ~180 | GPS定位 + MapView；周边5km发现标记（**稀有度彩色圆点**：★绿/★★蓝/★★★紫）；点击标记显示植物信息浮层；右下角图例；**空状态提示**（无发现时浮层）；刷新按钮 |
+| `/(tabs)/social` | app/(tabs)/social.tsx | ~460 | 好友标签（搜索/申请/接受/拒绝）；花束标签（收件箱/**花束到期天数**/已发送/撰写花束）；植物选择3-5种 |
+| `/(tabs)/profile` | app/(tabs)/profile.tsx | ~170 | 显示名编辑；收集进度条；当季回顾卡片（→recap）；月度配额卡片；**Friends快捷入口**（→social）；**Settings入口**（→settings）；退出登录 |
 | `/(auth)/login` | app/(auth)/login.tsx | ~120 | Apple登录（主）；Email登录/注册（次）；欢迎文案 |
 | `/onboarding` | app/onboarding.tsx | ~164 | 首次启动3幕横向滑动引导；dot指示器；跳过+下一步/开始按钮；完成后写入SecureStore |
-| `/recap` | app/recap.tsx | ~180 | 当季（春/夏/秋/冬）收获总结；季节emoji标题；最稀有发现卡片；植物缩略图网格 |
-| `/plant/[id]` | app/plant/[id].tsx | ~327 | 植物全名（日/英/拉丁）；花言葉；12个月开花日历；都道府县分布芯片；发现历史列表（含备注编辑）；分享海报 |
+| `/recap` | app/recap.tsx | ~180 | 当季（春/夏/秋/冬）收获总结；季节emoji标题；最稀有发现卡片；植物缩略图网格；**分享按钮**（原生Share API） |
+| `/plant/[id]` | app/plant/[id].tsx | ~330 | 植物全名（日/英/拉丁）；花言葉；12个月开花日历；都道府县分布芯片；发现历史列表（**発見日标签**+备注编辑）；分享海报 |
 | `/friend/[id]` | app/friend/[id].tsx | ~135 | 朋友的6×10图鉑只读展示；收集进度计数；**显示朋友名称**（URL参数传递）；**花束赠送快捷按钮**（→social/bouquets）；返回导航 |
+| `/settings` | app/settings.tsx | ~115 | **语言切换**（ja/en + SecureStore持久化）；隐私设置入口（→privacy）；应用版本号 |
 | `/privacy` | app/privacy.tsx | ~150 | 地图可见性开关（持久化到DB）；数据导出（JSON → expo-sharing）；删除账号（软删除30天 + 即时退出登录） |
 
 ---

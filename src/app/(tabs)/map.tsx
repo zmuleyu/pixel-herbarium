@@ -74,8 +74,16 @@ export default function MapScreen() {
           ))}
         </MapView>
 
+        {/* Empty state overlay */}
+        {discoveries.length === 0 && (
+          <View style={styles.emptyOverlay}>
+            <Text style={styles.emptyEmoji}>🌿</Text>
+            <Text style={styles.emptyText}>{t('map.noDiscoveries')}</Text>
+          </View>
+        )}
+
         {/* Rarity legend */}
-        <MapLegend />
+        {discoveries.length > 0 && <MapLegend />}
       </View>
     </ErrorBoundary>
   );
@@ -122,6 +130,9 @@ const styles = StyleSheet.create({
   map:                { flex: 1 },
   loadingText:        { color: colors.textSecondary, fontSize: typography.fontSize.sm },
   message:            { color: colors.text, fontSize: typography.fontSize.md, textAlign: 'center' },
+  emptyOverlay:       { position: 'absolute', top: '40%', alignSelf: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: borderRadius.md, padding: spacing.lg, gap: spacing.xs },
+  emptyEmoji:         { fontSize: 36, opacity: 0.5 },
+  emptyText:          { fontSize: typography.fontSize.sm, color: colors.textSecondary, textAlign: 'center' },
 
   // Header
   header:             { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.border, gap: spacing.sm },
