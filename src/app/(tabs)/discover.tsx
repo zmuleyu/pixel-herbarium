@@ -26,6 +26,13 @@ import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { RARITY_LABELS } from '@/constants/plants';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { SharePoster } from '@/components/SharePoster';
+import { getCurrentSeason, type Season } from '@/utils/date';
+
+const SEASON_EVENTS: Partial<Record<Season, { emoji: string; key: string }>> = {
+  spring: { emoji: '🌸', key: 'events.sakuraMatsuri' },
+  summer: { emoji: '🌻', key: 'events.tsuyuNoHana' },
+  autumn: { emoji: '🍂', key: 'events.momojiGari' },
+};
 
 // Statuses that show the processing overlay on the viewfinder
 const PROCESSING_STATUSES = new Set(['checking', 'identifying', 'saving']);
@@ -152,6 +159,9 @@ export default function DiscoverScreen() {
             <Text style={styles.gpsText}>📡 {t('discover.gpsAcquiring')}</Text>
           )}
         </View>
+
+        {/* Seasonal event banner */}
+        <EventBanner />
 
         {/* Processing overlay */}
         {isProcessing && (
@@ -383,6 +393,24 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
   );
 }
 
+// ── Event Banner ──────────────────────────────────────────────────────
+
+function EventBanner() {
+  const { t } = useTranslation();
+  const event = SEASON_EVENTS[getCurrentSeason()];
+  if (!event) return null;
+
+  return (
+    <View style={styles.eventBanner}>
+      <Text style={styles.eventEmoji}>{event.emoji}</Text>
+      <View>
+        <Text style={styles.eventName}>{t(event.key)}</Text>
+        <Text style={styles.eventActive}>{t('events.eventActive')}</Text>
+      </View>
+    </View>
+  );
+}
+
 // ── Styles ────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   container:          { flex: 1, backgroundColor: '#000' },
@@ -406,6 +434,12 @@ const styles = StyleSheet.create({
   quotaExhausted:     { fontSize: typography.fontSize.xs, color: colors.textSecondary, textAlign: 'center', paddingHorizontal: spacing.md },
   captureButtonDimmed:{ borderColor: colors.border, opacity: 0.4 },
   captureInnerDimmed: { backgroundColor: colors.border },
+
+  // Event banner
+  eventBanner:        { position: 'absolute', bottom: spacing.lg, left: spacing.md, flexDirection: 'row', alignItems: 'center', gap: spacing.xs, backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: borderRadius.md, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
+  eventEmoji:         { fontSize: 20 },
+  eventName:          { color: '#fff', fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.sm },
+  eventActive:        { color: 'rgba(255,255,255,0.7)', fontSize: typography.fontSize.xs },
 
   // Shutter button
   captureButton:      { width: 72, height: 72, borderRadius: 36, borderWidth: 4, borderColor: colors.plantPrimary, alignItems: 'center', justifyContent: 'center' },
