@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useHerbarium } from '@/hooks/useHerbarium';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { GRID_COLUMNS, TOTAL_PLANTS } from '@/constants/plants';
@@ -26,6 +27,7 @@ const RARITY_COLORS: Record<number, string> = {
 export default function FriendHerbariumScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const { plants, collected, loading } = useHerbarium(id ?? '');
 
   if (loading) {
@@ -41,10 +43,10 @@ export default function FriendHerbariumScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backText}>‹ 戻る</Text>
+          <Text style={styles.backText}>‹ {t('common.back')}</Text>
         </TouchableOpacity>
         <Text style={styles.headerProgress}>
-          {collected.size} / {TOTAL_PLANTS} 収集済み
+          {t('herbarium.progress', { count: collected.size })}
         </Text>
       </View>
 
