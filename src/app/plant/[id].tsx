@@ -14,11 +14,13 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { captureRef } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
+import { LinearGradient } from 'expo-linear-gradient';
 import { usePlantDetail } from '@/hooks/usePlantDetail';
 import { useHerbarium } from '@/hooks/useHerbarium';
 import { useAuthStore } from '@/stores/auth-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { RARITY_LABELS } from '@/constants/plants';
+import { getPlantGradientColors } from '@/utils/plant-gradient';
 
 function getMonthName(month: number, lng: string): string {
   return new Date(2024, month - 1, 1).toLocaleDateString(lng === 'ja' ? 'ja-JP' : 'en-US', { month: 'short' });
@@ -90,6 +92,7 @@ export default function PlantDetailScreen() {
   }
 
   const rarityColor = RARITY_COLORS[plant.rarity] ?? colors.rarity.common;
+  const gradientColors = getPlantGradientColors(plant.rarity, plant.bloom_months);
   const rarityLabel = RARITY_LABELS[plant.rarity as keyof typeof RARITY_LABELS] ?? '★';
 
   // Best available image: personal pixel art > standard sprite
@@ -110,7 +113,13 @@ export default function PlantDetailScreen() {
       </View>
 
       {/* Hero image (poster capture area) */}
-      <View ref={posterRef} style={[styles.posterArea, { borderColor: rarityColor, backgroundColor: colors.white }]}>
+      <View ref={posterRef} style={[styles.posterArea, { borderColor: rarityColor }]}>
+        <LinearGradient
+          colors={gradientColors}
+          style={StyleSheet.absoluteFill}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+        />
         {heroImageUri ? (
           <Image source={{ uri: heroImageUri }} style={styles.heroImage} resizeMode="contain" />
         ) : (
@@ -284,7 +293,7 @@ const styles = StyleSheet.create({
   shareBtn:      { flexDirection: 'row', alignItems: 'center', gap: 4, borderWidth: 1, borderColor: colors.plantPrimary, borderRadius: borderRadius.sm, paddingHorizontal: spacing.sm, paddingVertical: 4 },
   shareBtnText:  { color: colors.plantPrimary, fontSize: typography.fontSize.xs, fontFamily: typography.fontFamily.display },
 
-  posterArea:    { width: 220, alignItems: 'center', borderWidth: 2, borderRadius: borderRadius.md, padding: spacing.sm, marginBottom: spacing.sm, gap: 4 },
+  posterArea:    { width: 220, alignItems: 'center', borderWidth: 2, borderRadius: borderRadius.md, padding: spacing.sm, marginBottom: spacing.sm, gap: 4, overflow: 'hidden' },
   heroImage:     { width: 192, height: 192 },
   posterName:    { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.lg, color: colors.text },
   posterHanakotoba: { fontSize: typography.fontSize.xs, color: colors.textSecondary, fontStyle: 'italic' },
