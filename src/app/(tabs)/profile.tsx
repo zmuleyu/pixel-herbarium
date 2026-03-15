@@ -113,6 +113,12 @@ export default function ProfileScreen() {
         </Text>
       </View>
 
+      {/* Friends link */}
+      <TouchableOpacity style={styles.menuRow} onPress={() => router.push('/(tabs)/social' as any)}>
+        <Text style={styles.menuText}>{t('profile.friends')}</Text>
+        <Text style={styles.menuArrow}>›</Text>
+      </TouchableOpacity>
+
       {/* Privacy settings link */}
       <TouchableOpacity style={styles.menuRow} onPress={() => router.push('/privacy' as any)}>
         <Text style={styles.menuText}>{t('profile.privacySettings')}</Text>

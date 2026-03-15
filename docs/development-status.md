@@ -1,6 +1,6 @@
 # Pixel Herbarium（花図鉑）— 开发状态全览
 
-> 最后更新：2026-03-15 · 当前版本：v1.0.0（pre-TestFlight）
+> 最后更新：2026-03-15 · 当前版本：v1.0.0（pre-TestFlight）· 最近完成：Chunk 27（Profile Friends入口）
 
 ---
 
@@ -104,16 +104,16 @@ pixel-herbarium/
 
 | 路由 | 文件路径 | 行数 | 主要功能 |
 |------|----------|------|---------|
-| `/(tabs)/discover` | app/(tabs)/discover.tsx | ~280 | 相机取景 → 拍照 → GPS获取 → 反作弊 → AI识别 → 像素化 → 入图鉑；首次发现特效；冷却提示 |
+| `/(tabs)/discover` | app/(tabs)/discover.tsx | ~310 | 相机取景 → 拍照 → GPS获取 → 反作弊 → AI识别 → 像素化 → 入图鉑；首次发现特效；冷却提示；**月度剩余配额显示**；配额耗尽时按钮变暗+温柔提示「来月また咲きます 🌿」 |
 | `/(tabs)/herbarium` | app/(tabs)/herbarium.tsx | ~190 | 6×10植物网格（已发现/未发现）；锁定格点击显示开花提示；季节回顾按钮 |
-| `/(tabs)/map` | app/(tabs)/map.tsx | ~116 | GPS定位 + MapView；周边5km发现标记；点击标记显示植物信息浮层；刷新按钮 |
+| `/(tabs)/map` | app/(tabs)/map.tsx | ~155 | GPS定位 + MapView；周边5km发现标记（**稀有度彩色圆点**：★绿/★★蓝/★★★紫）；点击标记显示植物信息浮层；右下角图例；刷新按钮 |
 | `/(tabs)/social` | app/(tabs)/social.tsx | ~445 | 好友标签（搜索/申请/接受/拒绝）；花束标签（收件箱/已发送/撰写花束）；植物选择3-5种 |
-| `/(tabs)/profile` | app/(tabs)/profile.tsx | ~165 | 显示名编辑；收集进度条；当季回顾卡片（→recap）；月度配额卡片；隐私设置入口；退出登录 |
+| `/(tabs)/profile` | app/(tabs)/profile.tsx | ~170 | 显示名编辑；收集进度条；当季回顾卡片（→recap）；月度配额卡片；**Friends快捷入口**（→social）；隐私设置入口；退出登录 |
 | `/(auth)/login` | app/(auth)/login.tsx | ~120 | Apple登录（主）；Email登录/注册（次）；欢迎文案 |
 | `/onboarding` | app/onboarding.tsx | ~164 | 首次启动3幕横向滑动引导；dot指示器；跳过+下一步/开始按钮；完成后写入SecureStore |
 | `/recap` | app/recap.tsx | ~180 | 当季（春/夏/秋/冬）收获总结；季节emoji标题；最稀有发现卡片；植物缩略图网格 |
 | `/plant/[id]` | app/plant/[id].tsx | ~327 | 植物全名（日/英/拉丁）；花言葉；12个月开花日历；都道府县分布芯片；发现历史列表（含备注编辑）；分享海报 |
-| `/friend/[id]` | app/friend/[id].tsx | ~119 | 朋友的6×10图鉑只读展示；收集进度计数；返回导航 |
+| `/friend/[id]` | app/friend/[id].tsx | ~135 | 朋友的6×10图鉑只读展示；收集进度计数；**显示朋友名称**（URL参数传递）；**花束赠送快捷按钮**（→social/bouquets）；返回导航 |
 | `/privacy` | app/privacy.tsx | ~150 | 地图可见性开关（持久化到DB）；数据导出（JSON → expo-sharing）；删除账号（软删除30天 + 即时退出登录） |
 
 ---
@@ -127,7 +127,7 @@ pixel-herbarium/
 | `useHerbarium` | 获取用户已收集的所有植物ID集合 | `discoveries.select('plant_id').eq('user_id')` |
 | `usePlantDetail` | 单植物详情 + 该用户发现历史 + 备注更新 | `plants.single()` + `discoveries.order()` + `discoveries.update()` |
 | `useSeasonRecap` | 当季发现列表（JOIN plants），按植物去重 | `discoveries.select('...plants!inner...').gte().lt()` |
-| `useNearbyDiscoveries` | 周边5km他人发现（带GPS模糊化） | `nearby_discoveries RPC` |
+| `useNearbyDiscoveries` | 周边5km他人发现（带GPS模糊化）；**包含rarity字段** | `nearby_discoveries RPC` |
 | `useProfile` | 用户资料读写（显示名/头像/配额） | `profiles.single()` + `profiles.update()` |
 | `useFriends` | 好友关系三分类（已接受/待我确认/我已发出）+ 用户搜索 | `friendships.select().or()` + `profiles.ilike()` |
 | `useBouquets` | 花束收发：收件箱（pending received）+ 已发送；植物批量enrichment | `bouquets.or().order()` + `plants.in()` |
@@ -203,6 +203,8 @@ pixel-herbarium/
 | `hooks/useBouquets.test.ts` | 15 | 收件箱/发件箱过滤；plant enrichment；跨花束去重plantId；空plant_ids跳过批量查询；mutations |
 
 **总计：165 tests，16 suites，全部通过**
+
+> Chunk 22（地图稀有度标记）新增 `useNearbyDiscoveries.test.ts` rarity 断言；Chunk 27 无新测试（纯导航UI）
 
 ---
 
