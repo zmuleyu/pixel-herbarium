@@ -52,8 +52,8 @@ const MOCK_RPC_ROWS = [
 ];
 
 const MOCK_PLANTS = [
-  { id: 7,  name_ja: 'タンポポ',   hanakotoba: '愛の神託' },
-  { id: 42, name_ja: 'シバザクラ', hanakotoba: '合意' },
+  { id: 7,  name_ja: 'タンポポ',   hanakotoba: '愛の神託', rarity: 1 },
+  { id: 42, name_ja: 'シバザクラ', hanakotoba: '合意',     rarity: 3 },
 ];
 
 function setupMocks(rpcRows = MOCK_RPC_ROWS, plants = MOCK_PLANTS, rpcError: any = null) {
@@ -100,13 +100,16 @@ describe('useNearbyDiscoveries – initial load', () => {
     expect(result.current.discoveries[0].longitude).toBeCloseTo(139.6510);
   });
 
-  it('enriches discoveries with plant name and hanakotoba', async () => {
+  it('enriches discoveries with plant name, hanakotoba, and rarity', async () => {
     setupMocks();
     const { result } = renderHook(() => useNearbyDiscoveries());
     await act(async () => { await flushPromises(); });
     const d = result.current.discoveries.find((x) => x.plant_id === 7);
     expect(d?.plant_name_ja).toBe('タンポポ');
     expect(d?.hanakotoba).toBe('愛の神託');
+    expect(d?.rarity).toBe(1);
+    const d2 = result.current.discoveries.find((x) => x.plant_id === 42);
+    expect(d2?.rarity).toBe(3);
   });
 
   it('returns correct count of discoveries', async () => {

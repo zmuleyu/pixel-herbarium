@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import MapView, { Marker, Callout, PROVIDER_DEFAULT } from 'react-native-maps';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,12 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // ~5km view delta
 const REGION_DELTA = 0.09;
+
+const RARITY_COLORS: Record<number, string> = {
+  1: colors.rarity.common,
+  2: colors.rarity.uncommon,
+  3: colors.rarity.rare,
+};
 
 export default function MapScreen() {
   const { t } = useTranslation();
@@ -67,6 +73,9 @@ export default function MapScreen() {
             <PlantMarker key={d.id} discovery={d} />
           ))}
         </MapView>
+
+        {/* Rarity legend */}
+        <MapLegend />
       </View>
     </ErrorBoundary>
   );
@@ -74,11 +83,10 @@ export default function MapScreen() {
 
 // ── Plant Marker ──────────────────────────────────────────────────────
 function PlantMarker({ discovery }: { discovery: NearbyDiscovery }) {
+  const dotColor = RARITY_COLORS[discovery.rarity] ?? colors.rarity.common;
   return (
-    <Marker
-      coordinate={{ latitude: discovery.latitude, longitude: discovery.longitude }}
-      pinColor={colors.plantPrimary}
-    >
+    <Marker coordinate={{ latitude: discovery.latitude, longitude: discovery.longitude }}>
+      <View style={[markerStyles.dot, { backgroundColor: dotColor }]} />
       <Callout tooltip={false} style={styles.callout}>
         <Text style={styles.calloutName}>{discovery.plant_name_ja}</Text>
         {discovery.hanakotoba ? (
@@ -89,6 +97,21 @@ function PlantMarker({ discovery }: { discovery: NearbyDiscovery }) {
         ) : null}
       </Callout>
     </Marker>
+  );
+}
+
+// ── Rarity Legend ─────────────────────────────────────────────────────
+function MapLegend() {
+  const { t } = useTranslation();
+  return (
+    <View style={legendStyles.container}>
+      {([1, 2, 3] as const).map((r) => (
+        <View key={r} style={legendStyles.row}>
+          <View style={[legendStyles.dot, { backgroundColor: RARITY_COLORS[r] }]} />
+          <Text style={legendStyles.label}>{t(`rarity.${r}`)}</Text>
+        </View>
+      ))}
+    </View>
   );
 }
 
@@ -112,4 +135,37 @@ const styles = StyleSheet.create({
   calloutName:        { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.md, color: colors.text },
   calloutHanakotoba:  { fontSize: typography.fontSize.sm, color: colors.textSecondary, fontStyle: 'italic' },
   calloutCity:        { fontSize: typography.fontSize.xs, color: colors.textSecondary },
+});
+
+const markerStyles = StyleSheet.create({
+  dot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    borderWidth: 2,
+    borderColor: colors.white,
+    ...Platform.select({
+      ios: { shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 2, shadowOffset: { width: 0, height: 1 } },
+      android: { elevation: 3 },
+    }),
+  },
+});
+
+const legendStyles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 24,
+    right: 12,
+    backgroundColor: 'rgba(255,255,255,0.88)',
+    borderRadius: borderRadius.md,
+    padding: spacing.sm,
+    gap: 4,
+    ...Platform.select({
+      ios: { shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
+      android: { elevation: 4 },
+    }),
+  },
+  row:   { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  dot:   { width: 10, height: 10, borderRadius: 5 },
+  label: { fontSize: typography.fontSize.xs, color: colors.text },
 });
