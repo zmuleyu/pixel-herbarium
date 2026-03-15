@@ -325,7 +325,7 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
         <Text style={styles.plantNameEn}>{plant.name_en}</Text>
         {plant.cityRank != null && (
           <Text style={styles.cityRankText}>
-            {t('discover.cityRank', { city: '全国', rank: plant.cityRank, plant: plant.name_ja })}
+            {t('discover.cityRank', { city: t('discover.nationwide'), rank: plant.cityRank, plant: plant.name_ja })}
           </Text>
         )}
         <View style={styles.divider} />

@@ -116,7 +116,8 @@ function getMonthName(month: number, lng: string): string {
 function BloomHintSheet({ plant, onClose, onDetail }: BloomHintSheetProps) {
   const { t, i18n } = useTranslation();
   const isCurrentMonth = plant.bloom_months.includes(CURRENT_MONTH);
-  const monthStr = plant.bloom_months.map((m) => getMonthName(m, i18n.language)).join('・');
+  const sep = i18n.language === 'ja' ? '・' : ', ';
+  const monthStr = plant.bloom_months.map((m) => getMonthName(m, i18n.language)).join(sep);
 
   return (
     <View style={sheet.overlay}>
