@@ -143,6 +143,10 @@
     "slide3Title": "Record Your Discoveries",
     "slide3Body": "GPS logs where you found each plant.\nSee how many people found it before you\nand explore bloom info by region."
   },
+  "settings": {
+    "language": "Language",
+    "version": "Version"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",

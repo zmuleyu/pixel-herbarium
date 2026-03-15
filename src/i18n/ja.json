@@ -143,6 +143,10 @@
     "slide3Title": "場所を記録する",
     "slide3Body": "GPS で発見場所を記録。\n全国何番目の発見者か確認したり、\n都道府県ごとの開花情報を楽しもう。"
   },
+  "settings": {
+    "language": "言語",
+    "version": "バージョン"
+  },
   "common": {
     "loading": "読み込み中...",
     "error": "エラーが発生しました",

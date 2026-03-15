@@ -119,9 +119,9 @@ export default function ProfileScreen() {
         <Text style={styles.menuArrow}>›</Text>
       </TouchableOpacity>
 
-      {/* Privacy settings link */}
-      <TouchableOpacity style={styles.menuRow} onPress={() => router.push('/privacy' as any)}>
-        <Text style={styles.menuText}>{t('profile.privacySettings')}</Text>
+      {/* Settings link */}
+      <TouchableOpacity style={styles.menuRow} onPress={() => router.push('/settings' as any)}>
+        <Text style={styles.menuText}>{t('profile.settings')}</Text>
         <Text style={styles.menuArrow}>›</Text>
       </TouchableOpacity>
 

@@ -1,4 +1,5 @@
 import '../i18n'; // initialize i18n before any screen renders
+import { restoreLanguage } from '../i18n';
 import { useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Slot, useRouter, useSegments } from 'expo-router';
@@ -30,6 +31,7 @@ export default function RootLayout() {
 
   // Bootstrap auth session from Supabase on first load
   useEffect(() => {
+    restoreLanguage(); // fire-and-forget, non-blocking
     setLoading(true);
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s);
