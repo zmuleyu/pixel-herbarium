@@ -9,10 +9,12 @@ import {
   StyleSheet,
   Dimensions,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useHerbarium, type PlantSlot } from '@/hooks/useHerbarium';
+import { useHerbariumFilter, FILTER_OPTIONS } from '@/hooks/useHerbariumFilter';
 import { useAuthStore } from '@/stores/auth-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { GRID_COLUMNS, TOTAL_PLANTS, RARITY_LABELS } from '@/constants/plants';
@@ -32,6 +34,7 @@ export default function HerbariumScreen() {
   const { user } = useAuthStore();
   const router = useRouter();
   const { plants, collected, loading } = useHerbarium(user?.id ?? '');
+  const { filter, setFilter, filteredPlants } = useHerbariumFilter(plants, collected);
   const [hintPlant, setHintPlant] = useState<PlantSlot | null>(null);
 
   function handleCellPress(plant: PlantSlot) {
@@ -70,9 +73,28 @@ export default function HerbariumScreen() {
         <View style={[styles.progressBarFill, { width: `${(collected.size / TOTAL_PLANTS) * 100}%` as any }]} />
       </View>
 
+      {/* Filter chips */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.filterRow}
+      >
+        {FILTER_OPTIONS.map(opt => (
+          <TouchableOpacity
+            key={String(opt.value)}
+            style={[styles.filterChip, filter === opt.value && styles.filterChipActive]}
+            onPress={() => setFilter(opt.value)}
+          >
+            <Text style={[styles.filterChipText, filter === opt.value && styles.filterChipTextActive]}>
+              {t(opt.labelKey)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
       {/* 6×10 Grid */}
       <FlatList
-        data={plants}
+        data={filteredPlants}
         numColumns={GRID_COLUMNS}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
@@ -84,6 +106,11 @@ export default function HerbariumScreen() {
         )}
         contentContainerStyle={styles.grid}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>{t('herbarium.noResults')}</Text>
+          </View>
+        }
       />
 
       {/* Bloom hint bottom sheet for locked cells */}
@@ -208,6 +235,14 @@ const styles = StyleSheet.create({
 
   progressBarTrack: { height: 3, backgroundColor: colors.border, marginHorizontal: 0 },
   progressBarFill:  { height: 3, backgroundColor: colors.plantPrimary },
+
+  filterRow:           { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, gap: spacing.sm },
+  filterChip:          { paddingHorizontal: 12, paddingVertical: 6, borderRadius: borderRadius.full, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.background },
+  filterChipActive:    { backgroundColor: colors.plantPrimary, borderColor: colors.plantPrimary },
+  filterChipText:      { fontSize: typography.fontSize.xs, color: colors.textSecondary, fontFamily: typography.fontFamily.display },
+  filterChipTextActive:{ color: colors.white },
+  emptyState:          { alignItems: 'center', justifyContent: 'center', paddingVertical: spacing.xl * 2 },
+  emptyText:           { fontSize: typography.fontSize.sm, color: colors.textSecondary },
 
   grid: { paddingBottom: spacing.lg },
 

@@ -44,7 +44,14 @@
     "recapEmpty": "今季はまだ発見がありません",
     "recapCollected": "{{count}} 種を発見",
     "recapRarest": "最も稀な発見",
-    "viewDetail": "詳しく見る →"
+    "viewDetail": "詳しく見る →",
+    "filterAll": "全部",
+    "filterCommon": "★",
+    "filterUncommon": "★★",
+    "filterRare": "★★★",
+    "filterCollected": "収集済",
+    "filterUncollected": "未収集",
+    "noResults": "該当なし"
   },
   "rarity": {
     "1": "★",
