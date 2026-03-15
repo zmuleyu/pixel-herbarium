@@ -109,10 +109,14 @@ interface BloomHintSheetProps {
   onDetail: () => void;
 }
 
+function getMonthName(month: number, lng: string): string {
+  return new Date(2024, month - 1, 1).toLocaleDateString(lng === 'ja' ? 'ja-JP' : 'en-US', { month: 'short' });
+}
+
 function BloomHintSheet({ plant, onClose, onDetail }: BloomHintSheetProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isCurrentMonth = plant.bloom_months.includes(CURRENT_MONTH);
-  const monthStr = plant.bloom_months.map((m) => `${m}月`).join('・');
+  const monthStr = plant.bloom_months.map((m) => getMonthName(m, i18n.language)).join('・');
 
   return (
     <View style={sheet.overlay}>

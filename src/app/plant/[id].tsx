@@ -20,13 +20,20 @@ import { useAuthStore } from '@/stores/auth-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { RARITY_LABELS } from '@/constants/plants';
 
-const MONTH_NAMES_JA = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+function getMonthName(month: number, lng: string): string {
+  return new Date(2024, month - 1, 1).toLocaleDateString(lng === 'ja' ? 'ja-JP' : 'en-US', { month: 'short' });
+}
 
-// Returns e.g. "3月〜4月ごろ" from bloom_months array
-function formatBloomHint(months: number[]): string {
+function getMonthNames(lng: string): string[] {
+  return Array.from({ length: 12 }, (_, i) => getMonthName(i + 1, lng));
+}
+
+// Returns e.g. "3月〜4月ごろ" (ja) or "Mar – Apr" (en) from bloom_months array
+function formatBloomHint(months: number[], lng: string): string {
   if (months.length === 0) return '';
   const sorted = [...months].sort((a, b) => a - b);
-  return sorted.map((m) => MONTH_NAMES_JA[m - 1]).join('〜') + 'ごろ';
+  const names = sorted.map((m) => getMonthName(m, lng));
+  return lng === 'ja' ? names.join('〜') + 'ごろ' : names.join(' – ');
 }
 
 const RARITY_COLORS: Record<number, string> = {
@@ -38,7 +45,7 @@ const RARITY_COLORS: Record<number, string> = {
 export default function PlantDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuthStore();
 
   const plantId = Number(id);
@@ -143,7 +150,7 @@ export default function PlantDetailScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>{t('plant.bloomCalendar')}</Text>
           <View style={styles.monthGrid}>
-            {MONTH_NAMES_JA.map((name, i) => {
+            {getMonthNames(i18n.language).map((name, i) => {
               const active = plant.bloom_months.includes(i + 1);
               return (
                 <View
@@ -185,7 +192,7 @@ export default function PlantDetailScreen() {
           {plant.bloom_months.length > 0 && (
             <Text style={styles.lockedHint}>
               {[
-                formatBloomHint(plant.bloom_months),
+                formatBloomHint(plant.bloom_months, i18n.language),
                 plant.prefectures.length > 0 ? plant.prefectures.slice(0, 3).join(' / ') : null,
               ].filter(Boolean).join('\n')}
             </Text>

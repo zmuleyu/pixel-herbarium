@@ -293,7 +293,7 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
         {/* First-discovery banner */}
         {plant.isFirstDiscovery && (
           <View style={styles.firstDiscoveryBanner}>
-            <Text style={styles.firstDiscoveryText}>✨ 新発見！</Text>
+            <Text style={styles.firstDiscoveryText}>{t('discover.firstDiscovery')}</Text>
           </View>
         )}
         {/* Off-screen poster for sharing (invisible to user) */}
