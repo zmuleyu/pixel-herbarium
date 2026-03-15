@@ -63,7 +63,9 @@
     "friends": "Friends",
     "settings": "Settings",
     "privacySettings": "Privacy Settings",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "monthlyQuota": "Monthly Captures",
+    "collectedCount": "Plants Collected"
   },
   "social": {
     "sendBouquet": "Send Bouquet",

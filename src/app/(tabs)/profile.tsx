@@ -6,16 +6,22 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Platform,
 } from 'react-native';
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useProfile } from '@/hooks/useProfile';
+import { useAuthStore } from '@/stores/auth-store';
+import { useHerbarium } from '@/hooks/useHerbarium';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
+import { TOTAL_PLANTS } from '@/constants/plants';
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { user } = useAuthStore();
   const { email, displayName, avatarUrl, quotaUsed, quotaTotal, loading, updating, handleSignOut, updateDisplayName } = useProfile();
+  const { collected } = useHerbarium(user?.id ?? '');
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
 
@@ -29,6 +35,7 @@ export default function ProfileScreen() {
 
   const initial = (displayName[0] ?? '?').toUpperCase();
   const quotaFraction = quotaTotal > 0 ? quotaUsed / quotaTotal : 0;
+  const collectFraction = collected.size / TOTAL_PLANTS;
 
   return (
     <View style={styles.container}>
@@ -60,7 +67,7 @@ export default function ProfileScreen() {
             >
               {updating
                 ? <ActivityIndicator size="small" color={colors.plantPrimary} />
-                : <Text style={styles.saveText}>保存</Text>}
+                : <Text style={styles.saveText}>{t('common.save')}</Text>}
             </TouchableOpacity>
           </View>
         ) : (
@@ -75,6 +82,16 @@ export default function ProfileScreen() {
         <Text style={styles.email}>{email}</Text>
       </View>
 
+      {/* Collection stats card */}
+      <View style={styles.card}>
+        <Text style={styles.cardLabel}>{t('profile.collectedCount')}</Text>
+        <View style={styles.progressTrack}>
+          <View style={[styles.progressFill, { flex: collectFraction }]} />
+          <View style={[styles.progressEmpty, { flex: 1 - collectFraction }]} />
+        </View>
+        <Text style={styles.quotaText}>{collected.size} / {TOTAL_PLANTS}</Text>
+      </View>
+
       {/* Quota card */}
       <View style={styles.card}>
         <Text style={styles.cardLabel}>{t('profile.monthlyQuota')}</Text>
@@ -86,6 +103,12 @@ export default function ProfileScreen() {
           {quotaUsed} / {quotaTotal}
         </Text>
       </View>
+
+      {/* Privacy settings link */}
+      <TouchableOpacity style={styles.menuRow} onPress={() => router.push('/privacy' as any)}>
+        <Text style={styles.menuText}>{t('profile.privacySettings')}</Text>
+        <Text style={styles.menuArrow}>›</Text>
+      </TouchableOpacity>
 
       {/* Sign out */}
       <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
@@ -111,13 +134,18 @@ const styles = StyleSheet.create({
   saveText:       { color: colors.plantPrimary, fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.sm },
   email:          { fontSize: typography.fontSize.sm, color: colors.textSecondary },
 
-  // Quota card
+  // Stats / quota cards
   card:           { width: '100%', backgroundColor: colors.white, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, padding: spacing.md, gap: spacing.sm, alignItems: 'center' },
   cardLabel:      { fontSize: typography.fontSize.sm, color: colors.textSecondary },
   progressTrack:  { width: '100%', height: 12, borderRadius: 6, overflow: 'hidden', flexDirection: 'row' },
   progressFill:   { backgroundColor: colors.plantPrimary },
   progressEmpty:  { backgroundColor: colors.border },
   quotaText:      { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.md, color: colors.text },
+
+  // Menu row
+  menuRow:        { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.white, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
+  menuText:       { fontSize: typography.fontSize.md, color: colors.text },
+  menuArrow:      { fontSize: typography.fontSize.lg, color: colors.textSecondary },
 
   // Sign out
   signOutButton:  { marginTop: spacing.md, borderWidth: 1.5, borderColor: '#c0392b', borderRadius: borderRadius.md, paddingVertical: spacing.sm, paddingHorizontal: spacing.xl },

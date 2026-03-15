@@ -63,7 +63,9 @@
     "friends": "フレンド",
     "settings": "設定",
     "privacySettings": "プライバシー設定",
-    "signOut": "サインアウト"
+    "signOut": "サインアウト",
+    "monthlyQuota": "今月の撮影枠",
+    "collectedCount": "収集した植物"
   },
   "social": {
     "sendBouquet": "花束を贈る",
