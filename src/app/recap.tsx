@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   Platform,
+  Share,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -38,6 +39,15 @@ export default function RecapScreen() {
     return best;
   }, null);
 
+  async function handleShare() {
+    const plantNames = plants.map((p) => p.name_ja).join('、');
+    const rarestLine = rarest && rarest.rarity >= 2
+      ? `\n${t('herbarium.recapRarest')}：${rarest.name_ja}`
+      : '';
+    const message = `${season.label} · ${t('herbarium.recap')}\n${t('herbarium.recapCollected', { count: plants.length })}${rarestLine}\n\n${plantNames}`;
+    await Share.share({ message });
+  }
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Back */}
@@ -61,11 +71,16 @@ export default function RecapScreen() {
         </View>
       ) : (
         <>
-          {/* Count badge */}
-          <View style={styles.countBadge}>
-            <Text style={styles.countText}>
-              {t('herbarium.recapCollected', { count: plants.length })}
-            </Text>
+          {/* Count badge + share */}
+          <View style={styles.topRow}>
+            <View style={styles.countBadge}>
+              <Text style={styles.countText}>
+                {t('herbarium.recapCollected', { count: plants.length })}
+              </Text>
+            </View>
+            <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.7}>
+              <Text style={styles.shareBtnText}>{t('common.share')}</Text>
+            </TouchableOpacity>
           </View>
 
           {/* Rarest plant spotlight */}
@@ -141,8 +156,11 @@ const styles = StyleSheet.create({
   emptyEmoji: { fontSize: 48, opacity: 0.4 },
   emptyText:  { fontSize: typography.fontSize.sm, color: colors.textSecondary, textAlign: 'center' },
 
-  countBadge: { backgroundColor: colors.plantSecondary, borderRadius: borderRadius.full, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, marginBottom: spacing.md },
+  topRow:     { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.md },
+  countBadge: { backgroundColor: colors.plantSecondary, borderRadius: borderRadius.full, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
   countText:  { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.md, color: colors.text },
+  shareBtn:      { borderWidth: 1.5, borderColor: colors.plantPrimary, borderRadius: borderRadius.full, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
+  shareBtnText:  { color: colors.plantPrimary, fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.sm },
 
   rarestCard:          { width: '100%', borderWidth: 2, borderRadius: borderRadius.md, backgroundColor: colors.white, alignItems: 'center', padding: spacing.md, gap: spacing.xs, marginBottom: spacing.md },
   rarestLabel:         { fontSize: typography.fontSize.xs, color: colors.textSecondary, letterSpacing: 1, textTransform: 'uppercase' },
