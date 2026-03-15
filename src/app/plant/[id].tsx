@@ -145,7 +145,7 @@ export default function PlantDetailScreen() {
 
       {/* Hanakotoba (花言葉) */}
       {plant.hanakotoba && (
-        <View style={styles.section}>
+        <View style={styles.metadataCard}>
           <Text style={styles.sectionLabel}>{t('herbarium.hanakotoba')}</Text>
           <Text style={styles.hanakotobaText}>{plant.hanakotoba}</Text>
           {plant.flower_meaning && (
@@ -156,7 +156,7 @@ export default function PlantDetailScreen() {
 
       {/* Bloom calendar */}
       {plant.bloom_months.length > 0 && (
-        <View style={styles.section}>
+        <View style={styles.metadataCard}>
           <Text style={styles.sectionLabel}>{t('plant.bloomCalendar')}</Text>
           <View style={styles.monthGrid}>
             {getMonthNames(i18n.language).map((name, i) => {
@@ -181,7 +181,7 @@ export default function PlantDetailScreen() {
 
       {/* Prefecture chips */}
       {plant.prefectures.length > 0 && (
-        <View style={styles.section}>
+        <View style={styles.metadataCard}>
           <Text style={styles.sectionLabel}>{t('plant.prefectures')}</Text>
           <View style={styles.chipRow}>
             {plant.prefectures.map((pref) => (
@@ -310,6 +310,7 @@ const styles = StyleSheet.create({
   divider: { width: '60%', height: 1, backgroundColor: colors.border, marginVertical: spacing.md },
 
   section:      { width: '100%', marginBottom: spacing.md },
+  metadataCard: { width: '100%', backgroundColor: colors.white, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, padding: spacing.lg, marginBottom: spacing.md },
   sectionLabel: { fontSize: typography.fontSize.xs, color: colors.textSecondary, marginBottom: spacing.xs, textTransform: 'uppercase', letterSpacing: 1 },
 
   hanakotobaText: { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.lg, color: colors.text },
