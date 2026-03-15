@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuthStore } from '@/stores/auth-store';
 import { useHerbarium } from '@/hooks/useHerbarium';
+import { useSeasonRecap } from '@/hooks/useSeasonRecap';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { TOTAL_PLANTS } from '@/constants/plants';
 
@@ -22,6 +23,7 @@ export default function ProfileScreen() {
   const { user } = useAuthStore();
   const { email, displayName, avatarUrl, quotaUsed, quotaTotal, loading, updating, handleSignOut, updateDisplayName } = useProfile();
   const { collected } = useHerbarium(user?.id ?? '');
+  const { plants: seasonPlants, season } = useSeasonRecap(user?.id ?? '');
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
 
@@ -92,6 +94,13 @@ export default function ProfileScreen() {
         <Text style={styles.quotaText}>{collected.size} / {TOTAL_PLANTS}</Text>
       </View>
 
+      {/* Season recap card */}
+      <TouchableOpacity style={styles.card} onPress={() => router.push('/recap' as any)} activeOpacity={0.7}>
+        <Text style={styles.cardLabel}>{season.label} · {t('herbarium.recap')}</Text>
+        <Text style={styles.seasonCount}>{seasonPlants.length}</Text>
+        <Text style={styles.cardSubLabel}>{t('herbarium.recapCollected', { count: seasonPlants.length })}</Text>
+      </TouchableOpacity>
+
       {/* Quota card */}
       <View style={styles.card}>
         <Text style={styles.cardLabel}>{t('profile.monthlyQuota')}</Text>
@@ -137,6 +146,8 @@ const styles = StyleSheet.create({
   // Stats / quota cards
   card:           { width: '100%', backgroundColor: colors.white, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, padding: spacing.md, gap: spacing.sm, alignItems: 'center' },
   cardLabel:      { fontSize: typography.fontSize.sm, color: colors.textSecondary },
+  cardSubLabel:   { fontSize: typography.fontSize.xs, color: colors.textSecondary },
+  seasonCount:    { fontFamily: typography.fontFamily.display, fontSize: 40, color: colors.plantPrimary, lineHeight: 48 },
   progressTrack:  { width: '100%', height: 12, borderRadius: 6, overflow: 'hidden', flexDirection: 'row' },
   progressFill:   { backgroundColor: colors.plantPrimary },
   progressEmpty:  { backgroundColor: colors.border },

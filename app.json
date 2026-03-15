@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "花図鉴",
+    "name": "花図鉑",
     "slug": "pixel-herbarium",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -35,7 +35,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "花図鉴では植物の撮影に使用します。"
+          "cameraPermission": "花図鉑では植物の撮影に使用します。"
         }
       ],
       [
@@ -47,7 +47,7 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "花図鉑の開発テスト用にフォトライブラリへのアクセスを許可します。"
+          "photosPermission": "花図鉑では植物の画像を選択するためにフォトライブラリへのアクセスを使用します。"
         }
       ],
       [
