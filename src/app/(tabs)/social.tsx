@@ -222,6 +222,11 @@ function BouquetsPanel({ bouquets, userId, friends }: {
 }
 
 // ── Bouquet card ──────────────────────────────────────────────────────────────
+function daysUntil(iso: string): number {
+  const diff = new Date(iso).getTime() - Date.now();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
 function BouquetCard({ bouquet, isReceiver, onAccept, onDecline }: {
   bouquet: Bouquet;
   isReceiver: boolean;
@@ -235,6 +240,9 @@ function BouquetCard({ bouquet, isReceiver, onAccept, onDecline }: {
     declined: t('social.statusDeclined'),
   };
   const other = isReceiver ? bouquet.sender : bouquet.receiver;
+  const expiryDays = isReceiver && bouquet.status === 'pending'
+    ? daysUntil(bouquet.expires_at)
+    : null;
 
   return (
     <View style={styles.bouquetCard}>
@@ -243,6 +251,11 @@ function BouquetCard({ bouquet, isReceiver, onAccept, onDecline }: {
           ? t('social.bouquetFrom', { name: other?.display_name ?? '?' })
           : t('social.bouquetTo', { name: other?.display_name ?? '?' })}
       </Text>
+      {expiryDays !== null && (
+        <Text style={styles.bouquetExpiry}>
+          {t('social.bouquetExpires', { days: expiryDays })}
+        </Text>
+      )}
       <View style={styles.bouquetPlants}>
         {(bouquet.plants ?? []).map((p) => (
           <View key={p.id} style={styles.bouquetPlantChip}>
@@ -420,6 +433,7 @@ const styles = StyleSheet.create({
   // Bouquet card
   bouquetCard:    { backgroundColor: colors.white, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, padding: spacing.md, gap: spacing.xs },
   bouquetFrom:    { fontSize: typography.fontSize.xs, color: colors.textSecondary },
+  bouquetExpiry:  { fontSize: typography.fontSize.xs, color: colors.rarity.uncommon },
   bouquetPlants:  { flexDirection: 'row', flexWrap: 'wrap', gap: 4 },
   bouquetPlantChip: { backgroundColor: colors.background, borderRadius: borderRadius.sm, paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1, borderColor: colors.border },
   bouquetPlantName: { fontSize: typography.fontSize.xs, color: colors.text },
