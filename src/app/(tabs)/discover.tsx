@@ -265,7 +265,7 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
     setSharing(true);
     try {
       const uri = await captureRef(posterRef, { format: 'jpg', quality: 0.92 });
-      await Sharing.shareAsync(uri, { mimeType: 'image/jpeg', dialogTitle: '花図鉑を共有' });
+      await Sharing.shareAsync(uri, { mimeType: 'image/jpeg', dialogTitle: t('herbarium.sharePoster') });
     } catch {
       // Share cancelled or failed — silent
     } finally {

@@ -126,7 +126,7 @@ function BloomHintSheet({ plant, onClose, onDetail }: BloomHintSheetProps) {
           <Text style={sheet.months}>{monthStr}</Text>
         )}
         <TouchableOpacity style={sheet.detailBtn} onPress={onDetail}>
-          <Text style={sheet.detailBtnText}>詳しく見る →</Text>
+          <Text style={sheet.detailBtnText}>{t('herbarium.viewDetail')}</Text>
         </TouchableOpacity>
       </View>
     </View>

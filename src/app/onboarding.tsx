@@ -9,6 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 
@@ -16,31 +17,22 @@ export const ONBOARDING_KEY = 'onboarding_done_v1';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-const SLIDES = [
-  {
-    emoji: '🌸',
-    title: '花図鉑へようこそ',
-    body: '日本の植物をカメラで発見して\nピクセルアートの図鉑を完成させよう。',
-  },
-  {
-    emoji: '📷',
-    title: '撮影して識別',
-    body: '植物を見つけたらカメラで撮影。\nAIが種類を識別して、あなただけの\nピクセルアートに変換します。',
-  },
-  {
-    emoji: '🗺️',
-    title: '場所を記録する',
-    body: 'GPS で発見場所を記録。\n全国何番目の発見者か確認したり、\n都道府県ごとの開花情報を楽しもう。',
-  },
-];
+const SLIDE_EMOJIS = ['🌸', '📷', '🗺️'];
 
 export default function OnboardingScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const scrollRef = useRef<ScrollView>(null);
   const [page, setPage] = useState(0);
 
+  const slides = [
+    { emoji: SLIDE_EMOJIS[0], title: t('onboarding.slide1Title'), body: t('onboarding.slide1Body') },
+    { emoji: SLIDE_EMOJIS[1], title: t('onboarding.slide2Title'), body: t('onboarding.slide2Body') },
+    { emoji: SLIDE_EMOJIS[2], title: t('onboarding.slide3Title'), body: t('onboarding.slide3Body') },
+  ];
+
   function goNext() {
-    if (page < SLIDES.length - 1) {
+    if (page < slides.length - 1) {
       const next = page + 1;
       scrollRef.current?.scrollTo({ x: next * SCREEN_WIDTH, animated: true });
       setPage(next);
@@ -54,7 +46,7 @@ export default function OnboardingScreen() {
     router.replace('/(tabs)/discover');
   }
 
-  const isLast = page === SLIDES.length - 1;
+  const isLast = page === slides.length - 1;
 
   return (
     <View style={styles.container}>
@@ -67,7 +59,7 @@ export default function OnboardingScreen() {
         showsHorizontalScrollIndicator={false}
         style={styles.pager}
       >
-        {SLIDES.map((slide, i) => (
+        {slides.map((slide, i) => (
           <View key={i} style={styles.slide}>
             <Text style={styles.slideEmoji}>{slide.emoji}</Text>
             <Text style={styles.slideTitle}>{slide.title}</Text>
@@ -78,7 +70,7 @@ export default function OnboardingScreen() {
 
       {/* Dot indicators */}
       <View style={styles.dots}>
-        {SLIDES.map((_, i) => (
+        {slides.map((_, i) => (
           <View key={i} style={[styles.dot, i === page && styles.dotActive]} />
         ))}
       </View>
@@ -87,13 +79,13 @@ export default function OnboardingScreen() {
       <View style={styles.buttonRow}>
         {!isLast ? (
           <TouchableOpacity onPress={finish} style={styles.skipBtn}>
-            <Text style={styles.skipText}>スキップ</Text>
+            <Text style={styles.skipText}>{t('onboarding.skip')}</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.skipBtn} />
         )}
         <TouchableOpacity onPress={goNext} style={styles.nextBtn}>
-          <Text style={styles.nextText}>{isLast ? 'はじめる 🌱' : '次へ'}</Text>
+          <Text style={styles.nextText}>{isLast ? t('onboarding.start') : t('onboarding.next')}</Text>
         </TouchableOpacity>
       </View>
     </View>

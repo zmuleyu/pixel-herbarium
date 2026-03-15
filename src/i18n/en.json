@@ -40,7 +40,8 @@
     "recap": "Season Recap",
     "recapEmpty": "No discoveries this season yet",
     "recapCollected": "{{count}} species found",
-    "recapRarest": "Rarest find"
+    "recapRarest": "Rarest find",
+    "viewDetail": "View details →"
   },
   "rarity": {
     "1": "★",
@@ -129,6 +130,17 @@
     "bloomCalendar": "Bloom Season",
     "prefectures": "Found In",
     "myDiscoveries": "My Discoveries"
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "next": "Next",
+    "start": "Get started 🌱",
+    "slide1Title": "Welcome to Pixel Herbarium",
+    "slide1Body": "Discover plants in Japan with your camera\nand complete your pixel art herbarium.",
+    "slide2Title": "Shoot & Identify",
+    "slide2Body": "Found a plant? Take a photo.\nAI identifies the species and turns it\ninto your own pixel art.",
+    "slide3Title": "Record Your Discoveries",
+    "slide3Body": "GPS logs where you found each plant.\nSee how many people found it before you\nand explore bloom info by region."
   },
   "common": {
     "loading": "Loading...",
