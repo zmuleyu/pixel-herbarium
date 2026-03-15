@@ -15,11 +15,19 @@ import { useTranslation } from 'react-i18next';
 import { captureRef } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 import { usePlantDetail } from '@/hooks/usePlantDetail';
+import { useHerbarium } from '@/hooks/useHerbarium';
 import { useAuthStore } from '@/stores/auth-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { RARITY_LABELS } from '@/constants/plants';
 
 const MONTH_NAMES_JA = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+
+// Returns e.g. "3月〜4月ごろ" from bloom_months array
+function formatBloomHint(months: number[]): string {
+  if (months.length === 0) return '';
+  const sorted = [...months].sort((a, b) => a - b);
+  return sorted.map((m) => MONTH_NAMES_JA[m - 1]).join('〜') + 'ごろ';
+}
 
 const RARITY_COLORS: Record<number, string> = {
   1: colors.rarity.common,
@@ -35,6 +43,8 @@ export default function PlantDetailScreen() {
 
   const plantId = Number(id);
   const { plant, discoveries, loading, error, updateNote } = usePlantDetail(plantId, user?.id ?? '');
+  const { collected } = useHerbarium(user?.id ?? '');
+  const isCollected = collected.has(plantId);
   const posterRef = useRef<View>(null);
   const [sharing, setSharing] = useState(false);
 
@@ -167,6 +177,27 @@ export default function PlantDetailScreen() {
         </View>
       )}
 
+      {/* Locked hint card — shown when plant not yet collected */}
+      {!isCollected && (
+        <View style={styles.lockedCard}>
+          <Text style={styles.lockedEmoji}>🌿</Text>
+          <Text style={styles.lockedTitle}>{t('herbarium.locked')}</Text>
+          {plant.bloom_months.length > 0 && (
+            <Text style={styles.lockedHint}>
+              {formatBloomHint(plant.bloom_months)}
+              {plant.prefectures.length > 0 && (
+                `\n${plant.prefectures.slice(0, 3).join(' / ')}`
+              )}
+            </Text>
+          )}
+          {plant.rarity === 3 && (
+            <View style={[styles.limitedBadge, { backgroundColor: colors.rarity.rare }]}>
+              <Text style={styles.limitedBadgeText}>{t('events.limitedPlant')}</Text>
+            </View>
+          )}
+        </View>
+      )}
+
       {/* Discovery history */}
       {discoveries.length > 0 && (
         <View style={styles.section}>
@@ -284,4 +315,12 @@ const styles = StyleSheet.create({
   discNoteInput: { fontSize: typography.fontSize.xs, color: colors.text, fontStyle: 'italic', paddingVertical: 2, minHeight: 20 },
 
   errorText: { color: colors.textSecondary, fontSize: typography.fontSize.md, textAlign: 'center', marginHorizontal: spacing.xl },
+
+  // Locked state hint card
+  lockedCard:        { width: '100%', backgroundColor: colors.white, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, padding: spacing.lg, alignItems: 'center', gap: spacing.sm, marginBottom: spacing.md },
+  lockedEmoji:       { fontSize: 40, opacity: 0.4 },
+  lockedTitle:       { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.md, color: colors.textSecondary },
+  lockedHint:        { fontSize: typography.fontSize.sm, color: colors.text, textAlign: 'center', lineHeight: typography.fontSize.sm * typography.lineHeight },
+  limitedBadge:      { borderRadius: borderRadius.full, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, marginTop: spacing.xs },
+  limitedBadgeText:  { fontSize: typography.fontSize.xs, color: colors.text, fontFamily: typography.fontFamily.display },
 });

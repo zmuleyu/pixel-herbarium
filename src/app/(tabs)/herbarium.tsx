@@ -33,9 +33,7 @@ export default function HerbariumScreen() {
   const { plants, collected, loading } = useHerbarium(user?.id ?? '');
 
   function handleCellPress(plant: PlantSlot) {
-    if (collected.has(plant.id)) {
-      router.push(`/plant/${plant.id}`);
-    }
+    router.push(`/plant/${plant.id}`);
   }
 
   if (loading) {
@@ -105,7 +103,7 @@ function PlantCell({ plant, isCollected, onPress }: PlantCellProps) {
     <TouchableOpacity
       style={[styles.cell, !isCollected && styles.cellLocked]}
       onPress={onPress}
-      activeOpacity={isCollected ? 0.7 : 1}
+      activeOpacity={0.7}
     >
       {isCollected ? (
         <Animated.View style={{ alignItems: 'center', transform: [{ scale }], opacity }}>
