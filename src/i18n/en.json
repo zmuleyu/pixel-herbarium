@@ -33,7 +33,11 @@
     "hanakotoba": "Flower Language",
     "sharePoster": "Share Herbarium",
     "discoveredOn": "Discovered on",
-    "yourNote": "Add a note..."
+    "yourNote": "Add a note...",
+    "recap": "Season Recap",
+    "recapEmpty": "No discoveries this season yet",
+    "recapCollected": "{{count}} species found",
+    "recapRarest": "Rarest find"
   },
   "rarity": {
     "1": "★",

@@ -33,7 +33,11 @@
     "hanakotoba": "花言葉",
     "sharePoster": "図鉑を共有",
     "discoveredOn": "発見日",
-    "yourNote": "メモを追加..."
+    "yourNote": "メモを追加...",
+    "recap": "今季の収穫",
+    "recapEmpty": "今季はまだ発見がありません",
+    "recapCollected": "{{count}} 種を発見",
+    "recapRarest": "最も稀な発見"
   },
   "rarity": {
     "1": "★",

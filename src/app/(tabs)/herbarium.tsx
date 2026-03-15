@@ -49,9 +49,14 @@ export default function HerbariumScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>{t('herbarium.title')}</Text>
-        <Text style={styles.headerProgress}>
-          {t('herbarium.progress', { count: collected.size })}
-        </Text>
+        <View style={styles.headerRight}>
+          <Text style={styles.headerProgress}>
+            {t('herbarium.progress', { count: collected.size })}
+          </Text>
+          <TouchableOpacity onPress={() => router.push('/recap' as any)} style={styles.recapBtn}>
+            <Text style={styles.recapBtnText}>📋</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Progress bar */}
@@ -137,9 +142,12 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   center:    { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' },
 
-  header:         { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
+  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
   headerTitle:    { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.lg, color: colors.text },
+  headerRight:    { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   headerProgress: { fontSize: typography.fontSize.sm, color: colors.textSecondary },
+  recapBtn:       { paddingHorizontal: spacing.xs, paddingVertical: 2 },
+  recapBtnText:   { fontSize: typography.fontSize.md },
 
   progressBarTrack: { height: 3, backgroundColor: colors.border, marginHorizontal: 0 },
   progressBarFill:  { height: 3, backgroundColor: colors.plantPrimary },
