@@ -12,6 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/auth-store';
 import { useFriends } from '@/hooks/useFriends';
 import { useBouquets } from '@/hooks/useBouquets';
@@ -24,6 +25,7 @@ import type { Bouquet } from '@/hooks/useBouquets';
 type TabKey = 'friends' | 'bouquets';
 
 export default function SocialScreen() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const router = useRouter();
   const userId = user?.id ?? '';
@@ -36,7 +38,7 @@ export default function SocialScreen() {
   if (!userId) {
     return (
       <View style={styles.center}>
-        <Text style={styles.emptyText}>ログインが必要です</Text>
+        <Text style={styles.emptyText}>{t('social.loginRequired')}</Text>
       </View>
     );
   }
@@ -45,8 +47,8 @@ export default function SocialScreen() {
     <View style={styles.container}>
       {/* Tab switcher */}
       <View style={styles.tabBar}>
-        <TabButton label="友達" active={activeTab === 'friends'} onPress={() => setActiveTab('friends')} badge={friends.pendingReceived.length} />
-        <TabButton label="花束" active={activeTab === 'bouquets'} onPress={() => setActiveTab('bouquets')} badge={bouquets.inbox.length} />
+        <TabButton label={t('social.tabFriends')} active={activeTab === 'friends'} onPress={() => setActiveTab('friends')} badge={friends.pendingReceived.length} />
+        <TabButton label={t('social.tabBouquets')} active={activeTab === 'bouquets'} onPress={() => setActiveTab('bouquets')} badge={bouquets.inbox.length} />
       </View>
 
       {activeTab === 'friends' ? (
@@ -78,6 +80,7 @@ function FriendsPanel({ friends, userId, onVisit }: {
   userId: string;
   onVisit: (id: string) => void;
 }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -99,10 +102,10 @@ function FriendsPanel({ friends, userId, onVisit }: {
   return (
     <ScrollView contentContainerStyle={styles.panel}>
       {/* Search */}
-      <Text style={styles.sectionTitle}>ユーザーを検索</Text>
+      <Text style={styles.sectionTitle}>{t('social.searchTitle')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="表示名で検索…"
+        placeholder={t('social.searchPlaceholder')}
         placeholderTextColor={colors.textSecondary}
         value={query}
         onChangeText={handleQueryChange}
@@ -117,12 +120,12 @@ function FriendsPanel({ friends, userId, onVisit }: {
             <AvatarCircle seed={p.avatar_seed} name={p.display_name} size={40} />
             <Text style={[styles.rowText, { flex: 1 }]}>{p.display_name}</Text>
             {alreadyFriend ? (
-              <Text style={styles.tagText}>友達</Text>
+              <Text style={styles.tagText}>{t('social.alreadyFriend')}</Text>
             ) : pendingSent ? (
-              <Text style={styles.tagText}>申請中</Text>
+              <Text style={styles.tagText}>{t('social.pending')}</Text>
             ) : (
               <TouchableOpacity style={styles.smallBtn} onPress={() => handleSend(p)}>
-                <Text style={styles.smallBtnText}>申請</Text>
+                <Text style={styles.smallBtnText}>{t('social.sendRequest')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -132,16 +135,16 @@ function FriendsPanel({ friends, userId, onVisit }: {
       {/* Pending requests */}
       {friends.pendingReceived.length > 0 && (
         <>
-          <Text style={styles.sectionTitle}>フレンド申請</Text>
+          <Text style={styles.sectionTitle}>{t('social.friendRequest')}</Text>
           {friends.pendingReceived.map((f) => (
             <View key={f.id} style={styles.row}>
               <AvatarCircle seed={f.friend.avatar_seed} name={f.friend.display_name} size={40} />
               <Text style={[styles.rowText, { flex: 1 }]}>{f.friend.display_name}</Text>
               <TouchableOpacity style={styles.smallBtn} onPress={() => friends.acceptRequest(f.id)}>
-                <Text style={styles.smallBtnText}>承認</Text>
+                <Text style={styles.smallBtnText}>{t('social.accept')}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.smallBtn, styles.smallBtnSecondary]} onPress={() => friends.declineRequest(f.id)}>
-                <Text style={[styles.smallBtnText, styles.smallBtnTextSecondary]}>拒否</Text>
+                <Text style={[styles.smallBtnText, styles.smallBtnTextSecondary]}>{t('social.decline')}</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -149,11 +152,11 @@ function FriendsPanel({ friends, userId, onVisit }: {
       )}
 
       {/* Friends list */}
-      <Text style={styles.sectionTitle}>友達 ({friends.friends.length})</Text>
+      <Text style={styles.sectionTitle}>{t('social.friendsCount', { count: friends.friends.length })}</Text>
       {friends.loading ? (
         <ActivityIndicator color={colors.plantPrimary} />
       ) : friends.friends.length === 0 ? (
-        <Text style={styles.emptyText}>まだ友達がいません</Text>
+        <Text style={styles.emptyText}>{t('social.noFriends')}</Text>
       ) : (
         friends.friends.map((f) => (
           <TouchableOpacity key={f.id} style={styles.row} onPress={() => onVisit(f.friend.id)}>
@@ -173,18 +176,19 @@ function BouquetsPanel({ bouquets, userId, friends }: {
   userId: string;
   friends: Friendship[];
 }) {
+  const { t } = useTranslation();
   const [showCompose, setShowCompose] = useState(false);
 
   return (
     <ScrollView contentContainerStyle={styles.panel}>
       <TouchableOpacity style={styles.primaryBtn} onPress={() => setShowCompose(true)}>
-        <Text style={styles.primaryBtnText}>🌸 花束を贈る</Text>
+        <Text style={styles.primaryBtnText}>🌸 {t('social.sendBouquet')}</Text>
       </TouchableOpacity>
 
       {/* Inbox */}
       {bouquets.inbox.length > 0 && (
         <>
-          <Text style={styles.sectionTitle}>受け取った花束</Text>
+          <Text style={styles.sectionTitle}>{t('social.inboxTitle')}</Text>
           {bouquets.inbox.map((b) => (
             <BouquetCard key={b.id} bouquet={b} isReceiver onAccept={() => bouquets.acceptBouquet(b.id)} onDecline={() => bouquets.declineBouquet(b.id)} />
           ))}
@@ -192,11 +196,11 @@ function BouquetsPanel({ bouquets, userId, friends }: {
       )}
 
       {/* Sent */}
-      <Text style={styles.sectionTitle}>送った花束</Text>
+      <Text style={styles.sectionTitle}>{t('social.sentTitle')}</Text>
       {bouquets.loading ? (
         <ActivityIndicator color={colors.plantPrimary} />
       ) : bouquets.sent.length === 0 ? (
-        <Text style={styles.emptyText}>まだ送っていません</Text>
+        <Text style={styles.emptyText}>{t('social.noSent')}</Text>
       ) : (
         bouquets.sent.map((b) => (
           <BouquetCard key={b.id} bouquet={b} isReceiver={false} />
@@ -224,13 +228,20 @@ function BouquetCard({ bouquet, isReceiver, onAccept, onDecline }: {
   onAccept?: () => void;
   onDecline?: () => void;
 }) {
-  const statusLabel: Record<string, string> = { pending: '未回答', accepted: '受け取り済み', declined: '辞退' };
+  const { t } = useTranslation();
+  const statusLabel: Record<string, string> = {
+    pending: t('social.statusPending'),
+    accepted: t('social.statusAccepted'),
+    declined: t('social.statusDeclined'),
+  };
   const other = isReceiver ? bouquet.sender : bouquet.receiver;
 
   return (
     <View style={styles.bouquetCard}>
       <Text style={styles.bouquetFrom}>
-        {isReceiver ? `${other?.display_name ?? '?'} より` : `${other?.display_name ?? '?'} へ`}
+        {isReceiver
+          ? t('social.bouquetFrom', { name: other?.display_name ?? '?' })
+          : t('social.bouquetTo', { name: other?.display_name ?? '?' })}
       </Text>
       <View style={styles.bouquetPlants}>
         {(bouquet.plants ?? []).map((p) => (
@@ -243,10 +254,10 @@ function BouquetCard({ bouquet, isReceiver, onAccept, onDecline }: {
       {isReceiver && bouquet.status === 'pending' ? (
         <View style={styles.bouquetActions}>
           <TouchableOpacity style={styles.smallBtn} onPress={onAccept}>
-            <Text style={styles.smallBtnText}>受け取る</Text>
+            <Text style={styles.smallBtnText}>{t('social.acceptBouquet')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.smallBtn, styles.smallBtnSecondary]} onPress={onDecline}>
-            <Text style={[styles.smallBtnText, styles.smallBtnTextSecondary]}>辞退</Text>
+            <Text style={[styles.smallBtnText, styles.smallBtnTextSecondary]}>{t('social.declineBouquet')}</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -264,6 +275,7 @@ function ComposeModal({ visible, friends, userId, onSend, onClose }: {
   onSend: (receiverId: string, plantIds: number[], message: string) => Promise<void>;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const herbarium = useHerbarium(userId);
   const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
   const [selectedPlants, setSelectedPlants] = useState<number[]>([]);
@@ -292,10 +304,10 @@ function ComposeModal({ visible, friends, userId, onSend, onClose }: {
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.modalBackdrop}>
         <View style={styles.modalCard}>
-          <Text style={styles.modalTitle}>花束を贈る</Text>
+          <Text style={styles.modalTitle}>{t('social.composeTitle')}</Text>
 
           {/* Friend selector */}
-          <Text style={styles.sectionTitle}>宛先</Text>
+          <Text style={styles.sectionTitle}>{t('social.recipient')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: spacing.sm }}>
             {friends.map((f) => (
               <TouchableOpacity
@@ -311,7 +323,7 @@ function ComposeModal({ visible, friends, userId, onSend, onClose }: {
           </ScrollView>
 
           {/* Plant selector */}
-          <Text style={styles.sectionTitle}>植物を選ぶ（3〜5種）</Text>
+          <Text style={styles.sectionTitle}>{t('social.selectPlants')}</Text>
           <ScrollView style={{ maxHeight: 140 }}>
             {collectedPlants.map((p) => {
               const selected = selectedPlants.includes(p.id);
@@ -330,25 +342,25 @@ function ComposeModal({ visible, friends, userId, onSend, onClose }: {
           </ScrollView>
 
           {/* Message */}
-          <Text style={styles.sectionTitle}>メッセージ（任意）</Text>
+          <Text style={styles.sectionTitle}>{t('social.messageLabel')}</Text>
           <TextInput
             style={[styles.input, { height: 60 }]}
-            placeholder="200文字以内…"
+            placeholder={t('social.messagePlaceholder')}
             placeholderTextColor={colors.textSecondary}
             value={message}
-            onChangeText={(t) => setMessage(t.slice(0, 200))}
+            onChangeText={(text) => setMessage(text.slice(0, 200))}
             multiline
           />
 
-          <Text style={styles.selectedCount}>{selectedPlants.length}/5 種選択中</Text>
+          <Text style={styles.selectedCount}>{t('social.selectedCount', { count: selectedPlants.length })}</Text>
 
           <View style={{ flexDirection: 'row', gap: spacing.sm }}>
             <TouchableOpacity style={[styles.primaryBtn, { flex: 1 }]} onPress={handleSend}
               disabled={!selectedFriend || selectedPlants.length < 3 || sending}>
-              {sending ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>送る</Text>}
+              {sending ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>{t('social.send')}</Text>}
             </TouchableOpacity>
             <TouchableOpacity style={[styles.smallBtn, styles.smallBtnSecondary, { flex: 1, justifyContent: 'center' }]} onPress={onClose}>
-              <Text style={[styles.smallBtnText, styles.smallBtnTextSecondary]}>キャンセル</Text>
+              <Text style={[styles.smallBtnText, styles.smallBtnTextSecondary]}>{t('common.cancel')}</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -87,7 +87,7 @@ export default function PlantDetailScreen() {
         <TouchableOpacity style={styles.shareBtn} onPress={handleShare} disabled={sharing}>
           {sharing
             ? <ActivityIndicator size="small" color={colors.plantPrimary} />
-            : <Text style={styles.shareBtnText}>🌸 シェア</Text>}
+            : <Text style={styles.shareBtnText}>🌸 {t('herbarium.sharePoster')}</Text>}
         </TouchableOpacity>
       </View>
 
