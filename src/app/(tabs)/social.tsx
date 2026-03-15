@@ -52,7 +52,7 @@ export default function SocialScreen() {
       </View>
 
       {activeTab === 'friends' ? (
-        <FriendsPanel friends={friends} userId={userId} onVisit={(id) => router.push(`/friend/${id}` as any)} />
+        <FriendsPanel friends={friends} userId={userId} onVisit={(id, name) => router.push(`/friend/${id}?name=${encodeURIComponent(name)}` as any)} />
       ) : (
         <BouquetsPanel bouquets={bouquets} userId={userId} friends={friends.friends} />
       )}
@@ -78,7 +78,7 @@ function TabButton({ label, active, onPress, badge }: {
 function FriendsPanel({ friends, userId, onVisit }: {
   friends: ReturnType<typeof useFriends>;
   userId: string;
-  onVisit: (id: string) => void;
+  onVisit: (id: string, name: string) => void;
 }) {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -159,7 +159,7 @@ function FriendsPanel({ friends, userId, onVisit }: {
         <Text style={styles.emptyText}>{t('social.noFriends')}</Text>
       ) : (
         friends.friends.map((f) => (
-          <TouchableOpacity key={f.id} style={styles.row} onPress={() => onVisit(f.friend.id)}>
+          <TouchableOpacity key={f.id} style={styles.row} onPress={() => onVisit(f.friend.id, f.friend.display_name)}>
             <AvatarCircle seed={f.friend.avatar_seed} name={f.friend.display_name} size={40} />
             <Text style={[styles.rowText, { flex: 1 }]}>{f.friend.display_name}</Text>
             <Text style={styles.chevron}>›</Text>

@@ -25,10 +25,11 @@ const RARITY_COLORS: Record<number, string> = {
 };
 
 export default function FriendHerbariumScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, name } = useLocalSearchParams<{ id: string; name?: string }>();
   const router = useRouter();
   const { t } = useTranslation();
   const { plants, collected, loading } = useHerbarium(id ?? '');
+  const friendName = name ? decodeURIComponent(name) : null;
 
   if (loading) {
     return (
@@ -45,9 +46,20 @@ export default function FriendHerbariumScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Text style={styles.backText}>‹ {t('common.back')}</Text>
         </TouchableOpacity>
-        <Text style={styles.headerProgress}>
-          {t('herbarium.progress', { count: collected.size })}
-        </Text>
+        <View style={styles.headerCenter}>
+          {friendName ? (
+            <Text style={styles.headerName} numberOfLines={1}>{friendName}</Text>
+          ) : null}
+          <Text style={styles.headerProgress}>
+            {t('herbarium.progress', { count: collected.size })}
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={styles.bouquetBtn}
+          onPress={() => router.push({ pathname: '/(tabs)/social', params: { tab: 'bouquets' } } as any)}
+        >
+          <Text style={styles.bouquetBtnText}>🌸</Text>
+        </TouchableOpacity>
       </View>
 
       {/* 6×10 Grid (read-only — no tap navigation) */}
@@ -99,9 +111,13 @@ const styles = StyleSheet.create({
   center:    { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' },
 
   header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.border },
-  backBtn:        { paddingVertical: 4, paddingRight: spacing.md },
+  backBtn:        { paddingVertical: 4, paddingRight: spacing.sm },
   backText:       { fontSize: typography.fontSize.md, color: colors.plantPrimary },
-  headerProgress: { fontSize: typography.fontSize.sm, color: colors.textSecondary },
+  headerCenter:   { flex: 1, alignItems: 'center' },
+  headerName:     { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.md, color: colors.text },
+  headerProgress: { fontSize: typography.fontSize.xs, color: colors.textSecondary },
+  bouquetBtn:     { paddingVertical: 4, paddingLeft: spacing.sm },
+  bouquetBtnText: { fontSize: typography.fontSize.lg },
 
   grid: { paddingBottom: spacing.lg },
 
