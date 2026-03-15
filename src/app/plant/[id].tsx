@@ -184,10 +184,10 @@ export default function PlantDetailScreen() {
           <Text style={styles.lockedTitle}>{t('herbarium.locked')}</Text>
           {plant.bloom_months.length > 0 && (
             <Text style={styles.lockedHint}>
-              {formatBloomHint(plant.bloom_months)}
-              {plant.prefectures.length > 0 && (
-                `\n${plant.prefectures.slice(0, 3).join(' / ')}`
-              )}
+              {[
+                formatBloomHint(plant.bloom_months),
+                plant.prefectures.length > 0 ? plant.prefectures.slice(0, 3).join(' / ') : null,
+              ].filter(Boolean).join('\n')}
             </Text>
           )}
           {plant.rarity === 3 && (
@@ -243,6 +243,7 @@ function DiscoveryRow({ record, onSaveNote, t }: DiscoveryRowProps) {
       )}
       <View style={styles.discInfo}>
         <View style={styles.discDateRow}>
+          <Text style={styles.discDateLabel}>{t('herbarium.discoveredOn')}</Text>
           <Text style={styles.discDate}>{dateStr}</Text>
           {saving && <ActivityIndicator size="small" color={colors.plantPrimary} style={{ marginLeft: 6 }} />}
         </View>
@@ -310,7 +311,8 @@ const styles = StyleSheet.create({
   discRow:       { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, marginBottom: spacing.sm, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.sm },
   discPixelArt:  { width: 64, height: 64, borderRadius: borderRadius.sm },
   discInfo:      { flex: 1 },
-  discDateRow:   { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
+  discDateRow:   { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
+  discDateLabel: { fontSize: typography.fontSize.xs, color: colors.textSecondary },
   discDate:      { fontSize: typography.fontSize.sm, color: colors.text, fontFamily: typography.fontFamily.display },
   discNoteInput: { fontSize: typography.fontSize.xs, color: colors.text, fontStyle: 'italic', paddingVertical: 2, minHeight: 20 },
 
