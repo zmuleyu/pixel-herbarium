@@ -10,6 +10,7 @@ export type DiscoveryStatus =
   | 'success'
   | 'cooldown'
   | 'quota_exceeded'
+  | 'out_of_region'
   | 'not_a_plant'
   | 'no_match'
   | 'error';
@@ -60,6 +61,8 @@ export function useDiscovery(): UseDiscoveryReturn {
         if (verifyData.reason === 'cooldown') {
           setDaysRemaining(verifyData.daysRemaining);
           setStatus('cooldown');
+        } else if (verifyData.reason === 'out_of_region') {
+          setStatus('out_of_region');
         } else {
           setStatus('quota_exceeded');
         }

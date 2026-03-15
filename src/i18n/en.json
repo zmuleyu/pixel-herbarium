@@ -23,7 +23,8 @@
     "noMatch": "Not found in database",
     "allowPermission": "Allow",
     "identifyError": "An error occurred. Please try again.",
-    "cameraError": "Failed to load camera"
+    "cameraError": "Failed to load camera",
+    "outOfRegion": "Plant discovery is only available in Japan"
   },
   "herbarium": {
     "title": "Herbarium",

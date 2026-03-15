@@ -56,6 +56,11 @@ export default function HerbariumScreen() {
         </Text>
       </View>
 
+      {/* Progress bar */}
+      <View style={styles.progressBarTrack}>
+        <View style={[styles.progressBarFill, { width: `${(collected.size / TOTAL_PLANTS) * 100}%` as any }]} />
+      </View>
+
       {/* 6×10 Grid */}
       <FlatList
         data={plants}
@@ -134,9 +139,12 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   center:    { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' },
 
-  header:         { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.border },
+  header:         { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
   headerTitle:    { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.lg, color: colors.text },
   headerProgress: { fontSize: typography.fontSize.sm, color: colors.textSecondary },
+
+  progressBarTrack: { height: 3, backgroundColor: colors.border, marginHorizontal: 0 },
+  progressBarFill:  { height: 3, backgroundColor: colors.plantPrimary },
 
   grid: { paddingBottom: spacing.lg },
 

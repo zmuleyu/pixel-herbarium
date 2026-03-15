@@ -14,11 +14,13 @@ interface DiscoveredPlant {
   rarity: number;
   hanakotoba: string;
   flower_meaning: string;
+  pixel_sprite_url: string | null;
+  available_window: string | null;
 }
 
 interface IdentifyResponse {
   status: 'success' | 'not_a_plant' | 'no_match';
-  plant?: DiscoveredPlant;
+  plant?: Omit<DiscoveredPlant, 'available_window'>;
   discoveryId?: string;
 }
 
@@ -34,6 +36,17 @@ function fuzzCoordinate(lat: number, lon: number): { lat: number; lon: number } 
     lat: lat + (Math.random() * 2 - 1) * maxLatDelta,
     lon: lon + (Math.random() * 2 - 1) * maxLonDelta,
   };
+}
+
+// Returns true if today falls within the plant's available window (or window is null = always available).
+function isWithinAvailableWindow(available_window: string | null): boolean {
+  if (!available_window) return true; // always available
+  // Postgres DATERANGE format: "[2026-04-01,2026-04-20)" — lower-inclusive, upper-exclusive
+  const match = available_window.match(/[\[{(](\d{4}-\d{2}-\d{2}),(\d{4}-\d{2}-\d{2})[)\]}]/);
+  if (!match) return true; // unparseable — allow
+  const [, startStr, endStr] = match;
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  return today >= startStr && today < endStr;
 }
 
 async function callPlantNet(imageBase64: string, apiKey: string): Promise<{
@@ -106,10 +119,10 @@ Deno.serve(async (req: Request) => {
       return jsonResponse({ status: 'no_match' } as IdentifyResponse);
     }
 
-    // --- Match against plants table ---
+    // --- Match against plants table (include available_window and pixel_sprite_url) ---
     const { data: plants, error: plantError } = await supabaseAdmin
       .from('plants')
-      .select('id, name_ja, name_en, name_latin, rarity, hanakotoba, flower_meaning')
+      .select('id, name_ja, name_en, name_latin, rarity, hanakotoba, flower_meaning, pixel_sprite_url, available_window')
       .or(`name_latin.ilike.${plantNetResult.plantName},name_en.ilike.${plantNetResult.plantName}`)
       .limit(1);
 
@@ -119,6 +132,12 @@ Deno.serve(async (req: Request) => {
     }
 
     const plant: DiscoveredPlant = plants[0];
+
+    // --- Enforce seasonal availability for ★★★ plants ---
+    if (!isWithinAvailableWindow(plant.available_window)) {
+      return jsonResponse({ status: 'no_match' } as IdentifyResponse);
+    }
+
     const fuzzy = fuzzCoordinate(lat, lon);
 
     // --- Insert discovery with correct PostGIS geography format ---
@@ -152,9 +171,11 @@ Deno.serve(async (req: Request) => {
       return jsonResponse({ status: 'no_match' } as IdentifyResponse, 429);
     }
 
+    // Strip available_window before returning to client
+    const { available_window: _aw, ...plantForClient } = plant;
     return jsonResponse({
       status: 'success',
-      plant,
+      plant: plantForClient,
       discoveryId: discovery.id,
     } as IdentifyResponse);
   } catch (err) {

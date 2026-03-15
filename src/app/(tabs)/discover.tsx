@@ -26,7 +26,7 @@ const PROCESSING_STATUSES = new Set(['checking', 'identifying', 'saving']);
 
 // Statuses that trigger the result modal
 const RESULT_STATUSES = new Set([
-  'success', 'not_a_plant', 'no_match', 'cooldown', 'quota_exceeded', 'error',
+  'success', 'not_a_plant', 'no_match', 'cooldown', 'quota_exceeded', 'out_of_region', 'error',
 ]);
 
 function processingLabel(status: string, t: (key: string) => string): string {
@@ -263,6 +263,10 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
       break;
     case 'no_match':
       message = t('discover.noMatch');
+      break;
+    case 'out_of_region':
+      message = t('discover.outOfRegion');
+      showRetry = false;
       break;
     case 'cooldown':
       message = `${t('discover.cooldown')}\n${daysRemaining ?? '?'}`;

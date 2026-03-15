@@ -23,7 +23,8 @@
     "noMatch": "データベースに見つかりません",
     "allowPermission": "許可する",
     "identifyError": "エラーが発生しました。もう一度お試しください。",
-    "cameraError": "カメラの読み込みに失敗しました"
+    "cameraError": "カメラの読み込みに失敗しました",
+    "outOfRegion": "日本国内でのみ発見できます"
   },
   "herbarium": {
     "title": "花図鉑",

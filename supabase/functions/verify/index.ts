@@ -7,12 +7,20 @@ interface VerifyRequest {
 
 interface VerifyResponse {
   allowed: boolean;
-  reason?: 'cooldown' | 'quota_exceeded';
+  reason?: 'cooldown' | 'quota_exceeded' | 'out_of_region';
   daysRemaining?: number;
 }
 
 const COOLDOWN_RADIUS_METERS = 50;
 const COOLDOWN_DAYS = 7;
+
+// Approximate bounding box for Japan (mainland + Okinawa + Hokkaido)
+const JAPAN_BOUNDS = { latMin: 24.0, latMax: 46.0, lonMin: 122.0, lonMax: 154.0 };
+
+function isInJapan(lat: number, lon: number): boolean {
+  return lat >= JAPAN_BOUNDS.latMin && lat <= JAPAN_BOUNDS.latMax &&
+         lon >= JAPAN_BOUNDS.lonMin && lon <= JAPAN_BOUNDS.lonMax;
+}
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -22,6 +30,11 @@ Deno.serve(async (req: Request) => {
   try {
     const { userId, supabaseAdmin } = await requireAuth(req);
     const { lat, lon }: VerifyRequest = await req.json();
+
+    // --- Check Japan GPS bounds ---
+    if (!isInJapan(lat, lon)) {
+      return jsonResponse({ allowed: false, reason: 'out_of_region' } as VerifyResponse);
+    }
 
     // --- Check GPS cooldown via PostGIS RPC ---
     // Returns rows of { created_at } for discoveries within 50m in the last 7 days.

@@ -53,10 +53,10 @@ export function useHerbarium(userId: string): UseHerbariumReturn {
         return;
       }
 
-      // Fetch user's collection
+      // Fetch user's collection; join discoveries to get first discovery date
       const { data: collRows, error: collError } = await (supabase as any)
         .from('collections')
-        .select('plant_id, discovered_at')
+        .select('plant_id, discoveries!first_discovery_id(created_at)')
         .eq('user_id', userId);
 
       if (cancelled) return;
@@ -65,7 +65,13 @@ export function useHerbarium(userId: string): UseHerbariumReturn {
       setPlants(rows);
 
       if (!collError && collRows) {
-        const entries = collRows as CollectionEntry[];
+        const entries: CollectionEntry[] = (collRows as Array<{
+          plant_id: number;
+          discoveries: { created_at: string } | null;
+        }>).map((row) => ({
+          plant_id: row.plant_id,
+          discovered_at: row.discoveries?.created_at ?? '',
+        }));
         setCollected(new Set(entries.map((e) => e.plant_id)));
         setCollectionMap(new Map(entries.map((e) => [e.plant_id, e])));
       } else {
