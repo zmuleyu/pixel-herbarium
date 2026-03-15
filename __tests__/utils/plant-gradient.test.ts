@@ -52,4 +52,11 @@ describe('getPlantGradientColors', () => {
     expect(typeof result[0]).toBe('string');
     expect(typeof result[1]).toBe('string');
   });
+
+  it('uses current month when currentMonth is omitted', () => {
+    const result = getPlantGradientColors(1, []);
+    expect(result).toHaveLength(2);
+    expect(result[0]).toMatch(/^#[0-9a-f]{6}$/);
+    expect(result[1]).toBe('#f5f4f1');
+  });
 });

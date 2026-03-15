@@ -61,6 +61,13 @@ function saturateHex(hex: string, amount: number): string {
   return hslToHex(h, newS, l);
 }
 
+/**
+ * Returns a two-stop gradient color tuple for the plant detail hero area.
+ * When the plant is currently in bloom the start color receives +10% HSL saturation.
+ * @param rarity  Plant rarity tier (1=common, 2=uncommon, 3=rare). Unknown values fall back to 1.
+ * @param bloomMonths  Array of 1-based month numbers when the plant blooms.
+ * @param currentMonth  1-based current month (1–12). Defaults to the real current month.
+ */
 export function getPlantGradientColors(
   rarity: number,
   bloomMonths: number[],
