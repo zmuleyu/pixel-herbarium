@@ -15,10 +15,16 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.pixelherbarium.app",
-      "usesAppleSignIn": true
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Pixel Herbarium uses the camera to photograph plants for identification.",
+        "NSLocationWhenInUseUsageDescription": "Pixel Herbarium uses your location to record where plants were discovered.",
+        "NSPhotoLibraryUsageDescription": "Pixel Herbarium accesses the photo library to select plant images."
+      }
     },
     "android": {
       "package": "com.pixelherbarium.app",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#f5f4f1",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -35,19 +41,19 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "花図鉑では植物の撮影に使用します。"
+          "cameraPermission": "Pixel Herbarium uses the camera to photograph plants for identification."
         }
       ],
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "花図鉑では発見場所の記録に使用します。"
+          "locationWhenInUsePermission": "Pixel Herbarium uses your location to record where plants were discovered."
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "花図鉑では植物の画像を選択するためにフォトライブラリへのアクセスを使用します。"
+          "photosPermission": "Pixel Herbarium accesses the photo library to select plant images."
         }
       ],
       [
