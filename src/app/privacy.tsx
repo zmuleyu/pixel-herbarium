@@ -10,8 +10,11 @@ import {
 import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import * as FileSystem from 'expo-file-system/legacy';
+import * as Sharing from 'expo-sharing';
 import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/services/supabase';
+import { signOut } from '@/services/auth';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 
 export default function PrivacyScreen() {
@@ -48,13 +51,43 @@ export default function PrivacyScreen() {
     setSaving(false);
   }
 
+  async function handleExportData() {
+    if (!user) return;
+    setSaving(true);
+    const { data } = await (supabase as any)
+      .from('discoveries')
+      .select('created_at, latitude, longitude, plants(name_ja, name_latin, rarity)')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    const json = JSON.stringify(
+      { exported_at: new Date().toISOString(), discoveries: data ?? [] },
+      null,
+      2,
+    );
+    const path = (FileSystem.cacheDirectory ?? '') + 'herbarium_export.json';
+    await FileSystem.writeAsStringAsync(path, json);
+    setSaving(false);
+    await Sharing.shareAsync(path, { mimeType: 'application/json' });
+  }
+
   function handleDeleteAccount() {
     Alert.alert(
       t('privacy.deleteAccount'),
       t('privacy.deleteConfirm'),
       [
         { text: t('common.cancel'), style: 'cancel' },
-        { text: t('common.ok'), style: 'destructive', onPress: () => {} },
+        {
+          text: t('common.ok'),
+          style: 'destructive',
+          onPress: async () => {
+            await (supabase as any)
+              .from('profiles')
+              .update({ deletion_requested_at: new Date().toISOString() })
+              .eq('id', user!.id);
+            await signOut();
+          },
+        },
       ],
     );
   }
@@ -88,7 +121,7 @@ export default function PrivacyScreen() {
           </View>
 
           {/* Export data */}
-          <TouchableOpacity style={styles.menuRow}>
+          <TouchableOpacity style={styles.menuRow} onPress={handleExportData} disabled={saving}>
             <Text style={styles.menuText}>{t('privacy.exportData')}</Text>
             <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
