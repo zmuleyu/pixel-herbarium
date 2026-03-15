@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 import { CameraView } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +22,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { RARITY_LABELS } from '@/constants/plants';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { SharePoster } from '@/components/SharePoster';
 
 // Statuses that show the processing overlay on the viewfinder
 const PROCESSING_STATUSES = new Set(['checking', 'identifying', 'saving']);
@@ -217,6 +220,8 @@ interface ResultContentProps {
 function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: ResultContentProps) {
   const cardScale = useRef(new Animated.Value(0.85)).current;
   const cardOpacity = useRef(new Animated.Value(0)).current;
+  const posterRef = useRef<View>(null);
+  const [sharing, setSharing] = useState(false);
 
   useEffect(() => {
     if (status === 'success') {
@@ -227,11 +232,39 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
     }
   }, [status]);
 
+  async function handleShare() {
+    if (!posterRef.current) return;
+    setSharing(true);
+    try {
+      const uri = await captureRef(posterRef, { format: 'jpg', quality: 0.92 });
+      await Sharing.shareAsync(uri, { mimeType: 'image/jpeg', dialogTitle: '花図鉑を共有' });
+    } catch {
+      // Share cancelled or failed — silent
+    } finally {
+      setSharing(false);
+    }
+  }
+
   if (status === 'success' && plant) {
     const rarityLabel = RARITY_LABELS[plant.rarity as keyof typeof RARITY_LABELS] ?? '★';
     const rarityEmoji = plant.rarity === 3 ? '⭐⭐⭐' : plant.rarity === 2 ? '⭐⭐' : '⭐';
     return (
       <Animated.View style={{ width: '100%', alignItems: 'center', gap: spacing.sm, transform: [{ scale: cardScale }], opacity: cardOpacity }}>
+        {/* Off-screen poster for sharing (invisible to user) */}
+        <View style={styles.posterOffscreen} pointerEvents="none">
+          <SharePoster
+            ref={posterRef}
+            plant={{
+              name_ja: plant.name_ja,
+              name_latin: plant.name_en,
+              rarity: plant.rarity,
+              hanakotoba: plant.hanakotoba,
+              pixel_sprite_url: plant.pixel_sprite_url,
+              cityRank: plant.cityRank,
+            }}
+          />
+        </View>
+
         {/* Plant image or rarity emoji card */}
         {plant.pixel_sprite_url ? (
           <Image source={{ uri: plant.pixel_sprite_url }} style={styles.spriteImage} resizeMode="contain" />
@@ -245,7 +278,7 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
         <Text style={styles.plantNameJa}>{plant.name_ja}</Text>
         <Text style={styles.plantNameEn}>{plant.name_en}</Text>
         {plant.cityRank != null && (
-          <Text style={styles.cityRank}>
+          <Text style={styles.cityRankText}>
             {t('discover.cityRank', { city: '全国', rank: plant.cityRank, plant: plant.name_ja })}
           </Text>
         )}
@@ -253,9 +286,18 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
         <Text style={styles.hanakotobaLabel}>{t('herbarium.hanakotoba')}</Text>
         <Text style={styles.hanakotobaValue}>{plant.hanakotoba}</Text>
         <Text style={styles.flowerMeaning}>{plant.flower_meaning}</Text>
-        <TouchableOpacity style={styles.button} onPress={onClose}>
-          <Text style={styles.buttonText}>{t('common.close')}</Text>
-        </TouchableOpacity>
+
+        {/* Action buttons */}
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={onClose}>
+            <Text style={[styles.buttonText, styles.buttonTextSecondary]}>{t('common.close')}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleShare} disabled={sharing}>
+            {sharing
+              ? <ActivityIndicator size="small" color={colors.white} />
+              : <Text style={styles.buttonText}>{t('common.share')}</Text>}
+          </TouchableOpacity>
+        </View>
       </Animated.View>
     );
   }
@@ -350,7 +392,13 @@ const styles = StyleSheet.create({
 
   // Plant card
   rarityLabel:        { fontSize: typography.fontSize.lg, color: colors.plantPrimary },
-  cityRank:           { fontSize: typography.fontSize.xs, color: colors.textSecondary, textAlign: 'center', fontStyle: 'italic' },
+  cityRankText:       { fontSize: typography.fontSize.xs, color: colors.textSecondary, textAlign: 'center', fontStyle: 'italic' },
+
+  // Share poster (off-screen, invisible to user)
+  posterOffscreen:    { position: 'absolute', left: -9999, top: 0 },
+
+  // Button row (close + share side by side)
+  buttonRow:          { flexDirection: 'row', gap: spacing.md },
   plantNameJa:        { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.xl, color: colors.text },
   plantNameEn:        { fontSize: typography.fontSize.sm, color: colors.textSecondary, fontStyle: 'italic' },
   divider:            { width: '60%', height: 1, backgroundColor: colors.border },
