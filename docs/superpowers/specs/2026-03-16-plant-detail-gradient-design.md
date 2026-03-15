@@ -32,9 +32,9 @@ with a self-contained gradient card.
 
 | Rarity | Start color | End color | Bloom start (enhanced) |
 |--------|-------------|-----------|------------------------|
-| ★ Common (1) | `#e8f0e8` sage green | `#f5f4f1` cream | `#dceadc` (+10% sat) |
-| ★★ Uncommon (2) | `#e0eaf5` sky blue | `#f5f4f1` cream | `#d4e2f5` (+10% sat) |
-| ★★★ Rare (3) | `#f5e0dd` blush pink | `#f5f4f1` cream | `#f5d4cf` (+10% sat) |
+| ★ Common (1) | `#e8f0e8` sage green | `#f5f4f1` cream | `#e6f2e6` (+10% sat) |
+| ★★ Uncommon (2) | `#e0eaf5` sky blue | `#f5f4f1` cream | `#deeaf7` (+10% sat) |
+| ★★★ Rare (3) | `#f5e0dd` blush pink | `#f5f4f1` cream | `#f7dedb` (+10% sat) |
 
 Bloom enhancement is determined by comparing the current month against `plant.bloom_months`.
 If the current month is in the bloom array, the start color is saturated by ~10%.
@@ -135,7 +135,7 @@ support would need to be added there separately.
 | 2 | Uncommon rarity returns sky blue gradient | rarity=2, bloom=[], month=1 | `['#e0eaf5', '#f5f4f1']` |
 | 3 | Rare rarity returns blush pink gradient | rarity=3, bloom=[], month=1 | `['#f5e0dd', '#f5f4f1']` |
 | 4 | Unknown rarity falls back to common | rarity=99, bloom=[], month=1 | `['#e8f0e8', '#f5f4f1']` |
-| 5 | Bloom month enhances start color saturation | rarity=1, bloom=[3,4], month=3 | `['#dceadc', '#f5f4f1']` (exact bloom color) |
+| 5 | Bloom month enhances start color saturation | rarity=1, bloom=[3,4], month=3 | `['#e6f2e6', '#f5f4f1']` (exact bloom color) |
 | 6 | Non-bloom month uses base color | rarity=1, bloom=[3,4], month=7 | `['#e8f0e8', '#f5f4f1']` |
 | 7 | Empty bloom array never enhances | rarity=2, bloom=[], month=6 | `['#e0eaf5', '#f5f4f1']` |
 | 8 | Returns [string, string] tuple | any valid input | Array of length 2 |
