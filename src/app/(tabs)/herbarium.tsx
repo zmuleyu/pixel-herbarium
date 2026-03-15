@@ -19,6 +19,7 @@ import { GRID_COLUMNS, TOTAL_PLANTS, RARITY_LABELS } from '@/constants/plants';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CELL_SIZE = Math.floor(SCREEN_WIDTH / GRID_COLUMNS);
+const CURRENT_MONTH = new Date().getMonth() + 1; // 1–12
 
 const RARITY_COLORS: Record<number, string> = {
   1: colors.rarity.common,
@@ -128,8 +129,10 @@ function PlantCell({ plant, isCollected, onPress }: PlantCellProps) {
           </View>
         </Animated.View>
       ) : (
-        <View style={styles.lockedInner}>
-          <Text style={styles.lockedIcon}>🌿</Text>
+        <View style={[styles.lockedInner, plant.bloom_months.includes(CURRENT_MONTH) && styles.lockedInnerSeason]}>
+          <Text style={[styles.lockedIcon, plant.bloom_months.includes(CURRENT_MONTH) && styles.lockedIconSeason]}>
+            {plant.bloom_months.includes(CURRENT_MONTH) ? '🌱' : '🌿'}
+          </Text>
         </View>
       )}
     </TouchableOpacity>
@@ -160,7 +163,9 @@ const styles = StyleSheet.create({
   spritePlaceholder:     { width: CELL_SIZE - 8, height: CELL_SIZE - 8, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
   spritePlaceholderText: { fontSize: CELL_SIZE * 0.4 },
   lockedInner:           { alignItems: 'center', justifyContent: 'center' },
+  lockedInnerSeason:     { backgroundColor: `${colors.plantSecondary}60` }, // in-season tint
   lockedIcon:            { fontSize: CELL_SIZE * 0.35, opacity: 0.3 },
+  lockedIconSeason:      { opacity: 0.55 }, // in-season more visible
 
   rarityBadge:     { position: 'absolute', top: 2, right: 2, borderRadius: 3, paddingHorizontal: 2, paddingVertical: 1 },
   rarityBadgeText: { fontSize: 7, color: colors.text },

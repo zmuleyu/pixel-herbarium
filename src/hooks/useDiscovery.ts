@@ -30,6 +30,7 @@ export interface DiscoveredPlant {
   flower_meaning: string;
   pixel_sprite_url: string | null;
   cityRank: number | null;
+  isFirstDiscovery: boolean;
 }
 
 interface UseDiscoveryReturn {
@@ -95,6 +96,7 @@ export function useDiscovery(): UseDiscoveryReturn {
       setDiscoveredPlant({
         ...identifyData.plant,
         cityRank: identifyData.cityRank ?? null,
+        isFirstDiscovery: identifyData.isFirstDiscovery ?? false,
       });
       setStatus('success');
 

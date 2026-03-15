@@ -52,9 +52,9 @@ function mockVerifyQuotaExceeded() {
   });
 }
 
-function mockIdentifySuccess() {
+function mockIdentifySuccess(isFirstDiscovery = true) {
   mockInvoke.mockResolvedValueOnce({
-    data: { status: 'success', plant: MOCK_PLANT, discoveryId: 'disc-uuid-1' },
+    data: { status: 'success', plant: MOCK_PLANT, discoveryId: 'disc-uuid-1', isFirstDiscovery },
     error: null,
   });
 }
@@ -111,6 +111,49 @@ describe('useDiscovery – successful pipeline', () => {
     expect(result.current.status).toBe<DiscoveryStatus>('success');
     expect(result.current.discoveredPlant?.name_ja).toBe('タンポポ');
     expect(result.current.discoveredPlant?.hanakotoba).toBe('愛の神託');
+  });
+
+  it('sets isFirstDiscovery=true when identify returns isFirstDiscovery=true', async () => {
+    mockVerifyAllowed();
+    mockIdentifySuccess(true);
+    mockPixelateSuccess();
+
+    const { result } = renderHook(() => useDiscovery());
+    await act(async () => {
+      await result.current.runDiscovery(PHOTO_URI, COORD);
+    });
+
+    expect(result.current.discoveredPlant?.isFirstDiscovery).toBe(true);
+  });
+
+  it('sets isFirstDiscovery=false for repeat discovery', async () => {
+    mockVerifyAllowed();
+    mockIdentifySuccess(false);
+    mockPixelateSuccess();
+
+    const { result } = renderHook(() => useDiscovery());
+    await act(async () => {
+      await result.current.runDiscovery(PHOTO_URI, COORD);
+    });
+
+    expect(result.current.discoveredPlant?.isFirstDiscovery).toBe(false);
+  });
+
+  it('defaults isFirstDiscovery=false when field absent from response', async () => {
+    mockVerifyAllowed();
+    // Response without isFirstDiscovery field
+    mockInvoke.mockResolvedValueOnce({
+      data: { status: 'success', plant: MOCK_PLANT, discoveryId: 'disc-uuid-1' },
+      error: null,
+    });
+    mockPixelateSuccess();
+
+    const { result } = renderHook(() => useDiscovery());
+    await act(async () => {
+      await result.current.runDiscovery(PHOTO_URI, COORD);
+    });
+
+    expect(result.current.discoveredPlant?.isFirstDiscovery).toBe(false);
   });
 
   it('calls /verify first with correct coordinates', async () => {

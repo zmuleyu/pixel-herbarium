@@ -23,6 +23,7 @@ interface IdentifyResponse {
   plant?: Omit<DiscoveredPlant, 'available_window'>;
   discoveryId?: string;
   cityRank?: number;
+  isFirstDiscovery?: boolean;
 }
 
 const METERS_PER_LAT_DEGREE = 111_320;
@@ -139,6 +140,15 @@ Deno.serve(async (req: Request) => {
       return jsonResponse({ status: 'no_match' } as IdentifyResponse);
     }
 
+    // --- Check if this is a first-time discovery for this species ---
+    const { count: existingCount } = await supabaseAdmin
+      .from('collections')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('plant_id', plant.id)
+      .then((r) => ({ count: r.count ?? 0 }));
+    const isFirstDiscovery = (existingCount as number) === 0;
+
     const fuzzy = fuzzCoordinate(lat, lon);
 
     // --- Insert discovery with correct PostGIS geography format ---
@@ -188,6 +198,7 @@ Deno.serve(async (req: Request) => {
       plant: plantForClient,
       discoveryId: discovery.id,
       cityRank,
+      isFirstDiscovery,
     } as IdentifyResponse);
   } catch (err) {
     if (err instanceof Response) return err;

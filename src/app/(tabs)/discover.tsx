@@ -15,10 +15,12 @@ import * as Sharing from 'expo-sharing';
 import { CameraView } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 import type { TFunction } from 'i18next';
 import { useCapture } from '@/hooks/useCapture';
 import { useDiscovery } from '@/hooks/useDiscovery';
 import { useAuthStore } from '@/stores/auth-store';
+import { useHerbariumStore } from '@/stores/herbarium-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { RARITY_LABELS } from '@/constants/plants';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -47,6 +49,7 @@ export default function DiscoverScreen() {
 
   const capture = useCapture();
   const discovery = useDiscovery();
+  const triggerHerbariumRefresh = useHerbariumStore((s) => s.triggerRefresh);
 
   const cameraRef = useRef<CameraView>(null);
 
@@ -61,6 +64,13 @@ export default function DiscoverScreen() {
       capture.acquireLocation();
     }
   }, [capture.cameraGranted, capture.locationGranted]);
+
+  // Notify herbarium to refresh when a discovery succeeds
+  useEffect(() => {
+    if (discovery.status === 'success') {
+      triggerHerbariumRefresh();
+    }
+  }, [discovery.status]);
 
   async function handleCapture() {
     if (!cameraRef.current || capture.status !== 'ready') return;
@@ -210,6 +220,7 @@ interface ResultContentProps {
     flower_meaning: string;
     pixel_sprite_url: string | null;
     cityRank: number | null;
+    isFirstDiscovery: boolean;
   } | null;
   daysRemaining?: number;
   onClose: () => void;
@@ -218,6 +229,7 @@ interface ResultContentProps {
 }
 
 function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: ResultContentProps) {
+  const router = useRouter();
   const cardScale = useRef(new Animated.Value(0.85)).current;
   const cardOpacity = useRef(new Animated.Value(0)).current;
   const posterRef = useRef<View>(null);
@@ -250,6 +262,12 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
     const rarityEmoji = plant.rarity === 3 ? '⭐⭐⭐' : plant.rarity === 2 ? '⭐⭐' : '⭐';
     return (
       <Animated.View style={{ width: '100%', alignItems: 'center', gap: spacing.sm, transform: [{ scale: cardScale }], opacity: cardOpacity }}>
+        {/* First-discovery banner */}
+        {plant.isFirstDiscovery && (
+          <View style={styles.firstDiscoveryBanner}>
+            <Text style={styles.firstDiscoveryText}>✨ 新発見！</Text>
+          </View>
+        )}
         {/* Off-screen poster for sharing (invisible to user) */}
         <View style={styles.posterOffscreen} pointerEvents="none">
           <SharePoster
@@ -289,13 +307,13 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
 
         {/* Action buttons */}
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={onClose}>
-            <Text style={[styles.buttonText, styles.buttonTextSecondary]}>{t('common.close')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleShare} disabled={sharing}>
+          <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={handleShare} disabled={sharing}>
             {sharing
-              ? <ActivityIndicator size="small" color={colors.white} />
-              : <Text style={styles.buttonText}>{t('common.share')}</Text>}
+              ? <ActivityIndicator size="small" color={colors.plantPrimary} />
+              : <Text style={[styles.buttonText, styles.buttonTextSecondary]}>{t('common.share')}</Text>}
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => { onClose(); router.navigate('/(tabs)/herbarium'); }}>
+            <Text style={styles.buttonText}>{t('discover.viewHerbarium')}</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>
@@ -383,6 +401,10 @@ const styles = StyleSheet.create({
   // Modal
   modalBackdrop:      { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalCard:          { backgroundColor: colors.background, borderTopLeftRadius: borderRadius.lg, borderTopRightRadius: borderRadius.lg, padding: spacing.xl, gap: spacing.md, alignItems: 'center', paddingBottom: Platform.OS === 'ios' ? 40 : spacing.xl },
+
+  // First-discovery banner
+  firstDiscoveryBanner:  { backgroundColor: colors.creamYellow, borderRadius: borderRadius.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderWidth: 1, borderColor: '#e8d87c' },
+  firstDiscoveryText:    { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.md, color: colors.text },
 
   // Plant card image
   spriteImage:        { width: 120, height: 120, borderRadius: borderRadius.md },

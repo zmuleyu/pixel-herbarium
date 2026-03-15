@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/services/supabase';
 import { TOTAL_PLANTS } from '@/constants/plants';
+import { useHerbariumStore } from '@/stores/herbarium-store';
 
 export interface PlantSlot {
   id: number;
@@ -31,6 +32,7 @@ export function useHerbarium(userId: string): UseHerbariumReturn {
   const [collected, setCollected] = useState<Set<number>>(new Set());
   const [collectionMap, setCollectionMap] = useState<Map<number, CollectionEntry>>(new Map());
   const [loading, setLoading] = useState(true);
+  const storeTick = useHerbariumStore((s) => s.tick);
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
@@ -84,7 +86,7 @@ export function useHerbarium(userId: string): UseHerbariumReturn {
 
     load();
     return () => { cancelled = true; };
-  }, [userId, tick]);
+  }, [userId, tick, storeTick]);
 
   const refresh = useCallback(() => setTick((t) => t + 1), []);
 
