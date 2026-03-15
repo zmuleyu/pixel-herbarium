@@ -62,7 +62,9 @@ const RARITY_GRADIENT: Record<number, { start: string; end: string }> = {
 };
 
 function saturateHex(hex: string, amount: number): string {
-  // Convert hex → HSL, increase S by amount, convert back
+  // Convert hex → HSL, increase S by amount (absolute), convert back
+  // Edge cases: clamp saturation at [0, 1], normalize hex (strip #, handle 3/6 digit)
+  // Achromatic colors (S=0) remain unchanged
 }
 
 export function getPlantGradientColors(
@@ -103,8 +105,14 @@ Changes:
 </View>
 ```
 
-5. Add `overflow: 'hidden'` to `posterArea` style (clip gradient to border radius)
-6. Remove `backgroundColor: colors.white` from posterArea inline style
+5. Add `overflow: 'hidden'` to `styles.posterArea` in the **StyleSheet** (line 287), not inline
+6. Remove `backgroundColor: colors.white` from the **inline style** at line 113:
+   - Before: `style={[styles.posterArea, { borderColor: rarityColor, backgroundColor: colors.white }]}`
+   - After: `style={[styles.posterArea, { borderColor: rarityColor }]}`
+
+**Deliberate visual change**: The poster background shifts from pure white (`#ffffff`)
+to a gradient ending at cream (`#f5f4f1`). This is intentional — the card now blends
+smoothly into the cream page background instead of having a hard white→cream edge.
 
 **Not changed**: All text styles, spacing, other sections, loading/error states.
 
@@ -112,6 +120,10 @@ Changes:
 
 `react-native-view-shot` (`captureRef`) captures native views including LinearGradient.
 The shared poster will include the gradient background. No changes needed to `handleShare`.
+
+**Note**: The separate `SharePoster` component (`src/components/SharePoster.tsx`) is not
+used in `[id].tsx`. If it is adopted for plant detail sharing in the future, gradient
+support would need to be added there separately.
 
 ## Testing
 
@@ -123,12 +135,21 @@ The shared poster will include the gradient background. No changes needed to `ha
 | 2 | Uncommon rarity returns sky blue gradient | rarity=2, bloom=[], month=1 | `['#e0eaf5', '#f5f4f1']` |
 | 3 | Rare rarity returns blush pink gradient | rarity=3, bloom=[], month=1 | `['#f5e0dd', '#f5f4f1']` |
 | 4 | Unknown rarity falls back to common | rarity=99, bloom=[], month=1 | `['#e8f0e8', '#f5f4f1']` |
-| 5 | Bloom month enhances start color saturation | rarity=1, bloom=[3,4], month=3 | start ≠ `'#e8f0e8'` (more saturated) |
+| 5 | Bloom month enhances start color saturation | rarity=1, bloom=[3,4], month=3 | `['#dceadc', '#f5f4f1']` (exact bloom color) |
 | 6 | Non-bloom month uses base color | rarity=1, bloom=[3,4], month=7 | `['#e8f0e8', '#f5f4f1']` |
 | 7 | Empty bloom array never enhances | rarity=2, bloom=[], month=6 | `['#e0eaf5', '#f5f4f1']` |
 | 8 | Returns [string, string] tuple | any valid input | Array of length 2 |
 
 No component snapshot tests — gradient is visual, verified by eye on device.
+
+**Note on RARITY_COLORS duplication**: `RARITY_COLORS` (single accent color per rarity)
+is currently duplicated across 5 files (`[id].tsx`, `friend/[id].tsx`, `herbarium.tsx`,
+`map.tsx`, `recap.tsx`). The new `RARITY_GRADIENT` serves a different purpose (gradient
+start/end pairs), so it lives separately. Future cleanup could centralize all
+rarity-related color mappings into a shared utility.
+
+**Non-goals**: Dark mode (not supported by the app). Accessibility contrast is maintained —
+`colors.text` (#3a3a3a) on all gradient start colors exceeds WCAG AAA (>7:1 ratio).
 
 ## Files Changed
 
