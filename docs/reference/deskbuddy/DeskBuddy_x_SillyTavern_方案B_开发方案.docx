@@ -1,0 +1,684 @@
+**DeskBuddy × SillyTavern**
+
+方案 B：桌面扩展融合架构
+
+详细开发方案
+
+v1.0 \| 2026.03
+
+基于 DeskBuddy 技术方案 v1.0 + 综合开发计划 v1.0 + 陆知行角色设计
+
+前置条件：DeskBuddy Phase 1 MVP 已完成，Spine 动画基础可用
+
+**一、架构总览与核心思路**
+
+**1.1 融合定位**
+
+方案 B 的核心思路是：**SillyTavern 作为对话主控引擎，DeskBuddy
+作为桌面渲染与环境感知端**。两者通过本地 WebSocket
+实时双向通信，形成「ST 管脑子，DB 管身体」的分工模式。
+
+用户的日常体验流程：桌面上始终有陆知行的 Spine 角色常驻（DeskBuddy
+提供），角色会根据时间、天气、用户行为主动发起话题（DeskBuddy
+的事件系统触发）；对话内容由 SillyTavern 的 LLM 后端生成，经过 ST 完整的
+prompt 模板、World Info、记忆摘要处理后返回；回复文本和情感标签回传给
+DeskBuddy，驱动 Spine 表情动画和气泡显示。用户也可以在 ST
+网页端进行更深度的长对话。
+
+**1.2 职责划分**
+
+  ------------ --------------------------------- ------------------------------
+  **层级**     **SillyTavern 负责**              **DeskBuddy 负责**
+
+  对话引擎     LLM API 调用、prompt              不参与，纯转发
+               组装、采样参数、模型切换          
+
+  角色人设     Character Card、World Info /      读取好感度阶段注入 ST
+               Lorebook                          
+
+  记忆系统     Chat Summary、Data Bank (RAG)     提供事件上下文给 ST
+
+  情感分类     classify 模块输出 emotion label   消费 label 驱动 Spine 动画
+
+  角色渲染     无（网页端可选展示头像/表情图）   Spine 骨骼 + PixiJS Overlay
+                                                 渲染
+
+  事件触发     无（被动接收）                    Claude Code
+                                                 Hook、定时器、天气、用户行为
+
+  好感度管理   通过变量读取当前等级              状态机计算、持久化、衰减逻辑
+
+  皮肤生成     无                                OpenClaw skin-gen pipeline
+  ------------ --------------------------------- ------------------------------
+
+**1.3 四层数据流**
+
+完整的数据流路径如下，自下而上：
+
+1.  **接入层**（DeskBuddy Rust）：Claude Code Hook / 系统日历 / 定时器 /
+    天气 API / 用户行为检测 → 生成 UnifiedEvent
+
+2.  **桥接层**（WebSocket Bridge）：UnifiedEvent 翻译为 ST 可消费的
+    context_event；ST 回复翻译为 DeskBuddy 可消费的 animation_command
+
+3.  **对话层**（SillyTavern）：接收 context + user_input → 组装
+    prompt（Character Card + World Info + Memory + Affection Stage） →
+    调用 LLM → 返回 text + emotion
+
+4.  **表现层**（DeskBuddy Frontend）：text → DialogBubble 组件；emotion
+    → AnimationScheduler → Spine 状态机 → PixiJS 渲染
+
+**二、WebSocket 桥接协议**
+
+**2.1 连接建立**
+
+DeskBuddy 启动时在本地监听 WebSocket 服务（默认
+ws://127.0.0.1:19821/ws），ST 扩展连接此端口。选择 DeskBuddy 做 Server
+而非 ST，原因是 DeskBuddy 作为 Tauri 进程生命周期更稳定，且已有 HTTP
+服务器（Webhook 端口 19820）。
+
+连接生命周期管理：
+
+-   DeskBuddy 启动 → WebSocket Server 就绪 → 广播 server_ready
+
+-   ST 扩展启动 → 连接 ws://127.0.0.1:19821/ws → 发送 handshake 消息
+
+-   DeskBuddy 回复 handshake_ack，携带当前角色状态（affection_level,
+    current_state 等）
+
+-   心跳：每 15 秒互发 ping/pong，3 次未响应则标记断线，自动重连
+
+-   断线期间 DeskBuddy
+    回退到本地预制台词池（技术方案中的代表台词），不阻塞用户体验
+
+**2.2 消息类型定义**
+
+所有消息均为 JSON 格式，顶层结构统一：
+
+> { \"type\": \"\<message_type\>\", \"id\": \"\<uuid\>\", \"timestamp\":
+> \<unix_ms\>, \"payload\": { \... } }
+
+**A. DeskBuddy → SillyTavern 消息**
+
+  ---------------- ------------------------------ ------------------------------------
+  **type**         **触发场景**                   **payload 关键字段**
+
+  user_input       用户点击角色或输入框发送消息   text: string, input_method:
+                                                  \"click\" \| \"type\" \|
+                                                  \"quick_reply\"
+
+  context_event    环境/行为事件触发              event_type: string, data: object
+                                                  (detail below)
+
+  affection_sync   好感度变化时同步               level: number (1-5), score: number,
+                                                  delta: number
+
+  state_change     角色状态机变更                 from_state: string, to_state:
+                                                  string, reason: string
+
+  handshake        连接建立                       version: string, character_id:
+                                                  string, affection: object
+
+  pong             心跳响应                       {}
+  ---------------- ------------------------------ ------------------------------------
+
+**B. SillyTavern → DeskBuddy 消息**
+
+  ------------------- -------------------------------- ----------------------------------
+  **type**            **触发场景**                     **payload 关键字段**
+
+  chat_response       LLM 生成回复后                   text: string, emotion: string,
+                                                       is_streaming: boolean
+
+  emotion_update      classify 模块输出                emotion: string, confidence:
+                                                       number
+
+  trigger_animation   ST 侧主动触发动画                animation_name: string, params:
+                                                       object
+
+  narrative_event     剧情事件触发（告白、纪念日等）   event_id: string, scene_data:
+                                                       object
+
+  handshake_ack       确认连接                         st_version: string,
+                                                       character_name: string
+
+  ping                心跳检测                         {}
+  ------------------- -------------------------------- ----------------------------------
+
+**2.3 context_event 详细架构**
+
+context_event 是方案 B 的核心差异化能力------它将 DeskBuddy
+的环境感知注入 ST 的对话上下文。ST 扩展收到后将其格式化为 system message
+插入 prompt。
+
+  ----------------- ------------------------- --------------------------------------------------------------- --------------------
+  **event_type**    **触发条件**              **data 结构**                                                   **ST 侧处理**
+
+  time_period       日间时段变化              {period:                                                        注入 \[Time:
+                                              \"morning\"\|\"noon\"\|\"evening\"\|\"late_night\"\|\"dawn\"}   晚上10点\]
+
+  weather           天气 API 更新（30min/次） {condition, temp, humidity, city}                               注入 \[Weather:
+                                                                                                              下雨, 18°C\]
+
+  user_active       用户活动时长变化          {active_minutes, session_start}                                 注入 \[已工作 2
+                                                                                                              小时\]
+
+  user_idle         用户长时间无操作          {idle_minutes}                                                  触发主动搭话
+
+  task_complete     Claude Code 任务完成      {task_summary, duration}                                        生成贺词/关心
+
+  calendar_remind   日历事件即将到期          {event_title, minutes_until}                                    生成提醒台词
+
+  date_special      特殊日期（节日/纪念日）   {date_type, days_together}                                      触发专属剧情
+
+  other_character   用户查看其他角色          {character_id, duration_seconds}                                触发吃醋台词
+  ----------------- ------------------------- --------------------------------------------------------------- --------------------
+
+**三、SillyTavern 角色卡设计**
+
+**3.1 Character Card 结构**
+
+将陆知行的完整人设转化为 ST Character Card V2
+格式。核心设计原则：**好感度阶段作为动态变量注入，而非写死在人设里**，这样一张卡就能覆盖
+L1--L5 全阶段。
+
+**Description（角色描述）**
+
+直接复用角色设计文档的「基础人设」+「核心人格模型」+「说话风格」部分，约
+300--500 tokens。保持简洁，不在 Description 里放好感度逻辑。
+
+**Personality（性格摘要）**
+
+> 温柔、细腻、可靠、内敜、冷幽默、轻微完美主义、习惯性照顾他人、在喜欢的人面前变得笨拙
+
+**First Message（首次问候）**
+
+> \*推了推眼镜\* \"你好。\" \*停顿了一下\*
+> \"我是陆知行。听说这里...需要人？\" \*微笑，但眼神有点紧张\*
+> \"总之，以后请多关照。\"
+
+**Creator's Notes（创作者指南 / JailBreak）**
+
+这里放置好感度阶段的动态 prompt 模板，使用 ST 的宏变量系统：
+
+> \[Current affection level: {{getvar::affection_level}}\]
+>
+> \[Current context: {{getvar::context_info}}\]
+>
+> // 好感度行为映射（由 ST 扩展动态写入 getvar）
+>
+> L1-L2: 保持礼貌距离，像可靠的学长，称呼用"你"
+>
+> L3: 开始不自觉地关注用户，说话偶尔会停顿或改口
+>
+> L4: 无法隐藏心意，偶尔说出暗昧的话然后假装若无其事
+>
+> L5: 已确认关系，温柔但偶尔有占有欲，会撒娇
+
+**3.2 World Info / Lorebook 设计**
+
+World Info
+条目按触发关键词自动注入上下文，非常适合实现「场景化台词」和「好感度解锁内容」：
+
+  ------------ ------------------ ------------------------------------------------ ----------------
+  **条目名**   **触发关键词**     **注入内容（摘要）**                             **触发条件**
+
+  下雨场景     rain, raining,     陆知行在雨天会变得感性，想说平时不会说的话       L3+
+               下雨                                                                
+
+  深夜场景     late_night, 深夜,  深夜时陆知行会担心用户，语气变软，会催用户睡觉   始终
+               23点                                                                
+
+  吃醋场景     other_character,   陆知行会表现出微妙的在意，但极力克制             L3+
+               jealous                                                             
+
+  告白场景     confession, 告白   完整告白剧本参考（角色设计文档场景 7）           L4→L5
+
+  纪念日       anniversary,       在一起的天数和对应台词池                         L5
+               纪念日                                                              
+
+  摩头互动     headpat, 摸头, pat 陆知行对摸头的反应分等级描述                     L4+
+
+  咖啡话题     coffee, 咖啡, 拿铁 陆知行是咖啡爱好者，能讲很多咖啡知识             始终
+
+  编程话题     code, debug,       陆知行是计算机系研究生，会用技术类比来表达感情   始终
+               programming                                                         
+  ------------ ------------------ ------------------------------------------------ ----------------
+
+**3.3 ST 变量与宏系统利用**
+
+ST 支持通过 /setvar 和 /getvar 命令管理会话变量。Extension-DeskBuddy
+在收到 affection_sync 消息时自动执行：
+
+> /setvar key=affection_level value={{payload.level}}
+>
+> /setvar key=affection_score value={{payload.score}}
+>
+> /setvar key=context_info value=\"\[Time: evening\] \[Weather: rain,
+> 18°C\] \[Active: 2h\]\"
+
+这些变量在 Creator's Notes 中通过 {{getvar::key}} 被自动展开，注入到每次
+LLM 调用的 prompt 中。
+
+**四、情感分类与动画映射**
+
+**4.1 ST classify → Spine 动画映射表**
+
+ST 的 classify 模块输出 emotion label，Extension-DeskBuddy 将其转换为
+Spine 动画指令发送给 DeskBuddy。以下是完整映射（覆盖 28-emotion 模型 +
+自定义扩展）：
+
+  ---------------- ------------------ -------------------- ----------------
+  **ST emotion**   **Spine 基础动画** **情感叠加动画**     **解锁等级**
+
+  joy / amusement  idle_01            emo_happy_hop        L1
+
+  love / caring    idle_04 (撑下巴)   emo_blush + emo_lean L3
+
+  sadness / grief  idle_02 (看书)     story_jealous (低落) L1
+
+  anger /          react_drag         无                   L1
+  annoyance                                                
+
+  surprise         react_click        emo_happy_hop        L1
+
+  fear /           idle_01            emo_ear_touch        L3
+  nervousness                                              
+
+  embarrassment    idle_02            emo_shy_turn +       L3
+                                      emo_blush            
+
+  desire /         idle_04            emo_lean +           L4
+  admiration                          emo_heartbeat        
+
+  neutral /        idle_02 (看书)     无                   L1
+  realization                                              
+
+  disapproval      react_drag         无                   L1
+
+  curiosity        idle_04            emo_peek             L2
+
+  confusion        idle_01            emo_ear_touch        L1
+
+  ---              react_click        emo_blush +          L4
+  headpat_react                       emo_hand_cover       
+  (自定义)                                                 
+
+  --- jealousy     story_jealous      emo_shy_turn         L3
+  (自定义)                                                 
+
+  --- confession   story_confession   emo_heartbeat +      L4
+  (自定义)                            emo_blush            
+  ---------------- ------------------ -------------------- ----------------
+
+**4.2 动画融合策略**
+
+情感叠加动画使用 Spine 的 additive blending track，具体规则：
+
+-   **Track
+    0**（基础层）：始终播放一个基础动画（idle_01\~04、walk、sleep 等）
+
+-   **Track 1**（情感层）：叠加 emo\_\* 动画，alpha 从 0 渐变到 1（过渡
+    300ms），持续显示直到下一条消息
+
+-   **Track
+    2**（事件层）：播放一次性动画（story_confession、story_hearthand
+    等），播完自动回落
+
+-   **优先级规则**：Track 2 \> Track 1 \> Track 0；剧情动画播放时不受
+    emotion_update 干扰
+
+**4.3 好感度锁定机制**
+
+低等级时，即使 classify 输出了 love/embarrassment 等高阶情感，DeskBuddy
+也会降级处理：
+
+  ----------------- -------------------------- --------------------------
+  **当前等级**      **收到高阶 emotion**       **降级处理**
+
+  L1                love / embarrassment /     降级为 neutral，仅播放
+                    desire                     idle_02
+
+  L2                love / embarrassment       降级为 curiosity，播放
+                                               emo_peek
+
+  L3                全部可用                   正常播放
+
+  L4+               全部可用 + 自定义          正常播放 + 剧情动画解锁
+  ----------------- -------------------------- --------------------------
+
+**五、Extension-DeskBuddy 开发规格**
+
+**5.1 扩展基本信息**
+
+  ----------------------- -------------------------------------------------------
+  **属性**                **值**
+
+  扩展名称                Extension-DeskBuddy
+
+  类型                    SillyTavern Third-party Extension
+
+  安装位置                /data/\<user-handle\>/extensions/Extension-DeskBuddy/
+
+  入口文件                index.js
+
+  依赖 ST 版本            ≥ 1.14.0 (staging)
+
+  依赖扩展                classify (内置), Quick Replies (可选)
+
+  网络需求                仅 localhost WebSocket (19821)
+  ----------------------- -------------------------------------------------------
+
+**5.2 核心模块**
+
+**Module 1: WebSocket Client (ws-client.js)**
+
+-   负责与 DeskBuddy 建立/维持 WebSocket 连接
+
+-   实现自动重连（指数退避，最大间隔 30s）
+
+-   消息队列缓冲：断线期间缓存消息，重连后按序发送
+
+-   心跳检测：15s 间隔，3 次未响应触发重连
+
+**Module 2: Affection Bridge (affection-bridge.js)**
+
+-   监听 DeskBuddy 发来的 affection_sync 消息
+
+-   调用 /setvar 更新 ST 会话变量
+
+-   根据等级变化触发 World Info 条目激活/停用
+
+-   等级跳变时触发剧情事件（如 L4→L5 触发告白）
+
+**Module 3: Context Injector (context-injector.js)**
+
+-   监听 context_event 消息，格式化为 ST 可消费的 system message
+
+-   维护一个「当前上下文」缓存，通过 /setvar key=context_info 更新
+
+-   支持事件叠加：同时存在多个 context 时拼接为单条
+
+-   事件 TTL 机制：天气类保留 30min，行为类保留 5min，特殊日期类保留全天
+
+**Module 4: Emotion Router (emotion-router.js)**
+
+-   监听 ST classify 模块输出的 emotion label
+
+-   应用好感度降级规则（见4.3 表）
+
+-   将最终 emotion 通过 WebSocket 发送给 DeskBuddy
+
+-   去重：500ms 内重复的相同 emotion 不重复发送
+
+**Module 5: Chat Relay (chat-relay.js)**
+
+-   拦截 ST 的 LLM 回复（通过 eventSource 监听）
+
+-   将回复文本 + emotion 封装为 chat_response 发送给 DeskBuddy
+
+-   支持流式传输：is_streaming=true 时每 200ms 发送一次增量文本
+
+-   反向转发：用户在 DeskBuddy 上的输入转为 ST 消息并触发 LLM 调用
+
+**六、DeskBuddy 侧改动**
+
+**6.1 Rust 后端新增模块**
+
+  --------------- --------------------- ---------------------------------------------
+  **模块**        **文件**              **职责**
+
+  WebSocket       src/ws_server.rs      基于 tokio-tungstenite，监听 19821 端口，管理
+  Server                                ST 扩展连接
+
+  ST Message      src/st_handler.rs     解析 ST
+  Handler                               消息，转换为内部事件，分发给状态机/动画系统
+
+  Context         src/context_pub.rs    收集环境事件，封装为
+  Publisher                             context_event，广播给所有连接的 ST
+
+  Affection       src/affection.rs      新增 affection_sync
+  Manager         (改造)                消息广播，每次好感度变化时同步给 ST
+  --------------- --------------------- ---------------------------------------------
+
+**6.2 前端改动**
+
+-   **DialogBubble 组件改造**：支持接收 chat_response
+    消息并渲染，支持流式逐字显示效果
+
+-   **输入框组件新增**：点击角色后弹出轻量级输入框，用户可以打字回复（而不仅仅是选项）
+
+-   **AnimationScheduler 改造**：新增 emotion 作为输入源（之前只有
+    state），实现 Track 0/1/2 分层混合
+
+-   **连接状态指示**：在角色旁边显示小圆点（绿色=ST已连接，灰色=离线模式）
+
+**6.3 离线回退策略**
+
+当 ST 未运行或 WebSocket 断开时，DeskBuddy 必须保持完整的独立体验：
+
+  ----------- ----------------------------- --------------------------------------------
+  **场景**    **在线模式（ST 连接）**       **离线模式（断开）**
+
+  早安/晚安   ST 生成个性化台词             本地台词池随机抽取（技术方案中的代表台词）
+
+  点击互动    ST 生成上下文相关回复         本地预制台词（按好感度等级过滤）
+
+  加班提醒    ST 生成带记忆的关心话语       本地固定提醒台词
+
+  剧情事件    ST 组装完整剧情对话           本地预制剧情脚本播放
+
+  自由聊天    ST 支持多轮对话               不可用，提示用户启动 ST
+  ----------- ----------------------------- --------------------------------------------
+
+**七、开发计划（6 Sprint）**
+
+总周期 **10--12 周**，每个 Sprint 约 2 周。前 2 个 Sprint
+聚焦技术验证，后 4 个 Sprint 逐步集成完整功能。
+
+**Sprint 0 --- 技术验证（第 1--2 周）**
+
+**目标**：验证 DeskBuddy ↔ SillyTavern WebSocket 通信可行性
+
+  --------------------- ---------------------------------------- ---------- -------------------
+  **任务**              **交付物**                               **工时**   **负责方**
+
+  搭建 ST 本地开发环境  ST staging 分支运行 + Claude API         2d         Full-stack
+                        连接可用                                            
+
+  写 DeskBuddy          tokio-tungstenite WS Server 在 19821     2d         Rust
+  ws_server.rs          可连接                                              
+
+  写                    ST 扩展可安装、manifest.json 可读、WS    2d         Frontend
+  Extension-DeskBuddy   Client 可连                                         
+  骨架                                                                      
+
+  Handshake + Ping/Pong 双端连接建立、心跳正常、断线重连可工作   2d         Both
+
+  端到端消息流测试      ST 发 mock 消息 → DeskBuddy              2d         Both
+                        控制台打印；DB 发事件 → ST 控制台打印               
+  --------------------- ---------------------------------------- ---------- -------------------
+
++-----------------------------------------------------------------------+
+| **⚠️ Sprint 0 通过标准**                                              |
+|                                                                       |
+| 双向 WebSocket 消息可靠收发，断线 5                                   |
+| 秒内自动重连，消息不丢失。这是后续所有 Sprint 的地基。                |
++-----------------------------------------------------------------------+
+
+**Sprint 1 --- 角色卡迁移 + 基础对话（第 3--4 周）**
+
+**目标**：陆知行在 ST 中可对话，回复能同步到桌面气泡
+
+  ------------------ -------------------------------- ---------- -------------------
+  **任务**           **交付物**                       **工时**   **负责方**
+
+  制作陆知行         V2 格式角色卡 .png，包含         2d         策划
+  Character Card     Description + Personality +                 
+                     First Msg                                   
+
+  编写 World Info    8+ 条 Lorebook 条目（见 3.2 表） 2d         策划
+  条目                                                           
+
+  Chat Relay 模块    ST 回复 → WebSocket → DeskBuddy  3d         Frontend
+                     DialogBubble 显示                           
+
+  反向输入模块       DeskBuddy 输入框 → WebSocket →   2d         Both
+                     ST 发送消息 → LLM 回复                      
+
+  流式传输支持       消息流式输出时桌面气泡逐字显示   1d         Frontend
+  ------------------ -------------------------------- ---------- -------------------
+
+**Sprint 2 --- 情感分类 + 动画联动（第 5--6 周）**
+
+**目标**：ST 的情感分类能驱动 DeskBuddy Spine 表情动画
+
+  --------------------- ---------------------------- ---------- -------------------
+  **任务**              **交付物**                   **工时**   **负责方**
+
+  启用 ST classify 模块 Local classify               1d         Config
+                        运行，每条回复输出 emotion              
+                        label                                   
+
+  Emotion Router 模块   接收 classify                2d         Frontend
+                        输出，应用降级规则，转发给              
+                        DB                                      
+
+  AnimationScheduler    emotion 可驱动 Track 1       3d         Frontend
+  Track 1 改造          叠加动画，包括渐变过渡                  
+
+  好感度降级逻辑        L1/L2 时高阶 emotion         1d         Frontend
+                        被正确降级                              
+
+  联调测试              完整流程：用户输入 → LLM     3d         Both
+                        回复 → 情感分类 → Spine                 
+                        动画变化                                
+  --------------------- ---------------------------- ---------- -------------------
+
+**Sprint 3 --- 好感度同步 + 环境感知（第 7--8 周）**
+
+**目标**：好感度双端同步，环境事件能触发 ST 对话
+
+  --------------------- ---------------------------------- ---------- -------------------
+  **任务**              **交付物**                         **工时**   **负责方**
+
+  Affection Bridge 模块 DB affection_sync → ST             2d         Frontend
+                        /setvar，变量注入 prompt                      
+
+  Context Publisher     收集时间/天气/用户活动事件，广播   3d         Rust
+  模块 (Rust)           context_event                                 
+
+  Context Injector 模块 接收 context_event，格式化为       2d         Frontend
+  (ST)                  \[Time: \...\] \[Weather: \...\]              
+                        注入                                          
+
+  主动搭话触发          user_idle 事件 → ST                2d         Both
+                        自动生成主动搭话 → 桌面显示                   
+
+  日历/定时器提醒联动   calendar_remind 事件 → ST          1d         Both
+                        生成角色化提醒词                              
+  --------------------- ---------------------------------- ---------- -------------------
+
+**Sprint 4 --- 剧情系统 + 高阶互动（第 9--10 周）**
+
+**目标**：告白、纪念日、吃醋等剧情可触发并双端同步
+
+  ------------------ ---------------------------------- ---------- -------------------
+  **任务**           **交付物**                         **工时**   **负责方**
+
+  剧情事件状态机     narrative_event                    3d         Both
+                     触发、分支选择、结果回写好感度                
+
+  告白场景实现       L4→L5 时触发完整告白序列（动画 +   3d         Both
+                     选项 + 好感度变更）                           
+
+  纪念日系统         L5                                 2d         Both
+                     后计数天数，整数天触发专属台词 +              
+                     动画                                          
+
+  吃醋/嘲笑反应      other_character 事件 → ST          1d         Both
+                     生成吃醋台词 → Spine story_jealous            
+
+  摸头互动           点击头部 hitbox → 发送特殊         1d         Both
+                     user_input → ST 生成反应                      
+  ------------------ ---------------------------------- ---------- -------------------
+
+**Sprint 5 --- 招工与优化（第 11--12 周）**
+
+**目标**：用户体验打磨、性能优化、文档完善
+
+  --------------------- ---------------------------------------- ------------
+  **任务**              **交付物**                               **工时**
+
+  离线回退完善          所有场景均有离线台词回退，体验无断层感   3d
+
+  TTS 集成（可选）      ST 的 TTS 模块输出音频 → DeskBuddy       3d
+                        播放 + Spine 口型同步                    
+
+  性能优化              WebSocket                                2d
+                        消息压缩、批量发送、动画帧率动态调节     
+
+  设置 UI               DeskBuddy 设置面板新增「ST               1d
+                        连接」页：端口配置、状态显示、重连按钮   
+
+  文档 + 安装指南       README、安装步骤、配置说明、故障排除     1d
+  --------------------- ---------------------------------------- ------------
+
+**八、风险矩阵与应对**
+
+  ------------------------ ---------- ---------------------------- -------------------------------
+  **风险**                 **等级**   **影响**                     **应对策略**
+
+  ST 扩展 API 变更         **高**     扩展可能无法加载或调用失败   锁定 ST 版本（≥ 1.14.0）；抽象
+                                                                   ST 交互层，变更时只改适配器
+
+  classify 情感不准        **中**     动画与文本语气不匹配         优先用 Main LLM classify（而非
+                                                                   Local）；加 fallback 默认动画
+
+  WebSocket 稳定性         **中**     消息丢失/延迟                消息队列缓冲 + ACK 确认 +
+                                                                   自动重连
+
+  双端好感度不同步         **中**     对话语气与动画表现矛盾       DB 为唯一数据源，ST
+                                                                   只读不写；每次连接时全量同步
+
+  用户运行两个程序的门槛   **高**     普通用户可能不愿意手动启动   提供一键启动脚本；未来考虑 ST
+                                      ST                           Headless 模式内嵌
+
+  prompt 过长导致 token    **低**     World Info + context         ST 内置 token 计数 +
+  溢出                                叠加超出上下文窗口           截断机制已能处理
+
+  多角色切换复杂度         **低**     切换角色时需同时切换 ST      终端命令 /character-switch
+                                      角色卡                       自动化，待多角色阶段再实现
+  ------------------------ ---------- ---------------------------- -------------------------------
+
+**九、未来演进方向**
+
+**9.1 从方案 B 到方案 C**
+
+方案 B 稳定运行后，可逐步向方案 C（共享角色引擎）演进。具体路径：将
+DeskBuddy 的好感度管理器和 ST 扩展的桥接逻辑抽取为独立微服务（Character
+State Service），通过 gRPC 或 Unix Socket
+与双端通信。这一步的前提是用户量增长到需要多客户端同步（如桌面 + 手机 +
+网页）时再启动。
+
+**9.2 ST Headless 内嵌**
+
+SillyTavern 本质是 Node.js 服务端 + 浏览器前端。未来可将 ST Server
+内嵌为 DeskBuddy 的子进程（Tauri 的 sidecar 机制），用户无需手动启动
+ST。ST 前端界面可通过 Tauri 的二级窗口呈现，实现真正的「单程序」体验。
+
+**9.3 社区角色卡生态**
+
+ST 拥有成熟的角色卡分享生态（Chub.ai、CharacterHub 等）。DeskBuddy
+可以发布标准化的「桌宠角色卡包」，包含 ST Character Card + Spine Atlas +
+好感度配置 + 动画映射表，让社区创作者为 DeskBuddy
+制作新角色，极大扩展内容供给。
+
+**9.4 OpenClaw 定位调整**
+
+接入 ST 后，OpenClaw 从「对话引擎」转型为「工具型 Agent
+编排器」，专注于皮肤生成 Pipeline（skin-gen Skill）和飞书/Telegram
+渠道管理。对话能力全部由 ST 承接，OpenClaw 做它最擅长的异步任务调度和
+Heartbeat 轮询。
+
+*DeskBuddy × SillyTavern 融合方案 v1.0 --- 2026.03*

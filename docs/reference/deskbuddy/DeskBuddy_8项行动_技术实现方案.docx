@@ -1,0 +1,1540 @@
+**DeskBuddy 行动清单**
+
+**8 项技术实现方案**
+
+基于 AI2U/YAGS 教训 · Tauri v2 + React + PixiJS + Spine + Rust +
+OpenClaw
+
+#1 Demo 1-3 统一使用 Gemini Flash --- P0
+
+**AI2U 教训 L3：**AlterStaff 从 ChatGPT 迁移到 Gemini
+后才敢承诺无限对话。Gemini Flash 是目前质量/成本比最优的选择。
+
+1.1 Provider 抽象层设计
+
+在 Rust backend 中定义统一的 trait，所有 AI provider
+实现同一接口。这是后续 #8 多模型 fallback 的基础。
+
+> // src-tauri/src/ai/provider.rs
+>
+> use async_trait::async_trait;
+>
+> use serde::{Deserialize, Serialize};
+>
+> #\[derive(Debug, Serialize, Deserialize, Clone)\]
+>
+> pub struct AiRequest {
+>
+> pub system_prompt: String,
+>
+> pub user_content: Vec\<ContentBlock\>, // text + base64 images
+>
+> pub max_tokens: u32,
+>
+> pub temperature: f32,
+>
+> pub response_format: ResponseFormat, // Json / Text
+>
+> }
+>
+> #\[derive(Debug, Serialize, Deserialize)\]
+>
+> pub struct AiResponse {
+>
+> pub content: String,
+>
+> pub usage: TokenUsage, // prompt_tokens, completion_tokens
+>
+> pub provider: String,
+>
+> pub model: String,
+>
+> pub latency_ms: u64,
+>
+> }
+>
+> #\[async_trait\]
+>
+> pub trait AiProvider: Send + Sync {
+>
+> fn name(&self) -\> &str;
+>
+> fn is_available(&self) -\> bool;
+>
+> async fn complete(&self, req: &AiRequest) -\> Result\<AiResponse\>;
+>
+> fn estimate_cost(&self, usage: &TokenUsage) -\> f64;
+>
+> }
+
+1.2 Gemini Flash 实现
+
+> // src-tauri/src/ai/gemini.rs
+>
+> pub struct GeminiFlashProvider {
+>
+> api_key: String,
+>
+> model: String, // \"gemini-2.0-flash\"
+>
+> endpoint: String, // generativelanguage.googleapis.com
+>
+> client: reqwest::Client,
+>
+> }
+>
+> #\[async_trait\]
+>
+> impl AiProvider for GeminiFlashProvider {
+>
+> fn name(&self) -\> &str { \"gemini-flash\" }
+>
+> fn is_available(&self) -\> bool { !self.api_key.is_empty() }
+>
+> async fn complete(&self, req: &AiRequest) -\> Result\<AiResponse\> {
+>
+> let url = format!(
+>
+> \"{}/v1beta/models/{}:generateContent?key={}\",
+>
+> self.endpoint, self.model, self.api_key
+>
+> );
+>
+> let body = self.build_request_body(req);
+>
+> let start = std::time::Instant::now();
+>
+> let resp = self.client.post(&url)
+>
+> .json(&body).send().await?;
+>
+> let latency = start.elapsed().as_millis() as u64;
+>
+> let data: GeminiResponse = resp.json().await?;
+>
+> Ok(AiResponse {
+>
+> content: data.extract_text(),
+>
+> usage: data.extract_usage(),
+>
+> provider: self.name().into(),
+>
+> model: self.model.clone(),
+>
+> latency_ms: latency,
+>
+> })
+>
+> }
+>
+> fn estimate_cost(&self, u: &TokenUsage) -\> f64 {
+>
+> // Gemini 2.0 Flash: \$0.10/1M input, \$0.40/1M output
+>
+> (u.prompt_tokens as f64 \* 0.10
+>
+> \+ u.completion_tokens as f64 \* 0.40) / 1_000_000.0
+>
+> }
+>
+> }
+
+1.3 成本估算表（10-photo × 3-style 测试矩阵）
+
+  ----------------- ----------- ----------- -------------- -----------------
+  **Pipeline        **Input     **Output    **单次成本**   **30 次成本
+  Stage**           Tokens**    Tokens**                   (10×3)**
+
+  Stage 1: 风格化   \~2,000     \~1,500     \$0.0008       \$0.024
+  Prompt                                                   
+
+  Stage 2:          \~3,000     \~2,000     \$0.0011       \$0.033
+  语义分割指令      (含图)                                 
+
+  Stage 3: Atlas    \~4,000     \~3,000     \$0.0016       \$0.048
+  坐标生成          (含图)                                 
+
+  **合计**          \~9,000     \~6,500     **\$0.0035**   **\$0.105**
+  ----------------- ----------- ----------- -------------- -----------------
+
+*结论：30 次完整 pipeline 执行仅需约 \$0.10，Gemini Flash 完全可以支撑
+Demo 验证阶段的成本。即使扩大到 1000 次/月的 B2B 规模，月成本也仅约
+\$3.50。*
+
+#2 Prompt 组装移至 Rust Backend / OpenClaw Skill --- P0
+
+**AI2U 教训 L4：**YAGS 的 system prompt 被 Charles Proxy
+完整逆向，胜利条件、人格设定全部暴露。DeskBuddy 的 skin pipeline prompt
+承载核心业务逻辑，必须服务端保护。
+
+2.1 架构分层
+
+> React Frontend Tauri IPC Rust Backend AI Provider
+>
+> ┌──────────────┐ invoke() ┌──────────────┐ HTTPS ┌───────────┐
+>
+> │ photo blob │ ──────────▶ │ prompt_tpl │ ───────▶ │ Gemini │
+>
+> │ style_id │ │ + photo │ │ GPT-4o │
+>
+> │ params │ │ + validate │ │ Local SD │
+>
+> └──────────────┘ └──────────────┘ └───────────┘
+>
+> ↑ 前端只发送: ↑ 后端负责:
+>
+> \- base64 photo - 加载 prompt template (TOML/JSON)
+>
+> \- style_id: \"kawaii\" - 注入 photo + style params
+>
+> \- user_prefs: {} - 调用 AI provider
+>
+> \- 校验返回值
+>
+> \- 返回结构化结果给前端
+
+2.2 Tauri Command 定义
+
+> // src-tauri/src/commands/skin_gen.rs
+>
+> #\[tauri::command\]
+>
+> pub async fn generate_skin(
+>
+> photo_base64: String,
+>
+> style_id: String, // \"kawaii\" \| \"pixel\" \| \"cyber\"
+>
+> user_prefs: Option\<UserPrefs\>,
+>
+> state: tauri::State\<\'\_, AppState\>,
+>
+> ) -\> Result\<SkinGenResult, String\> {
+>
+> // 1. 输入校验
+>
+> let photo = validate_photo(&photo_base64)?; // 尺寸/格式/大小
+>
+> let style = state.styles.get(&style_id)
+>
+> .ok_or(\"Unknown style\")?;
+>
+> // 2. 组装 prompt（核心逻辑，前端不可见）
+>
+> let prompt = PromptBuilder::new()
+>
+> .load_template(\"skin_gen_v1\") // 从 resources/ 加载
+>
+> .set_style(style) // 注入风格参数
+>
+> .set_atlas_template( // 注入 atlas 坐标模板
+>
+> &state.spine_atlas_coords
+>
+> )
+>
+> .set_user_prefs(user_prefs) // 可选的用户偏好
+>
+> .build();
+>
+> // 3. 调用 AI provider（#1 的抽象层）
+>
+> let ai_req = AiRequest {
+>
+> system_prompt: prompt.system,
+>
+> user_content: vec\![
+>
+> ContentBlock::Image(photo),
+>
+> ContentBlock::Text(prompt.user_instruction),
+>
+> \],
+>
+> max_tokens: 4096,
+>
+> temperature: 0.7,
+>
+> response_format: ResponseFormat::Json,
+>
+> };
+>
+> let ai_resp = state.provider_chain
+>
+> .complete(&ai_req).await
+>
+> .map_err(\|e\| e.to_string())?;
+>
+> // 4. 校验 AI 输出（#3 的 validation）
+>
+> let result = validate_skin_output(
+>
+> &ai_resp.content, &state.spine_atlas_coords
+>
+> )?;
+>
+> // 5. 记录成本（用于 #6 的配额管理）
+>
+> state.usage_tracker.record(
+>
+> &ai_resp.usage, &ai_resp.provider
+>
+> ).await;
+>
+> Ok(result)
+>
+> }
+
+2.3 Prompt Template 存储
+
+> \# resources/prompts/skin_gen_v1.toml
+>
+> \# 编译进 Tauri bundle，前端无法访问
+>
+> \[meta\]
+>
+> version = \"1.0\"
+>
+> description = \"Skin generation pipeline - Stage 1: Stylization\"
+>
+> \[system\]
+>
+> template = \"\"\"
+>
+> You are a character skin designer for a desktop pet application.
+>
+> Given a user photo, generate a {style_name} style character design.
+>
+> Output MUST be valid JSON matching this schema:
+>
+> {schema_json}
+>
+> Atlas regions (DO NOT modify coordinates):
+>
+> {atlas_regions}
+>
+> Color palette constraints for {style_name}:
+>
+> {palette_rules}
+>
+> \"\"\"
+>
+> \[styles.kawaii\]
+>
+> style_name = \"可爱/Kawaii\"
+>
+> palette_rules = \"Pastel colors, soft gradients\...\"
+>
+> \[styles.pixel\]
+>
+> style_name = \"像素/Pixel Art\"
+>
+> palette_rules = \"Limited 16-color palette\...\"
+>
+> \[styles.cyber\]
+>
+> style_name = \"赛博朋克/Cyberpunk\"
+>
+> palette_rules = \"Neon accents on dark base\...\"
+
+2.4 OpenClaw Skill 封装（B2B / Feishu 场景）
+
+当 pipeline 通过 Feishu 触发时，OpenClaw 作为编排层调用同一套 prompt
+逻辑。Skill 内部持有 prompt template，不暴露给 WebSocket 消息。
+
+> // openclaw-skills/skin-gen/src/index.ts
+>
+> import { Skill, SkillContext } from \'@openclaw/sdk\';
+>
+> import { PROMPT_TEMPLATES } from \'./prompts\'; // 编译时内联
+>
+> export default class SkinGenSkill extends Skill {
+>
+> async execute(ctx: SkillContext) {
+>
+> const { photo_url, style_id } = ctx.input;
+>
+> // prompt 组装在 Skill 内部，Feishu 侧只传 photo_url + style_id
+>
+> const prompt = this.buildPrompt(
+>
+> PROMPT_TEMPLATES\[style_id\],
+>
+> await this.fetchPhoto(photo_url)
+>
+> );
+>
+> const result = await ctx.ai.complete({
+>
+> provider: \'gemini-flash\',
+>
+> \...prompt
+>
+> });
+>
+> // 同样的 validation 逻辑
+>
+> return this.validateAndReturn(result);
+>
+> }
+>
+> }
+
+#3 Stage 3 AI 输出 Validation --- P1
+
+**YAGS Prompt 分析启示：**YAGS 用 \"ONLY choose from this list\" 来约束
+LLM 输出枚举值，但仍有 LLM "发挥创意"的情况。skin pipeline 的 atlas
+坐标输出必须在 Rust backend 做严格校验。
+
+3.1 校验分层架构
+
+> // src-tauri/src/validation/skin_output.rs
+>
+> use serde::Deserialize;
+>
+> use serde_json::Value;
+>
+> /// AI 返回的 JSON 结构校验链
+>
+> pub fn validate_skin_output(
+>
+> raw_json: &str,
+>
+> atlas_template: &AtlasTemplate,
+>
+> ) -\> Result\<ValidatedSkinOutput, ValidationError\> {
+>
+> // Layer 1: JSON 语法校验
+>
+> let parsed: Value = serde_json::from_str(raw_json)
+>
+> .map_err(\|e\| ValidationError::JsonParse(e.to_string()))?;
+>
+> // Layer 2: Schema 结构校验
+>
+> let output: RawSkinOutput = serde_json::from_value(parsed)
+>
+> .map_err(\|e\| ValidationError::SchemaMismatch(e.to_string()))?;
+>
+> // Layer 3: 业务约束校验
+>
+> validate_regions(&output.regions, atlas_template)?;
+>
+> validate_colors(&output.color_palette)?;
+>
+> validate_part_names(&output.parts)?;
+>
+> // Layer 4: 模板对齐修正
+>
+> let corrected = align_to_template(output, atlas_template);
+>
+> Ok(corrected)
+>
+> }
+
+3.2 坐标边界检查
+
+> fn validate_regions(
+>
+> regions: &\[SkinRegion\],
+>
+> template: &AtlasTemplate,
+>
+> ) -\> Result\<(), ValidationError\> {
+>
+> for region in regions {
+>
+> // 检查 1: region name 必须在已知柚举中
+>
+> let tpl_region = template.get_region(&region.name)
+>
+> .ok_or(ValidationError::UnknownRegion(
+>
+> region.name.clone(),
+>
+> template.known_names(), // 返回有效名称列表
+>
+> ))?;
+>
+> // 检查 2: 坐标不能超出 atlas 页面边界
+>
+> if region.x \< 0 \|\| region.y \< 0
+>
+> \|\| region.x + region.w \> template.page_width
+>
+> \|\| region.y + region.h \> template.page_height {
+>
+> return Err(ValidationError::OutOfBounds {
+>
+> region: region.name.clone(),
+>
+> bounds: (template.page_width, template.page_height),
+>
+> actual: (region.x, region.y, region.w, region.h),
+>
+> });
+>
+> }
+>
+> // 检查 3: 尺寸在合理范围（模板尺寸的 50%-150%）
+>
+> let w_ratio = region.w as f64 / tpl_region.w as f64;
+>
+> let h_ratio = region.h as f64 / tpl_region.h as f64;
+>
+> if w_ratio \< 0.5 \|\| w_ratio \> 1.5
+>
+> \|\| h_ratio \< 0.5 \|\| h_ratio \> 1.5 {
+>
+> return Err(ValidationError::SizeDeviation {
+>
+> region: region.name.clone(),
+>
+> expected: (tpl_region.w, tpl_region.h),
+>
+> actual: (region.w, region.h),
+>
+> });
+>
+> }
+>
+> }
+>
+> Ok(())
+>
+> }
+
+3.3 模板对齐修正（Snap-to-Template）
+
+当 AI
+输出的坐标偏差较小时（\<15%），自动修正到模板坐标，而不是报错。这是
+\"swap skin, not skeleton\" 原则的技术保障。
+
+> fn align_to_template(
+>
+> mut output: RawSkinOutput,
+>
+> template: &AtlasTemplate,
+>
+> ) -\> ValidatedSkinOutput {
+>
+> for region in &mut output.regions {
+>
+> if let Some(tpl) = template.get_region(&region.name) {
+>
+> // 强制使用模板坐标（确保 atlas 布局一致）
+>
+> region.x = tpl.x;
+>
+> region.y = tpl.y;
+>
+> region.w = tpl.w;
+>
+> region.h = tpl.h;
+>
+> // AI 生成的图像内容会被 resize 到模板尺寸
+>
+> region.needs_resize = true;
+>
+> }
+>
+> }
+>
+> ValidatedSkinOutput::from(output)
+>
+> }
+
+*设计考量：因为核心原则是 \"swap skin, not skeleton\"，atlas
+坐标实际上应该 100% 使用模板值。AI 只负责生成每个 region
+的图像内容，不负责定位。这简化了问题------"让 AI
+专注于画画，不让它做数学"。*
+
+#4 优先完善 Gamma 策略（本地 MediaPipe）--- P1
+
+**核心思路：**将 MediaPipe Pose/Selfie Segmentation
+作为零成本基线。这条路径完全本地执行，不依赖任何云服务，解决了 AI2U
+被诅病的强制联网问题。
+
+4.1 技术选型
+
+  ----------------- ---------------------- ----------------- -----------------
+  **方案**          **MediaPipe Web (JS)** **MediaPipe C++   **推荐**
+                                           (Rust FFI)**      
+
+  运行环境          Tauri WebView          Rust Backend      \-
+
+  集成难度          低（npm install）      高（编译 + FFI）  Web 版 ✅
+
+  性能              \~30ms/帧（GPU加速）   \~15ms/帧         Web 版足够
+
+  打包大小          \~5MB WASM             \~15MB native     Web 版更小
+  ----------------- ---------------------- ----------------- -----------------
+
+4.2 实现流程
+
+> // src/services/local-segmentation.ts
+>
+> // Gamma 策略：MediaPipe Pose + Selfie Segmentation
+>
+> import {
+>
+> PoseLandmarker, FilesetResolver,
+>
+> ImageSegmenter
+>
+> } from \'@mediapipe/tasks-vision\';
+>
+> export class LocalSegmentation {
+>
+> private poseLandmarker: PoseLandmarker \| null = null;
+>
+> private segmenter: ImageSegmenter \| null = null;
+>
+> async init() {
+>
+> const vision = await FilesetResolver.forVisionTasks(
+>
+> // WASM 文件打包在 Tauri resources/ 中
+>
+> \'tauri://localhost/mediapipe-wasm\'
+>
+> );
+>
+> this.poseLandmarker = await PoseLandmarker.createFromOptions(
+>
+> vision, {
+>
+> baseOptions: {
+>
+> modelAssetPath:
+> \'tauri://localhost/models/pose_landmarker_lite.task\',
+>
+> delegate: \'GPU\'
+>
+> },
+>
+> runningMode: \'IMAGE\',
+>
+> numPoses: 1
+>
+> }
+>
+> );
+>
+> this.segmenter = await ImageSegmenter.createFromOptions(
+>
+> vision, {
+>
+> baseOptions: {
+>
+> modelAssetPath: \'tauri://localhost/models/selfie_segmenter.tflite\',
+>
+> delegate: \'GPU\'
+>
+> },
+>
+> runningMode: \'IMAGE\',
+>
+> outputCategoryMask: true
+>
+> }
+>
+> );
+>
+> }
+>
+> async processPhoto(imageElement: HTMLImageElement):
+> Promise\<BodyParts\> {
+>
+> // Step 1: Pose landmarks 提取关键点
+>
+> const poseResult = this.poseLandmarker!.detect(imageElement);
+>
+> const landmarks = poseResult.landmarks\[0\];
+>
+> // Step 2: Selfie segmentation 提取人物轮廓
+>
+> const segResult = this.segmenter!.segment(imageElement);
+>
+> const mask = segResult.categoryMask!.getAsUint8Array();
+>
+> // Step 3: 基于 landmarks 切割身体部位
+>
+> return this.extractBodyParts(imageElement, landmarks, mask);
+>
+> }
+>
+> private extractBodyParts(
+>
+> img: HTMLImageElement,
+>
+> landmarks: NormalizedLandmark\[\],
+>
+> mask: Uint8Array
+>
+> ): BodyParts {
+>
+> const canvas = document.createElement(\'canvas\');
+>
+> const ctx = canvas.getContext(\'2d\')!;
+>
+> canvas.width = img.naturalWidth;
+>
+> canvas.height = img.naturalHeight;
+>
+> ctx.drawImage(img, 0, 0);
+>
+> // 用 landmarks 定位各部位的 bounding box
+>
+> const head = this.getHeadBBox(landmarks, canvas);
+>
+> const torso = this.getTorsoBBox(landmarks, canvas);
+>
+> const leftArm = this.getArmBBox(landmarks, \'left\', canvas);
+>
+> const rightArm = this.getArmBBox(landmarks, \'right\', canvas);
+>
+> const leftLeg = this.getLegBBox(landmarks, \'left\', canvas);
+>
+> const rightLeg = this.getLegBBox(landmarks, \'right\', canvas);
+>
+> // 用 mask 裁剪每个部位，移除背景
+>
+> return {
+>
+> head: this.cropWithMask(ctx, head, mask, canvas.width),
+>
+> torso: this.cropWithMask(ctx, torso, mask, canvas.width),
+>
+> leftArm: this.cropWithMask(ctx, leftArm, mask, canvas.width),
+>
+> rightArm: this.cropWithMask(ctx, rightArm, mask, canvas.width),
+>
+> leftLeg: this.cropWithMask(ctx, leftLeg, mask, canvas.width),
+>
+> rightLeg: this.cropWithMask(ctx, rightLeg, mask, canvas.width),
+>
+> };
+>
+> }
+>
+> }
+
+4.3 与 Atlas 模板的对接
+
+切割出的各部位图像需要 resize 到模板坐标对应的尺寸，然后绘制到 atlas
+页面上：
+
+> // 将切割结果绘制到 Spine atlas
+>
+> function assembleAtlas(
+>
+> parts: BodyParts,
+>
+> atlasTemplate: AtlasTemplate
+>
+> ): HTMLCanvasElement {
+>
+> const canvas = document.createElement(\'canvas\');
+>
+> canvas.width = atlasTemplate.pageWidth;
+>
+> canvas.height = atlasTemplate.pageHeight;
+>
+> const ctx = canvas.getContext(\'2d\')!;
+>
+> for (const \[partName, partCanvas\] of Object.entries(parts)) {
+>
+> const region = atlasTemplate.regions\[partName\];
+>
+> if (!region) continue;
+>
+> // resize 到模板尺寸，保证 atlas 布局一致
+>
+> ctx.drawImage(
+>
+> partCanvas,
+>
+> region.x, region.y,
+>
+> region.width, region.height
+>
+> );
+>
+> }
+>
+> return canvas; // 可直接作为 PixiJS Texture
+>
+> }
+
+#5 B2B POC "客户自带 Key" 模式 --- P1
+
+**AI2U 可取之处：**YAGS 的"自带 Key"模式虽然不适合 C 端，但对 B2B POC
+极为合适------企业客户的技术团队可以配置 API Key，零成本试用。
+
+5.1 Key 存储（加密）
+
+> // src-tauri/src/config/api_keys.rs
+>
+> use keyring::Entry; // 系统级密钥存储
+>
+> #\[tauri::command\]
+>
+> pub fn set_api_key(
+>
+> provider: String, // \"gemini\" \| \"openai\"
+>
+> key: String,
+>
+> ) -\> Result\<(), String\> {
+>
+> let entry = Entry::new(\"deskbuddy\", &format!(\"api_key\_{}\",
+> provider))
+>
+> .map_err(\|e\| e.to_string())?;
+>
+> entry.set_password(&key)
+>
+> .map_err(\|e\| e.to_string())?;
+>
+> Ok(())
+>
+> }
+>
+> #\[tauri::command\]
+>
+> pub fn get_api_key(provider: String) -\> Result\<Option\<String\>,
+> String\> {
+>
+> let entry = Entry::new(\"deskbuddy\", &format!(\"api_key\_{}\",
+> provider))
+>
+> .map_err(\|e\| e.to_string())?;
+>
+> match entry.get_password() {
+>
+> Ok(key) =\> Ok(Some(key)),
+>
+> Err(keyring::Error::NoEntry) =\> Ok(None),
+>
+> Err(e) =\> Err(e.to_string()),
+>
+> }
+>
+> }
+
+5.2 Provider 选择逻辑
+
+> // src-tauri/src/ai/provider_chain.rs
+>
+> pub struct ProviderChain {
+>
+> providers: Vec\<Box\<dyn AiProvider\>\>,
+>
+> mode: ProviderMode,
+>
+> }
+>
+> pub enum ProviderMode {
+>
+> /// 内置 Gemini Flash（默认）
+>
+> Builtin,
+>
+> /// 客户自带 Key（B2B POC）
+>
+> CustomerKey { provider: String },
+>
+> /// 混合模式（内置 + fallback 到客户 Key）
+>
+> Hybrid,
+>
+> }
+>
+> impl ProviderChain {
+>
+> pub async fn complete(&self, req: &AiRequest) -\> Result\<AiResponse\>
+> {
+>
+> match &self.mode {
+>
+> ProviderMode::CustomerKey { provider } =\> {
+>
+> // B2B POC: 直接用客户的 Key
+>
+> self.get_provider(provider)?.complete(req).await
+>
+> }
+>
+> ProviderMode::Builtin =\> {
+>
+> // 默认: 用内置 Gemini Flash
+>
+> self.providers\[0\].complete(req).await
+>
+> }
+>
+> ProviderMode::Hybrid =\> {
+>
+> // 先试内置，失败则 fallback
+>
+> self.complete_with_fallback(req).await
+>
+> }
+>
+> }
+>
+> }
+>
+> }
+
+5.3 前端配置 UI
+
+设置界面提供 Provider 选择和 Key 输入。重要：Key
+从不经过网络传输，只通过 Tauri IPC 存入系统 Keychain。
+
+> // src/components/SettingsPanel.tsx
+>
+> const ProviderSettings = () =\> {
+>
+> const \[mode, setMode\] = useState\<\'builtin\' \|
+> \'custom\'\>(\'builtin\');
+>
+> const \[provider, setProvider\] = useState\<\'gemini\' \|
+> \'openai\'\>(\'gemini\');
+>
+> const \[key, setKey\] = useState(\'\');
+>
+> const saveKey = async () =\> {
+>
+> await invoke(\'set_api_key\', { provider, key });
+>
+> await invoke(\'set_provider_mode\', {
+>
+> mode: mode === \'builtin\'
+>
+> ? { type: \'Builtin\' }
+>
+> : { type: \'CustomerKey\', provider }
+>
+> });
+>
+> setKey(\'\'); // 不在前端保留 key
+>
+> };
+>
+> return (
+>
+> \<div\>
+>
+> \<select value={mode} onChange={e =\> setMode(e.target.value)}\>
+>
+> \<option value=\"builtin\"\>内置 AI（推荐）\</option\>
+>
+> \<option value=\"custom\"\>自带 API Key\</option\>
+>
+> \</select\>
+>
+> {mode === \'custom\' && (
+>
+> \<\>
+>
+> \<select value={provider} onChange={\...}\>
+>
+> \<option value=\"gemini\"\>Gemini\</option\>
+>
+> \<option value=\"openai\"\>OpenAI GPT-4o\</option\>
+>
+> \</select\>
+>
+> \<input type=\"password\" value={key} onChange={\...}
+>
+> placeholder=\"粘贴你的 API Key\" /\>
+>
+> \<button onClick={saveKey}\>保存到系统密钥链\</button\>
+>
+> \<p\>ℹ️ Key 存储在系统 Keychain，不会经过网络传输\</p\>
+>
+> \</\>
+>
+> )}
+>
+> \</div\>
+>
+> );
+>
+> };
+
+#6 跳过 Token 制，直接规划次数包/年费 --- P2
+
+**AI2U 教训 L2：**Token 制在 6 个月内被强制废除。DeskBuddy 的 skin
+生成是离散事件，比连续对话更适合次数包模式。
+
+6.1 配额管理设计
+
+> // src-tauri/src/quota/mod.rs
+>
+> #\[derive(Debug, Serialize, Deserialize)\]
+>
+> pub struct QuotaPlan {
+>
+> pub plan_type: PlanType,
+>
+> pub total_generations: u32,
+>
+> pub used_generations: u32,
+>
+> pub expires_at: Option\<DateTime\<Utc\>\>,
+>
+> }
+>
+> #\[derive(Debug, Serialize, Deserialize)\]
+>
+> pub enum PlanType {
+>
+> /// 免费试用（首次 3 次）
+>
+> FreeTrial,
+>
+> /// B2B 次数包（如 50 次/购买）
+>
+> UsagePack { pack_size: u32 },
+>
+> /// B2B 年费订阅（无限次数，月制 rate limit）
+>
+> Subscription {
+>
+> monthly_limit: u32, // soft limit 防滥用
+>
+> monthly_used: u32,
+>
+> },
+>
+> /// 客户自带 Key（不计数）
+>
+> CustomerKey,
+>
+> }
+>
+> impl QuotaPlan {
+>
+> pub fn can_generate(&self) -\> Result\<(), QuotaError\> {
+>
+> match &self.plan_type {
+>
+> PlanType::FreeTrial \| PlanType::UsagePack { .. } =\> {
+>
+> if self.used_generations \>= self.total_generations {
+>
+> return Err(QuotaError::Exhausted {
+>
+> used: self.used_generations,
+>
+> total: self.total_generations,
+>
+> });
+>
+> }
+>
+> }
+>
+> PlanType::Subscription { monthly_limit, monthly_used } =\> {
+>
+> if \*monthly_used \>= \*monthly_limit {
+>
+> // soft limit: 警告但不封止
+>
+> log::warn!(\"Monthly limit reached\");
+>
+> }
+>
+> }
+>
+> PlanType::CustomerKey =\> {} // 不限制
+>
+> }
+>
+> Ok(())
+>
+> }
+>
+> }
+
+6.2 定价参考（基于 Gemini Flash 成本）
+
+  ----------------- ----------- ----------- -------------- -----------------
+  **套餐类型**      **次数**    **AI 成本** **建议售价**   **毛利率**
+
+  免费试用          3 次        \$0.01      免费           获客成本
+
+  B2B 入门包        50 次       \$0.18      ¥99/月         \>99%
+
+  B2B 专业包        500 次      \$1.75      ¥499/月        \>99%
+
+  年费订阅          无限 (soft  \~\$7/月    ¥4999/年       \>98%
+                    2000/月)                               
+  ----------------- ----------- ----------- -------------- -----------------
+
+*Gemini Flash 的极低成本使得 AI
+调用几乎可以忽略不计，定价的主要基础是产品价值而非成本覆盖。*
+
+#7 Feishu 集成延后，API-First 架构确保可扩展 --- P2
+
+**AI2U 教训 L6：**itch→Steam
+双平台维护导致版本不同步、用户投诉、团队精力分散。DeskBuddy 应该 Sprint
+1-3 专注桌面端，但架构上为 Feishu 留好接口。
+
+7.1 内部 API 分层
+
+> // 核心业务层------与入口无关
+>
+> src-tauri/src/
+>
+> ├── core/ // 纯业务逻辑，无 Tauri 依赖
+>
+> │ ├── skin_pipeline.rs // photo → skin 全流程
+>
+> │ ├── atlas_assembler.rs // atlas 组装
+>
+> │ └── validation.rs // AI 输出校验
+>
+> ├── ai/ // Provider 抽象层
+>
+> ├── commands/ // Tauri IPC 入口（桌面端）
+>
+> │ └── skin_gen.rs // invoke(\'generate_skin\', \...)
+>
+> └── api/ // HTTP API 入口（未来 Feishu/OpenClaw）
+>
+> └── routes.rs // POST /api/v1/skin/generate
+
+core/ 不依赖 Tauri，可以被 Tauri commands 和 HTTP API 同时调用。Sprint
+4+ 添加 Feishu 入口时，只需新增 api/ 模块，无需改动核心逻辑。
+
+7.2 OpenClaw 对接预留接口
+
+> // src-tauri/src/api/routes.rs
+>
+> // Sprint 4+ 启用，Sprint 1-3 可以不编译这个模块
+>
+> #\[cfg(feature = \"http-api\")\] // feature flag 控制
+>
+> pub async fn start_api_server(core: Arc\<SkinPipelineCore\>) {
+>
+> let app = axum::Router::new()
+>
+> .route(\"/api/v1/skin/generate\",
+>
+> post(\|Json(req): Json\<SkinGenApiRequest\>\| async move {
+>
+> // 复用同一套 core 逻辑
+>
+> let result = core.generate(
+>
+> &req.photo_base64,
+>
+> &req.style_id,
+>
+> req.user_prefs.as_ref(),
+>
+> ).await;
+>
+> Json(result)
+>
+> })
+>
+> )
+>
+> .route(\"/api/v1/skin/status/:task_id\",
+>
+> get(/\* 异步任务查询 \*/))
+>
+> .route(\"/api/v1/health\", get(\|\| async { \"ok\" }));
+>
+> // OpenClaw Heartbeat 轮询对接点
+>
+> axum::Server::bind(&\"0.0.0.0:3210\".parse().unwrap())
+>
+> .serve(app.into_make_service())
+>
+> .await.unwrap();
+>
+> }
+
+7.3 Feishu Interactive Card 预规划
+
+当 Sprint 4+ 启用 Feishu 集成时，用户在群聊发送照片，机器人返回
+Interactive Card 展示风格选择和生成结果：
+
+> // openclaw-skills/feishu-skin/src/card-template.ts
+>
+> export const SKIN_RESULT_CARD = {
+>
+> header: {
+>
+> title: { tag: \'plain_text\', content: \'🎨 Skin 生成完成\' },
+>
+> template: \'turquoise\'
+>
+> },
+>
+> elements: \[
+>
+> {
+>
+> tag: \'img\',
+>
+> img_key: \'{result_image_key}\', // 上传到 Feishu 图床
+>
+> alt: { tag: \'plain_text\', content: \'生成的 Skin 预览\' }
+>
+> },
+>
+> {
+>
+> tag: \'action\',
+>
+> actions: \[
+>
+> {
+>
+> tag: \'button\',
+>
+> text: { tag: \'plain_text\', content: \'✅ 应用到桌宠\' },
+>
+> type: \'primary\',
+>
+> value: { action: \'apply_skin\', skin_id: \'{skin_id}\' }
+>
+> },
+>
+> {
+>
+> tag: \'button\',
+>
+> text: { tag: \'plain_text\', content: \'🔄 重新生成\' },
+>
+> value: { action: \'regenerate\', style: \'{style_id}\' }
+>
+> }
+>
+> \]
+>
+> }
+>
+> \]
+>
+> };
+
+#8 Gemini→GPT-4o→本地 SD 三层 Fallback --- P2
+
+**AI2U 教训 L5：**AI2U 采用 Gemini + ChatGPT 双模型切换。DeskBuddy
+可以做得更彻底------三层 fallback 含本地降级。
+
+8.1 Circuit Breaker 模式
+
+> // src-tauri/src/ai/circuit_breaker.rs
+>
+> pub struct CircuitBreaker {
+>
+> state: Mutex\<BreakerState\>,
+>
+> failure_threshold: u32, // 连续失败 N 次后断开
+>
+> recovery_timeout: Duration, // 断开后多久尝试恢复
+>
+> }
+>
+> #\[derive(Debug)\]
+>
+> enum BreakerState {
+>
+> Closed { consecutive_failures: u32 }, // 正常
+>
+> Open { opened_at: Instant }, // 断开
+>
+> HalfOpen, // 试探
+>
+> }
+>
+> impl CircuitBreaker {
+>
+> pub fn can_execute(&self) -\> bool {
+>
+> let state = self.state.lock().unwrap();
+>
+> match &\*state {
+>
+> BreakerState::Closed { .. } =\> true,
+>
+> BreakerState::Open { opened_at } =\> {
+>
+> opened_at.elapsed() \> self.recovery_timeout
+>
+> }
+>
+> BreakerState::HalfOpen =\> true,
+>
+> }
+>
+> }
+>
+> pub fn record_success(&self) { /\* → Closed { failures: 0 } \*/ }
+>
+> pub fn record_failure(&self) { /\* failures++ → Open if threshold \*/
+> }
+>
+> }
+
+8.2 三层 Fallback 编排
+
+> // src-tauri/src/ai/fallback_chain.rs
+>
+> pub struct FallbackChain {
+>
+> layers: Vec\<FallbackLayer\>,
+>
+> }
+>
+> struct FallbackLayer {
+>
+> provider: Box\<dyn AiProvider\>,
+>
+> breaker: CircuitBreaker,
+>
+> priority: u8, // 0 = 最高优先
+>
+> }
+>
+> impl FallbackChain {
+>
+> pub fn new() -\> Self {
+>
+> Self {
+>
+> layers: vec\![
+>
+> FallbackLayer {
+>
+> provider: Box::new(GeminiFlashProvider::new()),
+>
+> breaker: CircuitBreaker::new(3, Duration::from_secs(60)),
+>
+> priority: 0,
+>
+> },
+>
+> FallbackLayer {
+>
+> provider: Box::new(Gpt4oProvider::new()),
+>
+> breaker: CircuitBreaker::new(3, Duration::from_secs(120)),
+>
+> priority: 1,
+>
+> },
+>
+> FallbackLayer {
+>
+> provider: Box::new(LocalSdProvider::new()),
+>
+> breaker: CircuitBreaker::new(5, Duration::from_secs(300)),
+>
+> priority: 2,
+>
+> },
+>
+> \]
+>
+> }
+>
+> }
+>
+> pub async fn complete(&self, req: &AiRequest) -\> Result\<AiResponse\>
+> {
+>
+> let mut last_error = None;
+>
+> for layer in &self.layers {
+>
+> if !layer.breaker.can_execute() {
+>
+> log::info!(\"{} circuit open, skipping\",
+>
+> layer.provider.name());
+>
+> continue;
+>
+> }
+>
+> if !layer.provider.is_available() {
+>
+> continue;
+>
+> }
+>
+> match layer.provider.complete(req).await {
+>
+> Ok(resp) =\> {
+>
+> layer.breaker.record_success();
+>
+> if layer.priority \> 0 {
+>
+> log::warn!(
+>
+> \"Used fallback provider: {}\",
+>
+> layer.provider.name()
+>
+> );
+>
+> }
+>
+> return Ok(resp);
+>
+> }
+>
+> Err(e) =\> {
+>
+> layer.breaker.record_failure();
+>
+> log::error!(
+>
+> \"{} failed: {}\", layer.provider.name(), e
+>
+> );
+>
+> last_error = Some(e);
+>
+> }
+>
+> }
+>
+> }
+>
+> Err(last_error.unwrap_or_else(\|\|
+>
+> anyhow::anyhow!(\"All providers unavailable\")
+>
+> ))
+>
+> }
+>
+> }
+
+8.3 本地 Stable Diffusion 降级方案
+
+作为最后一层 fallback，本地 SD
+不需要网络，但质量和速度会降级。两种实现路径：
+
+  ----------- ----------------------------- -----------------------------
+  **方案**    **A: 内嵌 sdcpp (Rust FFI)**  **B: 本地 ComfyUI Server**
+
+  集成方式    stable-diffusion.cpp 编译为   用户本地安装 ComfyUI，Tauri
+              Rust crate，内嵌到 Tauri      通过 HTTP 调用 localhost
+              binary                        
+
+  优势        零配置，用户无感知            灵活，可用各种模型/LoRA
+
+  劣势        包体积大 (+500MB\~1GB)，需要  用户要手动安装 ComfyUI
+              GPU                           
+
+  推荐        Phase 6+ 考虑，当前优先级低   B2B 场景可以推荐这个方案 ✅
+  ----------- ----------------------------- -----------------------------
+
+> // src-tauri/src/ai/local_sd.rs
+>
+> pub struct LocalSdProvider {
+>
+> comfyui_url: String, // \"http://127.0.0.1:8188\"
+>
+> client: reqwest::Client,
+>
+> }
+>
+> impl LocalSdProvider {
+>
+> fn is_available(&self) -\> bool {
+>
+> // 健康检查: ComfyUI 是否在运行
+>
+> self.client.get(&format!(\"{}/system_stats\", self.comfyui_url))
+>
+> .send().await.is_ok()
+>
+> }
+>
+> async fn complete(&self, req: &AiRequest) -\> Result\<AiResponse\> {
+>
+> // 将 skin gen prompt 转换为 ComfyUI workflow
+>
+> let workflow = self.build_workflow(req);
+>
+> let resp = self.client
+>
+> .post(&format!(\"{}/prompt\", self.comfyui_url))
+>
+> .json(&workflow)
+>
+> .send().await?;
+>
+> // 轮询结果\...
+>
+> let images = self.poll_result(resp).await?;
+>
+> Ok(AiResponse {
+>
+> content: self.images_to_skin_json(images),
+>
+> provider: \"local-sd\".into(),
+>
+> ..Default::default()
+>
+> })
+>
+> }
+>
+> }
+
+附录：8 项行动的依赖关系
+
+> #1 Provider 抽象层 (Gemini Flash)
+>
+> │
+>
+> ├──▶ #2 Prompt 服务端化 (依赖 #1 的 AiProvider trait)
+>
+> │ │
+>
+> │ ├──▶ #3 Validation (在 #2 的 pipeline 中调用)
+>
+> │ │
+>
+> │ └──▶ #7 API-First 架构 (抽取 #2 的 core/ 模块)
+>
+> │ │
+>
+> │ └──▶ Feishu 集成 (Sprint 4+)
+>
+> │
+>
+> ├──▶ #5 客户自带 Key (复用 #1 的 ProviderChain)
+>
+> │
+>
+> └──▶ #8 三层 Fallback (扩展 #1 为 FallbackChain)
+>
+> #4 Gamma 本地策略 (独立于云端 pipeline)
+>
+> │
+>
+> └──▶ 与 #3 的 atlas 对齐逻辑共享
+>
+> #6 配额管理 (独立模块，在 #2 的 pipeline 中调用)
+>
+> ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+>
+> 建议实施顺序: #1 → #2 → #3 → #4 → #5 → #7 → #6 → #8

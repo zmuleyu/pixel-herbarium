@@ -1,0 +1,624 @@
+**DeskBuddy**
+
+Chrome Extension 开发方案
+
+桥接形态 · 浮窗 + SidePanel 组合 · 共享 EmotionCore
+
+版本 v1.0 \| 2026 年 3 月
+
+类型 Chrome MV3 Extension (WXT + TypeScript + React)
+
+依赖 Tauri v2 桌面端运行中（Native Messaging Host）
+
+一、项目概述
+
+1.1 定位与动机
+
+Chrome 插件是 DeskBuddy 的**第四种形态**，作为 Tauri
+桌面端的浏览器延伸。核心价值主张：用户在浏览器中工作/娱乐时，陆知行仍然在"余光里"陪伴，且能感知浏览行为产生情境化反应。
+
+在 DeskBuddy 已确立的四种形态中的位置：
+
+  -------------- --------------------- --------------------- -----------------
+  **形态**       **载体**              **定位**              **状态**
+
+  桌面全身形态   Tauri v2 透明窗口     主形态，Spine 2D      已规划
+                                       完整动画              
+
+  IME 迷你形态   系统托盘浮窗          输入法场景伴随        已规划（方案 B）
+
+  SillyTavern    Extension-DeskBuddy   ST 对话桥接           已规划（方案 B）
+  扩展                                                       
+
+  Chrome 插件 ←  Chrome MV3 Extension  浏览器场景陪伴 +      本方案
+  本文档                               独立对话              
+  -------------- --------------------- --------------------- -----------------
+
+1.2 与其他形态的关系原则
+
++-----------------------------------------------------------------------+
+| **硬约束：三个不变量**                                                |
+|                                                                       |
+| > ① EmotionCore 单一数据源：好感度/情绪状态始终从 Tauri               |
+| > 端读取，Chrome 插件不维护副本                                       |
+| >                                                                     |
+| > ② "ST 管大脑，DB 管身体"不变：Chrome 插件的 Claude API              |
+| > 对话是独立通道，与 ST 不交叉                                        |
+| >                                                                     |
+| > ③ 换肤不换骨架：Chrome 插件复用同一套角色资产，不新增动画资源       |
++-----------------------------------------------------------------------+
+
+1.3 核心技术决策摘要
+
+  ----------------------- ---------------------- -------------------------------------
+  **维度**                **决策**               **理由**
+
+  扩展框架                WXT + TypeScript       与小红书研究工具同技术栈，MV3 兼容
+
+  UI 框架                 React + Tailwind       与 DeskBuddy 主工程保持一致
+
+  状态管理                Zustand                轻量，适合扩展多上下文环境
+
+  通信协议                Native Messaging (JSON 标准 Chrome API，双向异步
+                          stdio)                 
+
+  角色渲染（浮窗）        CSS Sprite Sheet + CSS 性能优先，避免 Canvas 开销
+                          Transitions            
+
+  角色渲染（SidePanel）   PixiJS v8 或 Spine     空间充足，可做完整动画
+                          WASM                   
+
+  AI 对话                 Claude API 直调        插件内独立对话，不依赖 ST
+
+  本地存储                chrome.storage.local   对话历史/设置，好感度不在此存
+  ----------------------- ---------------------- -------------------------------------
+
+二、架构设计
+
+2.1 整体通信链路
+
+插件作为桥接形态，核心数据流如下：
+
+> ┌────────────────────────── Chrome Extension ───────────────────────┐
+>
+> │ │
+>
+> │ Content Script Service Worker SidePanel │
+>
+> │ ┌─────────────┐ ┌──────────────┐ ┌─────────────┐ │
+>
+> │ │ MiniAvatar │ │ NativeMsg │ │ ChatUI │ │
+>
+> │ │ BrowseSensor │ │ Bridge │ │ SpineView │ │
+>
+> │ │ EventReporter│ │ StateCache │ │ AffectionUI │ │
+>
+> │ └──────┬──────┘ │ ClaudeProxy │ └──────┬──────┘ │
+>
+> │ │ runtime.msg │ BrowseAnalyzer │ │ │
+>
+> │ └──────────►└───────┬──────┘◄────────┘ │
+>
+> └─────────────────────────┴─────────────────────────────────────┘
+>
+> │ Native Messaging (stdio JSON)
+>
+> ▼
+>
+> ┌───────────────────────────────────────────────────────────────┐
+>
+> │ Tauri Backend (Rust) │
+>
+> │ ┌────────────────┐ ┌───────────┐ ┌────────────────────┐ │
+>
+> │ │ NativeMsg Host │ │ EventBus │ │ EmotionCore (单一源) │ │
+>
+> │ └────────────────┘ └───────────┘ └────────────────────┘ │
+>
+> │ ┌────────────────┐ ┌───────────┐ ┌────────────────────┐ │
+>
+> │ │ ws_server.rs │ │ CompBrain │ │ SpineController │ │
+>
+> │ │ (ST 19821) │ │ │ │ (Desktop Renderer) │ │
+>
+> │ └────────────────┘ └───────────┘ └────────────────────┘ │
+>
+> └───────────────────────────────────────────────────────────────┘
+
+2.2 Native Messaging 协议设计
+
+Chrome Extension 与 Tauri 后端通过 Native Messaging Host 通信。Tauri
+侧新增一个独立的 native_msg_host 可执行文件（或集成在主进程中），通过
+stdin/stdout JSON 分包与插件交换数据。
+
+**消息类型一览：**
+
+  ---------- -------------------- --------------------------- ----------------------------
+  **方向**   **类型**             **payload 摘要**            **说明**
+
+  Tauri →    emotion_state        { mood, blushCheek, eye,    情绪状态推送（变更时 + 30s
+  Ext                             affectionLevel, \... }      心跳）
+
+  Tauri →    affection_sync       { level: \'L1\'--\'L5\',    好感度变更通知
+  Ext                             points, delta }             
+
+  Tauri →    event_notification   { source, priority, title,  EventBus 事件转发
+  Ext                             body }                      
+
+  Tauri →    dialogue_hint        { context, emotion }        角色主动发起话题的上下文
+  Ext                                                         
+
+  Ext →      browse_event         { type, url, title,         浏览行为上报
+  Tauri                           duration, \... }            
+
+  Ext →      interaction_event    { zone, gesture, comboCount 角色交互上报（浮窗点击等）
+  Tauri                           }                           
+
+  Ext →      chat_input           { text, source: \'chrome\'  用户在 SidePanel 输入的对话
+  Tauri                           }                           
+
+  Ext →      heartbeat            { timestamp }               连接存活检测
+  Tauri                                                       
+  ---------- -------------------- --------------------------- ----------------------------
+
+2.2.1 断线降级策略
+
+Tauri 未运行时，插件降级为"离线模式"：
+
+-   浮窗角色切换为"休眠"表情（闭眼 + 降低透明度）
+
+-   对话功能仍可用（直接调 Claude API，不经 Tauri 中转）
+
+-   浏览事件缓存到 chrome.storage.local，Tauri 恢复后批量上报
+
+-   好感度显示为"最后已知"值，不做本地计算
+
+2.3 Chrome 插件模块拆分
+
+  ----------------- --------------- ---------------------------------------------------
+  **模块**          **运行位置**    **职责**
+
+  NativeMsgBridge   Service Worker  管理 Native Messaging 连接，消息路由，断线重连
+
+  StateCache        Service Worker  缓存最新 EmotionState/Affection，供 UI 层读取
+
+  BrowseAnalyzer    Service Worker  聚合浏览事件，生成情境标签（工作/休闲/学习/购物）
+
+  ClaudeProxy       Service Worker  封装 Claude API 调用，管理对话历史和 system prompt
+
+  MiniAvatar        Content Script  48-64px 角色浮窗渲染、表情切换、气泡弹出
+
+  BrowseSensor      Content Script  采集当前页面 URL/title/滚动/停留时长
+
+  ChatUI            SidePanel       对话界面、好感度面板、设置
+
+  SpineView         SidePanel       较大尺寸角色渲染（可选 Spine WASM）
+  ----------------- --------------- ---------------------------------------------------
+
+三、浏览行为感知系统
+
+这是 Chrome
+插件相对于其他形态的**独特价值点**------能感知用户正在做什么，产生情境化反应。与
+IME 形态的"打字节奏感知"并行，形成浏览场景的专属事件源。
+
+3.1 事件采集层（BrowseSensor）
+
+Content Script 采集以下信号，**严格不采集页面内容/表单填写/密码**：
+
+  --------------- ------------------------- -------------------------------
+  **信号**        **采集方式**              **隐私边界**
+
+  页面 URL 域名   location.hostname         只取域名，不取完整路径/参数
+
+  页面标题        document.title            截取前 50 字符
+
+  停留时长        visibilitychange +        只记录时长，不记录具体时间戳
+                  focus/blur                
+
+  滚动深度        scroll 事件节流           百分比值，不关联具体内容
+
+  Tab 切换频率    chrome.tabs.onActivated   只计数，不记录目标 Tab
+  --------------- ------------------------- -------------------------------
+
+3.2 情境分类引擎（BrowseAnalyzer）
+
+Service Worker 中运行，将原始信号聚合为情境标签：
+
+  --------------------- ------------------------------- ----------------------------
+  **情境标签**          **判定规则（域名分类 +          **角色反应示例**
+                        行为特征）**                    
+
+  working               github.com / stackoverflow.com  安静陪伴模式，减少气泡频率
+                        / docs.\* / 停留 \> 5min        
+
+  browsing_casual       社交/视频/新闻类域名 + 频繁切换 表情活跃，偶尔评论
+                        Tab                             
+
+  shopping              电商域名 + 滚动深度 \> 70%      好奇表情，「在看什么？」
+
+  studying              学习/文档类 + 长时间停留 \>     「加油。」+ 安静表情
+                        20min                           
+
+  late_night_browsing   任何域名 + 时间 23:00--5:00     困倦表情，「该睡了...」
+
+  idle                  无活动 \> 10min                 存在感衰减（复用 IME
+                                                        衰减曲线）
+  --------------------- ------------------------------- ----------------------------
+
+**域名分类字典**内置于插件，用户可在设置中自定义。不使用 AI
+分类（避免将浏览内容发送到云端），仅基于域名规则匹配。
+
+3.3 事件上报与 EventBus 对接
+
+浏览事件通过 Native Messaging 上报给 Tauri 端的
+EventBus，触发与日历/天气/打字行为同等的情绪响应链路。浏览事件的优先级低于日历/闹钟，高于天气（与打字行为同级）。
+
+上报节流：同一情境标签 5 分钟内不重复上报。情境切换时立即上报。
+
+四、UI 形态设计
+
+4.1 Sprint 1 · Content Script 浮窗
+
+角色以 48-64px 头像浮窗注入网页右下角，**复用 IME
+迷你形态的设计语言**（参照 DeskBuddy_IME_桌宠开发规划.md）。
+
+4.1.1 渲染方案
+
+浮窗使用 Shadow DOM 隔离样式，内部用 CSS Sprite Sheet + CSS Transitions
+渲染，不使用 Canvas（避免 Content Script 中的 GPU 开销和 CSP 冲突）。
+
+  --------------- ---------------------- ---------------------------------
+  **表情参数**    **映射方式**           **实现**
+
+  眼睛状态 (5种)  替换 sprite 帧         CSS background-position 切换
+
+  脸红程度 (3档)  两颊粉色圆点叠加       CSS ::after 伪元素 + opacity
+
+  存在感等级      整体透明度 + 动画频率  CSS opacity +
+                                         animation-play-state
+
+  气泡文本        从头像旁浮出，3-5s     CSS animation + 台词池随机
+                  淡出                   
+  --------------- ---------------------- ---------------------------------
+
+4.1.2 存在感衰减（复用 IME 设计）
+
+直接复用 IME 形态的四级存在感衰减曲线：
+
+> Active ──(3min 无交互)──► Idle ──(8min)──► Dim ──(15min)──► Ghost
+>
+> Active: 透明度 1.0，眼睛微动，偶尔眩光
+>
+> Idle: 透明度 0.7，眼睛半闭，动画放慢
+>
+> Dim: 透明度 0.4，静止，仅保留很慢的呼吸动画
+>
+> Ghost: 透明度 0.15，完全静止，CPU 接近零
+>
+> 回神触发：用户 hover/click 浮窗 → 立即回到 Active
+>
+> 惊喜微动：Ghost → Active 时播放"睡醒微张眼"动画（符合陆知行人设）
+
+4.1.3 注入策略与 CSP 处理
+
+Content Script 使用 chrome.scripting.registerContentScripts
+注册，配合匹配规则排除以下页面：
+
+-   chrome://\* 、chrome-extension://\* 、about:\* 等受保护页面
+
+-   用户可在设置中自定义"禁止注入"域名列表（如银行/邮箱）
+
+-   Shadow DOM 封装确保不与页面样式冲突，z-index 设为 2147483646
+
+4.2 Sprint 2 · SidePanel 侧边栏
+
+点击浮窗角色或工具栏图标展开 SidePanel，提供完整交互界面。
+
+4.2.1 SidePanel 功能分区
+
+  --------------- ---------------------------- ---------------------------
+  **区域**        **内容**                     **技术实现**
+
+  角色区（上部    较大尺寸角色渲染 +           PixiJS Canvas 或 Spine
+  40%）           情绪动画 + hitbox 交互       WASM（待验证）
+
+  对话区（中部    聊天气泡 + 打字机效果 +      React 组件，对话存
+  45%）           历史滚动                     chrome.storage.local
+
+  状态栏（底部    好感度进度条 +               React + Zustand store 读取
+  15%）           当前情境标签 + 连接状态      
+  --------------- ---------------------------- ---------------------------
+
+4.2.2 注意力分配协议（复用 IME 设计）
+
+SidePanel
+打开时，浮窗切换为"回声模式"（仅眨眼同步，不弹气泡）。SidePanel
+关闭时浮窗升为"代言人模式"。这与 IME 文档中的「桌面在前台 vs
+被遮挡」逻辑一致。
+
+4.2.3 Claude API 对话集成
+
+插件内置独立的 Claude API 对话通道，不经 ST，不经 Tauri 中转。
+
+  --------------- -------------------------------------------------------
+  **维度**        **设计**
+
+  API 调用位置    Service Worker 中的 ClaudeProxy 模块，避免 API Key
+                  暴露到 Content Script
+
+  System Prompt   复用陆知行 Character Card 人设，注入当前好感度等级 +
+                  情境标签
+
+  API Key 存储    chrome.storage.local 加密存储，首次使用时引导用户输入
+
+  对话历史        最近 20 轮存 chrome.storage.local，超过截断
+
+  情绪提取        从 Claude 回复中提取情绪标签，通过 Native Messaging
+                  上报给 Tauri 驱动动画
+
+  与 ST 的边界    完全独立。ST 运行时用户可选择"优先 ST
+                  对话"，此时插件对话按钮置灰
+  --------------- -------------------------------------------------------
+
++-----------------------------------------------------------------------+
+| **与现有架构的关系说明**                                              |
+|                                                                       |
+| > Chrome 插件的 Claude API 对话是 Plan A（直接 Claude                 |
+| > API）的浏览器形态实例。                                             |
+| >                                                                     |
+| > ST 集成仍然是 Plan B，两者模块边界清晰，不交叉。                    |
+| >                                                                     |
+| > 插件对话产生的情绪标签上报给 Tauri，由 CompanionBrain 统一处理。    |
++-----------------------------------------------------------------------+
+
+五、Tauri 侧新增模块
+
+为支持 Chrome 插件桥接，Tauri Rust 后端需新增以下模块：
+
+  ---------------------- ------------------------- --------------------------------------------------
+  **模块**               **文件**                  **职责**
+
+  NativeMsgHost          src/native_msg_host.rs    实现 Chrome Native Messaging 协议（stdin/stdout
+                                                   长度前缀
+                                                   JSON）。可作为独立二进制，也可集成在主进程中通过
+                                                   CLI 参数触发
+
+  ChromeEventAdapter     src/chrome_adapter.rs     将插件上报的 browse_event 转换为 EventBus
+                                                   标准事件格式
+
+  ChromeStatePublisher   src/chrome_publisher.rs   监听 EmotionCore 变更，通过 NativeMsgHost
+                                                   推送给插件
+  ---------------------- ------------------------- --------------------------------------------------
+
+Native Messaging Host 注册
+
+Tauri 安装时自动写入 Native Messaging Host manifest：
+
+> // com.deskbuddy.native_host.json
+>
+> {
+>
+> \"name\": \"com.deskbuddy.native_host\",
+>
+> \"description\": \"DeskBuddy Native Messaging Host\",
+>
+> \"path\": \"/path/to/deskbuddy-native-host\",
+>
+> \"type\": \"stdio\",
+>
+> \"allowed_origins\": \[
+>
+> \"chrome-extension://\<extension-id\>/\"
+>
+> \]
+>
+> }
+>
+> // 注册位置：
+>
+> // macOS: \~/Library/Application
+> Support/Google/Chrome/NativeMessagingHosts/
+>
+> // Windows: HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\
+>
+> // Linux: \~/.config/google-chrome/NativeMessagingHosts/
+
+六、Sprint 规划
+
+6.1 总览
+
+> Sprint 0 (1周) 基础设施：WXT 脚手架 + Native Messaging Host +
+> 端到端通信验证
+>
+> Sprint 1 (2周) Content Script 浮窗 MVP：角色渲染 + 存在感 + 情绪同步
+>
+> Sprint 2 (2周) 浏览行为感知：BrowseSensor + BrowseAnalyzer + 情境反应
+>
+> Sprint 3 (2周) SidePanel 对话：ChatUI + Claude API 集成 + 注意力分配
+>
+> Sprint 4 (2周) SidePanel 进阶：Spine/PixiJS 角色 + 好感度面板 + 设置
+>
+> Sprint 5 (1周) 性能优化 + 测试 + Chrome Web Store 发布准备
+>
+> 总计：约 10 周
+
+6.2 各 Sprint 详细
+
+Sprint 0 · 基础设施（1 周）
+
+  --------------------------- -------------------------------------------
+  **交付物**                  **验收标准**
+
+  WXT + React + TS 项目脚手架 wxt dev 可运行，Popup 显示"Hello DeskBuddy"
+
+  Rust NativeMsgHost 二进制   可通过 chrome.runtime.connectNative
+                              建立连接
+
+  端到端通信验证              插件发 heartbeat → Tauri 回 echo →
+                              插件控制台确认
+
+  Manifest V3 权限配置        nativeMessaging + activeTab + sidePanel +
+                              storage
+  --------------------------- -------------------------------------------
+
+Sprint 1 · 浮窗 MVP（2 周）
+
+  ------------------ ----------------------------------------------------
+  **交付物**         **验收标准**
+
+  MiniAvatar 组件    网页右下角显示 48px 角色头像，Shadow DOM 隔离
+
+  情绪同步渲染       Tauri 侧修改情绪状态 → 浮窗 1s 内响应表情变化
+
+  存在感衰减系统     Active → Idle → Dim → Ghost 完整链路可观察
+
+  气泡系统           事件触发时浮出一句话气泡，3-5s 淡出
+
+  点击交互           点击头像 → 上报 interaction_event → Tauri 侧好感度
+                     +2
+
+  断线降级           Tauri 未运行时角色显示休眠表情
+  ------------------ ----------------------------------------------------
+
+Sprint 2 · 浏览感知（2 周）
+
+  -------------------- ----------------------------------------------------
+  **交付物**           **验收标准**
+
+  BrowseSensor 采集层  采集域名 + 标题 + 停留时长 + 滚动深度，不采集内容
+
+  BrowseAnalyzer 分类  域名分类字典 ≥ 50 条规则，覆盖 6 种情境标签
+
+  Tauri                browse_event 正确转化为 EventBus 事件
+  ChromeEventAdapter   
+
+  角色情境反应         从 working 切换到 browsing_casual
+                       时角色表情变化可观察
+
+  深夜浏览关怀         23:00 后浏览触发困倦表情 + 「该睡了...」气泡
+  -------------------- ----------------------------------------------------
+
+Sprint 3 · SidePanel 对话（2 周）
+
+  ------------------ ----------------------------------------------------
+  **交付物**         **验收标准**
+
+  SidePanel 基础 UI  点击浮窗/工具栏图标 → 打开侧边栏
+
+  ChatUI 对话组件    输入框 + 气泡列表 + 打字机效果 + 历史滚动
+
+  ClaudeProxy 集成   API Key 配置→ 发送消息 → 收到回复 → 情绪提取
+
+  注意力分配         SidePanel
+                     打开时浮窗进入回声模式，关闭后恢复代言人模式
+
+  情境注入 prompt    对话 system prompt 包含当前情境标签和好感度等级
+  ------------------ ----------------------------------------------------
+
+Sprint 4 · SidePanel 进阶（2 周）
+
+  ------------------ ----------------------------------------------------
+  **交付物**         **验收标准**
+
+  角色渲染升级       SidePanel 中显示较大角色，支持 hitbox 点击交互
+
+  好感度面板         展示当前等级 + 进度条 + 解锁内容预览
+
+  设置页             API Key 管理、注入域名白名单、气泡频率、隐私开关
+
+  跨形态交互累积     浮窗点击好感度变化在 SidePanel 实时反映
+  ------------------ ----------------------------------------------------
+
+Sprint 5 · 优化与发布（1 周）
+
+  ------------------ ----------------------------------------------------
+  **交付物**         **验收标准**
+
+  性能达标           浮窗 CPU \< 0.5%（Active）/ \< 0.1%（Ghost），内存
+                     \< 15MB
+
+  Chrome Web Store   Manifest V3 审核要求全满足，权限说明清晰
+  合规               
+
+  集成测试           Tauri 运行/未运行、ST 运行/未运行的 4 种组合均正常
+
+  安装引导           首次安装引导页：下载 Tauri + 配置 API Key + 隐私说明
+  ------------------ ----------------------------------------------------
+
+七、隐私与合规
+
+浏览行为感知是 Chrome 插件最敏感的功能，必须从设计层确保合规。
+
+  -------------------- ------------------------------------------------------------
+  **原则**             **实现**
+
+  只采域名，不采路径   location.hostname 截取，不取 pathname/search/hash
+
+  不采集页面内容       不读取 DOM 文本、不截图、不监听表单事件
+
+  数据不上传           所有浏览数据仅通过 Native Messaging 发给本地 Tauri
+                       进程，不发往任何服务器
+
+  用户可控             设置页提供"采集了什么/没采集什么"可视化说明 +
+                       一键关闭浏览感知
+
+  域名黑名单           用户可添加"不跟踪"域名，该域名下不采集任何数据且不显示浮窗
+
+  Claude API Key       存储在 chrome.storage.local，只在 Service Worker
+                       中访问，不暴露给 Content Script
+  -------------------- ------------------------------------------------------------
+
+八、风险项
+
+  ------------------- ---------- ---------------- ----------------------------------------
+  **风险**            **概率**   **影响**         **缓解措施**
+
+  CSP 阻止 Content    中         部分网站无浮窗   使用 Shadow
+  Script 注入                                     DOM；受限页面自动降级为仅工具栏图标
+
+  Native Messaging    中         用户流失         Tauri 安装包自动注册；提供手动安装引导
+  Host 安装复杂                                   
+
+  Service Worker 被   高         状态推送延迟     chrome.alarms 保活；关键状态存
+  Chrome 休眠                                     chrome.storage 而非内存
+
+  Sprite Sheet        低         首次加载慢       预渲染 sprite 压缩到 \< 200KB；Service
+  资源大小影响加载                                Worker 缓存
+
+  SidePanel 中 Spine  中         动画卡顿         Sprint 4 进行性能验证；备选方案用 CSS
+  WASM 性能不足                                   精灵动画替代
+
+  Chrome Web Store    低         无法分发         严格最小权限原则；备选 CRX 自分发
+  审核拒绝                                        
+
+  与页面原生浮窗      中         角色被遮挡       动态检测遮挡，自动调整位置或收起
+  z-index 冲突                                    
+  ------------------- ---------- ---------------- ----------------------------------------
+
+九、与现有文档的交叉引用
+
+  ----------------------------------------------- ---------------------------------------------------------- ----------------------------
+  **复用来源**                                    **复用内容**                                               **修改点**
+
+  DeskBuddy_IME_桌宠开发规划.md                   存在感衰减曲线、表情映射、气泡触发条件表、注意力分配协议   衰减时间参数微调（浏览场景
+                                                                                                             Tab 切换可重置衰减）
+
+  DeskBuddy_技术路线深度分析.md                   进程模型设计、事件总线架构、冲突消解规则                   新增 BrowseEventSource
+                                                                                                             作为事件产生层新成员
+
+  DeskBuddy_模块化架构设计方案_v1.0.docx          五层纵深架构 L1--L5                                        感知层 L1 新增 BrowseSensor
+                                                                                                             作为输入源
+
+  DeskBuddy_x_SillyTavern_方案B_开发方案.docx     情绪→动画映射表、好感度降级规则                            直接复用，无修改
+
+  DeskBuddy_乙女角色设计_陆知行.md                角色人设、台词池、好感度分级话术                           Claude API system prompt
+                                                                                                             直接引用
+
+  小红书乙游×酒馆_研究方法论工程化开发方案.docx   WXT + React + Zustand 技术栈、模块边界规范                 消息通信格式保持一致：{
+                                                                                                             type, payload, requestId }
+  ----------------------------------------------- ---------------------------------------------------------- ----------------------------
+
+*本文档基于 DeskBuddy 已有的 IME
+迷你形态规划、技术路线深度分析、模块化架构设计方案、SillyTavern
+集成方案（Plan B）、乙女角色设计文档以及小红书研究工具 Chrome
+插件方案编写。*
