@@ -198,17 +198,16 @@ function PlantCell({ plant, isCollected, onPress }: PlantCellProps) {
     >
       {isCollected ? (
         <Animated.View style={{ alignItems: 'center', transform: [{ scale }], opacity }}>
-          {plant.pixel_sprite_url ? (
-            <Image
-              source={{ uri: plant.pixel_sprite_url }}
-              style={styles.sprite}
-              resizeMode="contain"
-            />
-          ) : (
-            <View style={[styles.spritePlaceholder, { backgroundColor: rarityColor }]}>
-              <Text style={styles.spritePlaceholderText}>🌸</Text>
-            </View>
-          )}
+          {(() => {
+            const src = resolvePlantImage(plant.id, plant.pixel_sprite_url);
+            return src ? (
+              <Image source={src} style={styles.sprite} resizeMode="contain" />
+            ) : (
+              <View style={[styles.spritePlaceholder, { backgroundColor: rarityColor }]}>
+                <Text style={styles.spritePlaceholderText}>🌸</Text>
+              </View>
+            );
+          })()}
           <View style={[styles.rarityBadge, { backgroundColor: rarityColor }]}>
             <Text style={styles.rarityBadgeText}>{'★'.repeat(plant.rarity)}</Text>
           </View>
