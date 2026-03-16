@@ -17,6 +17,13 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 // ~5km view delta
 const REGION_DELTA = 0.09;
 
+// Heat map gradient — Adult Kawaii sage green (never harsh red)
+const HEATMAP_GRADIENT = {
+  colors: ['rgba(193, 232, 216, 0)', '#c1e8d8', '#9fb69f', '#5a8a5a'],
+  startPoints: [0, 0.4, 0.7, 1.0],
+  colorMapSize: 256,
+};
+
 const RARITY_COLORS: Record<number, string> = {
   1: colors.rarity.common,
   2: colors.rarity.uncommon,
@@ -26,6 +33,11 @@ const RARITY_COLORS: Record<number, string> = {
 export default function MapScreen() {
   const { t } = useTranslation();
   const { discoveries, userLocation, loading, refresh } = useNearbyDiscoveries();
+  const [showHeatmap, setShowHeatmap] = useState(false);
+  const heatPoints = useMemo(
+    () => discoveries.map(d => ({ latitude: d.latitude, longitude: d.longitude, weight: d.rarity })),
+    [discoveries],
+  );
 
   if (loading) {
     return (
@@ -58,6 +70,14 @@ export default function MapScreen() {
         <View style={styles.header}>
           <Text style={styles.headerTitle}>{t('tabs.cityMap')}</Text>
           <Text style={styles.headerCount}>{t('map.discoveryCount', { count: discoveries.length })}</Text>
+          <TouchableOpacity
+            onPress={() => setShowHeatmap(v => !v)}
+            style={[styles.refreshButton, showHeatmap && styles.toggleActive]}
+          >
+            <Text style={styles.refreshText}>
+              {showHeatmap ? t('map.togglePoints') : t('map.toggleHeatmap')}
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={refresh} style={styles.refreshButton}>
             <Text style={styles.refreshText}>{t('map.refresh')}</Text>
           </TouchableOpacity>
@@ -71,9 +91,12 @@ export default function MapScreen() {
           showsUserLocation
           showsMyLocationButton={false}
         >
-          {discoveries.map((d) => (
+          {!showHeatmap && discoveries.map((d) => (
             <PlantMarker key={d.id} discovery={d} />
           ))}
+          {showHeatmap && heatPoints.length > 0 && (
+            <Heatmap points={heatPoints} radius={50} opacity={0.75} gradient={HEATMAP_GRADIENT} />
+          )}
         </MapView>
 
         {/* Empty state overlay */}
@@ -84,8 +107,8 @@ export default function MapScreen() {
           </View>
         )}
 
-        {/* Rarity legend */}
-        {discoveries.length > 0 && <MapLegend />}
+        {/* Rarity legend — hidden in heat map mode */}
+        {discoveries.length > 0 && !showHeatmap && <MapLegend />}
       </View>
     </ErrorBoundary>
   );
@@ -93,11 +116,13 @@ export default function MapScreen() {
 
 // ── Plant Marker ──────────────────────────────────────────────────────
 function PlantMarker({ discovery }: { discovery: NearbyDiscovery }) {
+  const router = useRouter();
   const dotColor = RARITY_COLORS[discovery.rarity] ?? colors.rarity.common;
   return (
     <Marker coordinate={{ latitude: discovery.latitude, longitude: discovery.longitude }}>
       <View style={[markerStyles.dot, { backgroundColor: dotColor }]} />
-      <Callout tooltip={false} style={styles.callout}>
+      <Callout tooltip={false} style={styles.callout}
+               onPress={() => router.push(`/plant/${discovery.plant_id}`)}>
         <Text style={styles.calloutName}>{discovery.plant_name_ja}</Text>
         {discovery.hanakotoba ? (
           <Text style={styles.calloutHanakotoba}>{discovery.hanakotoba}</Text>
@@ -141,6 +166,7 @@ const styles = StyleSheet.create({
   headerTitle:        { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.lg, color: colors.text, flex: 1 },
   headerCount:        { fontSize: typography.fontSize.sm, color: colors.textSecondary },
   refreshButton:      { backgroundColor: colors.plantPrimary, borderRadius: borderRadius.sm, paddingHorizontal: spacing.sm, paddingVertical: 4 },
+  toggleActive:       { backgroundColor: colors.plantSecondary },
   refreshText:        { color: colors.white, fontSize: typography.fontSize.xs, fontFamily: typography.fontFamily.display },
 
   // Callout

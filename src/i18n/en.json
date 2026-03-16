@@ -75,7 +75,9 @@
     "loading": "Loading map…",
     "discoveryCount": "{{count}} found",
     "refresh": "Refresh",
-    "loadError": "Failed to load map"
+    "loadError": "Failed to load map",
+    "toggleHeatmap": "Heat Map",
+    "togglePoints": "Points"
   },
   "profile": {
     "title": "Profile",
