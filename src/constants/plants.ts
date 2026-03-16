@@ -1,6 +1,6 @@
-export const TOTAL_PLANTS = 60;
+export const TOTAL_PLANTS = 120;
 export const GRID_COLUMNS = 6;
-export const GRID_ROWS = 10;
+export const GRID_ROWS = 20;
 
 export const RARITY_LABELS = {
   1: '★',
