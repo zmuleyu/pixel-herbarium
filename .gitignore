@@ -18,3 +18,7 @@ coverage/
 
 # Cross-project reference docs (not PH-specific)
 docs/reference/
+
+# Supabase CLI temp
+supabase/.branches/
+supabase/.temp/
