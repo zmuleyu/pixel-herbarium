@@ -93,8 +93,8 @@ export default function PlantDetailScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Hero image (poster capture area) */}
-      <View ref={posterRef} style={[styles.posterArea, { borderColor: rarityColor }]}>
+      {/* Hero image */}
+      <View style={[styles.posterArea, { borderColor: rarityColor }]}>
         <LinearGradient
           colors={gradientColors}
           style={StyleSheet.absoluteFill}
