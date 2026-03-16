@@ -10,8 +10,6 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import { captureRef } from 'react-native-view-shot';
-import * as Sharing from 'expo-sharing';
 import { CameraView } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +23,7 @@ import { useHerbariumStore } from '@/stores/herbarium-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { RARITY_LABELS } from '@/constants/plants';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { SharePoster } from '@/components/SharePoster';
+import { ShareSheet } from '@/components/ShareSheet';
 import { getCurrentSeason, type Season } from '@/utils/date';
 
 const SEASON_EVENTS: Partial<Record<Season, { emoji: string; key: string }>> = {
