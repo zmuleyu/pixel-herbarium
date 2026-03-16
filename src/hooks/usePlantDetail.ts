@@ -20,6 +20,7 @@ export interface DiscoveryRecord {
   created_at: string;
   pixel_url: string | null;
   user_note: string | null;
+  city: string | null;
 }
 
 interface UsePlantDetailReturn {
