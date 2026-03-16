@@ -153,7 +153,10 @@
   "plant": {
     "bloomCalendar": "開花時期",
     "prefectures": "発見エリア",
-    "myDiscoveries": "マイ発見記録"
+    "myDiscoveries": "マイ発見記録",
+    "tapToFlip": "タップして裏面へ",
+    "westernMeaning": "西洋の花言葉",
+    "meaningSecret": "意味はまだ秘密です"
   },
   "onboarding": {
     "skip": "スキップ",

@@ -153,7 +153,10 @@
   "plant": {
     "bloomCalendar": "Bloom Season",
     "prefectures": "Found In",
-    "myDiscoveries": "My Discoveries"
+    "myDiscoveries": "My Discoveries",
+    "tapToFlip": "Tap to turn over",
+    "westernMeaning": "Western Meaning",
+    "meaningSecret": "Meaning still a secret"
   },
   "onboarding": {
     "skip": "Skip",

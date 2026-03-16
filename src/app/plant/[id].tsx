@@ -14,6 +14,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ShareSheet } from '@/components/ShareSheet';
+import { HanakotobaFlipCard } from '@/components/HanakotobaFlipCard';
 import { usePlantDetail } from '@/hooks/usePlantDetail';
 import { useHerbarium } from '@/hooks/useHerbarium';
 import { useAuthStore } from '@/stores/auth-store';
@@ -126,13 +127,10 @@ export default function PlantDetailScreen() {
 
       {/* Hanakotoba (花言葉) */}
       {plant.hanakotoba && (
-        <View style={styles.metadataCard}>
-          <Text style={styles.sectionLabel}>{t('herbarium.hanakotoba')}</Text>
-          <Text style={styles.hanakotobaText}>{plant.hanakotoba}</Text>
-          {plant.flower_meaning && (
-            <Text style={styles.flowerMeaning}>{plant.flower_meaning}</Text>
-          )}
-        </View>
+        <HanakotobaFlipCard
+          hanakotoba={plant.hanakotoba}
+          flowerMeaning={plant.flower_meaning}
+        />
       )}
 
       {/* Bloom calendar */}
@@ -309,9 +307,6 @@ const styles = StyleSheet.create({
   section:      { width: '100%', marginBottom: spacing.md },
   metadataCard: { width: '100%', backgroundColor: colors.white, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, padding: spacing.lg, marginBottom: spacing.md },
   sectionLabel: { fontSize: typography.fontSize.xs, color: colors.textSecondary, marginBottom: spacing.xs, textTransform: 'uppercase', letterSpacing: 1 },
-
-  hanakotobaText: { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.lg, color: colors.text },
-  flowerMeaning:  { fontSize: typography.fontSize.sm, color: colors.textSecondary, fontStyle: 'italic', marginTop: 2 },
 
   monthGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 4 },
   monthCell:      { width: 44, height: 32, borderRadius: borderRadius.sm, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.white },
