@@ -1,6 +1,6 @@
-export const TOTAL_PLANTS = 120;
+export const TOTAL_PLANTS = 240;
 export const GRID_COLUMNS = 6;
-export const GRID_ROWS = 20;
+export const GRID_ROWS = 40; // 6 cols × 40 rows = 240 plants (spring + summer + autumn + winter)
 
 export const RARITY_LABELS = {
   1: '★',
