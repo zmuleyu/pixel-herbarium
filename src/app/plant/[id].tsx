@@ -218,7 +218,7 @@ export default function PlantDetailScreen() {
           cityRank: null,
         }}
         discoveryDate={discoveries[0]?.created_at}
-        discoveryCity={discoveries[0]?.city}
+        discoveryCity={discoveries[0]?.city ?? undefined}
       />
     </ScrollView>
   );
