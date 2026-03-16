@@ -9,12 +9,11 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { captureRef } from 'react-native-view-shot';
-import * as Sharing from 'expo-sharing';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ShareSheet } from '@/components/ShareSheet';
 import { usePlantDetail } from '@/hooks/usePlantDetail';
 import { useHerbarium } from '@/hooks/useHerbarium';
 import { useAuthStore } from '@/stores/auth-store';
@@ -54,23 +53,7 @@ export default function PlantDetailScreen() {
   const { plant, discoveries, loading, error, updateNote } = usePlantDetail(plantId, user?.id ?? '');
   const { collected } = useHerbarium(user?.id ?? '');
   const isCollected = collected.has(plantId);
-  const posterRef = useRef<View>(null);
-  const [sharing, setSharing] = useState(false);
-
-  async function handleShare() {
-    if (!posterRef.current || sharing) return;
-    setSharing(true);
-    try {
-      const uri = await captureRef(posterRef, { format: 'png', quality: 1 });
-      if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: plant?.name_ja });
-      }
-    } catch (_) {
-      // Sharing cancelled or unavailable — silent
-    } finally {
-      setSharing(false);
-    }
-  }
+  const [shareSheetVisible, setShareSheetVisible] = useState(false);
 
   if (loading) {
     return (
@@ -105,10 +88,8 @@ export default function PlantDetailScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Text style={styles.backBtnText}>← {t('common.back')}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.shareBtn} onPress={handleShare} disabled={sharing}>
-          {sharing
-            ? <ActivityIndicator size="small" color={colors.plantPrimary} />
-            : <Text style={styles.shareBtnText}>🌸 {t('herbarium.sharePoster')}</Text>}
+        <TouchableOpacity style={styles.shareBtn} onPress={() => setShareSheetVisible(true)}>
+          <Text style={styles.shareBtnText}>🌸 {t('herbarium.sharePoster')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -223,6 +204,22 @@ export default function PlantDetailScreen() {
           ))}
         </View>
       )}
+
+      <ShareSheet
+        visible={shareSheetVisible}
+        onClose={() => setShareSheetVisible(false)}
+        plant={{
+          name_ja: plant.name_ja,
+          name_latin: plant.name_latin,
+          rarity: plant.rarity,
+          hanakotoba: plant.hanakotoba ?? '',
+          bloom_months: plant.bloom_months ?? [],
+          pixel_sprite_url: heroImageUri ?? null,
+          cityRank: null,
+        }}
+        discoveryDate={discoveries[0]?.created_at}
+        discoveryCity={discoveries[0]?.city}
+      />
     </ScrollView>
   );
 }
