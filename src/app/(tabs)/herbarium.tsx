@@ -14,6 +14,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useHerbarium, type PlantSlot } from '@/hooks/useHerbarium';
+import { resolvePlantImage } from '@/utils/plant-image';
 import { useHerbariumFilter, FILTER_OPTIONS } from '@/hooks/useHerbariumFilter';
 import { useAuthStore } from '@/stores/auth-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
