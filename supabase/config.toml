@@ -20,7 +20,8 @@ enabled = false
 
 [db.seed]
 enabled = true
-sql_paths = ["./seed/plants_jp_spring.sql", "./seed/discoveries_cold_start.sql"]
+sql_paths = ["./seed/plants_jp_spring.sql", "./seed/plants_jp_summer.sql", "./seed/discoveries_cold_start.sql"]
+# Note: autumn + winter plants are in migrations 017 + 018 (applied via db push/reset)
 
 [realtime]
 enabled = true

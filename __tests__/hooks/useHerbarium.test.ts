@@ -31,7 +31,7 @@ function mockCollectionsQuery(data: any[], error: any = null) {
   };
 }
 
-const MOCK_PLANTS = Array.from({ length: 120 }, (_, i) => ({
+const MOCK_PLANTS = Array.from({ length: TOTAL_PLANTS }, (_, i) => ({
   id: i + 1,
   name_ja: `植物${i + 1}`,
   name_en: `Plant ${i + 1}`,
