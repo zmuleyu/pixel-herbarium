@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ShareSheet } from '@/components/ShareSheet';
 import { HanakotobaFlipCard } from '@/components/HanakotobaFlipCard';
+import { SeasonPhaseIndicator } from '@/components/SeasonPhaseIndicator';
 import { usePlantDetail } from '@/hooks/usePlantDetail';
 import { useHerbarium } from '@/hooks/useHerbarium';
 import { useAuthStore } from '@/stores/auth-store';
@@ -132,6 +133,13 @@ export default function PlantDetailScreen() {
           flowerMeaning={plant.flower_meaning}
         />
       )}
+
+      {/* Season phase indicator (花開き → 見頃 → 花散り) */}
+      <SeasonPhaseIndicator
+        bloomMonths={plant.bloom_months}
+        rarity={plant.rarity}
+        availableWindow={plant.available_window}
+      />
 
       {/* Bloom calendar */}
       {plant.bloom_months.length > 0 && (

@@ -1,4 +1,4 @@
-import { isInSeasonWindow, getCurrentSeason } from '@/utils/date';
+import { isInSeasonWindow, getCurrentSeason, getSeasonPhase } from '@/utils/date';
 
 describe('isInSeasonWindow', () => {
   it('returns true when today is inside the window', () => {
@@ -72,5 +72,76 @@ describe('getCurrentSeason', () => {
   it('uses today if no date provided', () => {
     const season = getCurrentSeason();
     expect(['spring', 'summer', 'autumn', 'winter']).toContain(season);
+  });
+});
+
+// ── getSeasonPhase ────────────────────────────────────────────────────
+
+describe('getSeasonPhase – ★★★ with DATERANGE window', () => {
+  const window = '[2026-04-01,2026-04-30)';
+
+  it('returns dormant before window starts', () => {
+    const result = getSeasonPhase([4], 3, window, new Date('2026-03-20'));
+    expect(result.phase).toBe('dormant');
+  });
+
+  it('returns budding in first third of window', () => {
+    const result = getSeasonPhase([4], 3, window, new Date('2026-04-05'));
+    expect(result.phase).toBe('budding');
+    expect(result.progress).toBeGreaterThan(0);
+    expect(result.progress).toBeLessThan(0.33);
+  });
+
+  it('returns peak in middle third of window', () => {
+    const result = getSeasonPhase([4], 3, window, new Date('2026-04-15'));
+    expect(result.phase).toBe('peak');
+    expect(result.progress).toBeGreaterThanOrEqual(0.33);
+    expect(result.progress).toBeLessThan(0.67);
+  });
+
+  it('returns falling in last third of window', () => {
+    const result = getSeasonPhase([4], 3, window, new Date('2026-04-25'));
+    expect(result.phase).toBe('falling');
+    expect(result.progress).toBeGreaterThanOrEqual(0.67);
+  });
+
+  it('returns dormant after window ends', () => {
+    const result = getSeasonPhase([4], 3, window, new Date('2026-05-01'));
+    expect(result.phase).toBe('dormant');
+  });
+});
+
+describe('getSeasonPhase – bloom_months based', () => {
+  it('returns dormant when not in bloom month', () => {
+    const result = getSeasonPhase([3, 4, 5], 2, null, new Date('2026-01-15'));
+    expect(result.phase).toBe('dormant');
+  });
+
+  it('returns budding in first bloom month of 3-month range', () => {
+    const result = getSeasonPhase([3, 4, 5], 2, null, new Date('2026-03-15'));
+    expect(result.phase).toBe('budding');
+  });
+
+  it('returns peak in middle bloom month of 3-month range', () => {
+    const result = getSeasonPhase([3, 4, 5], 2, null, new Date('2026-04-15'));
+    expect(result.phase).toBe('peak');
+  });
+
+  it('returns falling in last bloom month of 3-month range', () => {
+    const result = getSeasonPhase([3, 4, 5], 2, null, new Date('2026-05-15'));
+    expect(result.phase).toBe('falling');
+  });
+
+  it('returns peak for single-month bloom', () => {
+    // Single month → progress = 0.5 → peak
+    const result = getSeasonPhase([4], 1, null, new Date('2026-04-15'));
+    expect(result.phase).toBe('peak');
+  });
+});
+
+describe('getSeasonPhase – always available', () => {
+  it('returns always when no bloom months', () => {
+    const result = getSeasonPhase([], 1, null);
+    expect(result.phase).toBe('always');
   });
 });

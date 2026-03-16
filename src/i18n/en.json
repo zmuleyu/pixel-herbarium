@@ -158,6 +158,13 @@
     "westernMeaning": "Western Meaning",
     "meaningSecret": "Meaning still a secret"
   },
+  "season": {
+    "budding": "Budding",
+    "peak": "In Bloom",
+    "falling": "Fading",
+    "dormant": "Dormant",
+    "always": "Year-round"
+  },
   "onboarding": {
     "skip": "Skip",
     "next": "Next",
