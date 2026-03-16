@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -6,8 +7,9 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import MapView, { Marker, Callout, PROVIDER_DEFAULT } from 'react-native-maps';
+import MapView, { Marker, Callout, Heatmap, PROVIDER_DEFAULT } from 'react-native-maps';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 import { useNearbyDiscoveries, type NearbyDiscovery } from '@/hooks/useNearbyDiscoveries';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
