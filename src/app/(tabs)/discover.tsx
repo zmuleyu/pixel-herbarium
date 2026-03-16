@@ -41,8 +41,6 @@ const RESULT_STATUSES = new Set([
 ]);
 
 const FRAME_SIZE = 240;
-const BRACKET_SIZE = 24;
-const BRACKET_THICKNESS = 2.5;
 const SAGE_BRACKET = 'rgba(159, 182, 159, 0.9)';
 const SAGE_BORDER  = 'rgba(159, 182, 159, 0.28)';
 
@@ -488,17 +486,12 @@ function ViewfinderFrame({ isReady }: { isReady: boolean }) {
   return (
     <View style={vfStyles.overlay} pointerEvents="none">
       <Animated.View style={[vfStyles.centered, { opacity: frameOpacity, transform: [{ scale: breathe }] }]}>
-        {/* Frame container — bracket corners + light border */}
-        <View style={vfStyles.frameContainer}>
-          <View style={vfStyles.frameBorder} />
-          {/* Top-left */}
-          <View style={[vfStyles.bracket, { top: -1, left: -1, borderTopWidth: BRACKET_THICKNESS, borderLeftWidth: BRACKET_THICKNESS, borderTopLeftRadius: borderRadius.md, borderColor: SAGE_BRACKET }]} />
-          {/* Top-right */}
-          <View style={[vfStyles.bracket, { top: -1, right: -1, borderTopWidth: BRACKET_THICKNESS, borderRightWidth: BRACKET_THICKNESS, borderTopRightRadius: borderRadius.md, borderColor: SAGE_BRACKET }]} />
-          {/* Bottom-left */}
-          <View style={[vfStyles.bracket, { bottom: -1, left: -1, borderBottomWidth: BRACKET_THICKNESS, borderLeftWidth: BRACKET_THICKNESS, borderBottomLeftRadius: borderRadius.md, borderColor: SAGE_BRACKET }]} />
-          {/* Bottom-right */}
-          <View style={[vfStyles.bracket, { bottom: -1, right: -1, borderBottomWidth: BRACKET_THICKNESS, borderRightWidth: BRACKET_THICKNESS, borderBottomRightRadius: borderRadius.md, borderColor: SAGE_BRACKET }]} />
+        {/* Circular viewfinder — sage ring + soft vignette */}
+        <View style={vfStyles.circleContainer}>
+          <View style={vfStyles.circleRing} />
+          {/* Subtle crosshair lines */}
+          <View style={[vfStyles.crosshair, vfStyles.crosshairH]} />
+          <View style={[vfStyles.crosshair, vfStyles.crosshairV]} />
         </View>
         <Text style={vfStyles.guideText}>{t('discover.viewfinderGuide')}</Text>
       </Animated.View>
@@ -590,21 +583,31 @@ const vfStyles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
   },
-  frameContainer: {
+  circleContainer: {
     width: FRAME_SIZE,
     height: FRAME_SIZE,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  frameBorder: {
+  circleRing: {
     position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: SAGE_BORDER,
+    width: FRAME_SIZE,
+    height: FRAME_SIZE,
+    borderRadius: FRAME_SIZE / 2,
+    borderWidth: 2,
+    borderColor: SAGE_BRACKET,
   },
-  bracket: {
+  crosshair: {
     position: 'absolute',
-    width: BRACKET_SIZE,
-    height: BRACKET_SIZE,
+    backgroundColor: SAGE_BORDER,
+  },
+  crosshairH: {
+    width: FRAME_SIZE * 0.15,
+    height: 1,
+  },
+  crosshairV: {
+    width: 1,
+    height: FRAME_SIZE * 0.15,
   },
   guideText: {
     color: 'rgba(255, 255, 255, 0.88)',
