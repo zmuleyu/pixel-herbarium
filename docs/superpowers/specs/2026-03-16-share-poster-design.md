@@ -37,6 +37,22 @@ Extend `SharePoster` with a `format` prop (`'story' | 'line'`), polish the visua
 
 No other new dependencies. `react-native-view-shot` and `expo-sharing` are already installed.
 
+### app.json plugin config
+
+```json
+["expo-media-library", {
+  "photosPermission": "Pixel Herbarium saves poster images to your photo library.",
+  "savePhotosPermission": "Pixel Herbarium saves poster images to your photo library."
+}]
+```
+
+### Data source prerequisites
+
+Two existing hooks need minor additions to provide `city` data for posters:
+
+- **`usePlantDetail`**: Add `city` to `DiscoveryRecord` interface and Supabase select query (the `discoveries` table already has a `city` column)
+- **`discover.tsx` flow**: The discover result already includes `city` from reverse geocoding during the save step; thread it through `discovery.discoveredPlant` to ShareSheet
+
 ---
 
 ## 3. SharePoster Component
