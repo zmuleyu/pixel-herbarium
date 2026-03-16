@@ -42,6 +42,12 @@ const RESULT_STATUSES = new Set([
   'success', 'not_a_plant', 'no_match', 'cooldown', 'quota_exceeded', 'out_of_region', 'error',
 ]);
 
+const FRAME_SIZE = 240;
+const BRACKET_SIZE = 24;
+const BRACKET_THICKNESS = 2.5;
+const SAGE_BRACKET = 'rgba(159, 182, 159, 0.9)';
+const SAGE_BORDER  = 'rgba(159, 182, 159, 0.28)';
+
 function processingLabel(status: string, t: (key: string) => string): string {
   switch (status) {
     case 'checking':    return t('discover.checking');
@@ -162,6 +168,9 @@ export default function DiscoverScreen() {
 
         {/* Seasonal event banner */}
         <EventBanner />
+
+        {/* Viewfinder frame */}
+        <ViewfinderFrame isReady={capture.status === 'ready' && !isProcessing} />
 
         {/* Processing overlay */}
         {isProcessing && (
@@ -411,6 +420,58 @@ function EventBanner() {
   );
 }
 
+// ── Viewfinder overlay ────────────────────────────────────────────────
+
+function ViewfinderFrame({ isReady }: { isReady: boolean }) {
+  const { t } = useTranslation();
+  const breathe      = useRef(new Animated.Value(1)).current;
+  const frameOpacity = useRef(new Animated.Value(0)).current;
+
+  // Fade in on mount
+  useEffect(() => {
+    Animated.timing(frameOpacity, { toValue: 1, duration: 600, useNativeDriver: true }).start();
+  }, []);
+
+  // Dim when not ready; restore + breathe when ready
+  useEffect(() => {
+    if (!isReady) {
+      breathe.stopAnimation();
+      Animated.timing(breathe, { toValue: 1, duration: 200, useNativeDriver: true }).start();
+      Animated.timing(frameOpacity, { toValue: 0.25, duration: 350, useNativeDriver: true }).start();
+      return;
+    }
+    Animated.timing(frameOpacity, { toValue: 1, duration: 350, useNativeDriver: true }).start();
+    const anim = Animated.loop(
+      Animated.sequence([
+        Animated.timing(breathe, { toValue: 1.013, duration: 2200, useNativeDriver: true }),
+        Animated.timing(breathe, { toValue: 1,     duration: 2200, useNativeDriver: true }),
+      ])
+    );
+    anim.start();
+    return () => anim.stop();
+  }, [isReady]);
+
+  return (
+    <View style={vfStyles.overlay} pointerEvents="none">
+      <Animated.View style={[vfStyles.centered, { opacity: frameOpacity, transform: [{ scale: breathe }] }]}>
+        {/* Frame container — bracket corners + light border */}
+        <View style={vfStyles.frameContainer}>
+          <View style={vfStyles.frameBorder} />
+          {/* Top-left */}
+          <View style={[vfStyles.bracket, { top: -1, left: -1, borderTopWidth: BRACKET_THICKNESS, borderLeftWidth: BRACKET_THICKNESS, borderTopLeftRadius: borderRadius.md, borderColor: SAGE_BRACKET }]} />
+          {/* Top-right */}
+          <View style={[vfStyles.bracket, { top: -1, right: -1, borderTopWidth: BRACKET_THICKNESS, borderRightWidth: BRACKET_THICKNESS, borderTopRightRadius: borderRadius.md, borderColor: SAGE_BRACKET }]} />
+          {/* Bottom-left */}
+          <View style={[vfStyles.bracket, { bottom: -1, left: -1, borderBottomWidth: BRACKET_THICKNESS, borderLeftWidth: BRACKET_THICKNESS, borderBottomLeftRadius: borderRadius.md, borderColor: SAGE_BRACKET }]} />
+          {/* Bottom-right */}
+          <View style={[vfStyles.bracket, { bottom: -1, right: -1, borderBottomWidth: BRACKET_THICKNESS, borderRightWidth: BRACKET_THICKNESS, borderBottomRightRadius: borderRadius.md, borderColor: SAGE_BRACKET }]} />
+        </View>
+        <Text style={vfStyles.guideText}>{t('discover.viewfinderGuide')}</Text>
+      </Animated.View>
+    </View>
+  );
+}
+
 // ── Styles ────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   container:          { flex: 1, backgroundColor: '#000' },
@@ -484,4 +545,43 @@ const styles = StyleSheet.create({
   hanakotobaLabel:    { fontSize: typography.fontSize.xs, color: colors.textSecondary },
   hanakotobaValue:    { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.lg, color: colors.text },
   flowerMeaning:      { fontSize: typography.fontSize.sm, color: colors.textSecondary, fontStyle: 'italic', marginBottom: spacing.sm },
+});
+
+// Viewfinder overlay styles (isolated to keep main styles clean)
+const vfStyles = StyleSheet.create({
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 80, // shift center upward, clear EventBanner space
+  },
+  centered: {
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  frameContainer: {
+    width: FRAME_SIZE,
+    height: FRAME_SIZE,
+  },
+  frameBorder: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: SAGE_BORDER,
+  },
+  bracket: {
+    position: 'absolute',
+    width: BRACKET_SIZE,
+    height: BRACKET_SIZE,
+  },
+  guideText: {
+    color: 'rgba(255, 255, 255, 0.88)',
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.display,
+    textShadowColor: 'rgba(0, 0, 0, 0.55)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+    letterSpacing: 0.4,
+  },
 });
