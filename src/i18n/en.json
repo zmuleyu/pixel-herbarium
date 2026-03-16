@@ -125,6 +125,15 @@
     "statusAccepted": "Accepted",
     "statusDeclined": "Declined"
   },
+  "share": {
+    "storyLabel": "Instagram Stories",
+    "lineLabel": "LINE Card",
+    "save": "Save to Photos",
+    "share": "Share",
+    "saved": "Saved ✓",
+    "permissionRequired": "Please allow photo library access",
+    "lineGiftCopy": "Sending this flower to you 🌸"
+  },
   "privacy": {
     "mapVisibility": "Show discoveries on City Map",
     "mapVisibilityDesc": "When off, your discoveries won't appear on the map",

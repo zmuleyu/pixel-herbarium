@@ -125,6 +125,15 @@
     "statusAccepted": "受け取り済み",
     "statusDeclined": "辞退"
   },
+  "share": {
+    "storyLabel": "インスタストーリーズ",
+    "lineLabel": "LINE カード",
+    "save": "写真に保存",
+    "share": "共有",
+    "saved": "保存しました ✓",
+    "permissionRequired": "写真ライブラリへのアクセスを許可してください",
+    "lineGiftCopy": "この花をあなたに贈ります 🌸"
+  },
   "privacy": {
     "mapVisibility": "同城マップに発見を公開",
     "mapVisibilityDesc": "オフにすると、あなたの発見は地図に表示されません",
