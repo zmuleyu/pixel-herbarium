@@ -1,7 +1,7 @@
 # Competitive Insights
 
 > Quick-reference document for design decisions informed by competitor analysis.
-> Full research: `../补充材料/`
+> Full research: `../补充材料/` | Automated monitoring: `scrapling-mcp/core/ph_monitor.py`
 
 ---
 
@@ -156,3 +156,69 @@ No competitor designs sharing content. Users who share take plain screenshots �
 Sakura Navi proves seasonal apps can succeed, but also shows the limitation: users disappear after cherry blossom season ends.
 
 **PH rule:** 60 species across all seasons. No month without at least one ★★ discovery window. Cherry blossom season is the launch window, not the entire product lifecycle.
+
+---
+
+## 5. Research SOP — Manual Research Platforms
+
+Platforms that cannot be automated (no public API or against ToS) require periodic manual research. Full guides are in `../补充材料/`.
+
+### 5.1 Platform Automation Status
+
+| Platform | Automation | Tool | Frequency | Guide |
+|----------|-----------|------|-----------|-------|
+| **App Store JP** | ✅ Automated | `scrapling-mcp appstore-reviews` | Weekly | — |
+| **Google Play JP** | ✅ Automated | `scrapling-mcp gplay-reviews` | Weekly | — |
+| **Yahoo! 知恵袋** | ✅ Automated | `scrapling-mcp chiebukuro-search` | Weekly | `补充材料/日本赏花App_用户评论采集指南_补充平台版.md §6` |
+| **Instagram** | ❌ Manual | Browser + Instaloader (personal) | Monthly | `补充材料/instagram_hashtag_research_guide.md` |
+| **YouTube** | ❌ Manual (Phase 2) | YouTube Data API v3 | Post-launch | `补充材料/youtube_comment_research_japan_hanami.md` |
+| **X (Twitter)** | ❌ Manual | Browser + Advanced Search | Bi-weekly | `补充材料/X_Japan_Hanami_Research_Guide.md` |
+| **LINE** | ❌ Manual | Browser — LINE OpenChat / VOOM | Monthly | `补充材料/LINE_Japan_Hanami_Research_Guide.md` |
+| **5ch / 2ch** | ❌ Skip | Wrong demographic (25-50M) | — | — |
+| **TikTok** | ❌ Skip | No public API | — | — |
+| **Ameba Blog** | ❌ Manual | Google site search | Monthly | `补充材料/日本赏花App_用户评论采集指南_补充平台版.md §8` |
+| **Note.com** | ❌ Manual (Phase 2) | Note API | Post-launch | `补充材料/日本赏花App_用户评论采集指南_补充平台版.md §9` |
+| **Google Maps** | ❌ Skip | Paid API, low ROI | — | — |
+
+### 5.2 Weekly Automated Run
+
+```bash
+cd D:/projects/Others/scrapling-mcp
+
+# App Store competitors (4 apps)
+python -m cli run-ph-monitor
+
+# Yahoo! Chiebukuro intent signals (9 keywords)
+python -m cli chiebukuro-search "桜 開花 アプリ おすすめ" -n 20
+python -m cli chiebukuro-search "花の名前 調べる アプリ" -n 20
+python -m cli chiebukuro-snapshot "桜 アプリ"
+```
+
+Results saved to `~/.scrapling-mcp/data.db` and summarized in `ph-signal-report.md`.
+
+### 5.3 Monthly Manual Research (Instagram + X)
+
+**Instagram (5 min):**
+1. Search hashtags: `#花しらべ` `#GreenSnap` `#花識別` `#花見アプリ` `#hanami2026`
+2. Record: post count, top post engagement, comment themes
+3. Log findings in `ph-signal-report.md` under "Instagram Signals"
+
+Full SOP → `补充材料/instagram_hashtag_research_guide.md`
+
+**X / Twitter (10 min):**
+1. Advanced Search: `(GreenSnap OR PictureThis OR ハナノナ) lang:ja min_faves:3`
+2. Search: `桜 アプリ おすすめ 2026` `-RT lang:ja`
+3. Record: sentiment, recurring complaints, feature requests
+
+Full SOP → `补充材料/X_Japan_Hanami_Research_Guide.md`
+
+### 5.4 Competitor GPlay IDs (verified 2026-03-16)
+
+| App | App Store ID | Google Play ID |
+|-----|-------------|---------------|
+| GreenSnap | 934293203 | jp.co.aainc.greensnap |
+| PictureThis | 1252497129 | cn.danatech.xingseus |
+| FLOWERY | 1270079385 | — (iOS only) |
+| Biome | 1459658355 | jp.co.biome.biome |
+
+> Note: Re-verify GPlay IDs monthly — apps frequently change package names.
