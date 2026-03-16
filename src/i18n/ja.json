@@ -137,6 +137,8 @@
   "privacy": {
     "mapVisibility": "同城マップに発見を公開",
     "mapVisibilityDesc": "オフにすると、あなたの発見は地図に表示されません",
+    "notifications": "季節のお知らせ",
+    "notificationsDesc": "季節の花が咲き始めたときにお知らせします",
     "exportData": "データをエクスポート",
     "deleteAccount": "アカウント削除",
     "deleteConfirm": "30日後にアカウントが削除されます。この操作は取り消せます。"

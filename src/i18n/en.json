@@ -137,6 +137,8 @@
   "privacy": {
     "mapVisibility": "Show discoveries on City Map",
     "mapVisibilityDesc": "When off, your discoveries won't appear on the map",
+    "notifications": "Seasonal Notifications",
+    "notificationsDesc": "Get notified when seasonal flowers start blooming",
     "exportData": "Export My Data",
     "deleteAccount": "Delete Account",
     "deleteConfirm": "Your account will be deleted in 30 days. This can be cancelled."

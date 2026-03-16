@@ -29,6 +29,19 @@ export default function RootLayout() {
   const { session, loading, setSession, setUser, setLoading } = useAuthStore();
   usePushToken();
 
+  // Handle push notification taps — navigate to herbarium
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+      const data = response.notification.request.content.data;
+      if (data?.screen === 'plant' && data?.plantId) {
+        router.push(`/plant/${data.plantId}` as any);
+      } else {
+        router.push('/(tabs)/herbarium' as any);
+      }
+    });
+    return () => subscription.remove();
+  }, []);
+
   // Bootstrap auth session from Supabase on first load
   useEffect(() => {
     restoreLanguage(); // fire-and-forget, non-blocking

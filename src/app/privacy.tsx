@@ -23,6 +23,7 @@ export default function PrivacyScreen() {
   const { user } = useAuthStore();
 
   const [mapVisible, setMapVisible] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -31,10 +32,13 @@ export default function PrivacyScreen() {
     async function load() {
       const { data } = await (supabase as any)
         .from('profiles')
-        .select('map_visible')
+        .select('map_visible, notifications_enabled')
         .eq('id', user!.id)
         .single();
-      if (data != null) setMapVisible(data.map_visible ?? true);
+      if (data != null) {
+        setMapVisible(data.map_visible ?? true);
+        setNotificationsEnabled(data.notifications_enabled ?? true);
+      }
       setLoading(false);
     }
     load();
@@ -47,6 +51,17 @@ export default function PrivacyScreen() {
     await (supabase as any)
       .from('profiles')
       .update({ map_visible: value, updated_at: new Date().toISOString() })
+      .eq('id', user.id);
+    setSaving(false);
+  }
+
+  async function toggleNotifications(value: boolean) {
+    if (!user || saving) return;
+    setNotificationsEnabled(value);
+    setSaving(true);
+    await (supabase as any)
+      .from('profiles')
+      .update({ notifications_enabled: value, updated_at: new Date().toISOString() })
       .eq('id', user.id);
     setSaving(false);
   }
@@ -114,6 +129,21 @@ export default function PrivacyScreen() {
             <Switch
               value={mapVisible}
               onValueChange={toggleMapVisible}
+              trackColor={{ false: colors.border, true: colors.plantPrimary }}
+              thumbColor={colors.white}
+              disabled={saving}
+            />
+          </View>
+
+          {/* Notification toggle */}
+          <View style={styles.row}>
+            <View style={styles.rowText}>
+              <Text style={styles.rowLabel}>{t('privacy.notifications')}</Text>
+              <Text style={styles.rowDesc}>{t('privacy.notificationsDesc')}</Text>
+            </View>
+            <Switch
+              value={notificationsEnabled}
+              onValueChange={toggleNotifications}
               trackColor={{ false: colors.border, true: colors.plantPrimary }}
               thumbColor={colors.white}
               disabled={saving}
