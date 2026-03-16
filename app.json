@@ -63,6 +63,13 @@
           "color": "#ffffff",
           "sounds": []
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Pixel Herbarium saves poster images to your photo library.",
+          "savePhotosPermission": "Pixel Herbarium saves poster images to your photo library."
+        }
       ]
     ],
     "experiments": {
