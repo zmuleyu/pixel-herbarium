@@ -11,3 +11,8 @@ google-services.json
 
 expo-env.d.ts
 # @end expo-cli
+# Test coverage reports (auto-generated)
+coverage/
+
+# Cross-project reference docs (not PH-specific)
+docs/reference/
