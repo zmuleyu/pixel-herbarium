@@ -267,8 +267,7 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
   const router = useRouter();
   const cardScale = useRef(new Animated.Value(0.85)).current;
   const cardOpacity = useRef(new Animated.Value(0)).current;
-  const posterRef = useRef<View>(null);
-  const [sharing, setSharing] = useState(false);
+  const [shareSheetVisible, setShareSheetVisible] = useState(false);
 
   useEffect(() => {
     if (status === 'success') {
@@ -278,19 +277,6 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
       ]).start();
     }
   }, [status]);
-
-  async function handleShare() {
-    if (!posterRef.current) return;
-    setSharing(true);
-    try {
-      const uri = await captureRef(posterRef, { format: 'jpg', quality: 0.92 });
-      await Sharing.shareAsync(uri, { mimeType: 'image/jpeg', dialogTitle: t('herbarium.sharePoster') });
-    } catch {
-      // Share cancelled or failed — silent
-    } finally {
-      setSharing(false);
-    }
-  }
 
   if (status === 'success' && plant) {
     const rarityLabel = RARITY_LABELS[plant.rarity as keyof typeof RARITY_LABELS] ?? '★';
@@ -303,20 +289,6 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
             <Text style={styles.firstDiscoveryText}>{t('discover.firstDiscovery')}</Text>
           </View>
         )}
-        {/* Off-screen poster for sharing (invisible to user) */}
-        <View style={styles.posterOffscreen} pointerEvents="none">
-          <SharePoster
-            ref={posterRef}
-            plant={{
-              name_ja: plant.name_ja,
-              name_latin: plant.name_en,
-              rarity: plant.rarity,
-              hanakotoba: plant.hanakotoba,
-              pixel_sprite_url: plant.pixel_sprite_url,
-              cityRank: plant.cityRank,
-            }}
-          />
-        </View>
 
         {/* Plant image or rarity emoji card */}
         {plant.pixel_sprite_url ? (
@@ -342,15 +314,28 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
 
         {/* Action buttons */}
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={handleShare} disabled={sharing}>
-            {sharing
-              ? <ActivityIndicator size="small" color={colors.plantPrimary} />
-              : <Text style={[styles.buttonText, styles.buttonTextSecondary]}>{t('common.share')}</Text>}
+          <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={() => setShareSheetVisible(true)}>
+            <Text style={[styles.buttonText, styles.buttonTextSecondary]}>{t('common.share')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={() => { onClose(); router.navigate('/(tabs)/herbarium'); }}>
             <Text style={styles.buttonText}>{t('discover.viewHerbarium')}</Text>
           </TouchableOpacity>
         </View>
+
+        <ShareSheet
+          visible={shareSheetVisible}
+          onClose={() => setShareSheetVisible(false)}
+          plant={{
+            name_ja: plant.name_ja,
+            name_latin: plant.name_en,
+            rarity: plant.rarity,
+            hanakotoba: plant.hanakotoba ?? '',
+            bloom_months: [],
+            pixel_sprite_url: plant.pixel_sprite_url,
+            cityRank: plant.cityRank ?? null,
+          }}
+          discoveryDate={new Date().toISOString()}
+        />
       </Animated.View>
     );
   }
@@ -531,9 +516,6 @@ const styles = StyleSheet.create({
   // Plant card
   rarityLabel:        { fontSize: typography.fontSize.lg, color: colors.plantPrimary },
   cityRankText:       { fontSize: typography.fontSize.xs, color: colors.textSecondary, textAlign: 'center', fontStyle: 'italic' },
-
-  // Share poster (off-screen, invisible to user)
-  posterOffscreen:    { position: 'absolute', left: -9999, top: 0 },
 
   // Button row (close + share side by side)
   buttonRow:          { flexDirection: 'row', gap: spacing.md },
