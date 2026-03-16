@@ -177,6 +177,7 @@ function PlantCell({ plant, isCollected, onPress }: PlantCellProps) {
   const rarityColor = RARITY_COLORS[plant.rarity] ?? colors.rarity.common;
   const scale = useRef(new Animated.Value(isCollected ? 0.8 : 1)).current;
   const opacity = useRef(new Animated.Value(isCollected ? 0 : 1)).current;
+  const shimmerX = useRef(new Animated.Value(-1)).current;
 
   useEffect(() => {
     if (!isCollected) return;
@@ -184,6 +185,8 @@ function PlantCell({ plant, isCollected, onPress }: PlantCellProps) {
       Animated.spring(scale, { toValue: 1, useNativeDriver: true, tension: 120, friction: 8 }),
       Animated.timing(opacity, { toValue: 1, duration: 300, useNativeDriver: true }),
     ]).start();
+    // Shimmer sweep: -1 → 2 over 600ms, plays once
+    Animated.timing(shimmerX, { toValue: 2, duration: 600, useNativeDriver: true, delay: 200 }).start();
   }, [isCollected]);
 
   return (
@@ -208,6 +211,11 @@ function PlantCell({ plant, isCollected, onPress }: PlantCellProps) {
           <View style={[styles.rarityBadge, { backgroundColor: rarityColor }]}>
             <Text style={styles.rarityBadgeText}>{'★'.repeat(plant.rarity)}</Text>
           </View>
+          {/* Shimmer overlay — sweeps once on unlock */}
+          <Animated.View
+            style={[styles.shimmer, { transform: [{ translateX: shimmerX.interpolate({ inputRange: [-1, 2], outputRange: [-CELL_SIZE, CELL_SIZE * 2] }) }] }]}
+            pointerEvents="none"
+          />
         </Animated.View>
       ) : (
         <View style={[styles.lockedInner, plant.bloom_months.includes(CURRENT_MONTH) && styles.lockedInnerSeason]}>

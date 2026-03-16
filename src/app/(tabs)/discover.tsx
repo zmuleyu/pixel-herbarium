@@ -263,6 +263,54 @@ interface ResultContentProps {
   t: TFunction;
 }
 
+// ── Gold particle burst for ★★★ rare discoveries ────────────────────
+const PARTICLE_COUNT = 12;
+const PARTICLE_COLORS = ['#f5d5d0', '#e8a87c', '#f5e6a3', '#c1e8d8'];
+
+function RareParticles() {
+  const particles = useRef(
+    Array.from({ length: PARTICLE_COUNT }, () => ({
+      x: new Animated.Value(0),
+      y: new Animated.Value(0),
+      opacity: new Animated.Value(1),
+      scale: new Animated.Value(0),
+    })),
+  ).current;
+
+  useEffect(() => {
+    const animations = particles.map((p, i) => {
+      const angle = (i / PARTICLE_COUNT) * 2 * Math.PI;
+      const radius = 60 + Math.random() * 40;
+      const duration = 800 + Math.random() * 400;
+      return Animated.parallel([
+        Animated.timing(p.x, { toValue: Math.cos(angle) * radius, duration, useNativeDriver: true }),
+        Animated.timing(p.y, { toValue: Math.sin(angle) * radius, duration, useNativeDriver: true }),
+        Animated.sequence([
+          Animated.timing(p.scale, { toValue: 1, duration: 200, useNativeDriver: true }),
+          Animated.timing(p.scale, { toValue: 0, duration: duration - 200, useNativeDriver: true }),
+        ]),
+        Animated.timing(p.opacity, { toValue: 0, duration, useNativeDriver: true }),
+      ]);
+    });
+    Animated.stagger(50, animations).start();
+  }, []);
+
+  return (
+    <View style={particleStyles.container} pointerEvents="none">
+      {particles.map((p, i) => (
+        <Animated.View
+          key={i}
+          style={[
+            particleStyles.dot,
+            { backgroundColor: PARTICLE_COLORS[i % PARTICLE_COLORS.length] },
+            { transform: [{ translateX: p.x }, { translateY: p.y }, { scale: p.scale }], opacity: p.opacity },
+          ]}
+        />
+      ))}
+    </View>
+  );
+}
+
 function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: ResultContentProps) {
   const router = useRouter();
   const cardScale = useRef(new Animated.Value(0.85)).current;
@@ -283,6 +331,9 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
     const rarityEmoji = plant.rarity === 3 ? '⭐⭐⭐' : plant.rarity === 2 ? '⭐⭐' : '⭐';
     return (
       <Animated.View style={{ width: '100%', alignItems: 'center', gap: spacing.sm, transform: [{ scale: cardScale }], opacity: cardOpacity }}>
+        {/* Gold particle burst for ★★★ */}
+        {plant.rarity === 3 && <RareParticles />}
+
         {/* First-discovery banner */}
         {plant.isFirstDiscovery && (
           <View style={styles.firstDiscoveryBanner}>
@@ -563,5 +614,22 @@ const vfStyles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 4,
     letterSpacing: 0.4,
+  },
+});
+
+// Gold particle burst styles for ★★★ discoveries
+const particleStyles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: '30%',
+    alignSelf: 'center',
+    width: 1,
+    height: 1,
+  },
+  dot: {
+    position: 'absolute',
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
 });

@@ -17,7 +17,9 @@ export const colors = {
   seasonal: {
     sakura: '#f5d5d0',         // Spring cherry blossom
     ajisai: '#d4e4f7',         // Rainy season hydrangea
+    himawari: '#f5e6a3',       // Summer sunflower
     momiji: '#e8a87c',         // Autumn maple
+    tsubaki: '#c9a0a0',        // Winter camellia
   },
 } as const;
 
