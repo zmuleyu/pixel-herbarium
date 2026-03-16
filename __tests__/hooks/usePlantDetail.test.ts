@@ -31,8 +31,8 @@ const MOCK_PLANT = {
 };
 
 const MOCK_DISCOVERIES = [
-  { id: 'disc-1', created_at: '2026-03-20T10:00:00Z', pixel_url: 'https://example.com/px1.png', user_note: 'きれいだった' },
-  { id: 'disc-2', created_at: '2026-04-01T08:00:00Z', pixel_url: null, user_note: null },
+  { id: 'disc-1', created_at: '2026-03-20T10:00:00Z', pixel_url: 'https://example.com/px1.png', user_note: 'きれいだった', city: '東京' },
+  { id: 'disc-2', created_at: '2026-04-01T08:00:00Z', pixel_url: null, user_note: null, city: null },
 ];
 
 function makePlantQuery(data: any, error: any = null) {
@@ -113,6 +113,14 @@ describe('usePlantDetail – initial load', () => {
 
     expect(result.current.discoveries[0].id).toBe('disc-1');
     expect(result.current.discoveries[1].id).toBe('disc-2');
+  });
+
+  it('includes city field in discoveries', async () => {
+    setupMocks();
+    const { result } = renderHook(() => usePlantDetail(3, 'user-1'));
+    await act(async () => { await flushPromises(); });
+    expect(result.current.discoveries[0].city).toBe('東京');
+    expect(result.current.discoveries[1].city).toBeNull();
   });
 });
 

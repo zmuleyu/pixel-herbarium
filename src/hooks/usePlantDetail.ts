@@ -55,7 +55,7 @@ export function usePlantDetail(plantId: number, userId: string): UsePlantDetailR
           .single(),
         (supabase as any)
           .from('discoveries')
-          .select('id, created_at, pixel_url, user_note')
+          .select('id, created_at, pixel_url, user_note, city')
           .eq('user_id', userId)
           .eq('plant_id', plantId)
           .order('created_at', { ascending: false }),
