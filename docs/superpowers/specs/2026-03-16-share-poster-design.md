@@ -291,9 +291,13 @@ All poster body text (花言葉, plant names, footer) uses existing constants/da
 ## 7. Testing Strategy
 
 ### SharePoster (unit)
+
+Note: This codebase currently has no component render tests (existing 19 test files cover hooks/utils/stores/i18n). These will establish a new test pattern using `@testing-library/react-native` (already in devDependencies).
+
 - Renders story format with correct dimensions (360x640)
 - Renders line format with correct dimensions (360x360)
 - Displays plant name, hanakotoba, rarity label
+- Hides hanakotoba section entirely when hanakotoba is empty string
 - Shows discovery date and city when provided
 - LINE format shows gift copy text
 - Fallback emoji when no pixel_sprite_url
