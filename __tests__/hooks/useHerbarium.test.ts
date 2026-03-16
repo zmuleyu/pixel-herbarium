@@ -74,7 +74,7 @@ describe('useHerbarium – initial load', () => {
     expect(result.current.loading).toBe(true);
   });
 
-  it('loads all 120 plant slots after fetch', async () => {
+  it('loads all 240 plant slots after fetch', async () => {
     setupMocks();
     const { result } = renderHook(() => useHerbarium('user-1'));
     await act(async () => { await flushPromises(); });
