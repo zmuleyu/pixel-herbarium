@@ -266,6 +266,7 @@ const styles = StyleSheet.create({
 
   rarityBadge:     { position: 'absolute', top: 2, right: 2, borderRadius: 3, paddingHorizontal: 2, paddingVertical: 1 },
   rarityBadgeText: { fontSize: 7, color: colors.text },
+  shimmer:         { position: 'absolute', top: 0, bottom: 0, width: CELL_SIZE * 0.4, backgroundColor: 'rgba(255,255,255,0.35)', transform: [{ skewX: '-15deg' }] },
 });
 
 const sheet = StyleSheet.create({
