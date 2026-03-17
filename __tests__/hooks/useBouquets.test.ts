@@ -182,6 +182,36 @@ describe('useBouquets – inbox/sent classification', () => {
     expect(result.current.inbox).toHaveLength(0);
     expect(result.current.sent).toHaveLength(0); // not sender either
   });
+
+  it('expired pending bouquet is NOT in inbox', async () => {
+    const expiredRow = {
+      ...makeBouquetRow('b-expired', 'user-9', 'user-1', 'pending', [1]),
+      expires_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    };
+    mockFrom
+      .mockReturnValueOnce(makeBouquetQuery([expiredRow]))
+      .mockReturnValueOnce(makePlantBatchQuery([makePlant(1)]));
+
+    const { result } = renderHook(() => useBouquets('user-1'));
+    await act(async () => { await flushPromises(); });
+
+    expect(result.current.inbox).toHaveLength(0);
+  });
+
+  it('not-yet-expired pending bouquet stays in inbox', async () => {
+    const freshRow = {
+      ...makeBouquetRow('b-fresh', 'user-9', 'user-1', 'pending', [1]),
+      expires_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+    };
+    mockFrom
+      .mockReturnValueOnce(makeBouquetQuery([freshRow]))
+      .mockReturnValueOnce(makePlantBatchQuery([makePlant(1)]));
+
+    const { result } = renderHook(() => useBouquets('user-1'));
+    await act(async () => { await flushPromises(); });
+
+    expect(result.current.inbox).toHaveLength(1);
+  });
 });
 
 describe('useBouquets – plant enrichment', () => {
