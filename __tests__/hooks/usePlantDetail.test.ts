@@ -24,6 +24,7 @@ const MOCK_PLANT = {
   rarity: 2,
   hanakotoba: '優れた美しさ',
   flower_meaning: '清楚な美しさ',
+  color_meaning: '淡いピンク——儚さの中に宿る希望と再生',
   bloom_months: [3, 4],
   prefectures: ['東京', '大阪', '京都'],
   pixel_sprite_url: 'https://example.com/sprite3.png',
