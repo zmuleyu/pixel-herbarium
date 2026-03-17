@@ -5,8 +5,13 @@ import * as SecureStore from 'expo-secure-store';
 
 const HINT_KEY = 'hanakotoba_hint_seen_v1';
 
+/**
+ * Manages a 3-state cycling card flip animation.
+ * phase: 0 = Japanese hanakotoba, 1 = Western meaning, 2 = Colour meaning.
+ * Each tap advances phase (0→1→2→0) using a forward-only flip animation.
+ */
 export function useFlipCard() {
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [phase, setPhase] = useState<0 | 1 | 2>(0);
   const [showHint, setShowHint] = useState(false);
   const flipAnim = useRef(new Animated.Value(0)).current;
   const hintOpacity = useRef(new Animated.Value(0.4)).current;
@@ -46,14 +51,17 @@ export function useFlipCard() {
 
   function handleFlip() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const toValue = isFlipped ? 0 : 1;
+    // Always animate forward (0 → 1). On completion, advance phase and reset
+    // the animation value silently so the next tap works identically.
     Animated.spring(flipAnim, {
-      toValue,
+      toValue: 1,
       tension: 60,
       friction: 8,
       useNativeDriver: true,
-    }).start();
-    setIsFlipped(!isFlipped);
+    }).start(() => {
+      setPhase((p) => ((p + 1) % 3) as 0 | 1 | 2);
+      flipAnim.setValue(0);
+    });
     if (showHint) {
       setShowHint(false);
       SecureStore.setItemAsync(HINT_KEY, '1');
@@ -61,7 +69,7 @@ export function useFlipCard() {
   }
 
   return {
-    isFlipped,
+    phase,
     frontRotation,
     backRotation,
     frontOpacity,
