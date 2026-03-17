@@ -208,3 +208,27 @@ describe('ShareSheet – Modal visible prop', () => {
     expect(output).toContain('"visible":false');
   });
 });
+
+describe('ShareSheet – onClose prop', () => {
+  it('onClose prop is accepted without error', () => {
+    const onClose = jest.fn();
+    expect(() => renderToString({ ...defaultProps, onClose })).not.toThrow();
+  });
+});
+
+describe('ShareSheet – feedback state', () => {
+  it('shows saved feedback text when feedback state is set', () => {
+    const mockUseState = jest.requireMock('react').useState as jest.Mock;
+    // Override so the 4th useState call (feedback) returns 'share.saved'
+    let callCount = 0;
+    mockUseState.mockImplementation((initial: any) => {
+      callCount++;
+      if (callCount === 4) return ['share.saved', jest.fn()]; // feedback state
+      return [initial, jest.fn()];
+    });
+    const output = renderToString(defaultProps);
+    expect(output).toContain('share.saved');
+    // Restore default implementation
+    mockUseState.mockImplementation((initial: any) => [initial, jest.fn()]);
+  });
+});
