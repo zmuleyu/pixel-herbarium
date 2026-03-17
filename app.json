@@ -18,6 +18,7 @@
       "buildNumber": "1",
       "usesAppleSignIn": true,
       "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "Pixel Herbarium uses the camera to photograph plants for identification.",
         "NSLocationWhenInUseUsageDescription": "Pixel Herbarium uses your location to record where plants were discovered.",
         "NSPhotoLibraryUsageDescription": "Pixel Herbarium accesses the photo library to select plant images."
@@ -83,7 +84,8 @@
           "photosPermission": "Pixel Herbarium saves poster images to your photo library.",
           "savePhotosPermission": "Pixel Herbarium saves poster images to your photo library."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

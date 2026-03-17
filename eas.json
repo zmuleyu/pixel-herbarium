@@ -9,8 +9,7 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://uwdgnueaycatmkzkbxwo.supabase.co"
       },
       "cache": {
-        "key": "ph-v2",
-        "paths": ["~/.npm"]
+        "disabled": true
       }
     },
     "development": {
