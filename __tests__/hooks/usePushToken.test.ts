@@ -106,6 +106,8 @@ describe('usePushToken – permission handling', () => {
 
     expect(mockGetPermissions).toHaveBeenCalledTimes(1);
     expect(mockRequestPermissions).toHaveBeenCalledTimes(1);
+    expect(mockFrom).toHaveBeenCalledWith('push_tokens');
+    expect(chain._upsertMock).toHaveBeenCalledTimes(1);
   });
 
   it('does not register token when permission denied', async () => {
