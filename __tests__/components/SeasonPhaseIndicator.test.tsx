@@ -162,4 +162,11 @@ describe('SeasonPhaseIndicator – petal active/inactive counts', () => {
     expect(countOccurrences(output, BG_ACTIVE)).toBe(3);
     expect(countOccurrences(output, BG_INACTIVE)).toBe(0);
   });
+
+  it('dormant shows 0 active petals and 3 inactive petals', () => {
+    (getSeasonPhase as jest.Mock).mockReturnValue({ phase: 'dormant' });
+    const output = renderToJson();
+    expect(countOccurrences(output, BG_ACTIVE)).toBe(0);
+    expect(countOccurrences(output, BG_INACTIVE)).toBe(3);
+  });
 });
