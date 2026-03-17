@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { Animated, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { colors, typography, spacing } from '@/constants/theme';
 
 // Slides down from the top when the device loses connectivity.
 export function OfflineBanner() {
+  const { t } = useTranslation();
   const isOnline = useNetworkStatus();
   const translateY = useRef(new Animated.Value(-60)).current;
 
@@ -18,7 +20,7 @@ export function OfflineBanner() {
 
   return (
     <Animated.View style={[styles.banner, { transform: [{ translateY }] }]}>
-      <Text style={styles.text}>📵 オフライン — 接続を確認してください</Text>
+      <Text style={styles.text}>{t('offline.banner')}</Text>
     </Animated.View>
   );
 }

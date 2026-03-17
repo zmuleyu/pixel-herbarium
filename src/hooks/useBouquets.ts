@@ -84,7 +84,11 @@ export function useBouquets(userId: string): UseBouquetsReturn {
         plants: (b.plant_ids ?? []).map((pid: number) => plantMap.get(pid)).filter(Boolean),
       }));
 
-      setInbox(enriched.filter((b) => b.receiver_id === userId && b.status === 'pending'));
+      setInbox(enriched.filter((b) =>
+        b.receiver_id === userId &&
+        b.status === 'pending' &&
+        new Date(b.expires_at) > new Date()
+      ));
       setSent(enriched.filter((b) => b.sender_id === userId));
       setLoading(false);
     }

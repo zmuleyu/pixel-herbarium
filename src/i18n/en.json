@@ -180,6 +180,12 @@
     "language": "Language",
     "version": "Version"
   },
+  "offline": {
+    "banner": "📵 Offline — Check your connection"
+  },
+  "error": {
+    "loadFailed": "Failed to load"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",

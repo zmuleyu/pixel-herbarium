@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import i18n from '@/i18n';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 
 interface Props {
@@ -33,10 +34,10 @@ export class ErrorBoundary extends React.Component<Props, State> {
         <View style={styles.container}>
           <Text style={styles.emoji}>🌿</Text>
           <Text style={styles.message}>
-            {this.props.fallbackLabel ?? '読み込みに失敗しました'}
+            {this.props.fallbackLabel ?? i18n.t('error.loadFailed')}
           </Text>
           <TouchableOpacity style={styles.button} onPress={this.handleRetry}>
-            <Text style={styles.buttonText}>もう一度</Text>
+            <Text style={styles.buttonText}>{i18n.t('common.retry')}</Text>
           </TouchableOpacity>
         </View>
       );
