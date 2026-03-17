@@ -2,6 +2,9 @@
  * Tests for useFlipCard hook.
  * Mocks expo-secure-store, expo-haptics, and relies on the existing
  * react-native Animated mock in __mocks__/react-native.js.
+ *
+ * The Animated.spring mock calls `.start(cb)` synchronously so phase
+ * transitions are observable within act() without awaiting real animation.
  */
 
 jest.mock('expo-secure-store', () => ({
@@ -33,16 +36,16 @@ describe('useFlipCard – initial state', () => {
     (SecureStore.getItemAsync as jest.Mock).mockResolvedValue('1'); // hint already seen
   });
 
-  it('starts with isFlipped=false', async () => {
+  it('starts with phase=0', async () => {
     const { result } = renderHook(() => useFlipCard());
     await flushPromises();
-    expect(result.current.isFlipped).toBe(false);
+    expect(result.current.phase).toBe(0);
   });
 
   it('returns all expected fields', async () => {
     const { result } = renderHook(() => useFlipCard());
     await flushPromises();
-    expect(result.current).toHaveProperty('isFlipped');
+    expect(result.current).toHaveProperty('phase');
     expect(result.current).toHaveProperty('frontRotation');
     expect(result.current).toHaveProperty('backRotation');
     expect(result.current).toHaveProperty('frontOpacity');
@@ -82,28 +85,37 @@ describe('useFlipCard – showHint behavior', () => {
   });
 });
 
-describe('useFlipCard – handleFlip', () => {
+describe('useFlipCard – handleFlip phase cycling', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (SecureStore.getItemAsync as jest.Mock).mockResolvedValue('1');
   });
 
-  it('toggles isFlipped from false to true', async () => {
+  it('increments phase from 0 to 1 on first flip', async () => {
     const { result } = renderHook(() => useFlipCard());
     await flushPromises();
     act(() => { result.current.handleFlip(); });
-    expect(result.current.isFlipped).toBe(true);
+    expect(result.current.phase).toBe(1);
   });
 
-  it('toggles isFlipped back to false on second flip', async () => {
+  it('increments phase from 1 to 2 on second flip', async () => {
     const { result } = renderHook(() => useFlipCard());
     await flushPromises();
     act(() => { result.current.handleFlip(); });
     act(() => { result.current.handleFlip(); });
-    expect(result.current.isFlipped).toBe(false);
+    expect(result.current.phase).toBe(2);
   });
 
-  it('calls Animated.spring with correct params', async () => {
+  it('wraps phase from 2 back to 0 on third flip', async () => {
+    const { result } = renderHook(() => useFlipCard());
+    await flushPromises();
+    act(() => { result.current.handleFlip(); });
+    act(() => { result.current.handleFlip(); });
+    act(() => { result.current.handleFlip(); });
+    expect(result.current.phase).toBe(0);
+  });
+
+  it('always calls Animated.spring with toValue: 1 (forward-only flip)', async () => {
     const springSpy = Animated.spring as jest.Mock;
     springSpy.mockClear();
     const { result } = renderHook(() => useFlipCard());
