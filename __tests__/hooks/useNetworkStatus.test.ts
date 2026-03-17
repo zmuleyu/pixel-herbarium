@@ -101,12 +101,16 @@ describe('useNetworkStatus – cleanup', () => {
   });
 
   it('calls sub.remove on unmount', async () => {
+    const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
     const { unmount } = renderHook(() => useNetworkStatus());
     await act(async () => { await flushPromises(); });
 
     const sub = mockAddEventListener.mock.results[0].value;
     unmount();
 
+    expect(clearIntervalSpy).toHaveBeenCalled();
     expect(sub.remove).toHaveBeenCalledTimes(1);
+
+    clearIntervalSpy.mockRestore();
   });
 });
