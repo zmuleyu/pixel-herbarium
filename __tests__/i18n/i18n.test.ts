@@ -46,4 +46,19 @@ describe('i18n content', () => {
     expect(rarity['1']).toBe('★');
     expect(rarity['3']).toContain('限定');
   });
+
+  it('ja has offline.banner key', () => {
+    const offline = (ja as Record<string, Record<string, string>>).offline;
+    expect(offline.banner).toBeTruthy();
+  });
+
+  it('ja has error.loadFailed key', () => {
+    const error = (ja as Record<string, Record<string, string>>).error;
+    expect(error.loadFailed).toBeTruthy();
+  });
+
+  it('en has offline.banner key', () => {
+    const offline = (en as Record<string, Record<string, string>>).offline;
+    expect(offline.banner).toBeTruthy();
+  });
 });
