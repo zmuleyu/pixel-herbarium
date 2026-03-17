@@ -99,20 +99,70 @@ function renderToString(): string {
 // ── Tests ──────────────────────────────────────────────────────────────────────
 
 describe('OfflineBanner – rendering', () => {
-  it('renders without crashing', () => {
-    expect(() => renderToString()).not.toThrow();
+  it('renders the banner element', () => {
+    // Component must render Animated.View and a Text child without throwing
+    let tree: any;
+    expect(() => {
+      tree = shallowRender(React.createElement(OfflineBanner, null));
+    }).not.toThrow();
+    // Top-level node should be Animated.View
+    expect(tree).not.toBeNull();
+    const output = JSON.stringify(tree);
+    expect(output).toContain('Animated.View');
+    expect(output).toContain('Text');
   });
 
-  it('text uses i18n key not hardcoded Japanese', () => {
+  it('text uses t("offline.banner") key', () => {
+    // Mock t returns key as-is, so the rendered text node is 'offline.banner'
     const output = renderToString();
     expect(output).toContain('offline.banner');
     expect(output).not.toContain('オフライン');
+  });
+
+  it('renders without crashing', () => {
+    expect(() => renderToString()).not.toThrow();
+  });
+});
+
+describe('OfflineBanner – Animated.timing', () => {
+  beforeEach(() => {
+    (Animated.timing as jest.Mock).mockClear();
+  });
+
+  it('calls Animated.timing when online (toValue -60)', () => {
+    (useNetworkStatus as jest.Mock).mockReturnValue(true);
+    // useEffect is mocked; capture and invoke the callback manually
+    const { useEffect } = jest.requireMock('react');
+    let capturedEffect: (() => void) | null = null;
+    (useEffect as jest.Mock).mockImplementationOnce((cb: () => void) => {
+      capturedEffect = cb;
+    });
+    renderToString();
+    if (capturedEffect) (capturedEffect as () => void)();
+    expect(Animated.timing).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ toValue: -60, duration: 280, useNativeDriver: true }),
+    );
+  });
+
+  it('calls Animated.timing when offline (toValue 0)', () => {
+    (useNetworkStatus as jest.Mock).mockReturnValue(false);
+    const { useEffect } = jest.requireMock('react');
+    let capturedEffect: (() => void) | null = null;
+    (useEffect as jest.Mock).mockImplementationOnce((cb: () => void) => {
+      capturedEffect = cb;
+    });
+    renderToString();
+    if (capturedEffect) (capturedEffect as () => void)();
+    expect(Animated.timing).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ toValue: 0, duration: 280, useNativeDriver: true }),
+    );
   });
 });
 
 describe('OfflineBanner – Animated.Value initialisation', () => {
   it('Animated.Value initialized to -60 (hidden when online)', () => {
-    // Reset the mock call record before rendering
     (Animated.Value as jest.Mock).mockClear();
     renderToString();
     expect(Animated.Value).toHaveBeenCalledWith(-60);
