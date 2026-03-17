@@ -131,6 +131,7 @@ export default function PlantDetailScreen() {
         <HanakotobaFlipCard
           hanakotoba={plant.hanakotoba}
           flowerMeaning={plant.flower_meaning}
+          colorMeaning={plant.color_meaning}
         />
       )}
 

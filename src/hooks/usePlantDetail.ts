@@ -9,6 +9,7 @@ export interface PlantDetail {
   rarity: number;
   hanakotoba: string | null;
   flower_meaning: string | null;
+  color_meaning: string | null;
   bloom_months: number[];
   prefectures: string[];
   pixel_sprite_url: string | null;
@@ -49,7 +50,7 @@ export function usePlantDetail(plantId: number, userId: string): UsePlantDetailR
         (supabase as any)
           .from('plants')
           .select(
-            'id, name_ja, name_en, name_latin, rarity, hanakotoba, flower_meaning, bloom_months, prefectures, pixel_sprite_url, available_window',
+            'id, name_ja, name_en, name_latin, rarity, hanakotoba, flower_meaning, color_meaning, bloom_months, prefectures, pixel_sprite_url, available_window',
           )
           .eq('id', plantId)
           .single(),

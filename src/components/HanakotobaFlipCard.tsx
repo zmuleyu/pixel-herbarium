@@ -6,46 +6,71 @@ import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 interface HanakotobaFlipCardProps {
   hanakotoba: string;
   flowerMeaning: string | null;
+  colorMeaning: string | null;
 }
 
-const CARD_HEIGHT = 140;
+const CARD_HEIGHT = 148;
 
-export function HanakotobaFlipCard({ hanakotoba, flowerMeaning }: HanakotobaFlipCardProps) {
+export function HanakotobaFlipCard({ hanakotoba, flowerMeaning, colorMeaning }: HanakotobaFlipCardProps) {
   const { t } = useTranslation();
   const {
-    frontRotation, backRotation,
+    phase, frontRotation, backRotation,
     frontOpacity, backOpacity,
     handleFlip, showHint, hintOpacity,
   } = useFlipCard();
 
+  // Three faces cycling: JP hanakotoba → Western meaning → Colour meaning
+  const faces = [
+    { label: t('herbarium.hanakotoba'), text: hanakotoba, bg: colors.white, isJP: true },
+    { label: t('plant.westernMeaning'), text: flowerMeaning ?? t('plant.meaningSecret'), bg: colors.creamYellow, isJP: false },
+    { label: t('plant.colorMeaning'), text: colorMeaning ?? t('plant.meaningSecret'), bg: colors.plantSecondary, isJP: false },
+  ] as const;
+
+  const frontFace = faces[phase];
+  const backFace = faces[(phase + 1) % 3];
+
   return (
     <TouchableOpacity activeOpacity={0.85} onPress={handleFlip} style={styles.container}>
-      {/* Front face — Japanese hanakotoba */}
+      {/* Front face — shows current phase content, rotates away on tap */}
       <Animated.View style={[
-        styles.face, styles.front,
-        { opacity: frontOpacity, transform: [{ perspective: 1000 }, { rotateY: frontRotation }] },
+        styles.face,
+        { backgroundColor: frontFace.bg, opacity: frontOpacity, transform: [{ perspective: 1000 }, { rotateY: frontRotation }] },
       ]}>
-        <Text style={styles.sectionLabel}>{t('herbarium.hanakotoba')}</Text>
-        <Text style={styles.hanakotobaText}>{hanakotoba}</Text>
-        {showHint && (
+        <Text style={styles.sectionLabel}>{frontFace.label}</Text>
+        <Text style={frontFace.isJP ? styles.hanakotobaText : styles.meaningText}>
+          {frontFace.text}
+        </Text>
+        {showHint && phase === 0 && (
           <Animated.Text style={[styles.hintText, { opacity: hintOpacity }]}>
             {t('plant.tapToFlip')}
           </Animated.Text>
         )}
+        <PageDots phase={phase} />
       </Animated.View>
 
-      {/* Back face — Western meaning */}
+      {/* Back face — shows next phase content, rotates into view on tap */}
       <Animated.View style={[
-        styles.face, styles.back,
-        { opacity: backOpacity, transform: [{ perspective: 1000 }, { rotateY: backRotation }] },
+        styles.face,
+        { backgroundColor: backFace.bg, opacity: backOpacity, transform: [{ perspective: 1000 }, { rotateY: backRotation }] },
       ]}>
-        <Text style={styles.sectionLabel}>{t('plant.westernMeaning')}</Text>
-        <Text style={styles.meaningText}>
-          {flowerMeaning ?? t('plant.meaningSecret')}
+        <Text style={styles.sectionLabel}>{backFace.label}</Text>
+        <Text style={backFace.isJP ? styles.hanakotobaText : styles.meaningText}>
+          {backFace.text}
         </Text>
         <Text style={styles.watermark}>✿</Text>
+        <PageDots phase={(phase + 1) % 3} />
       </Animated.View>
     </TouchableOpacity>
+  );
+}
+
+function PageDots({ phase }: { phase: number }) {
+  return (
+    <View style={styles.dots}>
+      {[0, 1, 2].map((i) => (
+        <View key={i} style={[styles.dot, phase === i && styles.dotActive]} />
+      ))}
+    </View>
   );
 }
 
@@ -65,12 +90,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.xs,
-  },
-  front: {
-    backgroundColor: colors.white,
-  },
-  back: {
-    backgroundColor: colors.creamYellow,
   },
   sectionLabel: {
     fontSize: typography.fontSize.xs,
@@ -99,10 +118,28 @@ const styles = StyleSheet.create({
   },
   watermark: {
     position: 'absolute',
-    bottom: 8,
+    bottom: 20,
     right: 12,
     fontSize: typography.fontSize.lg,
     color: colors.plantPrimary,
     opacity: 0.15,
+  },
+  dots: {
+    position: 'absolute',
+    bottom: 8,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 5,
+  },
+  dot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: colors.border,
+  },
+  dotActive: {
+    backgroundColor: colors.plantPrimary,
   },
 });
