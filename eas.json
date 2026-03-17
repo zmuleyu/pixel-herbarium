@@ -17,11 +17,12 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
-        "simulator": true
+        "simulator": false
       },
       "env": {
         "APP_VARIANT": "development"
-      }
+      },
+      "channel": "development"
     },
     "preview": {
       "extends": "base",
@@ -31,7 +32,8 @@
       },
       "env": {
         "APP_VARIANT": "preview"
-      }
+      },
+      "channel": "preview"
     },
     "production": {
       "extends": "base",
