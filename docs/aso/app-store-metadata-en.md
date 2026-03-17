@@ -63,6 +63,20 @@ Unlike plant identification apps that stop at "what is this plant?", Pixel Herba
 It's part field guide, part art project, part seasonal companion.
 
 
+WHY PIXEL HERBARIUM INSTEAD OF OTHER PLANT APPS
+
+If you've tried plant identification apps before, you may have run into:
+— Surprise annual subscriptions that auto-charge after a free trial
+— AI confidently misidentifying the wrong species
+— Losing your data when you cancel a subscription
+
+Pixel Herbarium is designed differently:
+✓ 5 free identifications per month, permanently — no expiry, no sudden paywalls
+✓ No advertisements
+✓ Your herbarium data persists even if you downgrade — your collection is yours
+✓ We focus on 60 curated species rather than "identifying everything" — precision over breadth
+
+
 SEASONAL DISCOVERY
 
 Spring brings cherry blossoms and tulips. Summer brings sunflowers and morning glories. Each season reveals new flowers to discover, and rare species appear only during narrow windows.
@@ -72,7 +86,7 @@ No countdowns. No pressure. Just the gentle rhythm of nature.
 
 FREE TO START
 
-Identify up to 5 plants per month for free. Start with the flowers around you.
+Identify up to 5 plants per month, forever free. No credit card. No trial period that auto-converts. Start with the flowers around you.
 
 
 PRIVACY
@@ -85,13 +99,15 @@ PRIVACY
 ## Screenshot Captions (6)
 
 ```
-1. Snap a flower, get pixel art
-2. Tap to flip — discover hanakotoba
-3. Complete your pixel art herbarium
-4. Flowers change with the seasons
-5. Map your city's discoveries
-6. Send a pixel art bouquet
+1. Snap a flower → instant ID + pixel art
+2. Flip the card → discover hanakotoba
+3. Build your 60-species herbarium
+4. Send a pixel art bouquet via LINE
+5. Map your city's flower discoveries
+6. 5 free IDs/month. No ads. Always.
 ```
+
+> Screenshot 6 positioning note: Lead with the free tier message — this directly addresses the #1 competitor pain point (forced paywalls). Makes a strong final impression before the download decision.
 
 ## Category
 
