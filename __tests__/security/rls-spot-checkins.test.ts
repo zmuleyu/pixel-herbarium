@@ -78,4 +78,8 @@ describe('Migration 021 — checkin_spot RPC', () => {
     expect(sql).toContain('jsonb_build_object(');
     expect(sql).not.toContain("headers := '{\"Authorization");
   });
+
+  it('guards against unauthenticated calls (auth.uid() NULL check)', () => {
+    expect(sql).toContain('v_uid IS NULL');
+  });
 });

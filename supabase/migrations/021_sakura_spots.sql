@@ -59,7 +59,13 @@ CREATE TABLE spot_checkins (
 ALTER TABLE spot_checkins ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "users can manage own checkins"
-  ON spot_checkins FOR ALL USING (auth.uid() = user_id);
+  ON spot_checkins FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "users can update own checkins"
+  ON spot_checkins FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "users can delete own checkins"
+  ON spot_checkins FOR DELETE USING (auth.uid() = user_id);
 
 CREATE POLICY "checkins are publicly viewable"
   ON spot_checkins FOR SELECT USING (true);
