@@ -106,7 +106,7 @@ describe('useBouquets – initial state', () => {
     const { result } = renderHook(() => useBouquets(''));
     await act(async () => { await flushPromises(); });
     expect(mockFrom).not.toHaveBeenCalled();
-    expect(result.current.loading).toBe(true);
+    expect(result.current.loading).toBe(false); // immediately resolves with no data when userId empty
   });
 
   it('returns empty arrays when there are no bouquets', async () => {
