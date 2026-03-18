@@ -7,9 +7,7 @@ appId: com.pixelherbarium.app
     index: 0
 - assertVisible:
     id: "dot-0"
-    timeout: 5000
 - tapOn:
     id: "dot-0"
 - assertVisible:
     id: "dot-1"
-    timeout: 3000

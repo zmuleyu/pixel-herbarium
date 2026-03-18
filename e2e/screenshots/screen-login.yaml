@@ -4,5 +4,4 @@ appId: com.pixelherbarium.app
     clearState: true
 - assertVisible:
     id: "auth.apple"
-    timeout: 10000
 - takeScreenshot: "login"

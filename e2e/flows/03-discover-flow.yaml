@@ -4,4 +4,3 @@ appId: com.pixelherbarium.app
 - runFlow: ./02-login-email.yaml
 - assertVisible:
     id: "discover.capture"
-    timeout: 5000

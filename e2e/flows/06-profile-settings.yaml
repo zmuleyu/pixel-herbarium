@@ -6,4 +6,3 @@ appId: com.pixelherbarium.app
     text: "プロフィール"
 - assertVisible:
     text: "言語"
-    timeout: 5000
