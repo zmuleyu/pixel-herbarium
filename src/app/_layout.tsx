@@ -76,7 +76,13 @@ export default function RootLayout() {
     async function redirect() {
       if ((segments[0] as string) === 'onboarding') return;
 
-      const done = await SecureStore.getItemAsync(ONBOARDING_KEY);
+      let done: string | null = null;
+      try {
+        done = await SecureStore.getItemAsync(ONBOARDING_KEY);
+      } catch {
+        done = '1'; // SecureStore error → assume done, don't block user
+      }
+
       if (!done) {
         router.replace('/onboarding' as any);
         return;
@@ -84,7 +90,8 @@ export default function RootLayout() {
 
       if (!session && segments[0] !== '(auth)') {
         router.replace('/(auth)/login');
-      } else if (session && segments[0] === '(auth)') {
+      } else if (session && (segments[0] === '(auth)' || segments.length === 0)) {
+        // segments.length === 0 means user is at root '/' (index.tsx spinner) — redirect to app
         router.replace('/(tabs)/discover');
       }
     }
