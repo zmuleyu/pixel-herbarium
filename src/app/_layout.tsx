@@ -50,14 +50,21 @@ export default function RootLayout() {
   // Bootstrap auth session + language from Supabase on first load
   useEffect(() => {
     setLoading(true);
+
+    // Ultimate safety net: force loading=false after 15s no matter what.
+    // Even if every promise hangs, the app becomes usable.
+    const ultimateTimeout = setTimeout(() => setLoading(false), 15000);
+
     Promise.all([
       withTimeout(restoreLanguage().catch(() => {}), 3000, undefined),
       withTimeout(supabase.auth.getSession(), 8000, { data: { session: null }, error: null }),
     ]).then(([, { data: { session: s } }]) => {
+      clearTimeout(ultimateTimeout);
       setSession(s);
       setUser(s?.user ?? null);
       setLoading(false);
     }).catch(() => {
+      clearTimeout(ultimateTimeout);
       setLoading(false);
     });
 
@@ -66,7 +73,10 @@ export default function RootLayout() {
       setUser(s?.user ?? null);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      clearTimeout(ultimateTimeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Redirect based on auth state — simple, no extra state
