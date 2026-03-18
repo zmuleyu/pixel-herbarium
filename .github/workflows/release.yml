@@ -1,0 +1,37 @@
+name: Release to App Store
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  validate:
+    name: Validate (TypeScript + Jest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.0'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npx jest --ci --passWithNoTests
+
+  build-submit:
+    name: EAS Build + Submit to App Store Connect
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.0'
+          cache: 'npm'
+      - run: npm ci
+      - run: eas build --profile production --platform ios --non-interactive
+      - run: eas submit --platform ios --latest --non-interactive
