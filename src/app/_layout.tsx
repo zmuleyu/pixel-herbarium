@@ -100,7 +100,7 @@ export default function RootLayout() {
 
       if (!session && segments[0] !== '(auth)') {
         router.replace('/(auth)/login');
-      } else if (session && (segments[0] === '(auth)' || !segments[0] || segments[0] === 'index')) {
+      } else if (session && (segments[0] === '(auth)' || !segments[0] || (segments[0] as string) === 'index')) {
         // !segments[0] catches [] and [''], segments[0]==='index' catches ['index'] — all possible root representations
         router.replace('/(tabs)/discover');
       }
