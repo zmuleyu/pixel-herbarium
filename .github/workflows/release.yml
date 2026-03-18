@@ -4,10 +4,16 @@ on:
   push:
     tags: ['v*']
 
+# Prevent duplicate release runs for the same tag
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   validate:
     name: Validate (TypeScript + Jest)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -22,6 +28,7 @@ jobs:
     name: EAS Build + Submit to App Store Connect
     needs: validate
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: expo/expo-github-action@v8
@@ -33,5 +40,7 @@ jobs:
           node-version: '20.18.0'
           cache: 'npm'
       - run: npm ci
-      - run: eas build --profile production --platform ios --non-interactive
-      - run: eas submit --platform ios --latest --non-interactive
+      # Build production IPA and auto-submit to App Store Connect in one step.
+      # Requires: EXPO_TOKEN (GitHub Secret) + Apple credentials stored in EAS
+      # (set up once via: npx eas submit --platform ios, then select "Save credentials to EAS")
+      - run: eas build --profile production --platform ios --non-interactive --auto-submit
