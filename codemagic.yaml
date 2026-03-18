@@ -41,8 +41,17 @@ workflows:
 
       - name: Boot Simulator & install app
         script: |
-          xcrun simctl boot "iPhone 16 Pro Max" || true
-          APP_PATH=$(find . -name "*.app" -maxdepth 3 | head -1)
+          # Pick first available iPhone simulator (handles any Xcode version)
+          DEVICE=$(xcrun simctl list devices available 2>/dev/null \
+            | grep -E "iPhone [0-9]" \
+            | grep -v "unavailable" \
+            | tail -1 \
+            | sed 's/ *(.*//' \
+            | xargs)
+          echo "Using simulator: $DEVICE"
+          xcrun simctl boot "$DEVICE" || true
+          APP_PATH=$(find . -name "*.app" -maxdepth 4 | head -1)
+          echo "App path: $APP_PATH"
           xcrun simctl install booted "$APP_PATH"
 
       - name: Run Maestro E2E flows
