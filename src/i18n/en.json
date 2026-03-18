@@ -252,5 +252,59 @@
     "ok": "OK",
     "back": "Back",
     "notFound": "Not found"
+  },
+  "sakura": {
+    "layerToggle": {
+      "heatmap": "Discovery Map",
+      "spots": "Sakura Spots"
+    },
+    "checkinSheet": {
+      "title": "Check in here",
+      "button": "Check in",
+      "distance": "{{distance}}m away"
+    },
+    "stampCard": {
+      "firstVisit": "Your first visit — thank you 🌸",
+      "saved": "Saved to your stamp collection",
+      "mankai": "Full bloom — a special memory preserved"
+    },
+    "collection": {
+      "progress": "{{count}} / {{total}} visited",
+      "tabLabel": "Sakura Spots",
+      "plantTab": "Plants",
+      "hintPoem": "In spring, beyond the mountains of {{prefecture}},\ncherry blossoms wait quietly.",
+      "visitDetail": "Visited on {{date}}"
+    },
+    "empty": {
+      "map": "Sakura spot data is being prepared.\nWhen spring arrives, a flower map will spread here 🌸",
+      "collection": "Your sakura journey hasn't begun yet.\nOpen the map to find your first spot.",
+      "mapButton": "Open Map"
+    },
+    "permission": {
+      "title": "We'll show sakura near you",
+      "description": "We use your location to show nearby sakura spots and bloom conditions. Location data is only used for app features and is never shared with third parties.",
+      "allow": "Allow Location",
+      "skip": "Not now",
+      "required": "Location permission is required to check in"
+    },
+    "review": {
+      "title": "How was this season?",
+      "body": "If Pixel Herbarium helped with your hanami, we'd love a review. Your feedback helps us improve 🌸",
+      "rate": "Leave a Review",
+      "later": "Maybe later"
+    },
+    "share": {
+      "spotCard": "I captured a sakura memory at {{spotName}} 🌸",
+      "twitter": "{{spotName}} sakura 🌸 #Hanami #PHSakuraSpots",
+      "saveToAlbum": "Saved to photos"
+    },
+    "season": {
+      "approaching": "The sound of spring is drawing near",
+      "firstBloom": "First bloom reports are arriving from around Japan",
+      "weekend": "This weekend is perfect for hanami",
+      "fullBloom": "Cherry blossoms have reached full bloom",
+      "petals": "The fleeting beauty of sakura — capture it while you can",
+      "end": "Another season of sakura memories. Until next year, when they bloom again 🌸"
+    }
   }
 }
