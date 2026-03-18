@@ -81,7 +81,7 @@ Updated: 2026-03-19
 
 | 项目 | 状态 |
 |------|------|
-| 450 tests passing | ✅ |
+| 457 tests passing | ✅ |
 | TypeScript 0 errors | ✅ |
 | EAS 账号绑定 (cbnium / zmuleyu@gmail.com) | ✅ |
 | EAS projectId: `74427c7e-dba6-4061-9cc9-3651d09fae01` | ✅ |
