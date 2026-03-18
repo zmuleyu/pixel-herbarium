@@ -1,8 +1,9 @@
 // src/components/SharePoster.tsx
 // Off-screen poster component for share image generation.
-// Supports two formats:
+// Supports three formats:
 //   'story' — 360x640 (9:16) Instagram/LINE Story vertical layout
 //   'line'  — 360x360 (1:1) LINE Card horizontal layout
+//   'spot'  — 360x360 (1:1) Sakura spot check-in share card
 
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
