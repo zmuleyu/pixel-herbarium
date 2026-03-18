@@ -117,6 +117,15 @@ export default function HerbariumScreen() {
         )}
         contentContainerStyle={styles.grid}
         showsVerticalScrollIndicator={false}
+        removeClippedSubviews={true}
+        windowSize={5}
+        maxToRenderPerBatch={GRID_COLUMNS * 3}
+        initialNumToRender={GRID_COLUMNS * 4}
+        getItemLayout={(_data, index) => ({
+          length: CELL_SIZE,
+          offset: CELL_SIZE * Math.floor(index / GRID_COLUMNS),
+          index,
+        })}
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Text style={styles.emptyText}>{t('herbarium.noResults')}</Text>
