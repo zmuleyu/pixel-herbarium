@@ -78,6 +78,8 @@ export default function RootLayout() {
           router.replace('/onboarding' as any);
           return;
         }
+      } else {
+        return; // already on onboarding, let user complete it
       }
 
       if (!session && !inAuthGroup) {
