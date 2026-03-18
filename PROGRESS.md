@@ -41,6 +41,8 @@ Updated: 2026-03-19
 - [x] **herbarium.tsx** — sakura spots tab + SpotStampGrid + SpotDetailSheet (commit `953b964`)
 - [x] **notify-bloom Edge Function** — pg_cron integration stub (commit `133fee8`)
 - [x] **SharePoster spot format** — format='spot' variant (commit `3d17bd6`)
+- [x] **Migration 021 applied to Supabase** — sakura_spots + spot_checkins + checkin_spot RPC (commit `b3aadb5`)
+- [x] **database.ts regenerated** — sakura_spots/spot_checkins types (commit `b3aadb5`)
 - **457 tests passing** | TypeScript 0 errors
 
 ### 待做 — 设备测试 + App Store
