@@ -29,56 +29,51 @@ Updated: 2026-03-19
 
 ---
 
-## 待做 — Phase 3: 设备测试 + App Store
+## ✅ Phase 3: 功能增强 — 完成 (commit `133fee8`)
 
 ### Phase 3 核心任务
 - [x] **onboarding 文案更新** — 花めぐり 3 slides (commit `43facc6`)
 - [x] **sakura.json 扩充** — 25 spots 覆盖九州/近畿/首都圏/東北/北海道 (commit `43facc6`)
-- 🔄 **EAS preview build `a9f3b18b`** — 排队中 (profile: preview, commit `43facc6`)
-  - Monitor: https://expo.dev/accounts/cbnium/projects/pixel-herbarium/builds/a9f3b18b-5ed1-4a83-9db5-766ae34347dc
-- [ ] 真机验证打卡向导（选图 → 选 spot → 预览 → 保存）
-- [ ] App Store Connect 元数据填写（见下）
-- [ ] Production EAS build + submit
+- [x] **EAS preview build `a9f3b18b`** — ✅ finished 2026-03-19 02:36
+- [x] **EAS simulator build `100ca731`** — ✅ finished 2026-03-19 05:19
+- [x] **useReviewPrompt** — 30-day cooldown レビュー促進 (commit `dd459ed`)
+- [x] **map.tsx** — sakura spots layer + PIN rendering + proximity check + check-in sheet (commit `90767ad`)
+- [x] **herbarium.tsx** — sakura spots tab + SpotStampGrid + SpotDetailSheet (commit `953b964`)
+- [x] **notify-bloom Edge Function** — pg_cron integration stub (commit `133fee8`)
+- [x] **SharePoster spot format** — format='spot' variant (commit `3d17bd6`)
+- **457 tests passing** | TypeScript 0 errors
 
-### OTA 补充（Phase 3 之后）
+### 待做 — 设备测试 + App Store
+- [ ] 真机验证打卡向导（选图 → 選 spot → 预览 → 保存）
+- [ ] App Store Connect 元数据填写（見下）
+- [ ] Production EAS build + submit
+- [ ] **触发 Codemagic 新 build** — EAS binary `100ca731` 已就绪
+
+### OTA 补充（上线之后）
 - [ ] WatermarkTemplate（叠加水印模板）
 - [ ] PixelTemplate（像素化模板）
 - [ ] TemplateSelector（模板选择 UI）
 
 ---
 
-## Layer 2: Codemagic + Maestro E2E — 待新 EAS 构建完成
+## Layer 2: Codemagic + Maestro E2E — EAS binary 已就绪，待触发新 build
 
-**当前状态**：Jest + TS CI 全通过 ✅ | Maestro E2E 待新 EAS Simulator build 完成后重测
+**当前状态**：Jest + TS ✅ | EAS Simulator `100ca731` ✅ finished | **待手动触发 Codemagic**
 
-### 根因分析（已更新 — Build #13 `69baba5d`）
-- ❌ **6/6 Maestro flows 失败** — 双重根因：
-  1. **旧 flows**：Build #13 用了 commit `47b8112`(22:41)，Maestro flow 更新在 `ae6b2bd`(23:04) 之后 → 旧 flows 仍用 `text: "スキップ"`
-  2. **旧 EAS binary**：EAS `100ca731` 于 23:07 才排队，Build #13 (22:44) 运行时不存在 → 下载了旧 `b99f88df` (CHECKIN_MODE=false)
-
-### 已完成修复 (commit `ae6b2bd`)
-- [x] **Jest mock 修复** — `DiscoverScreen.test.tsx` 加 `jest.mock('expo-secure-store', ...)`
-- [x] **4个 testID 新增** — home/footprint/checkin/settings 加 `testID="xxx.container"`
-- [x] **Maestro flows 全量更新** — 适配 CHECKIN_MODE UI (id: selector 替代 text: selector)
-- [x] **EAS Simulator build `100ca731`** 已排队 (commit `4ae8eb7`，含所有 testID)
-  - Monitor: https://expo.dev/accounts/cbnium/projects/pixel-herbarium/builds/100ca731-861f-4ff9-928a-ef2a15a542db
+### 已完成
+- [x] Jest mock 修复 + 4 个 testID 新增 + Maestro flows 全量更新 (commit `ae6b2bd`)
+- [x] EAS Simulator build `100ca731` — ✅ finished 2026-03-19 05:19 (commit `4ae8eb7`)
+- [x] Layer 4: GitHub Actions release workflow (`release.yml`)
 
 ### 待做
-- [ ] **等待 EAS Simulator build `100ca731` 完成**（排队中，约 30-60 分钟）
-- [ ] **在 Codemagic 手动触发新 build** (dev 分支 `a7c3ba0`)，验证 Maestro E2E 通过
-  - 预期：6/6 PASS（新 binary + 新 flows）
+- [ ] **在 Codemagic 手动触发新 build** (dev 分支 `133fee8`)，验证 Maestro E2E 通过
+  - ⚠️ 注意：需先 git push，否则 Codemagic 拉不到最新代码
+  - 预期：6/6 PASS（新 binary `100ca731` + 新 flows）
 - [ ] Visual regression baselines + Git LFS
-- [x] **Layer 4: GitHub Actions release workflow** — `.github/workflows/release.yml` 完善
-  - 触发条件：`git push tag v*`
-  - Job 1: TypeScript + Jest validate (timeout 10min)
-  - Job 2: `eas build --auto-submit` production iOS (timeout 60min)
-  - 需要：GitHub Secret `EXPO_TOKEN` ✅ | EAS 存储的 Apple credentials（首次需交互式 `eas submit` 保存）
 
 ### Build IDs
-- **新 EAS Simulator**: `100ca731` (commit `4ae8eb7`) ← 排队中 (23:07 CST)
-- 旧 EAS Simulator: `b99f88df` (commit `2d42b30`) ← 废弃
+- **EAS Simulator**: `100ca731` (commit `4ae8eb7`) — ✅ finished
 - Codemagic App: `69ba556c2217be10dc8b85f8`
-- Build #13: `69baba5d` (commit `47b8112`, 旧flows+旧binary → 6/6 失败，已诊断)
 
 ---
 
