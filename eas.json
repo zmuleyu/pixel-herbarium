@@ -35,6 +35,16 @@
       },
       "channel": "preview"
     },
+    "simulator": {
+      "node": "20.18.0",
+      "ios": { "simulator": true },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://uwdgnueaycatmkzkbxwo.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "PLACEHOLDER",
+        "APP_VARIANT": "development"
+      },
+      "channel": "simulator"
+    },
     "production": {
       "extends": "base",
       "autoIncrement": true,
