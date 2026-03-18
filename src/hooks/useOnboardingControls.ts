@@ -84,7 +84,8 @@ export function useOnboardingControls(slideCount: number) {
     } catch {
       // Write failed — still navigate (worst case: user sees onboarding again)
     }
-    router.replace('/(tabs)/discover');
+    // Go to login; root layout redirect handles session-based routing
+    router.replace('/(auth)/login');
   }
 
   function onSwipeEnd(event: NativeSyntheticEvent<NativeScrollEvent>): void {

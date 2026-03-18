@@ -1,6 +1,6 @@
 import '../i18n'; // initialize i18n before any screen renders
 import { restoreLanguage } from '../i18n';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import * as Notifications from 'expo-notifications';
@@ -29,8 +29,9 @@ export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
   const { session, loading, setSession, setUser, setLoading } = useAuthStore();
+  const [isReady, setIsReady] = useState(false);
   usePushToken();
-  const { isDownloading, isReady } = useOTAUpdate();
+  const { isDownloading } = useOTAUpdate();
 
   // Handle push notification taps — navigate to herbarium
   useEffect(() => {
@@ -65,7 +66,8 @@ export default function RootLayout() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Redirect based on auth state once loading is complete
+  // Redirect chain — runs after each navigation until final destination reached.
+  // segments in deps is safe: isReady gate hides intermediate states from user.
   useEffect(() => {
     if (loading) return;
 
@@ -73,28 +75,43 @@ export default function RootLayout() {
       const inAuthGroup = segments[0] === '(auth)';
       const inOnboarding = (segments[0] as string) === 'onboarding';
 
-      // First-time launch: show onboarding before auth
-      if (!inOnboarding) {
-        const done = await SecureStore.getItemAsync(ONBOARDING_KEY);
-        if (!done) {
-          router.replace('/onboarding' as any);
-          return;
-        }
-      } else {
-        return; // already on onboarding, let user complete it
+      // Already on onboarding — show it
+      if (inOnboarding) {
+        setIsReady(true);
+        return;
       }
 
+      // First-time launch: check onboarding
+      const done = await SecureStore.getItemAsync(ONBOARDING_KEY);
+      if (!done) {
+        router.replace('/onboarding' as any);
+        return;
+      }
+
+      // Auth redirects
       if (!session && !inAuthGroup) {
         router.replace('/(auth)/login');
-      } else if (session && inAuthGroup) {
-        router.replace('/(tabs)/discover');
+        return;
       }
+      if (session && inAuthGroup) {
+        router.replace('/(tabs)/discover');
+        return;
+      }
+
+      // Arrived at correct destination
+      setIsReady(true);
     }
 
     redirect();
-  }, [session, loading]);
+  }, [session, loading, segments]);
 
-  if (loading) {
+  // Reset on login/logout so redirect chain re-evaluates
+  useEffect(() => {
+    setIsReady(false);
+  }, [session]);
+
+  // Double gate: loading OR redirect incomplete → spinner
+  if (loading || !isReady) {
     return (
       <View style={styles.splash}>
         <ActivityIndicator color={colors.plantPrimary} />
@@ -106,7 +123,7 @@ export default function RootLayout() {
     <ErrorBoundary>
       <OfflineBanner />
       <Slot />
-      <OTAUpdateBanner isDownloading={isDownloading} isReady={isReady} />
+      <OTAUpdateBanner isDownloading={isDownloading} isReady={false} />
     </ErrorBoundary>
   );
 }
