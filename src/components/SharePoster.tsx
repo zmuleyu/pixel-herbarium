@@ -229,27 +229,6 @@ function SpotPoster({ spot }: { spot: SharePosterSpot }) {
   );
 }
 
-const spotStyles = StyleSheet.create({
-  canvas: {
-    width: 360, height: 360,
-    alignItems: 'center', justifyContent: 'center',
-    overflow: 'hidden',
-    borderRadius: borderRadius.md,
-  },
-  spotIcon:   { fontSize: 64, marginBottom: 8 },
-  spotName:   {
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.xxl,
-    color: colors.text, textAlign: 'center', marginBottom: spacing.xs,
-  },
-  prefecture: { fontSize: typography.fontSize.sm, color: colors.textSecondary, marginBottom: spacing.sm },
-  date:       { fontSize: typography.fontSize.sm, color: colors.textSecondary, marginBottom: spacing.lg },
-  logo:       {
-    fontSize: typography.fontSize.xs, color: colors.textSecondary,
-    position: 'absolute', bottom: 12, right: 12,
-  },
-});
-
 // ---------------------------------------------------------------------------
 // Main export
 // ---------------------------------------------------------------------------
@@ -452,5 +431,26 @@ const lineStyles = StyleSheet.create({
     color: colors.text,
     textAlign: 'center',
     paddingVertical: spacing.sm,
+  },
+});
+
+const spotStyles = StyleSheet.create({
+  canvas: {
+    width: 360, height: 360,
+    alignItems: 'center', justifyContent: 'center',
+    overflow: 'hidden',
+    borderRadius: borderRadius.md,
+  },
+  spotIcon:   { fontSize: 64, marginBottom: 8 },
+  spotName:   {
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.xxl,
+    color: colors.text, textAlign: 'center', marginBottom: spacing.xs,
+  },
+  prefecture: { fontSize: typography.fontSize.sm, color: colors.textSecondary, marginBottom: spacing.sm },
+  date:       { fontSize: typography.fontSize.sm, color: colors.textSecondary, marginBottom: spacing.lg },
+  logo:       {
+    fontSize: typography.fontSize.xs, color: colors.textSecondary,
+    position: 'absolute', bottom: 12, right: 12,
   },
 });

@@ -9,6 +9,8 @@ jest.mock('@/constants/theme', () => ({
   colors: {
     background: '#f5f4f1', text: '#3a3a3a', textSecondary: '#7a7a7a',
     white: '#ffffff', border: '#e8e6e1', plantPrimary: '#9fb69f',
+    blushPink: '#f5d5d0',
+    seasonal: { sakura: '#f5d5d0' },
     rarity: { common: '#9fb69f', uncommon: '#d4e4f7', rare: '#f5d5d0' },
   },
   typography: {
@@ -210,7 +212,7 @@ describe('SharePosterPlant type', () => {
 
 describe('SharePoster format=spot', () => {
   it('renders spot name', () => {
-    const props = {
+    const props: SharePosterProps = {
       format: 'spot' as const,
       spot: {
         spot_id: 1, name_ja: '上野恩賜公園', name_en: 'Ueno Park',
@@ -219,12 +221,13 @@ describe('SharePoster format=spot', () => {
         is100sen: true,
       },
     };
-    const html = JSON.stringify(React.createElement(SharePoster as any, props));
+    const html = renderToString(props);
     expect(html).toContain('上野恩賜公園');
+    expect(html).not.toContain('#d4a017'); // no gold border for normal variant
   });
 
   it('shows mankai gold border when stamp_variant is mankai', () => {
-    const props = {
+    const props: SharePosterProps = {
       format: 'spot' as const,
       spot: {
         spot_id: 1, name_ja: '吉野山', name_en: 'Mt. Yoshino',
@@ -233,7 +236,8 @@ describe('SharePoster format=spot', () => {
         is100sen: true,
       },
     };
-    const html = JSON.stringify(React.createElement(SharePoster as any, props));
+    const html = renderToString(props);
     expect(html).toContain('吉野山');
+    expect(html).toContain('#d4a017'); // mankai gold border
   });
 });
