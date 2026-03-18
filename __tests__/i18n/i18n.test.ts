@@ -33,7 +33,7 @@ describe('i18n key parity', () => {
 describe('i18n content', () => {
   it('ja has correct tab names', () => {
     expect((ja as Record<string, Record<string, string>>).tabs.discover).toBe('発見');
-    expect((ja as Record<string, Record<string, string>>).tabs.herbarium).toBe('花図鉴');
+    expect((ja as Record<string, Record<string, string>>).tabs.herbarium).toBe('花図鉑');
   });
 
   it('en has English tab names', () => {

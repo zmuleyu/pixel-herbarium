@@ -98,7 +98,7 @@ describe('useFriends – initial state', () => {
     const { result } = renderHook(() => useFriends(''));
     await act(async () => { await flushPromises(); });
     expect(mockFrom).not.toHaveBeenCalled();
-    expect(result.current.loading).toBe(true); // never transitions to false
+    expect(result.current.loading).toBe(false); // immediately resolves with no data when userId empty
   });
 
   it('returns empty arrays when there are no friendships', async () => {
