@@ -85,8 +85,8 @@ LANGUAGE plpgsql SECURITY DEFINER AS $$
 DECLARE
   v_uid     UUID  := auth.uid();
   v_uid_txt TEXT  := v_uid::TEXT;
-  v_checkin spot_checkins;
   v_is_new  BOOLEAN;
+  v_json    JSON;
 BEGIN
   IF v_uid IS NULL THEN
     RAISE EXCEPTION 'Not authenticated';
@@ -102,7 +102,11 @@ BEGIN
   )
   ON CONFLICT (user_id, spot_id) DO UPDATE
     SET checked_in_at = spot_checkins.checked_in_at
-  RETURNING *, (xmax = 0) AS is_new INTO v_checkin, v_is_new;
+  RETURNING (xmax = 0) INTO v_is_new;
+
+  SELECT row_to_json(sc) INTO v_json
+  FROM spot_checkins sc
+  WHERE sc.user_id = v_uid AND sc.spot_id = p_spot_id;
 
   IF v_is_new AND p_is_peak THEN
     INSERT INTO user_quotas (user_id, month, used, "limit")
@@ -116,7 +120,7 @@ BEGIN
   END IF;
 
   RETURN json_build_object(
-    'checkin',    row_to_json(v_checkin),
+    'checkin',    v_json,
     'is_new_row', v_is_new
   );
 END;
