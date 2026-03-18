@@ -114,4 +114,11 @@ module.exports = {
   useWindowDimensions: jest.fn(() => ({ width: 375, height: 812, scale: 2, fontScale: 1 })),
   NativeScrollEvent: {},
   NativeSyntheticEvent: {},
+  AccessibilityInfo: {
+    isReduceMotionEnabled: jest.fn(() => Promise.resolve(false)),
+    addEventListener: jest.fn(() => ({ remove: jest.fn() })),
+    fetch: jest.fn(() => Promise.resolve(false)),
+    setAccessibilityFocus: jest.fn(),
+    announceForAccessibility: jest.fn(),
+  },
 };
