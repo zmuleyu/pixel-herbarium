@@ -17,7 +17,7 @@ import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 
 export default function LoginScreen() {
   const { t } = useTranslation();
-  const { setUser, setSession, setError } = useAuthStore();
+  const { setError } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -25,15 +25,14 @@ export default function LoginScreen() {
   async function handleApple() {
     try {
       setSubmitting(true);
-      const data = await signInWithApple();
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
+      await signInWithApple();
+      // onAuthStateChange in _layout.tsx handles session/user updates.
+      // Don't reset submitting — component unmounts on success.
     } catch (e: any) {
       if (e.code !== 'ERR_REQUEST_CANCELED') {
         setError(e.message);
         Alert.alert(t('auth.error'), e.message);
       }
-    } finally {
       setSubmitting(false);
     }
   }
@@ -42,13 +41,11 @@ export default function LoginScreen() {
     if (!email || !password) return;
     try {
       setSubmitting(true);
-      const data = await signInWithEmail(email, password);
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
+      await signInWithEmail(email, password);
+      // onAuthStateChange handles session/user updates.
     } catch (e: any) {
       setError(e.message);
       Alert.alert(t('auth.error'), e.message);
-    } finally {
       setSubmitting(false);
     }
   }
