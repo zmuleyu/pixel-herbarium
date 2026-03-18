@@ -27,8 +27,13 @@ module.exports = {
       setupFilesAfterEnv: ['<rootDir>/__tests__/mocks/server.ts'],
       moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
-        '^msw/node$': '<rootDir>/node_modules/msw/node/index.js',
+        '^msw/node$': '<rootDir>/node_modules/msw/lib/node/index.js',
       },
+      // msw v2 and until-async ship ESM; transform them so CJS jest can consume them
+      transformIgnorePatterns: [
+        '/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base|msw|until-async|@mswjs))',
+        '/node_modules/react-native-reanimated/plugin/',
+      ],
     },
   ],
 };
