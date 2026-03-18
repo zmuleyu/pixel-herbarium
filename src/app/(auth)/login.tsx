@@ -60,7 +60,7 @@ export default function LoginScreen() {
     >
       <View style={styles.inner}>
         {/* Title */}
-        <Text style={styles.title}>花図鉑</Text>
+        <Text style={styles.title}>{t('auth.appName')}</Text>
         <Text style={styles.subtitle}>{t('auth.tagline')}</Text>
 
         {/* Apple Sign-In (iOS only) */}

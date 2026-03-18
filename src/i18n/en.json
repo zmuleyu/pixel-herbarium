@@ -66,7 +66,12 @@
     "email": "Email",
     "password": "Password",
     "welcomeTitle": "Welcome to Pixel Herbarium",
-    "welcomeSubtitle": "Discover plants and transform them into pixel art"
+    "welcomeSubtitle": "Discover plants and transform them into pixel art",
+    "appName": "Pixel Herbarium",
+    "tagline": "Discover plants and transform them into pixel art",
+    "orEmail": "or email",
+    "error": "Authentication Error",
+    "signIn": "Sign In"
   },
   "map": {
     "title": "City Map",

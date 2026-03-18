@@ -1,7 +1,7 @@
 {
   "tabs": {
     "discover": "発見",
-    "herbarium": "花図鉴",
+    "herbarium": "花図鉑",
     "cityMap": "同城マップ",
     "social": "ソーシャル",
     "profile": "マイページ"
@@ -25,7 +25,7 @@
     "identifyError": "エラーが発生しました。もう一度お試しください。",
     "cameraError": "カメラの読み込みに失敗しました",
     "outOfRegion": "日本国内でのみ発見できます",
-    "viewHerbarium": "花図鑑を見る",
+    "viewHerbarium": "花図鉑を見る",
     "checkingHint": "今月は発見できます",
     "firstDiscovery": "✨ 新発見！",
     "outOfSeason": "今月は見つかりません",
@@ -66,7 +66,12 @@
     "email": "メールアドレス",
     "password": "パスワード",
     "welcomeTitle": "花図鉑へようこそ",
-    "welcomeSubtitle": "植物を発見して、ピクセルアートに変換しよう"
+    "welcomeSubtitle": "植物を発見して、ピクセルアートに変換しよう",
+    "appName": "花図鉑",
+    "tagline": "植物を発見して、ピクセルアートに変換しよう",
+    "orEmail": "またはメールで",
+    "error": "認証エラー",
+    "signIn": "サインイン"
   },
   "map": {
     "title": "同城マップ",
