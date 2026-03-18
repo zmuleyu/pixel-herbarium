@@ -12,10 +12,6 @@ interface Props {
   visible:        boolean;
   onClose:        () => void;
   onViewOnMap:    () => void;
-  /** i18n key for visit detail label — injected via defaultProps for testability */
-  visitDetailKey?: string;
-  /** i18n key for mankai label — injected via defaultProps for testability */
-  mankaiKey?:      string;
 }
 
 function formatDate(iso: string): string {
@@ -24,11 +20,9 @@ function formatDate(iso: string): string {
   return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
 }
 
-function SpotDetailSheet({
-  spot, checkin, visible, onClose, onViewOnMap,
-  visitDetailKey = 'sakura.collection.visitDetail',
-  mankaiKey      = 'sakura.stampCard.mankai',
-}: Props) {
+function SpotDetailSheet({ spot, checkin, visible, onClose, onViewOnMap }: Props) {
+  const visitDetailKey = 'sakura.collection.visitDetail';
+  const mankaiKey      = 'sakura.stampCard.mankai';
   const { t } = useTranslation();
   if (!spot || !checkin || !visible) return null;
 
@@ -57,11 +51,6 @@ function SpotDetailSheet({
     </Modal>
   );
 }
-
-SpotDetailSheet.defaultProps = {
-  visitDetailKey: 'sakura.collection.visitDetail',
-  mankaiKey:      'sakura.stampCard.mankai',
-};
 
 export default SpotDetailSheet;
 

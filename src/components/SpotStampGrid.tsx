@@ -17,12 +17,11 @@ interface Props {
   spots:        FlowerSpot[];
   checkins:     SpotCheckinResult[];
   onSpotPress:  (spot: FlowerSpot, checkin: SpotCheckinResult | null) => void;
-  /** i18n key for progress label — injected via defaultProps for testability */
-  progressKey?: string;
 }
 
-function SpotStampGrid({ spots, checkins, onSpotPress, progressKey = 'sakura.collection.progress' }: Props) {
+function SpotStampGrid({ spots, checkins, onSpotPress }: Props) {
   const { t } = useTranslation();
+  const progressKey = 'sakura.collection.progress';
 
   const checkinMap = new Map(checkins.map((c) => [c.spot_id, c]));
   const checked    = checkins.length;
@@ -69,10 +68,6 @@ function SpotStampGrid({ spots, checkins, onSpotPress, progressKey = 'sakura.col
     </View>
   );
 }
-
-SpotStampGrid.defaultProps = {
-  progressKey: 'sakura.collection.progress',
-};
 
 export default SpotStampGrid;
 

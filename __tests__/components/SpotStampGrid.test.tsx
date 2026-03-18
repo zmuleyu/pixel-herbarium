@@ -24,17 +24,29 @@ const checkin: SpotCheckinResult = {
   is_mankai: false, stamp_variant: 'normal', bloom_status_at_checkin: null,
 };
 
+function shallowRender(el: any, depth = 5): any {
+  if (el == null || typeof el !== 'object' || !el.type) return el;
+  if (typeof el.type === 'function' && depth > 0) {
+    return shallowRender(el.type(el.props ?? {}), depth - 1);
+  }
+  const children = el.props?.children;
+  return { type: el.type, props: { ...el.props, children: undefined },
+           children: Array.isArray(children)
+             ? children.map((c: any) => shallowRender(c, depth))
+             : shallowRender(children, depth) };
+}
+
 describe('SpotStampGrid', () => {
   it('renders without crashing with empty spots', () => {
-    expect(() => React.createElement(SpotStampGrid, {
+    expect(() => shallowRender(React.createElement(SpotStampGrid, {
       spots: [], checkins: [], onSpotPress: jest.fn()
-    })).not.toThrow();
+    }))).not.toThrow();
   });
 
   it('renders progress text key', () => {
-    const html = JSON.stringify(React.createElement(SpotStampGrid, {
+    const html = JSON.stringify(shallowRender(React.createElement(SpotStampGrid, {
       spots: [spot], checkins: [checkin], onSpotPress: jest.fn()
-    }));
+    })));
     expect(html).toContain('sakura.collection.progress');
   });
 });
