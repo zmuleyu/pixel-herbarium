@@ -5,25 +5,28 @@
 
 // Mock all dependencies BEFORE imports
 jest.mock('@/stores/sakura-store', () => ({
-  useSakuraStore: jest.fn(() => ({
-    spots: [
-      {
-        id: 1, nameJa: '上野恩賜公園', nameEn: 'Ueno Park',
-        prefecture: '東京都', prefectureCode: 13, city: '台東区', category: 'park',
-        bloomTypical: { earlyStart: '03-20', peakStart: '03-28', peakEnd: '04-05', lateEnd: '04-12' },
-        latitude: 35.7141, longitude: 139.7734,
-        tags: ['名所100選'],
-      },
-    ],
-    checkins: [],
-    loading: false,
-    initSpots: jest.fn(),
-    loadCheckins: jest.fn(),
-    performCheckin: jest.fn(),
-    hasCheckedIn: jest.fn(() => false),
-    getProgress: jest.fn(() => ({ checked: 0, total: 1 })),
-    flushOfflineQueue: jest.fn(),
-  })),
+  useSakuraStore: Object.assign(
+    jest.fn(() => ({
+      spots: [
+        {
+          id: 1, nameJa: '上野恩賜公園', nameEn: 'Ueno Park',
+          prefecture: '東京都', prefectureCode: 13, city: '台東区', category: 'park',
+          bloomTypical: { earlyStart: '03-20', peakStart: '03-28', peakEnd: '04-05', lateEnd: '04-12' },
+          latitude: 35.7141, longitude: 139.7734,
+          tags: ['名所100選'],
+        },
+      ],
+      checkins: [],
+      loading: false,
+      initSpots: jest.fn(),
+      loadCheckins: jest.fn(),
+      performCheckin: jest.fn(() => Promise.resolve({ isNew: false, isMankai: false })),
+      hasCheckedIn: jest.fn(() => false),
+      getProgress: jest.fn(() => ({ checked: 0, total: 1 })),
+      flushOfflineQueue: jest.fn(),
+    })),
+    { getState: jest.fn(() => ({ checkins: [] })) }
+  ),
 }));
 jest.mock('@/components/PrePermissionScreen', () => ({
   __esModule: true,
