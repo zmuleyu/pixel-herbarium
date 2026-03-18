@@ -20,6 +20,11 @@ import { useAuthStore } from '@/stores/auth-store';
 import { getCurrentSeason } from '@/utils/date';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { GRID_COLUMNS, TOTAL_PLANTS, RARITY_LABELS } from '@/constants/plants';
+import { useSakuraStore } from '@/stores/sakura-store';
+import SpotStampGrid from '@/components/SpotStampGrid';
+import SpotDetailSheet from '@/components/SpotDetailSheet';
+import type { FlowerSpot } from '@/types/hanami';
+import type { SpotCheckinResult } from '@/types/sakura';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CELL_SIZE = Math.floor(SCREEN_WIDTH / GRID_COLUMNS);

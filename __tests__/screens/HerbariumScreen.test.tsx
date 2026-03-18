@@ -4,6 +4,20 @@
  */
 
 // Mock all dependencies BEFORE imports
+jest.mock('@/stores/sakura-store', () => ({
+  useSakuraStore: jest.fn(() => ({
+    spots: [], checkins: [], loading: false,
+    initSpots: jest.fn(), loadCheckins: jest.fn(),
+    hasCheckedIn: jest.fn(() => false), getProgress: jest.fn(() => ({ checked: 0, total: 0 })),
+  })),
+}));
+jest.mock('@/components/SpotStampGrid', () => ({
+  __esModule: true, default: () => null,
+}));
+jest.mock('@/components/SpotDetailSheet', () => ({
+  __esModule: true, default: () => null,
+}));
+
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'ja' } }),
 }));
@@ -43,6 +57,7 @@ jest.mock('@/constants/theme', () => ({
     rarity: { common: '#9fb69f', uncommon: '#d4e4f7', rare: '#f5d5d0' },
     seasonal: { sakura: '#f5d5d0' },
     plantSecondary: '#c1e8d8',
+    blushPink: '#f5d5d0',
   },
   typography: {
     fontFamily: { body: 'System', display: 'HiraginoMaruGothicProN' },
@@ -100,5 +115,12 @@ describe('HerbariumScreen', () => {
   it('renders FlatList for plant grid', () => {
     const output = renderToString();
     expect(output).toContain('FlatList');
+  });
+});
+
+describe('HerbariumScreen — spot tab', () => {
+  it('renders spot tab label', () => {
+    const html = renderToString();
+    expect(html).toContain('sakura.collection.tabLabel');
   });
 });
