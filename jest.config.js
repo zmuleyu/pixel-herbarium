@@ -33,6 +33,7 @@ module.exports = {
         '^react-native$': '<rootDir>/__mocks__/react-native.js',
         '^msw/node$': '<rootDir>/__mocks__/msw-node.js',
         '^msw$': '<rootDir>/__mocks__/msw-core.js',
+        '^react$': '<rootDir>/__mocks__/react-hooks-stub.js',
       },
       transform: {
         '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx', resolveJsonModule: true } }],
