@@ -207,3 +207,33 @@ describe('SharePosterPlant type', () => {
     expect(plant.bloom_months).toHaveLength(2);
   });
 });
+
+describe('SharePoster format=spot', () => {
+  it('renders spot name', () => {
+    const props = {
+      format: 'spot' as const,
+      spot: {
+        spot_id: 1, name_ja: '上野恩賜公園', name_en: 'Ueno Park',
+        prefecture: '東京都', checked_in_at: '2026-03-28T10:00:00Z',
+        stamp_variant: 'normal' as const, bloom_status: 'peak' as const,
+        is100sen: true,
+      },
+    };
+    const html = JSON.stringify(React.createElement(SharePoster as any, props));
+    expect(html).toContain('上野恩賜公園');
+  });
+
+  it('shows mankai gold border when stamp_variant is mankai', () => {
+    const props = {
+      format: 'spot' as const,
+      spot: {
+        spot_id: 1, name_ja: '吉野山', name_en: 'Mt. Yoshino',
+        prefecture: '奈良県', checked_in_at: '2026-04-05T10:00:00Z',
+        stamp_variant: 'mankai' as const, bloom_status: 'peak' as const,
+        is100sen: true,
+      },
+    };
+    const html = JSON.stringify(React.createElement(SharePoster as any, props));
+    expect(html).toContain('吉野山');
+  });
+});
