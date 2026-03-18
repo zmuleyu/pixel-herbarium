@@ -51,36 +51,30 @@ Updated: 2026-03-18
 
 **当前状态**：Jest + TS CI 全通过 ✅ | Maestro E2E 待新 EAS Simulator build 完成后重测
 
-### 根因分析 (build `69baba5d`)
-- ❌ **6/6 Maestro flows 失败**：全部找不到 "スキップ" 按钮
-- 根因：EAS build `b99f88df` (commit `2d42b30`) 是旧代码（Pivot前）
-  - 旧 EAS build = CHECKIN_MODE=false + 无 onboarding redirect → 直接进入 discover 屏
-  - Maestro flows 期待新代码的 onboarding 屏 → 6/6 失败
+### 根因分析（已更新 — Build #13 `69baba5d`）
+- ❌ **6/6 Maestro flows 失败** — 双重根因：
+  1. **旧 flows**：Build #13 用了 commit `47b8112`(22:41)，Maestro flow 更新在 `ae6b2bd`(23:04) 之后 → 旧 flows 仍用 `text: "スキップ"`
+  2. **旧 EAS binary**：EAS `100ca731` 于 23:07 才排队，Build #13 (22:44) 运行时不存在 → 下载了旧 `b99f88df` (CHECKIN_MODE=false)
 
 ### 已完成修复 (commit `ae6b2bd`)
 - [x] **Jest mock 修复** — `DiscoverScreen.test.tsx` 加 `jest.mock('expo-secure-store', ...)`
 - [x] **4个 testID 新增** — home/footprint/checkin/settings 加 `testID="xxx.container"`
-- [x] **Maestro flows 全量更新** — 适配 CHECKIN_MODE UI:
-  - 01: `text: "スキップ"` → `id: "onboarding.skip"` (testID 更稳定)
-  - 02: skip onboarding → 设定タブ → ログイン → home.container
-  - 03: 验证 home.container 可见
-  - 04: 足跡タブ → footprint.container (替代 herbarium 図鑑)
-  - 05: 打卡タブ → checkin.container (替代 hanakotoba flip)
-  - 06: 設定タブ → settings.container (替代 profile)
-- [x] **新 EAS Simulator build** — `100ca731` 已排队 (commit `4ae8eb7`)
+- [x] **Maestro flows 全量更新** — 适配 CHECKIN_MODE UI (id: selector 替代 text: selector)
+- [x] **EAS Simulator build `100ca731`** 已排队 (commit `4ae8eb7`，含所有 testID)
   - Monitor: https://expo.dev/accounts/cbnium/projects/pixel-herbarium/builds/100ca731-861f-4ff9-928a-ef2a15a542db
 
 ### 待做
-- [ ] 等待 EAS Simulator build `100ca731` 完成（约 30-60 分钟）
-- [ ] 在 Codemagic 手动触发新 build (dev 分支)，验证 Maestro E2E 通过
+- [ ] **等待 EAS Simulator build `100ca731` 完成**（排队中，约 30-60 分钟）
+- [ ] **在 Codemagic 手动触发新 build** (dev 分支 `a7c3ba0`)，验证 Maestro E2E 通过
+  - 预期：6/6 PASS（新 binary + 新 flows）
 - [ ] Visual regression baselines + Git LFS
 - [ ] Layer 4: GitHub Actions release workflow
 
 ### Build IDs
-- **新 EAS Simulator**: `100ca731` (commit `4ae8eb7`) ← 排队中
-- 旧 EAS Simulator: `b99f88df` (commit `2d42b30`) ← 旧代码，已废弃
+- **新 EAS Simulator**: `100ca731` (commit `4ae8eb7`) ← 排队中 (23:07 CST)
+- 旧 EAS Simulator: `b99f88df` (commit `2d42b30`) ← 废弃
 - Codemagic App: `69ba556c2217be10dc8b85f8`
-- 上次 Codemagic build: `69baba5d` (根因确认: 旧EAS build + 流程配置不匹配)
+- Build #13: `69baba5d` (commit `47b8112`, 旧flows+旧binary → 6/6 失败，已诊断)
 
 ---
 
