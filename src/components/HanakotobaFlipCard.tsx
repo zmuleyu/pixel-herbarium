@@ -30,7 +30,7 @@ export function HanakotobaFlipCard({ hanakotoba, flowerMeaning, colorMeaning }: 
   const backFace = faces[(phase + 1) % 3];
 
   return (
-    <TouchableOpacity activeOpacity={0.85} onPress={handleFlip} style={styles.container}>
+    <TouchableOpacity activeOpacity={0.85} onPress={handleFlip} style={styles.container} accessibilityLabel="花言葉カード" accessibilityRole="button">
       {/* Front face — shows current phase content, rotates away on tap */}
       <Animated.View style={[
         styles.face,
@@ -68,7 +68,7 @@ function PageDots({ phase }: { phase: number }) {
   return (
     <View style={styles.dots}>
       {[0, 1, 2].map((i) => (
-        <View key={i} style={[styles.dot, phase === i && styles.dotActive]} />
+        <View key={i} style={[styles.dot, phase === i && styles.dotActive]} testID={`dot-${i}`} />
       ))}
     </View>
   );

@@ -62,6 +62,7 @@ export default function LoginScreen() {
 
         {/* Apple Sign-In (iOS only) */}
         {Platform.OS === 'ios' && (
+          <View testID="auth.apple">
           <AppleAuthentication.AppleAuthenticationButton
             buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
             buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
@@ -69,6 +70,7 @@ export default function LoginScreen() {
             style={styles.appleButton}
             onPress={handleApple}
           />
+          </View>
         )}
 
         <Text style={styles.divider}>— {t('auth.orEmail')} —</Text>

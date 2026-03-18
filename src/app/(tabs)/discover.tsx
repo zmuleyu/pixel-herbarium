@@ -189,6 +189,7 @@ export default function DiscoverScreen() {
               style={[styles.captureButton, quotaRemaining === 0 && styles.captureButtonDimmed]}
               onPress={quotaRemaining === 0 ? undefined : handleCapture}
               activeOpacity={quotaRemaining === 0 ? 1 : 0.8}
+              testID="discover.capture"
             >
               <View style={[styles.captureInner, quotaRemaining === 0 && styles.captureInnerDimmed]} />
             </TouchableOpacity>

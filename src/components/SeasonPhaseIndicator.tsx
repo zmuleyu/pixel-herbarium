@@ -34,7 +34,7 @@ export function SeasonPhaseIndicator({ bloomMonths, rarity, availableWindow }: S
     <View style={styles.container}>
       {/* Icon + label */}
       <View style={styles.labelRow}>
-        <Text style={styles.icon}>{config.icon}</Text>
+        <Text style={styles.icon} accessibilityLabel={phase}>{config.icon}</Text>
         <Text style={styles.label}>{t(config.labelKey)}</Text>
       </View>
 

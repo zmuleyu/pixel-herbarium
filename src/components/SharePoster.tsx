@@ -51,20 +51,22 @@ interface PlantSpriteProps {
   url: string | null;
   size: number;
   borderColor: string;
+  nameJa: string;
 }
 
-function PlantSprite({ url, size, borderColor }: PlantSpriteProps) {
+function PlantSprite({ url, size, borderColor, nameJa }: PlantSpriteProps) {
   if (url) {
     return (
       <Image
         source={{ uri: url }}
         style={[shared.sprite, { width: size, height: size }]}
         resizeMode="contain"
+        accessibilityLabel={nameJa}
       />
     );
   }
   return (
-    <View style={[shared.emojiCard, { width: size, height: size, borderColor }]}>
+    <View style={[shared.emojiCard, { width: size, height: size, borderColor }]} accessibilityLabel={nameJa}>
       <Text style={shared.emoji}>🌸</Text>
     </View>
   );
@@ -130,7 +132,7 @@ function StoryPoster({ plant, discoveryDate, discoveryCity }: Omit<SharePosterPr
 
       {/* Sprite */}
       <View style={storyStyles.imageArea}>
-        <PlantSprite url={plant.pixel_sprite_url} size={160} borderColor={rarityColor} />
+        <PlantSprite url={plant.pixel_sprite_url} size={160} borderColor={rarityColor} nameJa={plant.name_ja} />
       </View>
 
       {/* Main content */}
@@ -183,7 +185,7 @@ function LineCard({ plant, discoveryDate, discoveryCity }: Omit<SharePosterProps
     >
       {/* Horizontal body: sprite left, text right */}
       <View style={lineStyles.body}>
-        <PlantSprite url={plant.pixel_sprite_url} size={120} borderColor={rarityColor} />
+        <PlantSprite url={plant.pixel_sprite_url} size={120} borderColor={rarityColor} nameJa={plant.name_ja} />
 
         <View style={lineStyles.textArea}>
           <Text style={[lineStyles.rarityLabel, { color: rarityColor }]}>{rarityLabel}</Text>

@@ -19,7 +19,7 @@ export function OfflineBanner() {
   }, [isOnline]);
 
   return (
-    <Animated.View style={[styles.banner, { transform: [{ translateY }] }]}>
+    <Animated.View style={[styles.banner, { transform: [{ translateY }] }]} testID="offline-banner" accessibilityRole="alert">
       <Text style={styles.text}>{t('offline.banner')}</Text>
     </Animated.View>
   );

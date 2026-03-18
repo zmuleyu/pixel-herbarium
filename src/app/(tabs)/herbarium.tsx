@@ -107,6 +107,7 @@ export default function HerbariumScreen() {
         data={filteredPlants}
         numColumns={GRID_COLUMNS}
         keyExtractor={(item) => String(item.id)}
+        testID="herbarium.grid"
         renderItem={({ item }) => (
           <PlantCell
             plant={item}
