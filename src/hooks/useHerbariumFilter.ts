@@ -22,7 +22,7 @@ export function useHerbariumFilter(plants: PlantSlot[], collected: Set<number>) 
     if (filter === 'uncollected') return plants.filter(p => !collected.has(p.id));
     if (filter === 'spring') {
       const currentMonth = new Date().getMonth() + 1;
-      return plants.filter(p => p.bloom_months.includes(currentMonth));
+      return plants.filter(p => p.bloom_months?.includes(currentMonth) ?? false);
     }
     return plants.filter(p => p.rarity === filter);
   }, [plants, collected, filter]);
