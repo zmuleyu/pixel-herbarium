@@ -30,11 +30,11 @@ module.exports = {
       testPathIgnorePatterns: ['<rootDir>/__tests__/screens/setup.ts'],
       setupFilesAfterEnv: [
         '<rootDir>/__tests__/mocks/server.ts',
-        '<rootDir>/__tests__/screens/setup.ts',
       ],
       moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
         '^react-native$': '<rootDir>/__mocks__/react-native.js',
+        '^react$': '<rootDir>/__mocks__/react-screen-test.js',
         '^msw/node$': '<rootDir>/__mocks__/msw-node.js',
         '^msw$': '<rootDir>/__mocks__/msw-core.js',
       },
