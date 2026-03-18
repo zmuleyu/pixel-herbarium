@@ -31,7 +31,6 @@ module.exports = {
       // Project B: screens — uses jest-expo for React Native component environment
       displayName: 'screens',
       preset: 'jest-expo',
-      testEnvironment: 'node',
       testMatch: ['<rootDir>/__tests__/screens/**'],
       setupFilesAfterEnv: ['<rootDir>/__tests__/mocks/server.ts'],
       moduleNameMapper: {
