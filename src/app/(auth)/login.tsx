@@ -82,6 +82,7 @@ export default function LoginScreen() {
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
+          testID="auth.email"
         />
         <TextInput
           style={styles.input}
@@ -90,12 +91,14 @@ export default function LoginScreen() {
           secureTextEntry
           value={password}
           onChangeText={setPassword}
+          testID="auth.password"
         />
 
         <TouchableOpacity
           style={[styles.button, submitting && styles.buttonDisabled]}
           onPress={handleEmail}
           disabled={submitting}
+          testID="auth.signIn"
         >
           <Text style={styles.buttonText}>{t('auth.signIn')}</Text>
         </TouchableOpacity>
