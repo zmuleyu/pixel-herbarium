@@ -1,6 +1,6 @@
 import '../i18n'; // initialize i18n before any screen renders
 import { restoreLanguage } from '../i18n';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import * as Notifications from 'expo-notifications';
@@ -29,7 +29,6 @@ export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
   const { session, loading, setSession, setUser, setLoading } = useAuthStore();
-  const [isReady, setIsReady] = useState(false);
   usePushToken();
   const { isDownloading } = useOTAUpdate();
 
@@ -50,14 +49,13 @@ export default function RootLayout() {
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      restoreLanguage().catch(() => {}), // SecureStore can throw — never let it reject
+      restoreLanguage().catch(() => {}),
       supabase.auth.getSession(),
     ]).then(([, { data: { session: s } }]) => {
       setSession(s);
       setUser(s?.user ?? null);
       setLoading(false);
     }).catch(() => {
-      // If getSession fails, still unblock the app
       setLoading(false);
     });
 
@@ -69,57 +67,42 @@ export default function RootLayout() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Redirect chain — runs after each navigation until final destination reached.
-  // segments in deps is safe: isReady gate hides intermediate states from user.
+  // Redirect based on auth state — simple, no extra state
   useEffect(() => {
     if (loading) return;
 
     async function redirect() {
-      const inAuthGroup = segments[0] === '(auth)';
-      const inOnboarding = (segments[0] as string) === 'onboarding';
+      if ((segments[0] as string) === 'onboarding') return;
 
-      // Already on onboarding — show it
-      if (inOnboarding) {
-        setIsReady(true);
-        return;
-      }
-
-      // First-time launch: check onboarding
       const done = await SecureStore.getItemAsync(ONBOARDING_KEY);
       if (!done) {
         router.replace('/onboarding' as any);
         return;
       }
 
-      // Auth redirects
-      if (!session && !inAuthGroup) {
+      if (!session && segments[0] !== '(auth)') {
         router.replace('/(auth)/login');
-        return;
-      }
-      if (session && inAuthGroup) {
+      } else if (session && segments[0] === '(auth)') {
         router.replace('/(tabs)/discover');
-        return;
       }
-
-      // Arrived at correct destination
-      setIsReady(true);
     }
 
     redirect();
   }, [session, loading, segments]);
 
-  // Always render Slot (keeps expo-router navigation tree alive).
-  // Splash overlay hides content until redirect chain completes.
+  if (loading) {
+    return (
+      <View style={styles.splash}>
+        <ActivityIndicator color={colors.plantPrimary} />
+      </View>
+    );
+  }
+
   return (
     <ErrorBoundary>
       <OfflineBanner />
       <Slot />
       <OTAUpdateBanner isDownloading={isDownloading} isReady={false} />
-      {(loading || !isReady) && (
-        <View style={[StyleSheet.absoluteFill, styles.splash]}>
-          <ActivityIndicator color={colors.plantPrimary} />
-        </View>
-      )}
     </ErrorBoundary>
   );
 }
