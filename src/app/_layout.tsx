@@ -50,11 +50,14 @@ export default function RootLayout() {
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      restoreLanguage(),
+      restoreLanguage().catch(() => {}), // SecureStore can throw — never let it reject
       supabase.auth.getSession(),
     ]).then(([, { data: { session: s } }]) => {
       setSession(s);
       setUser(s?.user ?? null);
+      setLoading(false);
+    }).catch(() => {
+      // If getSession fails, still unblock the app
       setLoading(false);
     });
 
@@ -110,20 +113,18 @@ export default function RootLayout() {
     setIsReady(false);
   }, [session]);
 
-  // Double gate: loading OR redirect incomplete → spinner
-  if (loading || !isReady) {
-    return (
-      <View style={styles.splash}>
-        <ActivityIndicator color={colors.plantPrimary} />
-      </View>
-    );
-  }
-
+  // Always render Slot (keeps expo-router navigation tree alive).
+  // Splash overlay hides content until redirect chain completes.
   return (
     <ErrorBoundary>
       <OfflineBanner />
       <Slot />
       <OTAUpdateBanner isDownloading={isDownloading} isReady={false} />
+      {(loading || !isReady) && (
+        <View style={[StyleSheet.absoluteFill, styles.splash]}>
+          <ActivityIndicator color={colors.plantPrimary} />
+        </View>
+      )}
     </ErrorBoundary>
   );
 }
