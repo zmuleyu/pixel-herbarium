@@ -64,14 +64,14 @@
 - [ ] 应用描述中无竞品名称（PictureThis、GreenSnap 等不可出现在描述中）
 - [ ] 无误导性功能声明（广告中的功能必须在当前版本中可用）
 - [ ] ⚠️ **核查广告中提及的功能是否当前版本均已实现**：
-  - 植物 AI 识别 → 已实现？
-  - 像素艺术生成 → 已实现？
-  - 花言叶翻卡 → 已实现 ✓
-  - Share Poster → 已实现 ✓
-  - 季节系统 → 已实现 ✓
-  - 同城地图（热力图）→ 已实现？⚠️ 确认
-  - LINE 花束赠送 → 已实现？⚠️ 确认（v1.0 未实现则须从描述移除）
-  - 月 5 次免费识别 → IAP 未实现时需调整描述
+  - 植物 AI 识别 → ✅ 已实现（Supabase edge function `identify`）
+  - 像素艺术生成 → ✅ 已实现（Supabase edge function `pixelate`）
+  - 花言叶翻卡 → ✅ 已实现
+  - Share Poster → ✅ 已实现
+  - 季节系统 → ✅ 已实现
+  - 同城地图（热力图）→ ✅ 已实现（react-native-maps Heatmap）
+  - LINE 海报分享 → ✅ 已实现（ShareSheet 生成 1:1 方形海报经系统 Share Sheet 发送到 LINE，非 LINE API 集成）
+  - ⚠️ IAP / 月 5 次免费识别 → **未实现**，描述中不得提及；v1.0 采用无限免费识别策略
 
 ---
 
