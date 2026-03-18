@@ -196,7 +196,17 @@
   },
   "checkin": {
     "comingSoon": "Coming Soon",
-    "comingSoonSub": "Check-in feature arrives in the next update"
+    "comingSoonSub": "Check-in feature arrives in the next update",
+    "stepPhoto": "Pick a photo",
+    "stepSpot": "Select a spot",
+    "stepPreview": "Preview & Share",
+    "pickCamera": "Take a photo",
+    "pickLibrary": "Choose from library",
+    "spotSearchPlaceholder": "Search spots…",
+    "saveCard": "Save to photos",
+    "addedToFootprint": "Added to footprint 🌸",
+    "permissionRequired": "Please allow access to your photo library",
+    "saveError": "Failed to save"
   },
   "footprint": {
     "title": "Footprint",

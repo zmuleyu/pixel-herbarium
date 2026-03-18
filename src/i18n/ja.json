@@ -196,7 +196,17 @@
   },
   "checkin": {
     "comingSoon": "もうすぐ",
-    "comingSoonSub": "打卡機能は次のアップデートで登場します"
+    "comingSoonSub": "打卡機能は次のアップデートで登場します",
+    "stepPhoto": "写真を選ぶ",
+    "stepSpot": "スポットを選ぶ",
+    "stepPreview": "確認・シェア",
+    "pickCamera": "カメラで撮影",
+    "pickLibrary": "ライブラリから選ぶ",
+    "spotSearchPlaceholder": "スポットを検索…",
+    "saveCard": "写真に保存",
+    "addedToFootprint": "足跡に追加しました 🌸",
+    "permissionRequired": "写真ライブラリへのアクセスを許可してください",
+    "saveError": "保存に失敗しました"
   },
   "footprint": {
     "title": "足跡",

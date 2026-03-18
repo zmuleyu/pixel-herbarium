@@ -22,10 +22,12 @@ Updated: 2026-03-18
   - ✅ discover.tsx: requestPermissions 加 SecureStore onboarding_done_v1 guard（根因修复）
   - ✅ Maestro 02-login-email.yaml: 条件式 tapOn "Allow" 安全网
   - ✅ codemagic.yaml: grant all → 显式 grant camera/location/photos
-  - 🔄 **验证 build `69ba7d94` 进行中** — https://codemagic.io/build/69ba7d94afe5703d425aa9e6
+  - ❌ build `69ba7d94` 失败 — Jest DiscoverScreen 缺 expo-secure-store mock（非 Maestro 问题）
+  - [x] **Jest mock 修复** — commit `29861ed`，`DiscoverScreen.test.tsx` 加 `jest.mock('expo-secure-store', ...)`
+  - 🔄 **验证 build `29861ed` 进行中**
 
 ### 待做
-- [ ] 确认 build `69ba7d94` Maestro flows 通过
+- [ ] 确认新 build Maestro flows 通过
 - [ ] 新 EAS simulator build（包含最新 testIDs）
 - [ ] Visual regression baselines + Git LFS
 - [ ] Layer 4: GitHub Actions release workflow
