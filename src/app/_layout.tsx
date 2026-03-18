@@ -41,7 +41,7 @@ export default function RootLayout() {
       if (data?.screen === 'plant' && data?.plantId) {
         router.push(`/plant/${data.plantId}` as any);
       } else {
-        router.push('/(tabs)/herbarium' as any);
+        router.push('/(tabs)/footprint' as any);
       }
     });
     return () => subscription.remove();
@@ -98,11 +98,11 @@ export default function RootLayout() {
         return;
       }
 
-      if (!session && segments[0] !== '(auth)') {
-        router.replace('/(auth)/login');
+      // Guest-first: no forced login. Unauthenticated users go straight to home.
+      if (!session && (!segments[0] || (segments[0] as string) === 'index')) {
+        router.replace('/(tabs)/home');
       } else if (session && (segments[0] === '(auth)' || !segments[0] || (segments[0] as string) === 'index')) {
-        // !segments[0] catches [] and [''], segments[0]==='index' catches ['index'] — all possible root representations
-        router.replace('/(tabs)/discover');
+        router.replace('/(tabs)/home');
       }
     }
 

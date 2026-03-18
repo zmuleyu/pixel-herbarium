@@ -18,11 +18,13 @@ Updated: 2026-03-18
 - [x] 添加诊断截图步骤
 
 ### 调试中
-- [ ] **Maestro flows 失败**：app 未显示 onboarding 也未显示 login
-  - 诊断 build `69ba766e` 包含截图 artifact → 查看 `debug-app-state.png`
-  - 可能原因：SecureStore 在模拟器上 throw → `done='1'` → 跳过 onboarding
-  - 或 app crash / 卡在 spinner
-  - **下次 session 第一步**：检查 build artifacts
+- [ ] **Maestro flows 失败**：相机权限弹窗覆盖 onboarding 屏幕
+  - ✅ 诊断截图确认：onboarding 正常显示（"スキップ" 可见），但相机权限弹窗阻挡
+  - 根因：`index.tsx → /(tabs)/discover → requestPermissions()` 在 onboarding redirect 前触发
+  - `xcrun simctl privacy grant all` 未生效（可能时序问题或语法问题）
+  - **修复方案 A**（快速）：Maestro flow 先 tap "Allow" dismiss 弹窗
+  - **修复方案 B**（根治）：discover.tsx 延迟 requestPermissions 到 onboarding 完成后
+  - **下次 session 第一步**：实施修复方案 A 或 B
 
 ### 待做
 - [ ] 根据截图修复 Maestro flows
