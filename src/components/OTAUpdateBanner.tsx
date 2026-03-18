@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { reloadAsync } from 'expo-updates';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { colors, spacing, typography } from '@/constants/theme';
 
 interface Props {
@@ -35,12 +34,6 @@ export function OTAUpdateBanner({ isDownloading, isReady }: Props) {
         duration: 18000, // smooth crawl toward 85%
         useNativeDriver: false,
       }).start();
-    } else if (isReady) {
-      Animated.timing(progressWidth, {
-        toValue: 1.0,
-        duration: 200,
-        useNativeDriver: false,
-      }).start();
     }
   }, [isDownloading, isReady]);
 
@@ -50,14 +43,7 @@ export function OTAUpdateBanner({ isDownloading, isReady }: Props) {
       style={[styles.container, { transform: [{ translateY }] }]}
     >
       <View style={styles.row}>
-        <Text style={styles.label}>
-          {isDownloading ? '🌿 新バージョンを取得中...' : '✿ 更新の準備ができました'}
-        </Text>
-        {isReady && !isDownloading && (
-          <TouchableOpacity style={styles.button} onPress={() => reloadAsync()}>
-            <Text style={styles.buttonText}>再起動</Text>
-          </TouchableOpacity>
-        )}
+        <Text style={styles.label}>🌿 新バージョンを取得中...</Text>
       </View>
       <View style={styles.track}>
         <Animated.View
@@ -99,17 +85,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: typography.fontSize.xs,
     color: colors.textSecondary,
-    fontFamily: typography.fontFamily.display,
-  },
-  button: {
-    backgroundColor: colors.plantPrimary,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: colors.white,
-    fontSize: typography.fontSize.xs,
     fontFamily: typography.fontFamily.display,
   },
   track: {
