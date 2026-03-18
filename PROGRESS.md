@@ -4,11 +4,45 @@ Updated: 2026-03-18
 
 ---
 
+## Layer 2: Codemagic + Maestro E2E — 调试中
+
+**当前状态**：Maestro E2E 流程全部失败，app 在模拟器上未显示预期屏幕
+
+### 已完成
+- [x] 350 tests passing (Jest unit + screen + component)
+- [x] codemagic.yaml 完整 CI 管线（Jest + TS + EAS + Simulator + Maestro）
+- [x] 6 个 Maestro E2E flows + 5 个 screenshot flows
+- [x] Jest + TypeScript 在 CI 通过（每次 build 均 pass）
+- [x] EAS simulator build `b99f88df` + Codemagic 下载/安装/启动均成功
+- [x] xcrun simctl privacy grant 预授权权限
+- [x] 添加诊断截图步骤
+
+### 调试中
+- [ ] **Maestro flows 失败**：app 未显示 onboarding 也未显示 login
+  - 诊断 build `69ba766e` 包含截图 artifact → 查看 `debug-app-state.png`
+  - 可能原因：SecureStore 在模拟器上 throw → `done='1'` → 跳过 onboarding
+  - 或 app crash / 卡在 spinner
+  - **下次 session 第一步**：检查 build artifacts
+
+### 待做
+- [ ] 根据截图修复 Maestro flows
+- [ ] 新 EAS simulator build（包含最新 testIDs）
+- [ ] Visual regression baselines + Git LFS
+- [ ] Layer 4: GitHub Actions release workflow
+
+### Build IDs
+- EAS Simulator: `b99f88df` (commit `2d42b30`)
+- 诊断 build: `69ba766e` (commit `f22ba9c`)
+- Codemagic App: `69ba556c2217be10dc8b85f8`
+- Monitor: https://codemagic.io/build/69ba766e481cc4df94cfd770
+
+---
+
 ## 已完成基础设施 ✅
 
 | 项目 | 状态 |
 |------|------|
-| 317+ tests passing | ✅ |
+| 350 tests passing | ✅ |
 | TypeScript 0 errors | ✅ |
 | EAS 账号绑定 (cbnium / zmuleyu@gmail.com) | ✅ |
 | EAS projectId: `74427c7e-dba6-4061-9cc9-3651d09fae01` | ✅ |
