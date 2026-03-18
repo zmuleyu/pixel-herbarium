@@ -52,6 +52,9 @@
     "filterRare": "★★★",
     "filterCollected": "Collected",
     "filterUncollected": "Not yet",
+    "filterSpring": "🌸",
+    "springBanner": "Cherry Blossom Season",
+    "springBannerSub": "Find plants blooming this month",
     "noResults": "No matches"
   },
   "rarity": {

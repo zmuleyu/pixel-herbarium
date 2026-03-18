@@ -52,6 +52,9 @@
     "filterRare": "★★★",
     "filterCollected": "収集済",
     "filterUncollected": "未収集",
+    "filterSpring": "🌸",
+    "springBanner": "桜の季節",
+    "springBannerSub": "今月咲いている植物を探しに行こう",
     "noResults": "該当なし"
   },
   "rarity": {

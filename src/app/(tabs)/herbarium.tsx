@@ -17,6 +17,7 @@ import { useHerbarium, type PlantSlot } from '@/hooks/useHerbarium';
 import { resolvePlantImage } from '@/utils/plant-image';
 import { useHerbariumFilter, FILTER_OPTIONS } from '@/hooks/useHerbariumFilter';
 import { useAuthStore } from '@/stores/auth-store';
+import { getCurrentSeason } from '@/utils/date';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { GRID_COLUMNS, TOTAL_PLANTS, RARITY_LABELS } from '@/constants/plants';
 
@@ -73,6 +74,14 @@ export default function HerbariumScreen() {
       <View style={styles.progressBarTrack}>
         <View style={[styles.progressBarFill, { width: `${(collected.size / TOTAL_PLANTS) * 100}%` as any }]} />
       </View>
+
+      {/* Spring season banner — visible March–May only */}
+      {getCurrentSeason() === 'spring' && (
+        <View style={styles.springBanner}>
+          <Text style={styles.springBannerText}>🌸 {t('herbarium.springBanner')}</Text>
+          <Text style={styles.springBannerSub}>{t('herbarium.springBannerSub')}</Text>
+        </View>
+      )}
 
       {/* Filter chips */}
       <ScrollView
@@ -243,6 +252,10 @@ const styles = StyleSheet.create({
 
   progressBarTrack: { height: 3, backgroundColor: colors.border, marginHorizontal: 0 },
   progressBarFill:  { height: 3, backgroundColor: colors.plantPrimary },
+
+  springBanner:     { marginHorizontal: spacing.md, marginBottom: spacing.sm, padding: spacing.md, backgroundColor: colors.seasonal.sakura, borderRadius: borderRadius.md },
+  springBannerText: { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.md, color: colors.text },
+  springBannerSub:  { fontSize: typography.fontSize.xs, color: colors.textSecondary, marginTop: 2 },
 
   filterRow:           { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, gap: spacing.sm },
   filterChip:          { paddingHorizontal: 12, paddingVertical: 6, borderRadius: borderRadius.full, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.background },

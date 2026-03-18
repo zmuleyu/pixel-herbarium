@@ -438,17 +438,23 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
 
 function EventBanner() {
   const { t } = useTranslation();
+  const router = useRouter();
   const event = SEASON_EVENTS[getCurrentSeason()];
   if (!event) return null;
 
   return (
-    <View style={styles.eventBanner}>
+    <TouchableOpacity
+      style={styles.eventBanner}
+      onPress={() => router.push('/(tabs)/herbarium')}
+      activeOpacity={0.8}
+    >
       <Text style={styles.eventEmoji}>{event.emoji}</Text>
-      <View>
+      <View style={{ flex: 1 }}>
         <Text style={styles.eventName}>{t(event.key)}</Text>
         <Text style={styles.eventActive}>{t('events.eventActive')}</Text>
       </View>
-    </View>
+      <Text style={styles.eventChevron}>›</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -528,6 +534,7 @@ const styles = StyleSheet.create({
   eventEmoji:         { fontSize: 20 },
   eventName:          { color: '#fff', fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.sm },
   eventActive:        { color: 'rgba(255,255,255,0.7)', fontSize: typography.fontSize.xs },
+  eventChevron:       { color: 'rgba(255,255,255,0.6)', fontSize: 18, marginLeft: spacing.xs },
 
   // Shutter button
   captureButton:      { width: 72, height: 72, borderRadius: 36, borderWidth: 4, borderColor: colors.plantPrimary, alignItems: 'center', justifyContent: 'center' },
