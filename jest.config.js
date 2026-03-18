@@ -31,15 +31,12 @@ module.exports = {
       moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
         '^react-native$': '<rootDir>/__mocks__/react-native.js',
-        '^msw/node$': '<rootDir>/node_modules/msw/lib/node/index.js',
+        '^msw/node$': '<rootDir>/__mocks__/msw-node.js',
+        '^msw$': '<rootDir>/__mocks__/msw-core.js',
       },
       transform: {
         '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx', resolveJsonModule: true } }],
-        '^.+\\.m?js$': ['babel-jest', {}],
       },
-      transformIgnorePatterns: [
-        '/node_modules/(?!(msw|until-async|@mswjs)/)',
-      ],
     },
   ],
 };
