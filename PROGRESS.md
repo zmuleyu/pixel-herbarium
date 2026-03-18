@@ -68,7 +68,11 @@ Updated: 2026-03-18
 - [ ] **在 Codemagic 手动触发新 build** (dev 分支 `a7c3ba0`)，验证 Maestro E2E 通过
   - 预期：6/6 PASS（新 binary + 新 flows）
 - [ ] Visual regression baselines + Git LFS
-- [ ] Layer 4: GitHub Actions release workflow
+- [x] **Layer 4: GitHub Actions release workflow** — `.github/workflows/release.yml` 完善
+  - 触发条件：`git push tag v*`
+  - Job 1: TypeScript + Jest validate (timeout 10min)
+  - Job 2: `eas build --auto-submit` production iOS (timeout 60min)
+  - 需要：GitHub Secret `EXPO_TOKEN` ✅ | EAS 存储的 Apple credentials（首次需交互式 `eas submit` 保存）
 
 ### Build IDs
 - **新 EAS Simulator**: `100ca731` (commit `4ae8eb7`) ← 排队中 (23:07 CST)
@@ -82,7 +86,7 @@ Updated: 2026-03-18
 
 | 项目 | 状态 |
 |------|------|
-| 433 tests passing | ✅ |
+| 450 tests passing | ✅ |
 | TypeScript 0 errors | ✅ |
 | EAS 账号绑定 (cbnium / zmuleyu@gmail.com) | ✅ |
 | EAS projectId: `74427c7e-dba6-4061-9cc9-3651d09fae01` | ✅ |
