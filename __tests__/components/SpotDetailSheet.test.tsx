@@ -24,22 +24,30 @@ const checkin: SpotCheckinResult = {
   is_mankai: true, stamp_variant: 'mankai', bloom_status_at_checkin: 'peak',
 };
 
-function shallowStr(el: any, depth = 5): string {
-  if (el == null || typeof el !== 'object' || !el.type) return String(el ?? '');
-  if (typeof el.type === 'function' && depth > 0) return shallowStr(el.type(el.props ?? {}), depth - 1);
-  const c = el.props?.children;
-  const cs = Array.isArray(c) ? c.map((x: any) => shallowStr(x, depth)).join('') : shallowStr(c, depth);
-  return cs;
+function shallowRender(el: any, depth = 8): any {
+  if (el == null || typeof el !== 'object' || !el.type) return el;
+  if (typeof el.type === 'function' && depth > 0) {
+    return shallowRender(el.type(el.props ?? {}), depth - 1);
+  }
+  const children = el.props?.children;
+  return { type: el.type, props: { ...el.props, children: undefined },
+           children: Array.isArray(children)
+             ? children.map((c: any) => shallowRender(c, depth))
+             : shallowRender(children, depth) };
 }
 
 describe('SpotDetailSheet', () => {
   it('renders spot name when visible', () => {
-    const html = JSON.stringify(React.createElement(SpotDetailSheet, { spot, checkin, visible: true, onClose: jest.fn(), onViewOnMap: jest.fn() }));
+    const html = JSON.stringify(shallowRender(
+      React.createElement(SpotDetailSheet, { spot, checkin, visible: true, onClose: jest.fn(), onViewOnMap: jest.fn() })
+    ));
     expect(html).toContain('新宿御苑');
   });
 
   it('renders visit date key', () => {
-    const html = JSON.stringify(React.createElement(SpotDetailSheet, { spot, checkin, visible: true, onClose: jest.fn(), onViewOnMap: jest.fn() }));
+    const html = JSON.stringify(shallowRender(
+      React.createElement(SpotDetailSheet, { spot, checkin, visible: true, onClose: jest.fn(), onViewOnMap: jest.fn() })
+    ));
     expect(html).toContain('sakura.collection.visitDetail');
   });
 });
