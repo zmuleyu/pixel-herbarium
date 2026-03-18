@@ -57,6 +57,17 @@ workflows:
           # (discover.tsx requests camera/location on mount before onboarding redirect)
           xcrun simctl privacy booted grant all com.pixelherbarium.app
 
+      - name: Debug - capture app state screenshot
+        script: |
+          # Launch the app, wait for it to settle, then screenshot
+          xcrun simctl launch booted com.pixelherbarium.app
+          sleep 15
+          mkdir -p e2e/current
+          xcrun simctl io booted screenshot e2e/current/debug-app-state.png
+          echo "Screenshot saved to e2e/current/debug-app-state.png"
+          # Also dump the accessibility tree for debugging
+          xcrun simctl spawn booted log show --last 30s --predicate 'process == "PixelHerbarium"' > e2e/current/debug-app-log.txt 2>&1 || true
+
       - name: Run Maestro E2E flows
         script: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
@@ -93,3 +104,4 @@ workflows:
       - e2e-results.xml
       - e2e/diffs/*.png
       - e2e/current/*.png
+      - e2e/current/*.txt
