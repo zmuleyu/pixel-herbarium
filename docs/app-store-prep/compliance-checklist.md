@@ -34,7 +34,7 @@
 - [ ] `usesAppleSignIn: true` 已在 `app.json` 配置 ✓
 - [ ] Apple Sign In 是**唯一**第三方登录（满足"所有第三方登录必须同等提供 Apple Sign In"要求）✓
 - [ ] Apple Sign In 按钮样式符合 [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple)（黑色/白色/轮廓三选一）
-- [ ] 用户删除账户功能已实现（Apple 审核自 2022 年强制要求）
+- [x] 用户删除账户功能已实现 ✅（privacy.tsx → soft-delete `deletion_requested_at` + signOut，满足 Apple 2022 强制要求）
 
 ---
 
@@ -102,6 +102,6 @@
 
 ## 提交后
 
-- [ ] TestFlight 内部测试通过（当前 build `33421d40` 等待中）
+- [ ] 真机安装验证通过（最新 build `40c5a289`，IPA 已生成，iOS 16+ 需先开启开发者模式）
 - [ ] 填写审核笔记（Review Notes）：说明 Apple Sign In 测试账号 + 特殊功能使用路径
 - [ ] 选择发布方式：手动发布（审核通过后自己确认上线）
