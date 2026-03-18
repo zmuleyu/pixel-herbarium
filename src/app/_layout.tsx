@@ -51,7 +51,7 @@ export default function RootLayout() {
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      restoreLanguage().catch(() => {}),
+      withTimeout(restoreLanguage().catch(() => {}), 3000, undefined),
       withTimeout(supabase.auth.getSession(), 8000, { data: { session: null }, error: null }),
     ]).then(([, { data: { session: s } }]) => {
       setSession(s);
@@ -90,8 +90,8 @@ export default function RootLayout() {
 
       if (!session && segments[0] !== '(auth)') {
         router.replace('/(auth)/login');
-      } else if (session && (segments[0] === '(auth)' || segments.length === 0)) {
-        // segments.length === 0 means user is at root '/' (index.tsx spinner) — redirect to app
+      } else if (session && (segments[0] === '(auth)' || !segments[0] || segments[0] === 'index')) {
+        // !segments[0] catches [] and [''], segments[0]==='index' catches ['index'] — all possible root representations
         router.replace('/(tabs)/discover');
       }
     }

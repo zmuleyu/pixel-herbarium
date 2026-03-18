@@ -1,21 +1,7 @@
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { colors } from '@/constants/theme';
+import { Redirect } from 'expo-router';
 
-// Root index — shows spinner while _layout.tsx redirect decides where to go.
-// Visually matches the loading splash so there is no visible flash.
+// Expo Router recommended pattern: root index redirects to app.
+// _layout.tsx handles auth gating (login/onboarding) AFTER this fires.
 export default function Index() {
-  return (
-    <View style={styles.splash}>
-      <ActivityIndicator color={colors.plantPrimary} />
-    </View>
-  );
+  return <Redirect href="/(tabs)/discover" />;
 }
-
-const styles = StyleSheet.create({
-  splash: {
-    flex: 1,
-    backgroundColor: colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
