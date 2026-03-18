@@ -108,11 +108,6 @@ export default function RootLayout() {
     redirect();
   }, [session, loading, segments]);
 
-  // Reset on login/logout so redirect chain re-evaluates
-  useEffect(() => {
-    setIsReady(false);
-  }, [session]);
-
   // Always render Slot (keeps expo-router navigation tree alive).
   // Splash overlay hides content until redirect chain completes.
   return (
