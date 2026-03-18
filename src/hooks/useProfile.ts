@@ -30,28 +30,32 @@ export function useProfile(): UseProfileReturn {
       return;
     }
 
+    let cancelled = false;
+
     async function load() {
-      // Fetch display_name from profiles table
       const { data } = await (supabase as any)
         .from('profiles')
         .select('display_name')
         .eq('id', user!.id)
         .single();
 
+      if (cancelled) return;
+
       if (data?.display_name) {
         setDisplayName(data.display_name);
       } else {
-        // Fallback: derive from auth metadata
         const fullName = user!.user_metadata?.full_name as string | undefined;
         setDisplayName(fullName ?? (user!.email ?? '').split('@')[0] ?? '');
       }
 
       const { remaining } = await checkQuota(user!.id);
+      if (cancelled) return;
       setQuotaUsed(MONTHLY_QUOTA - remaining);
       setLoading(false);
     }
 
     load();
+    return () => { cancelled = true; };
   }, [user?.id]);
 
   const handleSignOut = useCallback(async () => {

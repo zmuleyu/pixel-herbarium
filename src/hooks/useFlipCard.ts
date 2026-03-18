@@ -18,10 +18,11 @@ export function useFlipCard() {
 
   // Check if hint has been seen
   useEffect(() => {
+    let mounted = true;
     SecureStore.getItemAsync(HINT_KEY).then((val) => {
+      if (!mounted) return;
       if (!val) {
         setShowHint(true);
-        // Start breathing pulse
         Animated.loop(
           Animated.sequence([
             Animated.timing(hintOpacity, { toValue: 1, duration: 1500, useNativeDriver: true }),
@@ -30,6 +31,7 @@ export function useFlipCard() {
         ).start();
       }
     });
+    return () => { mounted = false; };
   }, []);
 
   const frontRotation = flipAnim.interpolate({

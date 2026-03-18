@@ -45,11 +45,13 @@ export default function RootLayout() {
     return () => subscription.remove();
   }, []);
 
-  // Bootstrap auth session from Supabase on first load
+  // Bootstrap auth session + language from Supabase on first load
   useEffect(() => {
-    restoreLanguage(); // fire-and-forget, non-blocking
     setLoading(true);
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
+    Promise.all([
+      restoreLanguage(),
+      supabase.auth.getSession(),
+    ]).then(([, { data: { session: s } }]) => {
       setSession(s);
       setUser(s?.user ?? null);
       setLoading(false);
@@ -90,7 +92,7 @@ export default function RootLayout() {
     }
 
     redirect();
-  }, [session, loading, segments]);
+  }, [session, loading]);
 
   if (loading) {
     return (

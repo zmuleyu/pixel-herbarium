@@ -16,25 +16,27 @@ export function usePushToken() {
 }
 
 async function registerToken(userId: string) {
-  // Request permission (no-op if already granted/denied)
-  const { status: existing } = await Notifications.getPermissionsAsync();
-  let finalStatus = existing;
-  if (existing !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
+  try {
+    const { status: existing } = await Notifications.getPermissionsAsync();
+    let finalStatus = existing;
+    if (existing !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') return;
+
+    const tokenResult = await Notifications.getExpoPushTokenAsync({
+      projectId: 'pixel-herbarium',
+    });
+    const token = tokenResult.data;
+
+    await (supabase as any)
+      .from('push_tokens')
+      .upsert(
+        { user_id: userId, token, platform: Platform.OS, updated_at: new Date().toISOString() },
+        { onConflict: 'user_id,token' },
+      );
+  } catch {
+    // Push token registration is non-critical — swallow errors silently
   }
-  if (finalStatus !== 'granted') return;
-
-  // Expo push token — requires EAS projectId matching app.json slug
-  const tokenResult = await Notifications.getExpoPushTokenAsync({
-    projectId: 'pixel-herbarium',
-  });
-  const token = tokenResult.data;
-
-  await (supabase as any)
-    .from('push_tokens')
-    .upsert(
-      { user_id: userId, token, platform: Platform.OS, updated_at: new Date().toISOString() },
-      { onConflict: 'user_id,token' },
-    );
 }

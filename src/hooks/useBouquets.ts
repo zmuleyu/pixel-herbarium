@@ -41,7 +41,7 @@ export function useBouquets(userId: string): UseBouquetsReturn {
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) { setLoading(false); return; }
     let cancelled = false;
 
     async function load() {

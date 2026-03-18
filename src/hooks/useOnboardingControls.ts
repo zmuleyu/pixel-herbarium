@@ -79,7 +79,11 @@ export function useOnboardingControls(slideCount: number) {
 
   async function finish(): Promise<void> {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    await SecureStore.setItemAsync(ONBOARDING_KEY, '1');
+    try {
+      await SecureStore.setItemAsync(ONBOARDING_KEY, '1');
+    } catch {
+      // Write failed — still navigate (worst case: user sees onboarding again)
+    }
     router.replace('/(tabs)/discover');
   }
 
