@@ -4,6 +4,17 @@ appId: com.pixelherbarium.app
 # Used as a reusable sub-flow by flows 03–06 via runFlow
 - launchApp:
     clearState: true
+# Dismiss permission dialogs if they appear (camera / location)
+- runFlow:
+    when:
+      visible: "Would like to access"
+    commands:
+      - tapOn: "Allow"
+- runFlow:
+    when:
+      visible: "Would like to access"
+    commands:
+      - tapOn: "Allow"
 - tapOn:
     text: "スキップ"
 - tapOn:
