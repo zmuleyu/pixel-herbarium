@@ -4,7 +4,7 @@ appId: com.pixelherbarium.app
 - launchApp:
     clearState: true
 - tapOn:
-    id: "onboarding.skip"
+    text: "Skip"
 - assertVisible:
     id: "auth.apple"
 - takeScreenshot: "login"
