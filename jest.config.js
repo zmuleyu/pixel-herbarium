@@ -37,6 +37,9 @@ module.exports = {
         '^react$': '<rootDir>/__mocks__/react-screen-test.js',
         '^msw/node$': '<rootDir>/__mocks__/msw-node.js',
         '^msw$': '<rootDir>/__mocks__/msw-core.js',
+        // Prevent Supabase client from starting autoRefreshToken timer in tests
+        '^@supabase/supabase-js$': '<rootDir>/__mocks__/supabase-js.js',
+        '^react-native-url-polyfill/auto$': '<rootDir>/__mocks__/empty.js',
       },
       transform: {
         '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx', resolveJsonModule: true } }],
