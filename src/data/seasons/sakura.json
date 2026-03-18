@@ -101,6 +101,406 @@
       "latitude": 34.3672,
       "longitude": 135.8583,
       "tags": ["名所100選", "世界遺産", "一目千本"]
+    },
+    {
+      "id": 6,
+      "seasonId": "sakura",
+      "nameJa": "千鳥ヶ淵",
+      "nameEn": "Chidorigafuchi",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "千代田区",
+      "category": "park",
+      "treeCount": 260,
+      "bloomTypical": {
+        "earlyStart": "03-21",
+        "peakStart": "03-28",
+        "peakEnd": "04-04",
+        "lateEnd": "04-10"
+      },
+      "latitude": 35.6941,
+      "longitude": 139.7484,
+      "tags": ["ボート", "堀", "夜桜"]
+    },
+    {
+      "id": 7,
+      "seasonId": "sakura",
+      "nameJa": "井の頭恩賜公園",
+      "nameEn": "Inokashira Park",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "武蔵野市",
+      "category": "park",
+      "treeCount": 450,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-05",
+        "lateEnd": "04-12"
+      },
+      "latitude": 35.7020,
+      "longitude": 139.5697,
+      "tags": ["池", "ボート", "吉祥寺"]
+    },
+    {
+      "id": 8,
+      "seasonId": "sakura",
+      "nameJa": "飛鳥山公園",
+      "nameEn": "Asukayama Park",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "北区",
+      "category": "park",
+      "treeCount": 650,
+      "bloomTypical": {
+        "earlyStart": "03-19",
+        "peakStart": "03-26",
+        "peakEnd": "04-03",
+        "lateEnd": "04-10"
+      },
+      "latitude": 35.7537,
+      "longitude": 139.7391,
+      "tags": ["名所100選", "徳川将軍", "モノレール"]
+    },
+    {
+      "id": 9,
+      "seasonId": "sakura",
+      "nameJa": "熊谷桜堤",
+      "nameEn": "Kumagaya Sakura Tsutsumi",
+      "prefecture": "埼玉県",
+      "prefectureCode": 11,
+      "city": "熊谷市",
+      "category": "river",
+      "treeCount": 500,
+      "bloomTypical": {
+        "earlyStart": "03-19",
+        "peakStart": "03-27",
+        "peakEnd": "04-03",
+        "lateEnd": "04-10"
+      },
+      "latitude": 36.1461,
+      "longitude": 139.3934,
+      "tags": ["名所100選", "荒川沿い", "一直線"]
+    },
+    {
+      "id": 10,
+      "seasonId": "sakura",
+      "nameJa": "三ツ池公園",
+      "nameEn": "Mitsuike Park",
+      "prefecture": "神奈川県",
+      "prefectureCode": 14,
+      "city": "横浜市鶴見区",
+      "category": "park",
+      "treeCount": 1500,
+      "bloomTypical": {
+        "earlyStart": "03-21",
+        "peakStart": "03-28",
+        "peakEnd": "04-05",
+        "lateEnd": "04-12"
+      },
+      "latitude": 35.5037,
+      "longitude": 139.6509,
+      "tags": ["三つの池", "多品種", "県立"]
+    },
+    {
+      "id": 11,
+      "seasonId": "sakura",
+      "nameJa": "鶴岡八幡宮",
+      "nameEn": "Tsurugaoka Hachimangu",
+      "prefecture": "神奈川県",
+      "prefectureCode": 14,
+      "city": "鎌倉市",
+      "category": "shrine",
+      "treeCount": 200,
+      "bloomTypical": {
+        "earlyStart": "03-20",
+        "peakStart": "03-27",
+        "peakEnd": "04-04",
+        "lateEnd": "04-10"
+      },
+      "latitude": 35.3238,
+      "longitude": 139.5569,
+      "tags": ["段葛", "鎌倉", "神社"]
+    },
+    {
+      "id": 12,
+      "seasonId": "sakura",
+      "nameJa": "鶴舞公園",
+      "nameEn": "Tsuruma Park",
+      "prefecture": "愛知県",
+      "prefectureCode": 23,
+      "city": "名古屋市昭和区",
+      "category": "park",
+      "treeCount": 700,
+      "bloomTypical": {
+        "earlyStart": "03-21",
+        "peakStart": "03-28",
+        "peakEnd": "04-05",
+        "lateEnd": "04-12"
+      },
+      "latitude": 35.1549,
+      "longitude": 136.9072,
+      "tags": ["名古屋", "噴水", "バラ園"]
+    },
+    {
+      "id": 13,
+      "seasonId": "sakura",
+      "nameJa": "犬山城",
+      "nameEn": "Inuyama Castle",
+      "prefecture": "愛知県",
+      "prefectureCode": 23,
+      "city": "犬山市",
+      "category": "castle",
+      "treeCount": 500,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-06",
+        "lateEnd": "04-13"
+      },
+      "latitude": 35.3837,
+      "longitude": 136.9412,
+      "tags": ["国宝", "木曽川", "城"]
+    },
+    {
+      "id": 14,
+      "seasonId": "sakura",
+      "nameJa": "大阪城公園",
+      "nameEn": "Osaka Castle Park",
+      "prefecture": "大阪府",
+      "prefectureCode": 27,
+      "city": "大阪市中央区",
+      "category": "castle",
+      "treeCount": 3000,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-06",
+        "lateEnd": "04-13"
+      },
+      "latitude": 34.6873,
+      "longitude": 135.5259,
+      "tags": ["大阪城", "西の丸庭園", "名所100選"]
+    },
+    {
+      "id": 15,
+      "seasonId": "sakura",
+      "nameJa": "万博記念公園",
+      "nameEn": "Expo Commemoration Park",
+      "prefecture": "大阪府",
+      "prefectureCode": 27,
+      "city": "吹田市",
+      "category": "park",
+      "treeCount": 5000,
+      "bloomTypical": {
+        "earlyStart": "03-23",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-14"
+      },
+      "latitude": 34.8072,
+      "longitude": 135.5247,
+      "tags": ["太陽の塔", "さくらまつり", "大型公園"]
+    },
+    {
+      "id": 16,
+      "seasonId": "sakura",
+      "nameJa": "円山公園",
+      "nameEn": "Maruyama Park",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市東山区",
+      "category": "park",
+      "treeCount": 680,
+      "bloomTypical": {
+        "earlyStart": "03-24",
+        "peakStart": "03-31",
+        "peakEnd": "04-08",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.0036,
+      "longitude": 135.7812,
+      "tags": ["枝垂れ桜", "夜桜", "祇園"]
+    },
+    {
+      "id": 17,
+      "seasonId": "sakura",
+      "nameJa": "哲学の道",
+      "nameEn": "Philosopher's Path",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市左京区",
+      "category": "street",
+      "treeCount": 500,
+      "bloomTypical": {
+        "earlyStart": "03-25",
+        "peakStart": "04-01",
+        "peakEnd": "04-08",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.0234,
+      "longitude": 135.7932,
+      "tags": ["散策路", "疏水沿い", "銀閣寺近く"]
+    },
+    {
+      "id": 18,
+      "seasonId": "sakura",
+      "nameJa": "醍醐寺",
+      "nameEn": "Daigo-ji Temple",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市伏見区",
+      "category": "shrine",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "03-26",
+        "peakStart": "04-02",
+        "peakEnd": "04-10",
+        "lateEnd": "04-17"
+      },
+      "latitude": 34.9535,
+      "longitude": 135.8046,
+      "tags": ["世界遺産", "豊臣秀吉", "枝垂れ桜"]
+    },
+    {
+      "id": 19,
+      "seasonId": "sakura",
+      "nameJa": "姫路城",
+      "nameEn": "Himeji Castle",
+      "prefecture": "兵庫県",
+      "prefectureCode": 28,
+      "city": "姫路市",
+      "category": "castle",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-14"
+      },
+      "latitude": 34.8395,
+      "longitude": 134.6939,
+      "tags": ["世界遺産", "白鷺城", "名所100選"]
+    },
+    {
+      "id": 20,
+      "seasonId": "sakura",
+      "nameJa": "西公園",
+      "nameEn": "Nishi Park",
+      "prefecture": "福岡県",
+      "prefectureCode": 40,
+      "city": "福岡市中央区",
+      "category": "park",
+      "treeCount": 1300,
+      "bloomTypical": {
+        "earlyStart": "03-18",
+        "peakStart": "03-25",
+        "peakEnd": "04-01",
+        "lateEnd": "04-08"
+      },
+      "latitude": 33.5895,
+      "longitude": 130.3725,
+      "tags": ["福岡", "海が見える", "名所100選"]
+    },
+    {
+      "id": 21,
+      "seasonId": "sakura",
+      "nameJa": "高遠城址公園",
+      "nameEn": "Takato Castle Ruins Park",
+      "prefecture": "長野県",
+      "prefectureCode": 20,
+      "city": "伊那市",
+      "category": "castle",
+      "treeCount": 1500,
+      "bloomTypical": {
+        "earlyStart": "04-08",
+        "peakStart": "04-15",
+        "peakEnd": "04-22",
+        "lateEnd": "04-30"
+      },
+      "latitude": 35.8504,
+      "longitude": 138.0825,
+      "tags": ["天下第一の桜", "高遠コヒガン", "名所100選"]
+    },
+    {
+      "id": 22,
+      "seasonId": "sakura",
+      "nameJa": "弘前城",
+      "nameEn": "Hirosaki Castle",
+      "prefecture": "青森県",
+      "prefectureCode": 2,
+      "city": "弘前市",
+      "category": "castle",
+      "treeCount": 2600,
+      "bloomTypical": {
+        "earlyStart": "04-16",
+        "peakStart": "04-23",
+        "peakEnd": "05-01",
+        "lateEnd": "05-08"
+      },
+      "latitude": 40.6074,
+      "longitude": 140.4637,
+      "tags": ["名所100選", "花びらの絨毯", "東北一"]
+    },
+    {
+      "id": 23,
+      "seasonId": "sakura",
+      "nameJa": "北上展勝地",
+      "nameEn": "Kitakami Tenshochi",
+      "prefecture": "岩手県",
+      "prefectureCode": 3,
+      "city": "北上市",
+      "category": "river",
+      "treeCount": 10000,
+      "bloomTypical": {
+        "earlyStart": "04-10",
+        "peakStart": "04-17",
+        "peakEnd": "04-25",
+        "lateEnd": "05-02"
+      },
+      "latitude": 39.2968,
+      "longitude": 141.1130,
+      "tags": ["名所100選", "北上川沿い", "武家屋敷"]
+    },
+    {
+      "id": 24,
+      "seasonId": "sakura",
+      "nameJa": "角館武家屋敷通り",
+      "nameEn": "Kakunodate Samurai District",
+      "prefecture": "秋田県",
+      "prefectureCode": 5,
+      "city": "仙北市",
+      "category": "street",
+      "treeCount": 400,
+      "bloomTypical": {
+        "earlyStart": "04-14",
+        "peakStart": "04-21",
+        "peakEnd": "04-28",
+        "lateEnd": "05-05"
+      },
+      "latitude": 39.5980,
+      "longitude": 140.5590,
+      "tags": ["枝垂れ桜", "武家屋敷", "みちのく小京都"]
+    },
+    {
+      "id": 25,
+      "seasonId": "sakura",
+      "nameJa": "五稜郭公園",
+      "nameEn": "Goryokaku Park",
+      "prefecture": "北海道",
+      "prefectureCode": 1,
+      "city": "函館市",
+      "category": "castle",
+      "treeCount": 1600,
+      "bloomTypical": {
+        "earlyStart": "04-22",
+        "peakStart": "04-29",
+        "peakEnd": "05-06",
+        "lateEnd": "05-13"
+      },
+      "latitude": 41.7967,
+      "longitude": 140.7571,
+      "tags": ["星形要塞", "北海道", "タワー"]
     }
   ]
 }
