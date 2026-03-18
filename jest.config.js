@@ -27,6 +27,7 @@ module.exports = {
       setupFilesAfterEnv: ['<rootDir>/__tests__/mocks/server.ts'],
       moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
+        '^msw/node$': '<rootDir>/node_modules/msw/node/index.js',
       },
     },
   ],
