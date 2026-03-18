@@ -9,10 +9,8 @@ import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/services/supabase';
 import { colors } from '@/constants/theme';
 import { usePushToken } from '@/hooks/usePushToken';
-import { useOTAUpdate } from '@/hooks/useOTAUpdate';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { OfflineBanner } from '@/components/OfflineBanner';
-import { OTAUpdateBanner } from '@/components/OTAUpdateBanner';
 import { ONBOARDING_KEY } from './onboarding';
 
 // Show notifications as banners when the app is in the foreground
@@ -30,7 +28,6 @@ export default function RootLayout() {
   const segments = useSegments();
   const { session, loading, setSession, setUser, setLoading } = useAuthStore();
   usePushToken();
-  const { isDownloading } = useOTAUpdate();
 
   // Handle push notification taps — navigate to herbarium
   useEffect(() => {
@@ -102,7 +99,6 @@ export default function RootLayout() {
     <ErrorBoundary>
       <OfflineBanner />
       <Slot />
-      <OTAUpdateBanner isDownloading={isDownloading} isReady={false} />
     </ErrorBoundary>
   );
 }
