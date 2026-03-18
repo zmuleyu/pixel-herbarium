@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "seasonId": "sakura",
+  "spots": [
+    {
+      "id": 1,
+      "seasonId": "sakura",
+      "nameJa": "上野恩賜公園",
+      "nameEn": "Ueno Park",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "台東区",
+      "category": "park",
+      "treeCount": 800,
+      "bloomTypical": {
+        "earlyStart": "03-20",
+        "peakStart": "03-28",
+        "peakEnd": "04-05",
+        "lateEnd": "04-12"
+      },
+      "latitude": 35.7141,
+      "longitude": 139.7734,
+      "tags": ["名所100選", "夜桜", "池"]
+    },
+    {
+      "id": 2,
+      "seasonId": "sakura",
+      "nameJa": "新宿御苑",
+      "nameEn": "Shinjuku Gyoen",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "新宿区",
+      "category": "garden",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-08",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.6852,
+      "longitude": 139.7100,
+      "tags": ["名所100選", "広い芝生", "多品種"]
+    },
+    {
+      "id": 3,
+      "seasonId": "sakura",
+      "nameJa": "目黒川",
+      "nameEn": "Meguro River",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "目黒区",
+      "category": "river",
+      "treeCount": 800,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-28",
+        "peakEnd": "04-04",
+        "lateEnd": "04-10"
+      },
+      "latitude": 35.6440,
+      "longitude": 139.6994,
+      "tags": ["夜桜", "川沿い", "ライトアップ"]
+    },
+    {
+      "id": 4,
+      "seasonId": "sakura",
+      "nameJa": "嵐山",
+      "nameEn": "Arashiyama",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市右京区",
+      "category": "mountain",
+      "treeCount": 1500,
+      "bloomTypical": {
+        "earlyStart": "03-25",
+        "peakStart": "04-01",
+        "peakEnd": "04-10",
+        "lateEnd": "04-18"
+      },
+      "latitude": 35.0094,
+      "longitude": 135.6722,
+      "tags": ["名所100選", "渡月橋", "山桜"]
+    },
+    {
+      "id": 5,
+      "seasonId": "sakura",
+      "nameJa": "吉野山",
+      "nameEn": "Mount Yoshino",
+      "prefecture": "奈良県",
+      "prefectureCode": 29,
+      "city": "吉野郡吉野町",
+      "category": "mountain",
+      "treeCount": 30000,
+      "bloomTypical": {
+        "earlyStart": "03-28",
+        "peakStart": "04-05",
+        "peakEnd": "04-15",
+        "lateEnd": "04-25"
+      },
+      "latitude": 34.3672,
+      "longitude": 135.8583,
+      "tags": ["名所100選", "世界遺産", "一目千本"]
+    }
+  ]
+}
