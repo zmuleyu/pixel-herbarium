@@ -1,7 +1,7 @@
 appId: com.pixelherbarium.app
 ---
-# Verify app launches and reaches the login screen (splash complete)
+# Verify app launches and shows onboarding on first cold start (splash completes, no crash)
 - launchApp:
     clearState: true
 - assertVisible:
-    id: "auth.apple"
+    id: "onboarding.skip"

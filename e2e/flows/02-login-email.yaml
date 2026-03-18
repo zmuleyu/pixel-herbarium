@@ -1,7 +1,11 @@
 appId: com.pixelherbarium.app
 ---
-# Email login flow — used as a reusable sub-flow by other tests
-- launchApp
+# Email login flow — fully self-contained: clearState → skip onboarding → login
+# Used as a reusable sub-flow by flows 03–06 via runFlow
+- launchApp:
+    clearState: true
+- tapOn:
+    id: "onboarding.skip"
 - tapOn:
     id: "auth.email"
 - inputText: "${E2E_TEST_EMAIL}"

@@ -58,6 +58,7 @@ export default function OnboardingScreen() {
       {/* Header: Skip (left) | Step counter (right) */}
       <View style={styles.header}>
         <TouchableOpacity
+          testID="onboarding.skip"
           onPress={finish}
           style={[styles.skipBtn, isLast && styles.invisible]}
           disabled={isLast}

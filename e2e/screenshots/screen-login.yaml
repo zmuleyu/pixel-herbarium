@@ -1,7 +1,10 @@
 appId: com.pixelherbarium.app
 ---
+# Skip onboarding first (clearState always shows onboarding on fresh install)
 - launchApp:
     clearState: true
+- tapOn:
+    id: "onboarding.skip"
 - assertVisible:
     id: "auth.apple"
 - takeScreenshot: "login"
