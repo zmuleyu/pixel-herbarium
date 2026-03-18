@@ -18,16 +18,14 @@ Updated: 2026-03-18
 - [x] 添加诊断截图步骤
 
 ### 调试中
-- [ ] **Maestro flows 失败**：相机权限弹窗覆盖 onboarding 屏幕
-  - ✅ 诊断截图确认：onboarding 正常显示（"スキップ" 可见），但相机权限弹窗阻挡
-  - 根因：`index.tsx → /(tabs)/discover → requestPermissions()` 在 onboarding redirect 前触发
-  - `xcrun simctl privacy grant all` 未生效（可能时序问题或语法问题）
-  - **修复方案 A**（快速）：Maestro flow 先 tap "Allow" dismiss 弹窗
-  - **修复方案 B**（根治）：discover.tsx 延迟 requestPermissions 到 onboarding 完成后
-  - **下次 session 第一步**：实施修复方案 A 或 B
+- [x] **权限弹窗修复** — commit `8562feb`，方案 A+B 同时实施
+  - ✅ discover.tsx: requestPermissions 加 SecureStore onboarding_done_v1 guard（根因修复）
+  - ✅ Maestro 02-login-email.yaml: 条件式 tapOn "Allow" 安全网
+  - ✅ codemagic.yaml: grant all → 显式 grant camera/location/photos
+  - 🔄 **验证 build `69ba7d94` 进行中** — https://codemagic.io/build/69ba7d94afe5703d425aa9e6
 
 ### 待做
-- [ ] 根据截图修复 Maestro flows
+- [ ] 确认 build `69ba7d94` Maestro flows 通过
 - [ ] 新 EAS simulator build（包含最新 testIDs）
 - [ ] Visual regression baselines + Git LFS
 - [ ] Layer 4: GitHub Actions release workflow
@@ -35,8 +33,9 @@ Updated: 2026-03-18
 ### Build IDs
 - EAS Simulator: `b99f88df` (commit `2d42b30`)
 - 诊断 build: `69ba766e` (commit `f22ba9c`)
+- **权限修复 build: `69ba7d94` (commit `8562feb`)** ← 当前
 - Codemagic App: `69ba556c2217be10dc8b85f8`
-- Monitor: https://codemagic.io/build/69ba766e481cc4df94cfd770
+- Monitor: https://codemagic.io/build/69ba7d94afe5703d425aa9e6
 
 ---
 
