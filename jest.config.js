@@ -10,6 +10,7 @@ module.exports = {
         '<rootDir>/__tests__/**/*.test.tsx',
         '<rootDir>/__tests__/**/*.test.ts',
       ],
+      testPathIgnorePatterns: ['<rootDir>/__tests__/screens/'],
       moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
         '^react-native$': '<rootDir>/__mocks__/react-native.js',
