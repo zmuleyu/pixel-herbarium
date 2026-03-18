@@ -47,41 +47,40 @@ Updated: 2026-03-18
 
 ---
 
-## Layer 2: Codemagic + Maestro E2E — 调试中
+## Layer 2: Codemagic + Maestro E2E — 待新 EAS 构建完成
 
-**当前状态**：Maestro E2E 流程全部失败，app 在模拟器上未显示预期屏幕
+**当前状态**：Jest + TS CI 全通过 ✅ | Maestro E2E 待新 EAS Simulator build 完成后重测
 
-### 已完成
-- [x] 350 tests passing (Jest unit + screen + component)
-- [x] codemagic.yaml 完整 CI 管线（Jest + TS + EAS + Simulator + Maestro）
-- [x] 6 个 Maestro E2E flows + 5 个 screenshot flows
-- [x] Jest + TypeScript 在 CI 通过（每次 build 均 pass）
-- [x] EAS simulator build `b99f88df` + Codemagic 下载/安装/启动均成功
-- [x] xcrun simctl privacy grant 预授权权限
-- [x] 添加诊断截图步骤
+### 根因分析 (build `69baba5d`)
+- ❌ **6/6 Maestro flows 失败**：全部找不到 "スキップ" 按钮
+- 根因：EAS build `b99f88df` (commit `2d42b30`) 是旧代码（Pivot前）
+  - 旧 EAS build = CHECKIN_MODE=false + 无 onboarding redirect → 直接进入 discover 屏
+  - Maestro flows 期待新代码的 onboarding 屏 → 6/6 失败
 
-### 调试中
-- [x] **权限弹窗修复** — commit `8562feb`，方案 A+B 同时实施
-  - ✅ discover.tsx: requestPermissions 加 SecureStore onboarding_done_v1 guard（根因修复）
-  - ✅ Maestro 02-login-email.yaml: 条件式 tapOn "Allow" 安全网
-  - ✅ codemagic.yaml: grant all → 显式 grant camera/location/photos
-  - ❌ build `69ba7d94` 失败 — Jest DiscoverScreen 缺 expo-secure-store mock（非 Maestro 问题）
-  - [x] **Jest mock 修复** — commit `29861ed`，`DiscoverScreen.test.tsx` 加 `jest.mock('expo-secure-store', ...)`
-  - 🔄 **验证 build `29861ed` 进行中**
+### 已完成修复 (commit `ae6b2bd`)
+- [x] **Jest mock 修复** — `DiscoverScreen.test.tsx` 加 `jest.mock('expo-secure-store', ...)`
+- [x] **4个 testID 新增** — home/footprint/checkin/settings 加 `testID="xxx.container"`
+- [x] **Maestro flows 全量更新** — 适配 CHECKIN_MODE UI:
+  - 01: `text: "スキップ"` → `id: "onboarding.skip"` (testID 更稳定)
+  - 02: skip onboarding → 设定タブ → ログイン → home.container
+  - 03: 验证 home.container 可见
+  - 04: 足跡タブ → footprint.container (替代 herbarium 図鑑)
+  - 05: 打卡タブ → checkin.container (替代 hanakotoba flip)
+  - 06: 設定タブ → settings.container (替代 profile)
+- [x] **新 EAS Simulator build** — `100ca731` 已排队 (commit `4ae8eb7`)
+  - Monitor: https://expo.dev/accounts/cbnium/projects/pixel-herbarium/builds/100ca731-861f-4ff9-928a-ef2a15a542db
 
 ### 待做
-- [ ] 确认新 build Maestro flows 通过
-- [ ] 新 EAS simulator build（包含最新 testIDs）
+- [ ] 等待 EAS Simulator build `100ca731` 完成（约 30-60 分钟）
+- [ ] 在 Codemagic 手动触发新 build (dev 分支)，验证 Maestro E2E 通过
 - [ ] Visual regression baselines + Git LFS
 - [ ] Layer 4: GitHub Actions release workflow
 
 ### Build IDs
-- EAS Simulator: `b99f88df` (commit `2d42b30`)
-- 诊断 build: `69ba766e` (commit `f22ba9c`)
-- 权限修复 build: `69ba7d94` (commit `8562feb`) ← 失败（Jest mock 缺失）
-- **Jest mock 修复 build: `29861ed`** ← 当前
+- **新 EAS Simulator**: `100ca731` (commit `4ae8eb7`) ← 排队中
+- 旧 EAS Simulator: `b99f88df` (commit `2d42b30`) ← 旧代码，已废弃
 - Codemagic App: `69ba556c2217be10dc8b85f8`
-- Monitor: https://codemagic.io/build/69ba7d94afe5703d425aa9e6
+- 上次 Codemagic build: `69baba5d` (根因确认: 旧EAS build + 流程配置不匹配)
 
 ---
 
@@ -89,7 +88,7 @@ Updated: 2026-03-18
 
 | 项目 | 状态 |
 |------|------|
-| 350 tests passing | ✅ |
+| 433 tests passing | ✅ |
 | TypeScript 0 errors | ✅ |
 | EAS 账号绑定 (cbnium / zmuleyu@gmail.com) | ✅ |
 | EAS projectId: `74427c7e-dba6-4061-9cc9-3651d09fae01` | ✅ |
