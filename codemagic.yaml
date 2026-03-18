@@ -18,7 +18,7 @@ workflows:
         script: npm ci
 
       - name: Jest unit + screen tests
-        script: npx jest --ci --passWithNoTests
+        script: npx jest --ci --passWithNoTests --forceExit
 
       - name: TypeScript check
         script: npx tsc --noEmit
