@@ -1,6 +1,47 @@
-# Pixel Herbarium — App Store 提交进度
+# Pixel Herbarium — 赏花打卡 Pivot 进度
 
 Updated: 2026-03-18
+
+---
+
+## ✅ Phase 1: Foundation — 完成 (commit `9f6ecb9`)
+
+- Season 抽象层 (SeasonConfig / SEASONS / getCurrentSeason / getActiveSeason)
+- Guest-first auth (无强制登录)
+- 4-tab 导航壳 (home / checkin / footprint / settings)
+- Home 屏 (特色 spot + 开花状态栏 + CTA)
+- 遗留 tab href:null 隐藏
+- **417 tests passing**
+
+---
+
+## ✅ Phase 2: MVP Check-in — 完成 (commit `73c1bda`)
+
+- `useCheckinPhoto` — camera/library 选图 hook
+- `SpotSelector` — 可搜索 spot 列表 + 开花状态 badge
+- `CardTemplate` — 360×480 打卡卡片（用户照片 + 地点 + 日期 + 品牌）
+- `checkin.tsx` — 3步向导（选图 → 选地点 → 预览+保存/分享）
+- `footprint.tsx` — 打卡历史网格
+- i18n: 12 个新 key (ja + en)
+- **417 tests passing**
+
+跳过（OTA 补充）：WatermarkTemplate / PixelTemplate / TemplateSelector
+
+---
+
+## 待做 — Phase 3: 设备测试 + App Store
+
+### Phase 3 核心任务
+- [ ] **EAS simulator build** — 验证打卡向导在真机上可用
+- [ ] **onboarding 文案更新** — 反映赏花打卡 Pivot（非 AI 识别）
+- [ ] **Full sakura.json** — 100 个 spot（目前 5 个 dev 样本）
+- [ ] App Store Connect 元数据填写（见下）
+- [ ] Production EAS build + submit
+
+### OTA 补充（Phase 3 之后）
+- [ ] WatermarkTemplate（叠加水印模板）
+- [ ] PixelTemplate（像素化模板）
+- [ ] TemplateSelector（模板选择 UI）
 
 ---
 
@@ -35,7 +76,8 @@ Updated: 2026-03-18
 ### Build IDs
 - EAS Simulator: `b99f88df` (commit `2d42b30`)
 - 诊断 build: `69ba766e` (commit `f22ba9c`)
-- **权限修复 build: `69ba7d94` (commit `8562feb`)** ← 当前
+- 权限修复 build: `69ba7d94` (commit `8562feb`) ← 失败（Jest mock 缺失）
+- **Jest mock 修复 build: `29861ed`** ← 当前
 - Codemagic App: `69ba556c2217be10dc8b85f8`
 - Monitor: https://codemagic.io/build/69ba7d94afe5703d425aa9e6
 
