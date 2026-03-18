@@ -77,6 +77,10 @@ jest.mock('@/utils/date', () => ({
 jest.mock('@/constants/plants', () => ({
   RARITY_LABELS: { 1: '★', 2: '★★', 3: '★★★ 限定' },
 }));
+jest.mock('expo-secure-store', () => ({
+  getItemAsync: jest.fn().mockResolvedValue('1'), // onboarding done → guard passes → requestPermissions allowed
+  setItemAsync: jest.fn().mockResolvedValue(undefined),
+}));
 jest.mock('@/constants/theme', () => ({
   colors: {
     background: '#f5f4f1', plantPrimary: '#9fb69f', text: '#3a3a3a',
