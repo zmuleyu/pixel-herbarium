@@ -89,7 +89,7 @@ export default function HerbariumScreen() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.filterRow}
       >
-        {FILTER_OPTIONS.map(opt => (
+        {FILTER_OPTIONS.filter(opt => opt.value !== 'spring' || getCurrentSeason() === 'spring').map(opt => (
           <TouchableOpacity
             key={String(opt.value)}
             style={[styles.filterChip, filter === opt.value && styles.filterChipActive]}
