@@ -4,6 +4,49 @@
  */
 
 // Mock all dependencies BEFORE imports
+jest.mock('@/stores/sakura-store', () => ({
+  useSakuraStore: jest.fn(() => ({
+    spots: [
+      {
+        id: 1, nameJa: '上野恩賜公園', nameEn: 'Ueno Park',
+        prefecture: '東京都', prefectureCode: 13, city: '台東区', category: 'park',
+        bloomTypical: { earlyStart: '03-20', peakStart: '03-28', peakEnd: '04-05', lateEnd: '04-12' },
+        latitude: 35.7141, longitude: 139.7734,
+        tags: ['名所100選'],
+      },
+    ],
+    checkins: [],
+    loading: false,
+    initSpots: jest.fn(),
+    loadCheckins: jest.fn(),
+    performCheckin: jest.fn(),
+    hasCheckedIn: jest.fn(() => false),
+    getProgress: jest.fn(() => ({ checked: 0, total: 1 })),
+    flushOfflineQueue: jest.fn(),
+  })),
+}));
+jest.mock('@/components/PrePermissionScreen', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+jest.mock('@/components/SpotCheckinAnimation', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+jest.mock('@/hooks/useReviewPrompt', () => ({
+  maybeRequestReview: jest.fn(() => Promise.resolve()),
+}));
+jest.mock('expo-location', () => ({
+  getForegroundPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  requestForegroundPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+}));
+jest.mock('@/utils/geo', () => ({
+  isWithinRadius: jest.fn(() => false),
+  fuzzCoordinate: jest.fn((c) => c),
+}));
+jest.mock('@/utils/bloom', () => ({
+  getBloomStatus: jest.fn(() => 'peak'),
+}));
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
