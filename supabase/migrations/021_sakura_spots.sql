@@ -82,6 +82,10 @@ DECLARE
   v_checkin spot_checkins;
   v_is_new  BOOLEAN;
 BEGIN
+  IF v_uid IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
   INSERT INTO spot_checkins (user_id, spot_id, is_mankai, stamp_variant, bloom_status_at_checkin)
   VALUES (
     v_uid,
