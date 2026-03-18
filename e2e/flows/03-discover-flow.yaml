@@ -1,0 +1,7 @@
+appId: com.pixelherbarium.app
+---
+# Discover screen: camera view or permission request visible after login
+- runFlow: ./02-login-email.yaml
+- assertVisible:
+    id: "discover.capture"
+    timeout: 5000

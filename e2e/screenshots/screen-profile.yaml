@@ -1,0 +1,8 @@
+appId: com.pixelherbarium.app
+---
+- runFlow: ../flows/02-login-email.yaml
+- tapOn:
+    text: "プロフィール"
+- pause:
+    milliseconds: 1000
+- takeScreenshot: "profile"

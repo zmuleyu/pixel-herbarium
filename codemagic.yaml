@@ -1,0 +1,83 @@
+workflows:
+  ios-ci:
+    name: iOS CI (Jest + E2E + Visual Regression)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      xcode: latest
+      node: 20.18.0
+      groups:
+        - expo_credentials
+    triggering:
+      events: [push]
+      branch_patterns:
+        - pattern: master
+        - pattern: dev
+    scripts:
+      - name: Install deps
+        script: npm ci
+
+      - name: Jest unit + screen tests
+        script: npx jest --ci --passWithNoTests
+
+      - name: TypeScript check
+        script: npx tsc --noEmit
+
+      - name: Download EAS Simulator build
+        script: |
+          npm install -g eas-cli
+          BUILD_URL=$(eas build:list --platform ios --profile simulator --limit 1 --json \
+            | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); \
+              console.log(d[0]?.artifacts?.buildUrl ?? '')")
+          if [ -z "$BUILD_URL" ]; then
+            echo "No simulator build found — triggering new build"
+            eas build --profile simulator --platform ios --non-interactive
+            BUILD_URL=$(eas build:list --platform ios --profile simulator --limit 1 --json \
+              | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); \
+                console.log(d[0].artifacts.buildUrl)")
+          fi
+          curl -L -o app.tar.gz "$BUILD_URL"
+          tar xzf app.tar.gz || unzip -q app.tar.gz || true
+
+      - name: Boot Simulator & install app
+        script: |
+          xcrun simctl boot "iPhone 16 Pro Max" || true
+          APP_PATH=$(find . -name "*.app" -maxdepth 3 | head -1)
+          xcrun simctl install booted "$APP_PATH"
+
+      - name: Run Maestro E2E flows
+        script: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          export PATH="$PATH:$HOME/.maestro/bin"
+          maestro test e2e/flows/ \
+            --format junit \
+            --output e2e-results.xml \
+            --env E2E_TEST_EMAIL=$E2E_TEST_EMAIL \
+            --env E2E_TEST_PASSWORD=$E2E_TEST_PASSWORD
+
+      - name: Run Maestro screenshot flows
+        script: |
+          export PATH="$PATH:$HOME/.maestro/bin"
+          mkdir -p e2e/current
+          maestro test e2e/screenshots/ \
+            --env E2E_TEST_EMAIL=$E2E_TEST_EMAIL \
+            --env E2E_TEST_PASSWORD=$E2E_TEST_PASSWORD || true
+          # Copy latest screenshots to e2e/current/
+          MAESTRO_LATEST=$(ls -td ~/.maestro/tests/*/ 2>/dev/null | head -1)
+          if [ -n "$MAESTRO_LATEST" ]; then
+            cp "$MAESTRO_LATEST"screenshots/*.png e2e/current/ 2>/dev/null || true
+          fi
+
+      - name: Visual regression check
+        script: |
+          if [ -d e2e/baselines ] && [ "$(ls -A e2e/baselines 2>/dev/null)" ]; then
+            npm install --no-save pixelmatch pngjs
+            node scripts/visual-regression.mjs
+          else
+            echo "No baselines yet — skipping regression check (first run establishes baselines)"
+          fi
+
+    artifacts:
+      - e2e-results.xml
+      - e2e/diffs/*.png
+      - e2e/current/*.png

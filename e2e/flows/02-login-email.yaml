@@ -1,0 +1,15 @@
+appId: com.pixelherbarium.app
+---
+# Email login flow — used as a reusable sub-flow by other tests
+- launchApp
+- tapOn:
+    id: "auth.email"
+- inputText: "${E2E_TEST_EMAIL}"
+- tapOn:
+    id: "auth.password"
+- inputText: "${E2E_TEST_PASSWORD}"
+- tapOn:
+    id: "auth.signIn"
+- assertVisible:
+    id: "discover.capture"
+    timeout: 8000

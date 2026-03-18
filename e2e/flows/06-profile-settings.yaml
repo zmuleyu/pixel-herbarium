@@ -1,0 +1,9 @@
+appId: com.pixelherbarium.app
+---
+# Navigate to Profile tab and verify settings row is visible
+- runFlow: ./02-login-email.yaml
+- tapOn:
+    text: "プロフィール"
+- assertVisible:
+    text: "言語"
+    timeout: 5000

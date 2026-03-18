@@ -1,0 +1,8 @@
+appId: com.pixelherbarium.app
+---
+# Verify app launches and reaches the login screen (splash complete)
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "auth.apple"
+    timeout: 10000
