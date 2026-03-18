@@ -32,9 +32,11 @@ Updated: 2026-03-18
 ## 待做 — Phase 3: 设备测试 + App Store
 
 ### Phase 3 核心任务
-- [ ] **EAS simulator build** — 验证打卡向导在真机上可用
-- [ ] **onboarding 文案更新** — 反映赏花打卡 Pivot（非 AI 识别）
-- [ ] **Full sakura.json** — 100 个 spot（目前 5 个 dev 样本）
+- [x] **onboarding 文案更新** — 花めぐり 3 slides (commit `43facc6`)
+- [x] **sakura.json 扩充** — 25 spots 覆盖九州/近畿/首都圏/東北/北海道 (commit `43facc6`)
+- 🔄 **EAS preview build `a9f3b18b`** — 排队中 (profile: preview, commit `43facc6`)
+  - Monitor: https://expo.dev/accounts/cbnium/projects/pixel-herbarium/builds/a9f3b18b-5ed1-4a83-9db5-766ae34347dc
+- [ ] 真机验证打卡向导（选图 → 选 spot → 预览 → 保存）
 - [ ] App Store Connect 元数据填写（见下）
 - [ ] Production EAS build + submit
 
