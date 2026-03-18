@@ -35,7 +35,11 @@ module.exports = {
       },
       transform: {
         '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx', resolveJsonModule: true } }],
+        '^.+\\.m?js$': ['babel-jest', {}],
       },
+      transformIgnorePatterns: [
+        '/node_modules/(?!(msw|until-async|@mswjs)/)',
+      ],
     },
   ],
 };
