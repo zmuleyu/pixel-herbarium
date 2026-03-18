@@ -20,20 +20,23 @@ module.exports = {
       },
     },
     {
-      // Project B: screens — uses ts-jest + same react-native mock as unit project
-      // so that shallowRender (calling function components outside a reconciler)
-      // works without a live React dispatcher.
+      // Project B: screens — ts-jest + react-native mock + patched React hooks
+      // shallowRender calls function components as plain functions (no fiber dispatcher).
+      // The setup file patches React.useState/useRef/etc. to work without a reconciler.
       displayName: 'screens',
       preset: 'ts-jest',
       testEnvironment: 'node',
       testMatch: ['<rootDir>/__tests__/screens/**'],
-      setupFilesAfterEnv: ['<rootDir>/__tests__/mocks/server.ts'],
+      testPathIgnorePatterns: ['<rootDir>/__tests__/screens/setup.ts'],
+      setupFilesAfterEnv: [
+        '<rootDir>/__tests__/mocks/server.ts',
+        '<rootDir>/__tests__/screens/setup.ts',
+      ],
       moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
         '^react-native$': '<rootDir>/__mocks__/react-native.js',
         '^msw/node$': '<rootDir>/__mocks__/msw-node.js',
         '^msw$': '<rootDir>/__mocks__/msw-core.js',
-        '^react$': '<rootDir>/__mocks__/react-hooks-stub.js',
       },
       transform: {
         '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx', resolveJsonModule: true } }],
