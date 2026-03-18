@@ -4,7 +4,11 @@
     "herbarium": "花図鉑",
     "cityMap": "同城マップ",
     "social": "ソーシャル",
-    "profile": "マイページ"
+    "profile": "マイページ",
+    "home": "ホーム",
+    "checkin": "打卡",
+    "footprint": "足跡",
+    "settings": "設定"
   },
   "discover": {
     "capture": "撮影する",
@@ -167,12 +171,42 @@
     "colorMeaning": "花の色言葉",
     "meaningSecret": "意味はまだ秘密です"
   },
+  "bloom": {
+    "pre": "開花前",
+    "budding": "つぼみ",
+    "partial": "五分咲き",
+    "peak": "満開",
+    "falling": "散り始め",
+    "ended": "終了"
+  },
   "season": {
     "budding": "花開き",
     "peak": "見頃",
     "falling": "花散り",
     "dormant": "休眠中",
-    "always": "通年"
+    "always": "通年",
+    "sakura": {
+      "name": "桜シーズン",
+      "cta": "今日の桜を記録する 🌸",
+      "empty": "まだ桜の記録がありません",
+      "featuredTitle": "今日のおすすめスポット",
+      "shareText": "{{spotName}}で桜を見つけました 🌸",
+      "hashtag": "#桜打卡"
+    }
+  },
+  "checkin": {
+    "comingSoon": "もうすぐ",
+    "comingSoonSub": "打卡機能は次のアップデートで登場します"
+  },
+  "footprint": {
+    "title": "足跡",
+    "comingSoon": "もうすぐ",
+    "totalCount": "{{count}} 箇所訪れた",
+    "empty": "まだ足跡がありません"
+  },
+  "home": {
+    "recentTitle": "最近の記録",
+    "noSpotsLoaded": "スポットデータを読み込み中…"
   },
   "onboarding": {
     "skip": "スキップ",
@@ -186,8 +220,10 @@
     "slide3Body": "GPS で発見場所を記録。\n全国何番目の発見者か確認したり、\n都道府県ごとの開花情報を楽しもう。"
   },
   "settings": {
+    "title": "設定",
     "language": "言語",
-    "version": "バージョン"
+    "version": "バージョン",
+    "login": "ログイン"
   },
   "offline": {
     "banner": "📵 オフライン — 接続を確認してください"

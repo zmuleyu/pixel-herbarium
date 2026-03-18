@@ -4,7 +4,11 @@
     "herbarium": "Herbarium",
     "cityMap": "City Map",
     "social": "Social",
-    "profile": "Profile"
+    "profile": "Profile",
+    "home": "Home",
+    "checkin": "Check-in",
+    "footprint": "Footprint",
+    "settings": "Settings"
   },
   "discover": {
     "capture": "Take Photo",
@@ -167,12 +171,42 @@
     "colorMeaning": "Colour Symbolism",
     "meaningSecret": "Meaning still a secret"
   },
+  "bloom": {
+    "pre": "Not yet",
+    "budding": "Budding",
+    "partial": "Partial bloom",
+    "peak": "Full bloom",
+    "falling": "Falling",
+    "ended": "Ended"
+  },
   "season": {
     "budding": "Budding",
     "peak": "In Bloom",
     "falling": "Fading",
     "dormant": "Dormant",
-    "always": "Year-round"
+    "always": "Year-round",
+    "sakura": {
+      "name": "Cherry Blossom Season",
+      "cta": "Record today's cherry blossoms 🌸",
+      "empty": "No cherry blossom records yet",
+      "featuredTitle": "Today's Featured Spot",
+      "shareText": "Found cherry blossoms at {{spotName}} 🌸",
+      "hashtag": "#SakuraCheckin"
+    }
+  },
+  "checkin": {
+    "comingSoon": "Coming Soon",
+    "comingSoonSub": "Check-in feature arrives in the next update"
+  },
+  "footprint": {
+    "title": "Footprint",
+    "comingSoon": "Coming Soon",
+    "totalCount": "{{count}} spots visited",
+    "empty": "No footprints yet"
+  },
+  "home": {
+    "recentTitle": "Recent Records",
+    "noSpotsLoaded": "Loading spot data…"
   },
   "onboarding": {
     "skip": "Skip",
@@ -186,8 +220,10 @@
     "slide3Body": "GPS logs where you found each plant.\nSee how many people found it before you\nand explore bloom info by region."
   },
   "settings": {
+    "title": "Settings",
     "language": "Language",
-    "version": "Version"
+    "version": "Version",
+    "login": "Sign In"
   },
   "offline": {
     "banner": "📵 Offline — Check your connection"
