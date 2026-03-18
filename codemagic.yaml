@@ -53,6 +53,9 @@ workflows:
           APP_PATH=$(find . -name "*.app" -maxdepth 4 | head -1)
           echo "App path: $APP_PATH"
           xcrun simctl install booted "$APP_PATH"
+          # Pre-grant all permissions to prevent system dialogs blocking E2E flows
+          # (discover.tsx requests camera/location on mount before onboarding redirect)
+          xcrun simctl privacy booted grant all com.pixelherbarium.app
 
       - name: Run Maestro E2E flows
         script: |
