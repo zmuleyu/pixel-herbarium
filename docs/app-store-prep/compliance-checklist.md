@@ -84,7 +84,7 @@
 - [ ] 关键词：日文 ≤100字 ✓
 - [ ] 宣传文本：≤170字（可随时更新，无需审核）
 - [ ] **Support URL**：必须有效且可访问（可填 `https://cybernium.cn` 或专属支持页）
-- [ ] **Privacy Policy URL**：见 `privacy-policy.md` 中确定的 hosting URL
+- [x] **Privacy Policy URL**：`https://zmuleyu.github.io/pixel-herbarium/privacy-policy.html` ✅（GitHub Pages 已启用 2026-03-18）
 - [ ] 截图：至少覆盖 6.9"（iPhone 16 Pro Max），见 `screenshot-plan.md`
 - [ ] App Icon：已在 `assets/icon.png` 配置 ✓（1024×1024 PNG，无圆角，无透明）
 
