@@ -60,6 +60,7 @@ export default function HomeScreen() {
 
   return (
     <ScrollView
+      testID="home.container"
       style={[styles.container, { backgroundColor: theme.bgTint }]}
       contentContainerStyle={styles.content}
     >

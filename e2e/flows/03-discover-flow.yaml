@@ -1,6 +1,6 @@
 appId: com.pixelherbarium.app
 ---
-# Discover screen: camera view or permission request visible after login
+# Home screen is visible after login (CHECKIN_MODE: home tab is the main screen)
 - runFlow: ./02-login-email.yaml
 - assertVisible:
-    id: "discover.capture"
+    id: "home.container"

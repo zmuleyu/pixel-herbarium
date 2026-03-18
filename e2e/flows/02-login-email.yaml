@@ -1,6 +1,6 @@
 appId: com.pixelherbarium.app
 ---
-# Email login flow — fully self-contained: clearState → skip onboarding → login
+# Email login flow — fully self-contained: clearState → skip onboarding → login via settings
 # Used as a reusable sub-flow by flows 03–06 via runFlow
 - launchApp:
     clearState: true
@@ -15,8 +15,15 @@ appId: com.pixelherbarium.app
       visible: "Would like to access"
     commands:
       - tapOn: "Allow"
+# Skip onboarding → home screen (guest-first: no forced login)
 - tapOn:
-    text: "スキップ"
+    id: "onboarding.skip"
+# Navigate to Settings tab to access login
+- tapOn:
+    text: "設定"
+# Tap login button (only visible for guest users)
+- tapOn:
+    text: "ログイン"
 - tapOn:
     id: "auth.email"
 - inputText: "${E2E_TEST_EMAIL}"
@@ -26,4 +33,4 @@ appId: com.pixelherbarium.app
 - tapOn:
     id: "auth.signIn"
 - assertVisible:
-    id: "discover.capture"
+    id: "home.container"

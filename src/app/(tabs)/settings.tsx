@@ -18,7 +18,7 @@ export default function SettingsTabScreen() {
   const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView testID="settings.container" style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>{t('settings.title')}</Text>
 
       {/* Language selector */}

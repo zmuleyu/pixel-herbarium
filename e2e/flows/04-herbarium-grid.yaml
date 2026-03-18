@@ -1,8 +1,8 @@
 appId: com.pixelherbarium.app
 ---
-# Navigate to Herbarium tab and verify plant grid is visible
+# Navigate to Footprint tab and verify it is visible (CHECKIN_MODE: replaces herbarium tab)
 - runFlow: ./02-login-email.yaml
 - tapOn:
-    text: "図鑑"
+    text: "足跡"
 - assertVisible:
-    id: "herbarium.grid"
+    id: "footprint.container"

@@ -1,13 +1,8 @@
 appId: com.pixelherbarium.app
 ---
-# Navigate to a collected plant detail and verify flip card is present
-- runFlow: ./04-herbarium-grid.yaml
+# Navigate to Check-in tab and verify it is visible (CHECKIN_MODE: replaces hanakotoba flow)
+- runFlow: ./02-login-email.yaml
 - tapOn:
-    id: "herbarium.grid"
-    index: 0
+    text: "打卡"
 - assertVisible:
-    id: "dot-0"
-- tapOn:
-    id: "dot-0"
-- assertVisible:
-    id: "dot-1"
+    id: "checkin.container"

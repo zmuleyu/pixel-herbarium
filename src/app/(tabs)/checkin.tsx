@@ -151,7 +151,7 @@ export default function CheckinScreen() {
   // ── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.bgTint }]}>
+    <View testID="checkin.container" style={[styles.container, { backgroundColor: theme.bgTint }]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity

@@ -4,4 +4,4 @@ appId: com.pixelherbarium.app
 - launchApp:
     clearState: true
 - assertVisible:
-    text: "スキップ"
+    id: "onboarding.skip"

@@ -73,7 +73,7 @@ export default function FootprintScreen() {
   }, []);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View testID="footprint.container" style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>{t('footprint.title')}</Text>
