@@ -32,33 +32,33 @@ describe('i18n key parity', () => {
 
 describe('i18n content', () => {
   it('ja has correct tab names', () => {
-    expect((ja as Record<string, Record<string, string>>).tabs.discover).toBe('発見');
-    expect((ja as Record<string, Record<string, string>>).tabs.herbarium).toBe('花図鉑');
+    expect((ja as unknown as Record<string, Record<string, string>>).tabs.discover).toBe('発見');
+    expect((ja as unknown as Record<string, Record<string, string>>).tabs.herbarium).toBe('花図鉑');
   });
 
   it('en has English tab names', () => {
-    expect((en as Record<string, Record<string, string>>).tabs.discover).toBe('Discover');
-    expect((en as Record<string, Record<string, string>>).tabs.herbarium).toBe('Herbarium');
+    expect((en as unknown as Record<string, Record<string, string>>).tabs.discover).toBe('Discover');
+    expect((en as unknown as Record<string, Record<string, string>>).tabs.herbarium).toBe('Herbarium');
   });
 
   it('ja has rarity labels', () => {
-    const rarity = (ja as Record<string, Record<string, string>>).rarity;
+    const rarity = (ja as unknown as Record<string, Record<string, string>>).rarity;
     expect(rarity['1']).toBe('★');
     expect(rarity['3']).toContain('限定');
   });
 
   it('ja has offline.banner key', () => {
-    const offline = (ja as Record<string, Record<string, string>>).offline;
+    const offline = (ja as unknown as Record<string, Record<string, string>>).offline;
     expect(offline.banner).toBeTruthy();
   });
 
   it('ja has error.loadFailed key', () => {
-    const error = (ja as Record<string, Record<string, string>>).error;
+    const error = (ja as unknown as Record<string, Record<string, string>>).error;
     expect(error.loadFailed).toBeTruthy();
   });
 
   it('en has offline.banner key', () => {
-    const offline = (en as Record<string, Record<string, string>>).offline;
+    const offline = (en as unknown as Record<string, Record<string, string>>).offline;
     expect(offline.banner).toBeTruthy();
   });
 });
