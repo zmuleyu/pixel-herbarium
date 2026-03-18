@@ -10,6 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { RARITY_LABELS } from '@/constants/plants';
 import { getPlantGradientColors } from '@/utils/plant-gradient';
+import type { SharePosterSpot } from '@/types/sakura';
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -25,12 +26,9 @@ export interface SharePosterPlant {
   bloom_months: number[];
 }
 
-export interface SharePosterProps {
-  format: 'story' | 'line';
-  plant: SharePosterPlant;
-  discoveryDate?: string; // ISO date string e.g. "2024-04-01"
-  discoveryCity?: string;
-}
+export type SharePosterProps =
+  | { format: 'story' | 'line'; plant: SharePosterPlant; discoveryDate?: string; discoveryCity?: string }
+  | { format: 'spot'; spot: SharePosterSpot };
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -108,7 +106,7 @@ function PosterFooter() {
 // StoryPoster (360x640)
 // ---------------------------------------------------------------------------
 
-function StoryPoster({ plant, discoveryDate, discoveryCity }: Omit<SharePosterProps, 'format'>) {
+function StoryPoster({ plant, discoveryDate, discoveryCity }: { plant: SharePosterPlant; discoveryDate?: string; discoveryCity?: string }) {
   const gradientColors = getPlantGradientColors(plant.rarity, plant.bloom_months) as [string, string];
   const rarityLabel = RARITY_LABELS[plant.rarity as keyof typeof RARITY_LABELS] ?? '★';
   const rarityColor =
@@ -165,7 +163,7 @@ function StoryPoster({ plant, discoveryDate, discoveryCity }: Omit<SharePosterPr
 // LineCard (360x360)
 // ---------------------------------------------------------------------------
 
-function LineCard({ plant, discoveryDate, discoveryCity }: Omit<SharePosterProps, 'format'>) {
+function LineCard({ plant, discoveryDate, discoveryCity }: { plant: SharePosterPlant; discoveryDate?: string; discoveryCity?: string }) {
   const gradientColors = getPlantGradientColors(plant.rarity, plant.bloom_months) as [string, string];
   const rarityLabel = RARITY_LABELS[plant.rarity as keyof typeof RARITY_LABELS] ?? '★';
   const rarityColor =
@@ -209,14 +207,60 @@ function LineCard({ plant, discoveryDate, discoveryCity }: Omit<SharePosterProps
 }
 
 // ---------------------------------------------------------------------------
+// SpotPoster (360x360) — sakura spot check-in share card
+// ---------------------------------------------------------------------------
+
+function SpotPoster({ spot }: { spot: SharePosterSpot }) {
+  const borderColor = spot.stamp_variant === 'mankai' ? '#d4a017' : colors.blushPink;
+
+  return (
+    <View style={[spotStyles.canvas, { borderColor, borderWidth: spot.stamp_variant === 'mankai' ? 3 : 0 }]}>
+      <LinearGradient
+        colors={[colors.seasonal.sakura, colors.blushPink]}
+        style={StyleSheet.absoluteFillObject}
+      />
+      <Text style={spotStyles.spotIcon}>{spot.is100sen ? '⭐' : '🌸'}</Text>
+      <Text style={spotStyles.spotName}>{spot.name_ja}</Text>
+      <Text style={spotStyles.prefecture}>{spot.prefecture}</Text>
+      <Text style={spotStyles.date}>{formatDate(spot.checked_in_at)}</Text>
+      <Text style={spotStyles.logo}>Pixel Herbarium</Text>
+    </View>
+  );
+}
+
+const spotStyles = StyleSheet.create({
+  canvas: {
+    width: 360, height: 360,
+    alignItems: 'center', justifyContent: 'center',
+    overflow: 'hidden',
+    borderRadius: borderRadius.md,
+  },
+  spotIcon:   { fontSize: 64, marginBottom: 8 },
+  spotName:   {
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.xxl,
+    color: colors.text, textAlign: 'center', marginBottom: spacing.xs,
+  },
+  prefecture: { fontSize: typography.fontSize.sm, color: colors.textSecondary, marginBottom: spacing.sm },
+  date:       { fontSize: typography.fontSize.sm, color: colors.textSecondary, marginBottom: spacing.lg },
+  logo:       {
+    fontSize: typography.fontSize.xs, color: colors.textSecondary,
+    position: 'absolute', bottom: 12, right: 12,
+  },
+});
+
+// ---------------------------------------------------------------------------
 // Main export
 // ---------------------------------------------------------------------------
 
 export function SharePoster(props: SharePosterProps) {
-  if (props.format === 'line') {
-    return <LineCard {...props} />;
+  if (props.format === 'spot') {
+    return <SpotPoster spot={props.spot} />;
   }
-  return <StoryPoster {...props} />;
+  if (props.format === 'line') {
+    return <LineCard plant={props.plant} discoveryDate={props.discoveryDate} discoveryCity={props.discoveryCity} />;
+  }
+  return <StoryPoster plant={props.plant} discoveryDate={props.discoveryDate} discoveryCity={props.discoveryCity} />;
 }
 
 // ---------------------------------------------------------------------------
