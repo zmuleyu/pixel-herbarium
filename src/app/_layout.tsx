@@ -13,6 +13,11 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { ONBOARDING_KEY } from './onboarding';
 
+/** Resolves to fallback after ms milliseconds if promise hasn't settled. */
+function withTimeout<T>(p: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([p, new Promise<T>(resolve => setTimeout(() => resolve(fallback), ms))]);
+}
+
 // Show notifications as banners when the app is in the foreground
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -47,7 +52,7 @@ export default function RootLayout() {
     setLoading(true);
     Promise.all([
       restoreLanguage().catch(() => {}),
-      supabase.auth.getSession(),
+      withTimeout(supabase.auth.getSession(), 8000, { data: { session: null }, error: null }),
     ]).then(([, { data: { session: s } }]) => {
       setSession(s);
       setUser(s?.user ?? null);
