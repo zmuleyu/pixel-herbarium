@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,14 @@ import { useRouter } from 'expo-router';
 import { useNearbyDiscoveries, type NearbyDiscovery } from '@/hooks/useNearbyDiscoveries';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import * as Location from 'expo-location';
+import { useSakuraStore } from '@/stores/sakura-store';
+import { isWithinRadius } from '@/utils/geo';
+import { getBloomStatus } from '@/utils/bloom';
+import PrePermissionScreen from '@/components/PrePermissionScreen';
+import SpotCheckinAnimation from '@/components/SpotCheckinAnimation';
+import { maybeRequestReview } from '@/hooks/useReviewPrompt';
+import type { FlowerSpot } from '@/types/hanami';
 
 // ~5km view delta
 const REGION_DELTA = 0.09;
@@ -34,6 +42,15 @@ export default function MapScreen() {
   const { t } = useTranslation();
   const { discoveries, userLocation, loading, refresh } = useNearbyDiscoveries();
   const [showHeatmap, setShowHeatmap] = useState(false);
+  const [mapLayer, setMapLayer]       = useState<'discoveries' | 'spots'>('discoveries');
+  const [showPrePerm, setShowPrePerm] = useState(false);
+  const [nearbySpot, setNearbySpot]   = useState<FlowerSpot | null>(null);
+  const [animSpot, setAnimSpot]       = useState<FlowerSpot | null>(null);
+  const [animMankai, setAnimMankai]   = useState(false);
+  const proximityTimer                = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const { spots, initSpots, performCheckin, hasCheckedIn } = useSakuraStore();
+
   const heatPoints = useMemo(
     () => discoveries.map(d => ({ latitude: d.latitude, longitude: d.longitude, weight: d.rarity })),
     [discoveries],

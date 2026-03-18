@@ -79,6 +79,7 @@ jest.mock('@/constants/theme', () => ({
     rarity: { common: '#9fb69f', uncommon: '#d4e4f7', rare: '#f5d5d0' },
     seasonal: { sakura: '#f5d5d0' },
     plantSecondary: '#c1e8d8',
+    blushPink: '#f5d5d0',
   },
   typography: {
     fontFamily: { body: 'System', display: 'HiraginoMaruGothicProN' },
@@ -125,5 +126,12 @@ describe('MapScreen', () => {
   it('renders map component', () => {
     const output = renderToString();
     expect(output).toContain('MapView');
+  });
+});
+
+describe('MapScreen — layer toggle', () => {
+  it('renders layer toggle buttons', () => {
+    const html = renderToString();
+    expect(html).toContain('sakura.layerToggle');
   });
 });
