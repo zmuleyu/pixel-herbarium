@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 import { signInWithApple, signInWithEmail, signInWithLine, confirmLinkLine } from '@/services/auth';
 import { trackEvent } from '@/services/analytics';
 import { useAuthStore } from '@/stores/auth-store';
@@ -19,9 +20,14 @@ import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 export default function LoginScreen() {
   const { t } = useTranslation();
   const { setError } = useAuthStore();
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  function handleGuest() {
+    router.replace('/(tabs)/home' as any);
+  }
 
   async function handleApple() {
     try {
@@ -165,6 +171,14 @@ export default function LoginScreen() {
         >
           <Text style={styles.buttonText}>{t('auth.signIn')}</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handleGuest}
+          testID="auth.continueAsGuest"
+          style={styles.guestButton}
+        >
+          <Text style={styles.guestText}>{t('auth.continueAsGuest')}</Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
@@ -249,5 +263,15 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontFamily: typography.fontFamily.display,
     fontSize: typography.fontSize.md,
+  },
+  guestButton: {
+    marginTop: spacing.xs,
+    padding: spacing.sm,
+  },
+  guestText: {
+    color: colors.textSecondary,
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.sm,
+    textDecorationLine: 'underline',
   },
 });

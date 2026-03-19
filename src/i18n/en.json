@@ -80,7 +80,8 @@
     "error": "Authentication Error",
     "signIn": "Sign In",
     "lineLogin": "Continue with LINE",
-    "lineError": "LINE connection failed. Please try again."
+    "lineError": "LINE connection failed. Please try again.",
+    "continueAsGuest": "Continue as Guest"
   },
   "invite": {
     "welcome": "Welcome to Pixel Herbarium\nBeautiful flower encounters\nawait you"
