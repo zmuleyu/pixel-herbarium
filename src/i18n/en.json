@@ -149,7 +149,8 @@
     "share": "Share",
     "saved": "Saved ✓",
     "permissionRequired": "Please allow photo library access",
-    "lineGiftCopy": "Sending this flower to you 🌸"
+    "lineGiftCopy": "Sending this flower to you 🌸",
+    "sendLine": "Send via LINE"
   },
   "privacy": {
     "mapVisibility": "Show discoveries on City Map",
