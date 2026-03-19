@@ -49,6 +49,32 @@ export default function RootLayout() {
     return () => subscription.remove();
   }, []);
 
+  // Handle deep links (custom scheme + universal links)
+  useEffect(() => {
+    function handleTarget(target: ReturnType<typeof parseDeepLink>) {
+      if (!target) return;
+      switch (target.type) {
+        case 'plant':
+          router.push(`/plant/${target.id}` as any);
+          break;
+        case 'spot':
+          router.push('/(tabs)/home' as any);
+          break;
+        case 'invite':
+          router.push(`/invite/${target.code}` as any);
+          break;
+      }
+    }
+
+    Linking.getInitialURL().then((url) => handleTarget(parseDeepLink(url)));
+
+    const sub = Linking.addEventListener('url', ({ url }) => {
+      handleTarget(parseDeepLink(url));
+    });
+
+    return () => sub.remove();
+  }, []);
+
   // Bootstrap auth session + language from Supabase on first load
   useEffect(() => {
     setLoading(true);
