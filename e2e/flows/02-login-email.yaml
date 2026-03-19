@@ -1,6 +1,6 @@
 appId: com.pixelherbarium.app
 ---
-# Email login flow — fully self-contained: clearState → skip onboarding → login via settings
+# Email login flow — fully self-contained: clearState → skip onboarding → login
 # Used as a reusable sub-flow by flows 03–06 via runFlow
 - launchApp:
     clearState: true
@@ -15,15 +15,15 @@ appId: com.pixelherbarium.app
       visible: "Would like to access"
     commands:
       - tapOn: "Allow"
-# Skip onboarding → home screen (guest-first: no forced login)
+# Wait for bootstrap to complete (supabase.auth.getSession can take up to 8s)
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.skip"
+    timeout: 15000
+# Skip onboarding → app navigates to /(auth)/login directly
 - tapOn:
     id: "onboarding.skip"
-# Navigate to Settings tab to access login
-- tapOn:
-    text: "設定"
-# Tap login button (only visible for guest users)
-- tapOn:
-    text: "ログイン"
+# Already on login screen — no need to navigate via Settings tab
 - tapOn:
     id: "auth.email"
 - inputText: "${E2E_TEST_EMAIL}"
