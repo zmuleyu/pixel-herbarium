@@ -3,11 +3,9 @@
 // returns {access_token, refresh_token} for the app to call setSession().
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { SignJWT } from 'https://esm.sh/jose@5.2.0';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const JWT_SECRET = Deno.env.get('SUPABASE_JWT_SECRET')!;
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -118,37 +116,16 @@ Deno.serve(async (req) => {
       userId = newUser.user.id;
     }
 
-    // 3. Generate session via custom JWT
-    const now = Math.floor(Date.now() / 1000);
-    const secret = new TextEncoder().encode(JWT_SECRET);
-
-    const accessToken = await new SignJWT({
-      sub: userId,
-      role: 'authenticated',
-      aud: 'authenticated',
-      iss: `${SUPABASE_URL}/auth/v1`,
-    })
-      .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
-      .setIssuedAt(now)
-      .setExpirationTime(now + 3600)
-      .sign(secret);
-
-    // For refresh token, use admin generateLink to get hashed_token
-    const { data: userData } = await supabase.auth.admin.getUserById(userId);
-    const userEmail = userData.user?.email ?? '';
-
-    const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
-      type: 'magiclink',
-      email: userEmail,
+    // 3. Generate session via admin API (avoids confirmation_token NULL issue)
+    const { data: sessionData, error: sessionError } = await supabase.auth.admin.createSession({
+      user_id: userId,
     });
-    if (linkError) throw linkError;
-
-    const hashedToken = linkData.properties?.hashed_token ?? '';
+    if (sessionError) throw sessionError;
 
     return Response.json({
-      access_token: accessToken,
-      refresh_token: hashedToken,
-      user: { id: userId, email: userEmail },
+      access_token: sessionData.session.access_token,
+      refresh_token: sessionData.session.refresh_token,
+      user: { id: userId, email: sessionData.session.user?.email ?? '' },
     }, { headers: corsHeaders });
   } catch (err: any) {
     console.error('auth-line error:', err);
