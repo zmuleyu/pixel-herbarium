@@ -373,7 +373,11 @@
         "日本さくら名所100選"
       ],
       "regionId": "jp",
-      "seasonId": "sakura"
+      "seasonId": "sakura",
+      "landmark": {
+        "nameJa": "天守閣",
+        "nameEn": "Tenshu (Main Keep)"
+      }
     },
     {
       "id": 15,
