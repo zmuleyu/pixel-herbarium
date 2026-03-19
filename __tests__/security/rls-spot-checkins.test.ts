@@ -54,6 +54,28 @@ describe('Migration 021 — spot_checkins', () => {
   });
 });
 
+describe('Migration 023 — flower_spots generalization', () => {
+  const SQL_PATH_023 = path.join(__dirname, '../../supabase/migrations/023_generalize_spots.sql');
+  let sql023: string;
+  beforeAll(() => { sql023 = fs.readFileSync(SQL_PATH_023, 'utf-8'); });
+
+  it('renames sakura_spots to flower_spots', () => {
+    expect(sql023).toContain('ALTER TABLE sakura_spots RENAME TO flower_spots');
+  });
+
+  it('adds region_id column with jp default', () => {
+    expect(sql023).toContain("region_id TEXT NOT NULL DEFAULT 'jp'");
+  });
+
+  it('adds season_id to spot_checkins', () => {
+    expect(sql023).toContain("season_id TEXT NOT NULL DEFAULT 'sakura'");
+  });
+
+  it('enables RLS on flower_spots', () => {
+    expect(sql023).toContain('flower_spots_public_read');
+  });
+});
+
 describe('Migration 021 — checkin_spot RPC', () => {
   it('creates checkin_spot function', () => {
     expect(sql).toContain('CREATE OR REPLACE FUNCTION checkin_spot');

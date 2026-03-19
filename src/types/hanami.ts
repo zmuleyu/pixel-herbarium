@@ -49,12 +49,16 @@ export interface CheckinRecord {
   spotId: number;
   photoUri: string; // local file path
   composedUri: string; // rendered template path
-  templateId: string;
+  templateId: string; // now stores stampStyle value: 'pixel' | 'seal' | 'minimal'
   timestamp: string; // ISO 8601
   synced: boolean;
+  stampStyle?: StampStyle;      // optional for backward compat with old records
+  stampPosition?: StampPosition; // optional for backward compat with old records
 }
 
-export type TemplateStyle = 'card' | 'watermark' | 'pixel';
+export type StampStyle = 'pixel' | 'seal' | 'minimal';
+export type StampPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+export type TemplateStyle = 'pixel' | 'seal' | 'minimal';
 
 export type StampStyle = 'pixel' | 'seal' | 'minimal';
 

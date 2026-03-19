@@ -213,6 +213,19 @@
     "permissionRequired": "写真ライブラリへのアクセスを許可してください",
     "saveError": "保存に失敗しました"
   },
+  "stamp": {
+    "pixel": "ピクセル",
+    "seal": "印章",
+    "minimal": "シンプル",
+    "share": "この出会いをシェア",
+    "saved": "写真に保存しました 🌸",
+    "shareError": "シェアに失敗しました",
+    "permissionRequired": "写真ライブラリへのアクセスを許可してください",
+    "photoOld": "この写真は{{days}}日前に撮影されました。今日の出会いとして記録しますか？",
+    "photoOldUse": "この写真を使う",
+    "photoOldReselect": "選び直す",
+    "photoLowRes": "画質が低いため、保存時にぼやけることがあります"
+  },
   "footprint": {
     "title": "足跡",
     "comingSoon": "もうすぐ",
@@ -311,5 +324,8 @@
       "petals": "はかない桜の美しさを、写真に残してみませんか",
       "end": "今年もたくさんの桜に出会えました。また来年、また咲きます 🌸"
     }
+  },
+  "invite": {
+    "welcome": "友達からの招待でやってきました\nいっしょに花を探しましょう 🌸"
   }
 }

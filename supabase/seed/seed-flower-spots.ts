@@ -1,15 +1,15 @@
-// supabase/seed/seed-sakura-spots.ts
-// Run once: npx tsx supabase/seed/seed-sakura-spots.ts
+// supabase/seed/seed-flower-spots.ts
+// Run once: npx tsx supabase/seed/seed-flower-spots.ts
 //
 // Transforms camelCase JSON fields → snake_case DB columns and upserts into
-// the sakura_spots table (created by migration 021_sakura_spots.sql).
+// the flower_spots table (created by migration 021, generalized by 023).
 //
 // Required env vars:
 //   SUPABASE_URL             (or EXPO_PUBLIC_SUPABASE_URL)
 //   SUPABASE_SERVICE_ROLE_KEY
 
 import { createClient } from '@supabase/supabase-js';
-import sakuraData from '../../src/data/seasons/sakura.json';
+import sakuraData from '../../src/data/packs/jp/seasons/sakura.json';
 
 const url = process.env.SUPABASE_URL ?? process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
@@ -48,7 +48,7 @@ async function run() {
   }));
 
   const { error } = await supabase
-    .from('sakura_spots')
+    .from('flower_spots')
     .upsert(rows, { onConflict: 'id' });
 
   if (error) {
@@ -56,7 +56,7 @@ async function run() {
     process.exit(1);
   }
 
-  console.log(`Seeded ${rows.length} sakura spots`);
+  console.log(`Seeded ${rows.length} flower spots`);
 }
 
 run();

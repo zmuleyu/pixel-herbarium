@@ -6,14 +6,10 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Image,
   StyleSheet,
-  ScrollView,
   ActivityIndicator,
-  Dimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { captureRef } from 'react-native-view-shot';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
 import { router } from 'expo-router';
@@ -22,23 +18,14 @@ import { getActiveSeason } from '@/constants/seasons';
 import { useCheckinStore } from '@/stores/checkin-store';
 import { useCheckinPhoto } from '@/hooks/useCheckinPhoto';
 import { SpotSelector } from '@/components/checkin/SpotSelector';
-import { CardTemplate, CARD_WIDTH, CARD_HEIGHT } from '@/components/templates/CardTemplate';
-import type { FlowerSpot, SpotsData } from '@/types/hanami';
-import sakuraData from '@/data/seasons/sakura.json';
+import { StampPreview } from '@/components/stamps';
+import type { FlowerSpot, SpotsData, StampStyle, StampPosition } from '@/types/hanami';
+import sakuraData from '@/data/packs/jp/seasons/sakura.json';
 
 // Map seasonId → spots JSON
 const SEASON_SPOTS: Record<string, SpotsData> = {
   sakura: sakuraData as SpotsData,
 };
-
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const PREVIEW_WIDTH = SCREEN_WIDTH - spacing.xl * 2;
-const PREVIEW_HEIGHT = (PREVIEW_WIDTH / CARD_WIDTH) * CARD_HEIGHT;
-const SCALE = PREVIEW_WIDTH / CARD_WIDTH;
-
-// Translate to keep visual top-left at (0, 0) when scaling around element center.
-const SCALE_OFFSET_X = (CARD_WIDTH * (1 - SCALE)) / 2;
-const SCALE_OFFSET_Y = (CARD_HEIGHT * (1 - SCALE)) / 2;
 
 /** Simple ID without extra deps */
 function genId(): string {
@@ -57,11 +44,8 @@ export default function CheckinScreen() {
   const [step, setStep] = useState<WizardStep>('photo');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [selectedSpot, setSelectedSpot] = useState<FlowerSpot | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [sharing, setSharing] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  const cardRef = useRef<View>(null);
   const checkinDate = useRef(new Date());
 
   const spotsData = SEASON_SPOTS[season.id];
@@ -95,29 +79,40 @@ export default function CheckinScreen() {
 
   // ── Preview step handlers ────────────────────────────────────────────────
 
-  async function handleSave() {
-    if (saving || !cardRef.current || !selectedSpot || !photoUri) return;
-    setSaving(true);
+  async function handleStampShare(composedUri: string) {
+    try {
+      await Sharing.shareAsync(composedUri, { mimeType: 'image/png' });
+    } catch {
+      // share cancelled or failed — silent
+    }
+  }
+
+  async function handleStampSave(
+    composedUri: string,
+    stampStyle: StampStyle,
+    stampPosition: StampPosition,
+  ) {
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
-        setFeedback(t('checkin.permissionRequired'));
+        setFeedback(t('stamp.permissionRequired'));
         setTimeout(() => setFeedback(null), 2000);
         return;
       }
-      const composedUri = await captureRef(cardRef, { format: 'png', quality: 1 });
       await MediaLibrary.saveToLibraryAsync(composedUri);
       await addCheckin({
         id: genId(),
         seasonId: season.id,
-        spotId: selectedSpot.id,
-        photoUri,
+        spotId: selectedSpot!.id,
+        photoUri: photoUri!,
         composedUri,
-        templateId: 'card',
+        templateId: stampStyle,
         timestamp: checkinDate.current.toISOString(),
         synced: false,
+        stampStyle,
+        stampPosition,
       });
-      setFeedback(t('checkin.addedToFootprint'));
+      setFeedback(t('stamp.saved'));
       setTimeout(() => {
         setFeedback(null);
         router.replace('/(tabs)/footprint');
@@ -125,21 +120,6 @@ export default function CheckinScreen() {
     } catch {
       setFeedback(t('checkin.saveError'));
       setTimeout(() => setFeedback(null), 2000);
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleShare() {
-    if (sharing || !cardRef.current) return;
-    setSharing(true);
-    try {
-      const uri = await captureRef(cardRef);
-      await Sharing.shareAsync(uri, { mimeType: 'image/png' });
-    } catch {
-      // share cancelled or failed — silent
-    } finally {
-      setSharing(false);
     }
   }
 
@@ -216,90 +196,19 @@ export default function CheckinScreen() {
 
       {/* ── Step: Preview ── */}
       {step === 'preview' && photoUri != null && selectedSpot != null && (
-        <ScrollView
-          contentContainerStyle={styles.previewStep}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Scaled card preview — visually top-left aligned */}
-          <View
-            style={[
-              styles.previewWrapper,
-              { width: PREVIEW_WIDTH, height: PREVIEW_HEIGHT },
-            ]}
-          >
-            <View
-              style={{
-                position: 'absolute',
-                left: -SCALE_OFFSET_X,
-                top: -SCALE_OFFSET_Y,
-                width: CARD_WIDTH,
-                height: CARD_HEIGHT,
-                transform: [{ scale: SCALE }],
-              }}
-            >
-              <CardTemplate
-                photoUri={photoUri}
-                spot={selectedSpot}
-                date={checkinDate.current}
-                season={season}
-              />
-            </View>
-          </View>
-
-          {/* Feedback */}
+        <>
+          <StampPreview
+            photoUri={photoUri}
+            spot={selectedSpot}
+            date={checkinDate.current}
+            seasonId={season.id}
+            onSave={handleStampSave}
+            onShare={handleStampShare}
+          />
           {feedback != null && (
             <Text style={[styles.feedback, { color: theme.primary }]}>{feedback}</Text>
           )}
-
-          {/* Actions */}
-          <View style={styles.actionRow}>
-            <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: theme.primary }]}
-              onPress={handleSave}
-              disabled={saving || sharing}
-              activeOpacity={0.8}
-            >
-              {saving ? (
-                <ActivityIndicator color={colors.white} size="small" />
-              ) : (
-                <Text style={styles.actionBtnText}>{t('checkin.saveCard')}</Text>
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.actionBtn,
-                styles.actionBtnOutline,
-                { borderColor: theme.primary },
-              ]}
-              onPress={handleShare}
-              disabled={saving || sharing}
-              activeOpacity={0.8}
-            >
-              {sharing ? (
-                <ActivityIndicator color={theme.primary} size="small" />
-              ) : (
-                <Text style={[styles.actionBtnText, { color: theme.primary }]}>
-                  {t('common.share')}
-                </Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      )}
-
-      {/* Off-screen card for captureRef — must be at full resolution */}
-      {step === 'preview' && photoUri != null && selectedSpot != null && (
-        <View style={styles.offscreen} pointerEvents="none">
-          <View ref={cardRef} collapsable={false}>
-            <CardTemplate
-              photoUri={photoUri}
-              spot={selectedSpot}
-              date={checkinDate.current}
-              season={season}
-            />
-          </View>
-        </View>
+        </>
       )}
     </View>
   );
@@ -375,55 +284,18 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
 
-  // ── Preview step
-
-  previewStep: {
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xl,
-    gap: spacing.lg,
-  },
-
-  previewWrapper: {
-    overflow: 'hidden',
-    borderRadius: borderRadius.md,
-  },
+  // ── Feedback (overlaid above StampPreview actions)
 
   feedback: {
+    position: 'absolute',
+    bottom: spacing.xl * 2,
+    alignSelf: 'center',
     fontFamily: typography.fontFamily.display,
     fontSize: typography.fontSize.sm,
     textAlign: 'center',
-  },
-
-  actionRow: {
-    width: '100%',
-    gap: spacing.md,
-  },
-
-  actionBtn: {
-    borderRadius: borderRadius.md,
-    paddingVertical: spacing.sm + 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 48,
-  },
-
-  actionBtnOutline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-  },
-
-  actionBtnText: {
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.md,
-    color: colors.white,
-  },
-
-  // ── Off-screen capture
-
-  offscreen: {
-    position: 'absolute',
-    left: -9999,
-    top: 0,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.sm,
   },
 });

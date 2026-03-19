@@ -15,7 +15,7 @@ import { colors, typography, spacing, borderRadius, getSeasonTheme } from '@/con
 import { getActiveSeason } from '@/constants/seasons';
 import { useCheckinStore } from '@/stores/checkin-store';
 import type { CheckinRecord } from '@/types/hanami';
-import sakuraData from '@/data/seasons/sakura.json';
+import sakuraData from '@/data/packs/jp/seasons/sakura.json';
 import type { SpotsData } from '@/types/hanami';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;

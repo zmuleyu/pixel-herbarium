@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SeasonConfig is defined in types/region.ts to prevent circular deps; re-exported here.
+>>>>>>> feat/line-phase1
 import type { SeasonConfig } from '@/types/region';
 export type { SeasonConfig } from '@/types/region';
 

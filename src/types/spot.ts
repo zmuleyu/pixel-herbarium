@@ -12,6 +12,7 @@ export interface SpotCheckinResult {
   is_mankai: boolean;
   stamp_variant: 'normal' | 'mankai';
   bloom_status_at_checkin: BloomStatus | null;
+  season_id: string;      // matches flower_spots.season_id
 }
 
 /** Data passed to SharePoster when format === 'spot' */

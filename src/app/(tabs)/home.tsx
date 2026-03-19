@@ -26,7 +26,7 @@ import {
 import { useCheckinStore } from '@/stores/checkin-store';
 import type { FlowerSpot } from '@/types/hanami';
 
-import sakuraData from '@/data/seasons/sakura.json';
+import sakuraData from '@/data/packs/jp/seasons/sakura.json';
 
 // Map seasonId to spot data
 const SEASON_SPOTS: Record<string, FlowerSpot[]> = {

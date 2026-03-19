@@ -26,3 +26,4 @@ supabase/.temp/
 # E2E test artifacts
 e2e/diffs/
 .maestro/tests/
+screenshots/
