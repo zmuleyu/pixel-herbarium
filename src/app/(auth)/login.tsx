@@ -87,16 +87,18 @@ export default function LoginScreen() {
           </View>
         )}
 
-        {/* LINE Sign-In */}
-        <TouchableOpacity
-          style={[styles.lineButton, submitting && styles.buttonDisabled]}
-          onPress={handleLine}
-          disabled={submitting}
-          testID="auth.signInLine"
-        >
-          <Text style={styles.lineButtonIcon}>L</Text>
-          <Text style={styles.lineButtonText}>{t('auth.signInLine')}</Text>
-        </TouchableOpacity>
+        {/* LINE Sign-In — only visible when Channel ID is configured */}
+        {!!process.env.EXPO_PUBLIC_LINE_CHANNEL_ID && (
+          <TouchableOpacity
+            style={[styles.lineButton, submitting && styles.buttonDisabled]}
+            onPress={handleLine}
+            disabled={submitting}
+            testID="auth.signInLine"
+          >
+            <Text style={styles.lineButtonIcon}>L</Text>
+            <Text style={styles.lineButtonText}>{t('auth.lineLogin')}</Text>
+          </TouchableOpacity>
+        )}
 
         <Text style={styles.divider}>— {t('auth.orEmail')} —</Text>
 

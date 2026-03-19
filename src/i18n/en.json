@@ -79,8 +79,8 @@
     "orEmail": "or email",
     "error": "Authentication Error",
     "signIn": "Sign In",
-    "signInLine": "Sign in with LINE",
-    "lineError": "Connection failed. Please try again."
+    "lineLogin": "Continue with LINE",
+    "lineError": "LINE connection failed. Please try again."
   },
   "map": {
     "title": "City Map",

@@ -79,8 +79,8 @@
     "orEmail": "またはメールで",
     "error": "認証エラー",
     "signIn": "サインイン",
-    "signInLine": "LINEでサインイン",
-    "lineError": "接続できませんでした。もう一度お試しください"
+    "lineLogin": "LINEで続ける",
+    "lineError": "LINE接続に失敗しました"
   },
   "map": {
     "title": "同城マップ",
