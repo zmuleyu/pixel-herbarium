@@ -43,6 +43,7 @@ module.exports = {
         // Prevent Supabase client from starting autoRefreshToken timer in tests
         '^@supabase/supabase-js$': '<rootDir>/__mocks__/supabase-js.js',
         '^react-native-url-polyfill/auto$': '<rootDir>/__mocks__/empty.js',
+        '^expo-secure-store$': '<rootDir>/__mocks__/empty.js',
       },
       transform: {
         '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx', resolveJsonModule: true } }],
