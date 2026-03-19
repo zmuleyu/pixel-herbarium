@@ -2,8 +2,11 @@ appId: com.pixelherbarium.app
 ---
 # Screenshot: Footprint tab — check-in history grid
 - runFlow: ./screen-guest-login.yaml
+# Navigate to footprint tab via coordinate (3rd of 4 tabs, ~62% from left, ~96% from top)
 - tapOn:
-    text: "足跡"
+    point:
+      x: 62
+      y: 96
 - extendedWaitUntil:
     visible:
       id: "footprint.container"

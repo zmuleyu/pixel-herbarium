@@ -36,23 +36,31 @@ workflows:
 
       - name: Boot Simulator & install app
         script: |
-          # Pick iPhone 16 Pro Max for App Store screenshots (1320x2868)
-          # Fallback to any available iPhone if Pro Max not found
-          DEVICE=$(xcrun simctl list devices available 2>/dev/null \
-            | grep "iPhone 16 Pro Max" \
-            | grep -v "unavailable" \
-            | head -1 \
-            | sed 's/ *(.*//' \
-            | xargs)
-          if [ -z "$DEVICE" ]; then
+          # Target iPhone 15 Plus (1284x2778) — accepted by ASC 6.5" screenshot slot
+          # Priority: 15 Plus > 14 Plus > 13 Pro Max (all give 1284x2778)
+          DEVICE=""
+          for MODEL in "iPhone 15 Plus" "iPhone 14 Plus" "iPhone 13 Pro Max" "iPhone 12 Pro Max"; do
             DEVICE=$(xcrun simctl list devices available 2>/dev/null \
-              | grep -E "iPhone 1[5-6] Pro" \
+              | grep "$MODEL" \
+              | grep -v "unavailable" \
+              | head -1 \
+              | sed 's/ *(.*//' \
+              | xargs)
+            if [ -n "$DEVICE" ]; then
+              echo "Selected: $DEVICE"
+              break
+            fi
+          done
+          if [ -z "$DEVICE" ]; then
+            # Last resort fallback — any large iPhone
+            DEVICE=$(xcrun simctl list devices available 2>/dev/null \
+              | grep -E "iPhone" \
               | grep -v "unavailable" \
               | tail -1 \
               | sed 's/ *(.*//' \
               | xargs)
+            echo "Fallback device: $DEVICE"
           fi
-          echo "Using simulator: $DEVICE"
           xcrun simctl boot "$DEVICE" || true
           APP_PATH=$(find . -name "*.app" -maxdepth 4 | head -1)
           echo "App path: $APP_PATH"
