@@ -28,3 +28,4 @@ e2e/diffs/
 .maestro/tests/
 screenshots/
 docs/reference/
+.worktrees/
