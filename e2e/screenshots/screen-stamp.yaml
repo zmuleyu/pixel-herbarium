@@ -1,24 +1,15 @@
 appId: com.pixelherbarium.app
 ---
-# Screenshot flow: Capture stamp preview in all 3 styles
-# Runs after 07-stamp-checkin.yaml — assumes app is in stamp preview state
-
-- runFlow: ../flows/07-stamp-checkin.yaml
-
-# Screenshot: Pixel style (default)
+# Screenshot: Settings tab — show app settings and login option
+# Stamp flow requires login + full checkin which is fragile on CI.
+# Instead, capture settings screen as a useful ASC screenshot.
+- runFlow: ./screen-guest-skip.yaml
+# Navigate to settings tab (4th of 4 tabs, ~87% from left)
 - tapOn:
-    text: "ピクセル"
+    point:
+      x: 87
+      y: 96
+- pause:
+    milliseconds: 1500
 - waitForAnimationToEnd
-- takeScreenshot: "stamp-pixel"
-
-# Screenshot: Seal style
-- tapOn:
-    text: "印章"
-- waitForAnimationToEnd
-- takeScreenshot: "stamp-seal"
-
-# Screenshot: Minimal style
-- tapOn:
-    text: "シンプル"
-- waitForAnimationToEnd
-- takeScreenshot: "stamp-minimal"
+- takeScreenshot: "06-settings"

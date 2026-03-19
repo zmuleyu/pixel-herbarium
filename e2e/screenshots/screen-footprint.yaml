@@ -1,7 +1,7 @@
 appId: com.pixelherbarium.app
 ---
 # Screenshot: Footprint tab — check-in history grid
-- runFlow: ./screen-guest-login.yaml
+- runFlow: ./screen-guest-skip.yaml
 # Navigate to footprint tab via coordinate (3rd of 4 tabs, ~62% from left, ~96% from top)
 - tapOn:
     point:

@@ -1,17 +1,25 @@
 appId: com.pixelherbarium.app
 ---
-# Screenshot: Login screen — shown after skipping onboarding
-- launchApp:
-    clearState: true
-- extendedWaitUntil:
-    visible:
-      id: "onboarding.skip"
-    timeout: 15000
+# Screenshot: Login screen — navigate from home → settings → login
+# Guest-first app: onboarding skip → home (not login screen)
+- runFlow: ./screen-guest-skip.yaml
+# Navigate to settings tab via coordinate (4th of 4 tabs, ~87% from left)
 - tapOn:
-    id: "onboarding.skip"
+    point:
+      x: 87
+      y: 96
+- pause:
+    milliseconds: 1000
+# Tap the login button in settings
 - extendedWaitUntil:
     visible:
-      id: "auth.apple"
-    timeout: 20000
+      id: "settings.login"
+    timeout: 10000
+- tapOn:
+    id: "settings.login"
+- extendedWaitUntil:
+    visible:
+      id: "auth.email"
+    timeout: 15000
 - waitForAnimationToEnd
 - takeScreenshot: "04-login"
