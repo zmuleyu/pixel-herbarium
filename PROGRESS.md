@@ -70,7 +70,7 @@ Updated: 2026-03-19 (15:00)
 
 ## Layer 2: Codemagic + Maestro E2E — 运行中
 
-**当前状态**：Jest + TS ✅ | EAS Simulator `fb6c8451` ✅ finished | Codemagic **需重新触发**（旧 build 用了旧 binary）
+**当前状态**：Jest + TS ✅ | EAS Simulator `fb6c8451` ✅ finished | Codemagic `69bb5fbf` 🔄 running
 
 ### 已完成
 - [x] Jest mock 修复 + 4 个 testID 新增 + Maestro flows 全量更新 (commit `ae6b2bd`)
@@ -88,7 +88,8 @@ Updated: 2026-03-19 (15:00)
 - **EAS Simulator (content-pack)**: `fb6c8451` (commit `fe38b7ae`) — ✅ finished
 - **EAS Simulator (prev)**: `100ca731` (commit `4ae8eb7`) — ✅ finished
 - Codemagic App: `69ba556c2217be10dc8b85f8`
-- Codemagic Build: `69bb5e85aaa343c9f4ac9378` — 🔄 triggered
+- Codemagic Build: `69bb5e85aaa343c9f4ac9378` — ⚠️ 作废（触发时 binary 未完成）
+- Codemagic Build: `69bb5fbf20d838e1b8c99f47` — 🔄 triggered (EAS `fb6c8451` ✅)
 
 ---
 

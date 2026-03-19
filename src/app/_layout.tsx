@@ -1,6 +1,7 @@
 import '../i18n'; // initialize i18n before any screen renders
 import { restoreLanguage } from '../i18n';
 import { useEffect } from 'react';
+import * as Updates from 'expo-updates';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import * as Notifications from 'expo-notifications';
@@ -18,6 +19,23 @@ import { ONBOARDING_KEY } from './onboarding';
 /** Resolves to fallback after ms milliseconds if promise hasn't settled. */
 function withTimeout<T>(p: Promise<T>, ms: number, fallback: T): Promise<T> {
   return Promise.race([p, new Promise<T>(resolve => setTimeout(() => resolve(fallback), ms))]);
+}
+
+/** Silent OTA check — runs during the loading splash.
+ *  If an update is found, fetches and reloads before the app renders.
+ *  Best-effort: all errors are silently ignored.
+ */
+async function checkAndApplyOTA(): Promise<undefined> {
+  if (__DEV__) return undefined; // expo-updates not available in dev/Expo Go
+  try {
+    const check = await Updates.checkForUpdateAsync();
+    if (!check.isAvailable) return undefined;
+    await Updates.fetchUpdateAsync();
+    await Updates.reloadAsync(); // App restarts here — this line never returns
+  } catch {
+    // Non-critical: network error, server down, etc. — proceed normally
+  }
+  return undefined;
 }
 
 // Show notifications as banners when the app is in the foreground
@@ -86,6 +104,7 @@ export default function RootLayout() {
     Promise.all([
       withTimeout(restoreLanguage().catch(() => {}), 3000, undefined),
       withTimeout(supabase.auth.getSession(), 8000, { data: { session: null }, error: null }),
+      withTimeout(checkAndApplyOTA(), 5000, undefined),
     ]).then(([, { data: { session: s } }]) => {
       clearTimeout(ultimateTimeout);
       setSession(s);
