@@ -49,50 +49,29 @@ workflows:
 
       - name: Boot Simulator & install app
         script: |
-          # Diagnostic: list available runtimes and devices
-          echo "=== Available runtimes ==="
-          xcrun simctl list runtimes
-          echo "=== Available devices ==="
-          xcrun simctl list devices available | head -40
-
-          # Find an iOS 18.x runtime (skip iOS 26 beta which breaks Expo Router)
-          RUNTIME=$(xcrun simctl list runtimes 2>/dev/null \
-            | grep -E "iOS 18\." \
-            | tail -1 \
-            | sed 's/.*- //')
-          echo "Selected runtime: $RUNTIME"
-
-          # Create iPhone 16 Pro Max with iOS 18 runtime (1320x2868 for ASC 6.9")
-          if [ -n "$RUNTIME" ]; then
-            DEVICE_UDID=$(xcrun simctl create "PH_Screenshot" "iPhone 16 Pro Max" "$RUNTIME" 2>/dev/null)
-            if [ -n "$DEVICE_UDID" ]; then
-              echo "Created simulator: PH_Screenshot ($DEVICE_UDID) with $RUNTIME"
-              xcrun simctl boot "$DEVICE_UDID"
-            else
-              echo "Failed to create simulator with iOS 18 runtime, falling back..."
+          # xcode: latest only ships iOS 26 beta runtime (no iOS 18).
+          # App runs on iOS 26 (verified in earlier builds), so we use the largest
+          # available device for ASC-quality screenshots.
+          # Priority: iPhone 17 Pro Max > iPhone 17 Pro > iPhone Air > iPhone 16e
+          DEVICE=""
+          for MODEL in "iPhone 17 Pro Max" "iPhone 17 Pro" "iPhone Air" "iPhone 17" "iPhone 16e"; do
+            DEVICE=$(xcrun simctl list devices available 2>/dev/null \
+              | grep "$MODEL" \
+              | grep -v "unavailable" \
+              | head -1 \
+              | sed 's/ *(.*//' \
+              | xargs)
+            if [ -n "$DEVICE" ]; then
+              echo "Selected: $DEVICE"
+              break
             fi
+          done
+          if [ -z "$DEVICE" ]; then
+            echo "ERROR: No suitable iPhone simulator found"
+            xcrun simctl list devices available
+            exit 1
           fi
-
-          # Fallback: if no iOS 18 runtime or creation failed, pick any available device
-          BOOTED=$(xcrun simctl list devices booted 2>/dev/null | grep -c "Booted")
-          if [ "$BOOTED" -eq 0 ]; then
-            echo "No booted sim — falling back to any available iPhone 16 Pro Max"
-            DEVICE=""
-            for MODEL in "iPhone 16 Pro Max" "iPhone 16 Plus" "iPhone 15 Plus" "iPhone 15 Pro Max"; do
-              DEVICE=$(xcrun simctl list devices available 2>/dev/null \
-                | grep "$MODEL" \
-                | grep -v "unavailable" \
-                | head -1 \
-                | sed 's/ *(.*//' \
-                | xargs)
-              if [ -n "$DEVICE" ]; then
-                echo "Fallback selected: $DEVICE"
-                break
-              fi
-            done
-            xcrun simctl boot "$DEVICE" || true
-          fi
-
+          xcrun simctl boot "$DEVICE" || true
           # Install app
           APP_PATH=$(find . -name "*.app" -maxdepth 4 | head -1)
           echo "App path: $APP_PATH"
