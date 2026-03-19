@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          id: string
+          properties: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          id?: string
+          properties?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          properties?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       bouquets: {
         Row: {
           created_at: string
@@ -132,6 +156,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      flower_spots: {
+        Row: {
+          access_note: string | null
+          best_time: string | null
+          bloom_early_start: string | null
+          bloom_late_end: string | null
+          bloom_peak_end: string | null
+          bloom_peak_start: string | null
+          category: string
+          city: string
+          custom_sprite_url: string | null
+          description: string | null
+          facilities: string[] | null
+          id: number
+          lat: number
+          lng: number
+          location: unknown
+          name_en: string
+          name_ja: string
+          prefecture: string
+          prefecture_code: number
+          region_id: string
+          season_id: string
+          sort_order: number | null
+          tags: string[]
+          tree_count: number | null
+        }
+        Insert: {
+          access_note?: string | null
+          best_time?: string | null
+          bloom_early_start?: string | null
+          bloom_late_end?: string | null
+          bloom_peak_end?: string | null
+          bloom_peak_start?: string | null
+          category: string
+          city: string
+          custom_sprite_url?: string | null
+          description?: string | null
+          facilities?: string[] | null
+          id: number
+          lat: number
+          lng: number
+          location?: unknown
+          name_en: string
+          name_ja: string
+          prefecture: string
+          prefecture_code: number
+          region_id?: string
+          season_id?: string
+          sort_order?: number | null
+          tags?: string[]
+          tree_count?: number | null
+        }
+        Update: {
+          access_note?: string | null
+          best_time?: string | null
+          bloom_early_start?: string | null
+          bloom_late_end?: string | null
+          bloom_peak_end?: string | null
+          bloom_peak_start?: string | null
+          category?: string
+          city?: string
+          custom_sprite_url?: string | null
+          description?: string | null
+          facilities?: string[] | null
+          id?: number
+          lat?: number
+          lng?: number
+          location?: unknown
+          name_en?: string
+          name_ja?: string
+          prefecture?: string
+          prefecture_code?: number
+          region_id?: string
+          season_id?: string
+          sort_order?: number | null
+          tags?: string[]
+          tree_count?: number | null
+        }
+        Relationships: []
       }
       friendships: {
         Row: {
@@ -259,84 +364,6 @@ export type Database = {
           token?: string
           updated_at?: string
           user_id?: string
-        }
-        Relationships: []
-      }
-      sakura_spots: {
-        Row: {
-          access_note: string | null
-          best_time: string | null
-          bloom_early_start: string | null
-          bloom_late_end: string | null
-          bloom_peak_end: string | null
-          bloom_peak_start: string | null
-          category: string
-          city: string
-          custom_sprite_url: string | null
-          description: string | null
-          facilities: string[] | null
-          id: number
-          lat: number
-          lng: number
-          location: unknown
-          name_en: string
-          name_ja: string
-          prefecture: string
-          prefecture_code: number
-          season_id: string
-          sort_order: number | null
-          tags: string[]
-          tree_count: number | null
-        }
-        Insert: {
-          access_note?: string | null
-          best_time?: string | null
-          bloom_early_start?: string | null
-          bloom_late_end?: string | null
-          bloom_peak_end?: string | null
-          bloom_peak_start?: string | null
-          category: string
-          city: string
-          custom_sprite_url?: string | null
-          description?: string | null
-          facilities?: string[] | null
-          id: number
-          lat: number
-          lng: number
-          location?: unknown
-          name_en: string
-          name_ja: string
-          prefecture: string
-          prefecture_code: number
-          season_id?: string
-          sort_order?: number | null
-          tags?: string[]
-          tree_count?: number | null
-        }
-        Update: {
-          access_note?: string | null
-          best_time?: string | null
-          bloom_early_start?: string | null
-          bloom_late_end?: string | null
-          bloom_peak_end?: string | null
-          bloom_peak_start?: string | null
-          category?: string
-          city?: string
-          custom_sprite_url?: string | null
-          description?: string | null
-          facilities?: string[] | null
-          id?: number
-          lat?: number
-          lng?: number
-          location?: unknown
-          name_en?: string
-          name_ja?: string
-          prefecture?: string
-          prefecture_code?: number
-          season_id?: string
-          sort_order?: number | null
-          tags?: string[]
-          tree_count?: number | null
         }
         Relationships: []
       }
@@ -934,6 +961,36 @@ export type Database = {
         }
         Relationships: []
       }
+      share_records: {
+        Row: {
+          channel: string
+          content_id: string
+          created_at: string | null
+          deep_link: string
+          id: string
+          share_type: string
+          user_id: string | null
+        }
+        Insert: {
+          channel: string
+          content_id: string
+          created_at?: string | null
+          deep_link: string
+          id?: string
+          share_type: string
+          user_id?: string | null
+        }
+        Update: {
+          channel?: string
+          content_id?: string
+          created_at?: string | null
+          deep_link?: string
+          id?: string
+          share_type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       spatial_ref_sys: {
         Row: {
           auth_name: string | null
@@ -964,6 +1021,7 @@ export type Database = {
           checked_in_at: string
           id: string
           is_mankai: boolean
+          season_id: string
           spot_id: number
           stamp_variant: string
           user_id: string
@@ -973,6 +1031,7 @@ export type Database = {
           checked_in_at?: string
           id?: string
           is_mankai?: boolean
+          season_id?: string
           spot_id: number
           stamp_variant?: string
           user_id: string
@@ -982,6 +1041,7 @@ export type Database = {
           checked_in_at?: string
           id?: string
           is_mankai?: boolean
+          season_id?: string
           spot_id?: number
           stamp_variant?: string
           user_id?: string
@@ -991,7 +1051,7 @@ export type Database = {
             foreignKeyName: "spot_checkins_spot_id_fkey"
             columns: ["spot_id"]
             isOneToOne: false
-            referencedRelation: "sakura_spots"
+            referencedRelation: "flower_spots"
             referencedColumns: ["id"]
           },
         ]

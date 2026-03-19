@@ -21,6 +21,7 @@ import * as MediaLibrary from 'expo-media-library';
 import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { SharePoster, type SharePosterPlant } from '@/components/SharePoster';
+import { supabase } from '@/services/supabase';
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -126,22 +127,39 @@ export function ShareSheet({ visible, onClose, plant, discoveryDate, discoveryCi
     setSelected('line'); // auto-select LINE format thumbnail
     try {
       // Build share text with plant info + optional deep link
-      const deepLink = plantId
-        ? `\nhttps://pixelherbarium.app/plant/${plantId}`
-        : '';
-      const text = `${plant.name_ja}を見つけました 🌸\n花言葉は「${plant.hanakotoba}」${deepLink}`;
+      const webDeepLink = plantId
+        ? `https://pixelherbarium.app/plant/${plantId}`
+        : null;
+      const text = `${plant.name_ja}を見つけました 🌸\n花言葉は「${plant.hanakotoba}」${webDeepLink ? `\n${webDeepLink}` : ''}`;
 
       // Try to open LINE directly with the text (bypasses OS share sheet)
       const lineUrl = `line://msg/text/${encodeURIComponent(text)}`;
       const canOpenLine = await Linking.canOpenURL(lineUrl);
       if (canOpenLine) {
         await Linking.openURL(lineUrl);
+        // Fire-and-forget share record
+        if (plantId) {
+          supabase.from('share_records').insert({
+            share_type: 'plant',
+            content_id: plantId,
+            channel: 'line',
+            deep_link: webDeepLink ?? '',
+          }).then(() => {});
+        }
         return;
       }
 
       // LINE not installed — fall back to image share via OS sheet
       const uri = await captureRef(lineRef);
       await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: plant.name_ja });
+      if (plantId) {
+        supabase.from('share_records').insert({
+          share_type: 'plant',
+          content_id: plantId,
+          channel: 'other',
+          deep_link: webDeepLink ?? '',
+        }).then(() => {});
+      }
     } catch {
       // Cancelled or failed — silent
     } finally {
