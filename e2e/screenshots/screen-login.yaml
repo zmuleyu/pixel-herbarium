@@ -1,10 +1,17 @@
 appId: com.pixelherbarium.app
 ---
-# Skip onboarding first (clearState always shows onboarding on fresh install)
+# Screenshot: Login screen — shown after skipping onboarding
 - launchApp:
     clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.skip"
+    timeout: 15000
 - tapOn:
-    text: "スキップ"
-- assertVisible:
-    id: "auth.apple"
-- takeScreenshot: "login"
+    id: "onboarding.skip"
+- extendedWaitUntil:
+    visible:
+      id: "auth.apple"
+    timeout: 20000
+- waitForAnimationToEnd
+- takeScreenshot: "04-login"

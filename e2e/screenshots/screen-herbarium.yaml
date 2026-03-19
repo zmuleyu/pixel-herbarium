@@ -1,8 +1,0 @@
-appId: com.pixelherbarium.app
----
-- runFlow: ../flows/02-login-email.yaml
-- tapOn:
-    text: "図鑑"
-- assertVisible:
-    id: "herbarium.grid"
-- takeScreenshot: "herbarium"

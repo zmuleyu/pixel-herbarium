@@ -1,6 +1,0 @@
-appId: com.pixelherbarium.app
----
-- runFlow: ../flows/02-login-email.yaml
-- assertVisible:
-    id: "discover.capture"
-- takeScreenshot: "discover"
