@@ -77,7 +77,7 @@ export function StampPreview({
     })();
   }, []);
 
-  const handleStyleChange = useCallback((s: StampStyle) => {
+  const handleStyleChange = useCallback((s: StampStyleId) => {
     setStampStyle(s);
     AsyncStorage.setItem(stampConst.storageKey, s);
   }, []);
@@ -127,7 +127,7 @@ export function StampPreview({
     setBusy(true);
     try {
       const composedUri = await captureRef(viewShotRef, { format: 'png', quality: 1 });
-      onSave(composedUri, stampStyle, stampPosition);
+      onSave(composedUri, stampStyle as StampStyleId, stampPosition);
     } catch {
       // fallback handled by parent
     } finally {
