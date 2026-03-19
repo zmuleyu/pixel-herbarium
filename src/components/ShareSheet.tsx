@@ -32,6 +32,8 @@ export interface ShareSheetProps {
   plant: SharePosterPlant;
   discoveryDate?: string;
   discoveryCity?: string;
+  /** Plant ID used to construct a deep link in LINE shares */
+  plantId?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -48,11 +50,12 @@ const LINE_SIZE = 360;
 // ShareSheet
 // ---------------------------------------------------------------------------
 
-export function ShareSheet({ visible, onClose, plant, discoveryDate, discoveryCity }: ShareSheetProps) {
+export function ShareSheet({ visible, onClose, plant, discoveryDate, discoveryCity, plantId }: ShareSheetProps) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<'story' | 'line'>('story');
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [sharingLine, setSharingLine] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const storyRef = useRef<View>(null);
@@ -114,6 +117,35 @@ export function ShareSheet({ visible, onClose, plant, discoveryDate, discoveryCi
       // Share cancelled or failed — silent
     } finally {
       setSharing(false);
+    }
+  }
+
+  async function handleShareLine() {
+    if (sharingLine) return;
+    setSharingLine(true);
+    setSelected('line'); // auto-select LINE format thumbnail
+    try {
+      // Build share text with plant info + optional deep link
+      const deepLink = plantId
+        ? `\nhttps://pixelherbarium.app/plant/${plantId}`
+        : '';
+      const text = `${plant.name_ja}を見つけました 🌸\n花言葉は「${plant.hanakotoba}」${deepLink}`;
+
+      // Try to open LINE directly with the text (bypasses OS share sheet)
+      const lineUrl = `line://msg/text/${encodeURIComponent(text)}`;
+      const canOpenLine = await Linking.canOpenURL(lineUrl);
+      if (canOpenLine) {
+        await Linking.openURL(lineUrl);
+        return;
+      }
+
+      // LINE not installed — fall back to image share via OS sheet
+      const uri = await captureRef(lineRef);
+      await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: plant.name_ja });
+    } catch {
+      // Cancelled or failed — silent
+    } finally {
+      setSharingLine(false);
     }
   }
 
@@ -214,7 +246,23 @@ export function ShareSheet({ visible, onClose, plant, discoveryDate, discoveryCi
           <Text style={styles.feedbackText}>{feedback}</Text>
         )}
 
-        {/* Action buttons */}
+        {/* LINE direct share button */}
+        <TouchableOpacity
+          style={[styles.button, styles.buttonLine, sharingLine && styles.buttonDisabled]}
+          onPress={handleShareLine}
+          disabled={sharingLine}
+        >
+          {sharingLine
+            ? <ActivityIndicator size="small" color={colors.white} />
+            : (
+              <View style={styles.lineButtonInner}>
+                <Text style={styles.lineIcon}>L</Text>
+                <Text style={styles.buttonText}>{t('share.sendLine')}</Text>
+              </View>
+            )}
+        </TouchableOpacity>
+
+        {/* Save / generic share buttons */}
         <View style={styles.buttonRow}>
           <TouchableOpacity
             style={[styles.button, styles.buttonSave]}
@@ -350,6 +398,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 44,
+  },
+
+  buttonLine: {
+    backgroundColor: '#06C755',
+    width: '100%',
+  },
+
+  lineButtonInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+
+  lineIcon: {
+    color: colors.white,
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.lg,
+    fontWeight: 'bold',
+    lineHeight: 22,
+  },
+
+  buttonDisabled: {
+    opacity: 0.5,
   },
 
   buttonSave: {

@@ -149,7 +149,8 @@
     "share": "共有",
     "saved": "保存しました ✓",
     "permissionRequired": "写真ライブラリへのアクセスを許可してください",
-    "lineGiftCopy": "この花をあなたに贈ります 🌸"
+    "lineGiftCopy": "この花をあなたに贈ります 🌸",
+    "sendLine": "LINEに送る"
   },
   "privacy": {
     "mapVisibility": "同城マップに発見を公開",

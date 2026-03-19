@@ -49,6 +49,8 @@ export function StampOverlay({ style, position, spot, date, season }: StampOverl
         return <SealStamp spotName={spot.nameJa} seasonEmoji={season.iconEmoji} year={date.getFullYear()} seasonLabel={SEASON_LABELS[season.id] ?? ''} themeColor={season.themeColor} />;
       case 'minimal':
         return <MinimalStamp spotName={spot.nameJa} cityEn={cityEn} date={date} accentColor={season.accentColor} />;
+      default:
+        return <PixelStamp spotName={spot.nameJa} cityEn={cityEn} date={date} themeColor={season.themeColor} />;
     }
   })();
 
