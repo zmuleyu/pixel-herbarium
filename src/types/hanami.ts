@@ -62,11 +62,12 @@ export interface CheckinRecord {
   templateId: string; // now stores stampStyle value: 'pixel' | 'seal' | 'minimal'
   timestamp: string; // ISO 8601
   synced: boolean;
-  stampStyle?: StampStyle;      // optional for backward compat with old records
+  stampStyle?: StampStyle | StampStyleId;  // optional for backward compat with old records
   stampPosition?: StampPosition; // optional for backward compat with old records
 }
 
 export type StampStyle = 'pixel' | 'seal' | 'minimal';
+export type StampStyleId = 'classic' | 'relief' | 'postcard' | 'medallion' | 'window' | 'minimal';
 export type StampPosition =
   | 'top-left' | 'top-center' | 'top-right'
   | 'middle-left' | 'center' | 'middle-right'
