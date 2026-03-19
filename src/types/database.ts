@@ -214,6 +214,7 @@ export type Database = {
           deletion_requested_at: string | null
           display_name: string
           id: string
+          line_uid: string | null
           map_visible: boolean
           updated_at: string | null
         }
@@ -222,6 +223,7 @@ export type Database = {
           deletion_requested_at?: string | null
           display_name?: string
           id: string
+          line_uid?: string | null
           map_visible?: boolean
           updated_at?: string | null
         }
@@ -230,6 +232,7 @@ export type Database = {
           deletion_requested_at?: string | null
           display_name?: string
           id?: string
+          line_uid?: string | null
           map_visible?: boolean
           updated_at?: string | null
         }
