@@ -1,13 +1,4 @@
-export interface SeasonConfig {
-  id: string;
-  nameKey: string; // i18n key for display name
-  themeColor: string; // primary interactive accent
-  accentColor: string; // softer card/badge accent
-  bgTint: string; // subtle background tint
-  iconEmoji: string;
-  dateRange: [string, string]; // ["MM-DD", "MM-DD"]
-  spotsDataKey: string; // key for data import
-}
+export type { SeasonConfig } from '@/types/region';
 
 export const SEASONS: SeasonConfig[] = [
   {
