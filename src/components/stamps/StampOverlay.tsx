@@ -1,15 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, type ViewStyle } from 'react-native';
 import { stamp as stampTheme } from '@/constants/theme';
-import { PixelStamp } from './PixelStamp';
-import { SealStamp } from './SealStamp';
-import { MinimalStamp } from './MinimalStamp';
-import type { StampStyle, StampPosition, FlowerSpot } from '@/types/hanami';
+import { StampRenderer } from './StampRenderer';
+import type { StampStyleId, StampPosition, FlowerSpot } from '@/types/hanami';
 import type { SeasonConfig } from '@/constants/seasons';
-import { PREFECTURE_EN } from '@/constants/prefecture-en';
 
 interface StampOverlayProps {
-  style: StampStyle;
+  /** Accepts new StampStyleId values as well as legacy 'pixel'/'seal' for backward compat */
+  style: StampStyleId | string;
   position: StampPosition;
   spot: FlowerSpot;
   date: Date;
@@ -46,10 +44,6 @@ function getPositionStyle(pos: StampPosition): ViewStyle {
   return s;
 }
 
-const SEASON_LABELS: Record<string, string> = {
-  sakura: '春', ajisai: '夏', himawari: '夏', momiji: '秋', tsubaki: '冬',
-};
-
 export function StampOverlay({
   style, position, spot, date, season,
   userOpacity = 1, userScale = 1,
@@ -62,20 +56,9 @@ export function StampOverlay({
     Animated.spring(mountScale, { toValue: 1, friction: 5, tension: 90, useNativeDriver: true }).start();
   }, []);
 
-  const cityEn = PREFECTURE_EN[spot.prefectureCode] ?? spot.nameEn.split(' ').pop()?.toUpperCase() ?? '';
-
-  const stampElement = (() => {
-    switch (style) {
-      case 'pixel':
-        return <PixelStamp spotName={spot.nameJa} cityEn={cityEn} date={date} themeColor={season.themeColor} />;
-      case 'seal':
-        return <SealStamp spotName={spot.nameJa} seasonEmoji={season.iconEmoji} year={date.getFullYear()} seasonLabel={SEASON_LABELS[season.id] ?? ''} themeColor={season.themeColor} />;
-      case 'minimal':
-        return <MinimalStamp spotName={spot.nameJa} cityEn={cityEn} date={date} accentColor={season.accentColor} />;
-      default:
-        return <PixelStamp spotName={spot.nameJa} cityEn={cityEn} date={date} themeColor={season.themeColor} />;
-    }
-  })();
+  const stampElement = (
+    <StampRenderer styleId={style} spot={spot} date={date} season={season} />
+  );
 
   return (
     <Animated.View
