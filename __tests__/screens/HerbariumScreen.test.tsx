@@ -65,7 +65,13 @@ jest.mock('@/constants/theme', () => ({
     lineHeight: 1.7,
   },
   spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 },
+  fontWeight: { light: '300', regular: '400', semibold: '600', bold: '800', heavy: '900' },
   borderRadius: { sm: 6, md: 12, lg: 20, full: 9999 },
+  shadows: {
+    card: { shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 4 },
+    cardSubtle: { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
+    cardLifted: { shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.12, shadowRadius: 24, elevation: 6 },
+  },
 }));
 
 import React from 'react';
