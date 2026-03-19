@@ -9,6 +9,8 @@ jest.mock('@/constants/theme', () => ({
   colors: {
     background: '#f5f4f1', text: '#3a3a3a', textSecondary: '#7a7a7a',
     white: '#ffffff', border: '#e8e6e1', plantPrimary: '#9fb69f',
+    blushPink: '#f5d5d0',
+    seasonal: { sakura: '#f5d5d0' },
     rarity: { common: '#9fb69f', uncommon: '#d4e4f7', rare: '#f5d5d0' },
   },
   typography: {
@@ -205,5 +207,37 @@ describe('SharePosterPlant type', () => {
       hanakotoba: '愛', pixel_sprite_url: null, cityRank: 1, bloom_months: [5, 6],
     };
     expect(plant.bloom_months).toHaveLength(2);
+  });
+});
+
+describe('SharePoster format=spot', () => {
+  it('renders spot name', () => {
+    const props: SharePosterProps = {
+      format: 'spot' as const,
+      spot: {
+        spot_id: 1, name_ja: '上野恩賜公園', name_en: 'Ueno Park',
+        prefecture: '東京都', checked_in_at: '2026-03-28T10:00:00Z',
+        stamp_variant: 'normal' as const, bloom_status: 'peak' as const,
+        is100sen: true,
+      },
+    };
+    const html = renderToString(props);
+    expect(html).toContain('上野恩賜公園');
+    expect(html).not.toContain('#d4a017'); // no gold border for normal variant
+  });
+
+  it('shows mankai gold border when stamp_variant is mankai', () => {
+    const props: SharePosterProps = {
+      format: 'spot' as const,
+      spot: {
+        spot_id: 1, name_ja: '吉野山', name_en: 'Mt. Yoshino',
+        prefecture: '奈良県', checked_in_at: '2026-04-05T10:00:00Z',
+        stamp_variant: 'mankai' as const, bloom_status: 'peak' as const,
+        is100sen: true,
+      },
+    };
+    const html = renderToString(props);
+    expect(html).toContain('吉野山');
+    expect(html).toContain('#d4a017'); // mankai gold border
   });
 });

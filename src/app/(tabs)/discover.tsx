@@ -14,6 +14,7 @@ import { CameraView } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import type { TFunction } from 'i18next';
 import { useCapture } from '@/hooks/useCapture';
 import { useDiscovery } from '@/hooks/useDiscovery';
@@ -64,9 +65,11 @@ export default function DiscoverScreen() {
 
   const cameraRef = useRef<CameraView>(null);
 
-  // Request permissions on mount
+  // Request permissions on mount — only after onboarding is complete
   useEffect(() => {
-    capture.requestPermissions();
+    SecureStore.getItemAsync('onboarding_done_v1').then((done) => {
+      if (done) capture.requestPermissions();
+    }).catch(() => {});
   }, []);
 
   // Acquire GPS once permissions are both granted
@@ -189,6 +192,7 @@ export default function DiscoverScreen() {
               style={[styles.captureButton, quotaRemaining === 0 && styles.captureButtonDimmed]}
               onPress={quotaRemaining === 0 ? undefined : handleCapture}
               activeOpacity={quotaRemaining === 0 ? 1 : 0.8}
+              testID="discover.capture"
             >
               <View style={[styles.captureInner, quotaRemaining === 0 && styles.captureInnerDimmed]} />
             </TouchableOpacity>

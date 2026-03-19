@@ -1,0 +1,65 @@
+appId: com.pixelherbarium.app
+---
+# Stamp watermark editor — verify 3 styles (Pixel / Seal / Minimal) and position selector
+# Navigates through checkin wizard: login → photo → spot → stamp preview
+
+- runFlow: ./02-login-email.yaml
+
+# Navigate to checkin tab
+- tapOn:
+    text: "打卡"
+- assertVisible:
+    id: "checkin.container"
+
+# Step 1: Pick photo from library
+- tapOn:
+    text: "ライブラリから選ぶ"
+
+# Wait for photo library to appear and select first photo
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "Recents"
+    commands:
+      - tapOn:
+          text: "Recents"
+- tapOn:
+    point: "20%, 30%"
+- waitForAnimationToEnd
+
+# Step 2: Spot selector — tap first available spot
+- waitForAnimationToEnd
+- tapOn:
+    point: "50%, 35%"
+- waitForAnimationToEnd
+
+# Step 3: Stamp preview — verify all 3 style tabs are visible
+- assertVisible:
+    text: "ピクセル"
+- assertVisible:
+    text: "印章"
+- assertVisible:
+    text: "シンプル"
+- assertVisible:
+    text: "この出会いをシェア"
+
+# Verify default style (pixel) is selected
+- tapOn:
+    text: "ピクセル"
+- waitForAnimationToEnd
+
+# Switch to Seal style
+- tapOn:
+    text: "印章"
+- waitForAnimationToEnd
+
+# Switch to Minimal style
+- tapOn:
+    text: "シンプル"
+- waitForAnimationToEnd
+
+# Switch back to Pixel
+- tapOn:
+    text: "ピクセル"
+- assertVisible:
+    text: "この出会いをシェア"

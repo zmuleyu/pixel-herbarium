@@ -24,18 +24,18 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SLIDE_CONFIG = [
   {
     emoji: '🌸',
-    gradientColors: ['#e8f0e8', '#f5f4f1'] as const,
-    glowColor: 'rgba(159,182,159,0.18)',
-  },
-  {
-    emoji: '📷',
-    gradientColors: ['#f5ede0', '#f5f4f1'] as const,
-    glowColor: 'rgba(210,160,90,0.15)',
+    gradientColors: ['#fce4ec', '#f5f4f1'] as const,
+    glowColor: 'rgba(232,165,176,0.22)',
   },
   {
     emoji: '🗺️',
     gradientColors: ['#e0eaf5', '#f5f4f1'] as const,
-    glowColor: 'rgba(100,140,190,0.15)',
+    glowColor: 'rgba(100,140,190,0.18)',
+  },
+  {
+    emoji: '📸',
+    gradientColors: ['#f5ede0', '#f5f4f1'] as const,
+    glowColor: 'rgba(210,160,90,0.15)',
   },
 ] as const;
 
@@ -58,6 +58,7 @@ export default function OnboardingScreen() {
       {/* Header: Skip (left) | Step counter (right) */}
       <View style={styles.header}>
         <TouchableOpacity
+          testID="onboarding.skip"
           onPress={finish}
           style={[styles.skipBtn, isLast && styles.invisible]}
           disabled={isLast}

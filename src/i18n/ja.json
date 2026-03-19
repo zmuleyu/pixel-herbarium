@@ -4,7 +4,11 @@
     "herbarium": "花図鉑",
     "cityMap": "同城マップ",
     "social": "ソーシャル",
-    "profile": "マイページ"
+    "profile": "マイページ",
+    "home": "ホーム",
+    "checkin": "打卡",
+    "footprint": "足跡",
+    "settings": "設定"
   },
   "discover": {
     "capture": "撮影する",
@@ -74,7 +78,12 @@
     "tagline": "植物を発見して、ピクセルアートに変換しよう",
     "orEmail": "またはメールで",
     "error": "認証エラー",
-    "signIn": "サインイン"
+    "signIn": "サインイン",
+    "lineLogin": "LINEで続ける",
+    "lineError": "LINE接続に失敗しました"
+  },
+  "invite": {
+    "welcome": "花めぐりへようこそ\n素敵な花との出会いが\nあなたを待っています"
   },
   "map": {
     "title": "同城マップ",
@@ -167,27 +176,82 @@
     "colorMeaning": "花の色言葉",
     "meaningSecret": "意味はまだ秘密です"
   },
+  "bloom": {
+    "pre": "開花前",
+    "budding": "つぼみ",
+    "partial": "五分咲き",
+    "peak": "満開",
+    "falling": "散り始め",
+    "ended": "終了"
+  },
   "season": {
     "budding": "花開き",
     "peak": "見頃",
     "falling": "花散り",
     "dormant": "休眠中",
-    "always": "通年"
+    "always": "通年",
+    "sakura": {
+      "name": "桜シーズン",
+      "cta": "今日の桜を記録する 🌸",
+      "empty": "まだ桜の記録がありません",
+      "featuredTitle": "今日のおすすめスポット",
+      "shareText": "{{spotName}}で桜を見つけました 🌸",
+      "hashtag": "#桜打卡"
+    }
+  },
+  "checkin": {
+    "comingSoon": "もうすぐ",
+    "comingSoonSub": "打卡機能は次のアップデートで登場します",
+    "stepPhoto": "写真を選ぶ",
+    "stepSpot": "スポットを選ぶ",
+    "stepPreview": "確認・シェア",
+    "pickCamera": "カメラで撮影",
+    "pickLibrary": "ライブラリから選ぶ",
+    "spotSearchPlaceholder": "スポットを検索…",
+    "saveCard": "写真に保存",
+    "addedToFootprint": "足跡に追加しました 🌸",
+    "permissionRequired": "写真ライブラリへのアクセスを許可してください",
+    "saveError": "保存に失敗しました"
+  },
+  "stamp": {
+    "pixel": "ピクセル",
+    "seal": "印章",
+    "minimal": "シンプル",
+    "share": "この出会いをシェア",
+    "saved": "写真に保存しました 🌸",
+    "shareError": "シェアに失敗しました",
+    "permissionRequired": "写真ライブラリへのアクセスを許可してください",
+    "photoOld": "この写真は{{days}}日前に撮影されました。今日の出会いとして記録しますか？",
+    "photoOldUse": "この写真を使う",
+    "photoOldReselect": "選び直す",
+    "photoLowRes": "画質が低いため、保存時にぼやけることがあります"
+  },
+  "footprint": {
+    "title": "足跡",
+    "comingSoon": "もうすぐ",
+    "totalCount": "{{count}} 箇所訪れた",
+    "empty": "まだ足跡がありません"
+  },
+  "home": {
+    "recentTitle": "最近の記録",
+    "noSpotsLoaded": "スポットデータを読み込み中…"
   },
   "onboarding": {
     "skip": "スキップ",
     "next": "次へ",
-    "start": "はじめる 🌱",
-    "slide1Title": "花図鉑へようこそ",
-    "slide1Body": "日本の植物をカメラで発見して\nピクセルアートの図鉑を完成させよう。",
-    "slide2Title": "撮影して識別",
-    "slide2Body": "植物を見つけたらカメラで撮影。\nAIが種類を識別して、あなただけの\nピクセルアートに変換します。",
-    "slide3Title": "場所を記録する",
-    "slide3Body": "GPS で発見場所を記録。\n全国何番目の発見者か確認したり、\n都道府県ごとの開花情報を楽しもう。"
+    "start": "はじめる 🌸",
+    "slide1Title": "花めぐりへようこそ",
+    "slide1Body": "桜の季節がやってきた。\n全国の名所をめぐって、\n今年の桜を記録しよう。",
+    "slide2Title": "スポットを探して訪れよう",
+    "slide2Body": "全国の桜スポットから\n今日の目的地を選ぼう。\n開花状況もわかるよ。",
+    "slide3Title": "写真を撮って、シェアしよう",
+    "slide3Body": "現地で撮影して打卡カードを作成。\nSNSでシェアしたり、\n足跡として残したりしよう。"
   },
   "settings": {
+    "title": "設定",
     "language": "言語",
-    "version": "バージョン"
+    "version": "バージョン",
+    "login": "ログイン"
   },
   "offline": {
     "banner": "📵 オフライン — 接続を確認してください"
@@ -206,5 +270,62 @@
     "ok": "OK",
     "back": "戻る",
     "notFound": "見つかりませんでした"
+  },
+  "sakura": {
+    "layerToggle": {
+      "heatmap": "発見ヒートマップ",
+      "spots": "桜スポット"
+    },
+    "checkinSheet": {
+      "title": "ここで打卡する",
+      "button": "打卡する",
+      "distance": "{{distance}}m 先"
+    },
+    "stampCard": {
+      "firstVisit": "初めての訪問、ありがとうございます🌸",
+      "saved": "図鑑のスタンプ帳に保存されました",
+      "mankai": "桜が満開の今、特別な記憶として残ります"
+    },
+    "collection": {
+      "progress": "{{count}} / {{total}} 訪れた",
+      "tabLabel": "桜スポット",
+      "plantTab": "植物",
+      "hintPoem": "春、{{prefecture}}の山の向こうに、\n桜が静かに待っています。",
+      "visitDetail": "{{date}} に訪れました"
+    },
+    "empty": {
+      "map": "まだ桜スポットのデータを準備中です。\n春が来たら、ここに花の地図が広がります 🌸",
+      "collection": "桜の旅はまだ始まっていません。\n地図を開いて、最初のスポットを探してみましょう。",
+      "mapButton": "地図を開く"
+    },
+    "permission": {
+      "title": "現在地の桜情報をお届けします",
+      "description": "現在地を使って、近くの桜スポットの開花状況やおすすめのお花見コースをご案内します。位置情報は本アプリの機能提供のみに使用され、第三者に共有されることはありません。",
+      "allow": "位置情報を許可する",
+      "skip": "今は使わない",
+      "required": "打卡するには位置情報が必要です"
+    },
+    "review": {
+      "title": "今シーズンはいかがでしたか？",
+      "body": "お花見のお役に立てていたら、ぜひ評価をお願いします。いただいたご意見は、より良いアプリ作りに役立てます🌸",
+      "rate": "評価する",
+      "later": "あとで"
+    },
+    "share": {
+      "spotCard": "{{spotName}}で、桜の記憶を残しました 🌸",
+      "twitter": "{{spotName}}の桜 🌸 #お花見 #PH桜スポット",
+      "saveToAlbum": "写真を保存しました"
+    },
+    "season": {
+      "approaching": "春の足音が近づいています",
+      "firstBloom": "各地で開花便りが届き始めました",
+      "weekend": "今週末はお花見日和です",
+      "fullBloom": "桜が満開を迎えました",
+      "petals": "はかない桜の美しさを、写真に残してみませんか",
+      "end": "今年もたくさんの桜に出会えました。また来年、また咲きます 🌸"
+    }
+  },
+  "invite": {
+    "welcome": "友達からの招待でやってきました\nいっしょに花を探しましょう 🌸"
   }
 }

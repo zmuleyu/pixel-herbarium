@@ -4,7 +4,11 @@
     "herbarium": "Herbarium",
     "cityMap": "City Map",
     "social": "Social",
-    "profile": "Profile"
+    "profile": "Profile",
+    "home": "Home",
+    "checkin": "Check-in",
+    "footprint": "Footprint",
+    "settings": "Settings"
   },
   "discover": {
     "capture": "Take Photo",
@@ -74,7 +78,12 @@
     "tagline": "Discover plants and transform them into pixel art",
     "orEmail": "or email",
     "error": "Authentication Error",
-    "signIn": "Sign In"
+    "signIn": "Sign In",
+    "lineLogin": "Continue with LINE",
+    "lineError": "LINE connection failed. Please try again."
+  },
+  "invite": {
+    "welcome": "Welcome to Pixel Herbarium\nBeautiful flower encounters\nawait you"
   },
   "map": {
     "title": "City Map",
@@ -167,27 +176,82 @@
     "colorMeaning": "Colour Symbolism",
     "meaningSecret": "Meaning still a secret"
   },
+  "bloom": {
+    "pre": "Not yet",
+    "budding": "Budding",
+    "partial": "Partial bloom",
+    "peak": "Full bloom",
+    "falling": "Falling",
+    "ended": "Ended"
+  },
   "season": {
     "budding": "Budding",
     "peak": "In Bloom",
     "falling": "Fading",
     "dormant": "Dormant",
-    "always": "Year-round"
+    "always": "Year-round",
+    "sakura": {
+      "name": "Cherry Blossom Season",
+      "cta": "Record today's cherry blossoms 🌸",
+      "empty": "No cherry blossom records yet",
+      "featuredTitle": "Today's Featured Spot",
+      "shareText": "Found cherry blossoms at {{spotName}} 🌸",
+      "hashtag": "#SakuraCheckin"
+    }
+  },
+  "checkin": {
+    "comingSoon": "Coming Soon",
+    "comingSoonSub": "Check-in feature arrives in the next update",
+    "stepPhoto": "Pick a photo",
+    "stepSpot": "Select a spot",
+    "stepPreview": "Preview & Share",
+    "pickCamera": "Take a photo",
+    "pickLibrary": "Choose from library",
+    "spotSearchPlaceholder": "Search spots…",
+    "saveCard": "Save to photos",
+    "addedToFootprint": "Added to footprint 🌸",
+    "permissionRequired": "Please allow access to your photo library",
+    "saveError": "Failed to save"
+  },
+  "stamp": {
+    "pixel": "Pixel",
+    "seal": "Seal",
+    "minimal": "Minimal",
+    "share": "Share this moment",
+    "saved": "Saved to photos 🌸",
+    "shareError": "Share failed",
+    "permissionRequired": "Please allow access to your photo library",
+    "photoOld": "This photo was taken {{days}} days ago. Record it as today's encounter?",
+    "photoOldUse": "Use this photo",
+    "photoOldReselect": "Choose another",
+    "photoLowRes": "Low resolution — the export may appear blurry"
+  },
+  "footprint": {
+    "title": "Footprint",
+    "comingSoon": "Coming Soon",
+    "totalCount": "{{count}} spots visited",
+    "empty": "No footprints yet"
+  },
+  "home": {
+    "recentTitle": "Recent Records",
+    "noSpotsLoaded": "Loading spot data…"
   },
   "onboarding": {
     "skip": "Skip",
     "next": "Next",
-    "start": "Get started 🌱",
-    "slide1Title": "Welcome to Pixel Herbarium",
-    "slide1Body": "Discover plants in Japan with your camera\nand complete your pixel art herbarium.",
-    "slide2Title": "Shoot & Identify",
-    "slide2Body": "Found a plant? Take a photo.\nAI identifies the species and turns it\ninto your own pixel art.",
-    "slide3Title": "Record Your Discoveries",
-    "slide3Body": "GPS logs where you found each plant.\nSee how many people found it before you\nand explore bloom info by region."
+    "start": "Let's go 🌸",
+    "slide1Title": "Welcome to Hanameguri",
+    "slide1Body": "Cherry blossom season is here.\nExplore famous spots across Japan\nand capture your sakura journey.",
+    "slide2Title": "Find Your Next Spot",
+    "slide2Body": "Browse cherry blossom spots\nnationwide and pick today's\ndestination. Bloom status included.",
+    "slide3Title": "Capture & Share",
+    "slide3Body": "Take a photo on-site and create a\ncheck-in card. Share it or save it\nas your personal footprint."
   },
   "settings": {
+    "title": "Settings",
     "language": "Language",
-    "version": "Version"
+    "version": "Version",
+    "login": "Sign In"
   },
   "offline": {
     "banner": "📵 Offline — Check your connection"
@@ -206,5 +270,62 @@
     "ok": "OK",
     "back": "Back",
     "notFound": "Not found"
+  },
+  "sakura": {
+    "layerToggle": {
+      "heatmap": "Discovery Map",
+      "spots": "Sakura Spots"
+    },
+    "checkinSheet": {
+      "title": "Check in here",
+      "button": "Check in",
+      "distance": "{{distance}}m away"
+    },
+    "stampCard": {
+      "firstVisit": "Your first visit — thank you 🌸",
+      "saved": "Saved to your stamp collection",
+      "mankai": "Full bloom — a special memory preserved"
+    },
+    "collection": {
+      "progress": "{{count}} / {{total}} visited",
+      "tabLabel": "Sakura Spots",
+      "plantTab": "Plants",
+      "hintPoem": "In spring, beyond the mountains of {{prefecture}},\ncherry blossoms wait quietly.",
+      "visitDetail": "Visited on {{date}}"
+    },
+    "empty": {
+      "map": "Sakura spot data is being prepared.\nWhen spring arrives, a flower map will spread here 🌸",
+      "collection": "Your sakura journey hasn't begun yet.\nOpen the map to find your first spot.",
+      "mapButton": "Open Map"
+    },
+    "permission": {
+      "title": "We'll show sakura near you",
+      "description": "We use your location to show nearby sakura spots and bloom conditions. Location data is only used for app features and is never shared with third parties.",
+      "allow": "Allow Location",
+      "skip": "Not now",
+      "required": "Location permission is required to check in"
+    },
+    "review": {
+      "title": "How was this season?",
+      "body": "If Pixel Herbarium helped with your hanami, we'd love a review. Your feedback helps us improve 🌸",
+      "rate": "Leave a Review",
+      "later": "Maybe later"
+    },
+    "share": {
+      "spotCard": "I captured a sakura memory at {{spotName}} 🌸",
+      "twitter": "{{spotName}} sakura 🌸 #Hanami #PHSakuraSpots",
+      "saveToAlbum": "Saved to photos"
+    },
+    "season": {
+      "approaching": "The sound of spring is drawing near",
+      "firstBloom": "First bloom reports are arriving from around Japan",
+      "weekend": "This weekend is perfect for hanami",
+      "fullBloom": "Cherry blossoms have reached full bloom",
+      "petals": "The fleeting beauty of sakura — capture it while you can",
+      "end": "Another season of sakura memories. Until next year, when they bloom again 🌸"
+    }
+  },
+  "invite": {
+    "welcome": "A friend brought you here.\nLet's discover flowers together 🌸"
   }
 }

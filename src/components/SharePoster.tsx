@@ -1,8 +1,9 @@
 // src/components/SharePoster.tsx
 // Off-screen poster component for share image generation.
-// Supports two formats:
+// Supports three formats:
 //   'story' — 360x640 (9:16) Instagram/LINE Story vertical layout
 //   'line'  — 360x360 (1:1) LINE Card horizontal layout
+//   'spot'  — 360x360 (1:1) Sakura spot check-in share card
 
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
@@ -10,6 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { RARITY_LABELS } from '@/constants/plants';
 import { getPlantGradientColors } from '@/utils/plant-gradient';
+import type { SharePosterSpot } from '@/types/spot';
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -25,12 +27,9 @@ export interface SharePosterPlant {
   bloom_months: number[];
 }
 
-export interface SharePosterProps {
-  format: 'story' | 'line';
-  plant: SharePosterPlant;
-  discoveryDate?: string; // ISO date string e.g. "2024-04-01"
-  discoveryCity?: string;
-}
+export type SharePosterProps =
+  | { format: 'story' | 'line'; plant: SharePosterPlant; discoveryDate?: string; discoveryCity?: string }
+  | { format: 'spot'; spot: SharePosterSpot };
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -51,20 +50,22 @@ interface PlantSpriteProps {
   url: string | null;
   size: number;
   borderColor: string;
+  nameJa: string;
 }
 
-function PlantSprite({ url, size, borderColor }: PlantSpriteProps) {
+function PlantSprite({ url, size, borderColor, nameJa }: PlantSpriteProps) {
   if (url) {
     return (
       <Image
         source={{ uri: url }}
         style={[shared.sprite, { width: size, height: size }]}
         resizeMode="contain"
+        accessibilityLabel={nameJa}
       />
     );
   }
   return (
-    <View style={[shared.emojiCard, { width: size, height: size, borderColor }]}>
+    <View style={[shared.emojiCard, { width: size, height: size, borderColor }]} accessibilityLabel={nameJa}>
       <Text style={shared.emoji}>🌸</Text>
     </View>
   );
@@ -106,7 +107,7 @@ function PosterFooter() {
 // StoryPoster (360x640)
 // ---------------------------------------------------------------------------
 
-function StoryPoster({ plant, discoveryDate, discoveryCity }: Omit<SharePosterProps, 'format'>) {
+function StoryPoster({ plant, discoveryDate, discoveryCity }: { plant: SharePosterPlant; discoveryDate?: string; discoveryCity?: string }) {
   const gradientColors = getPlantGradientColors(plant.rarity, plant.bloom_months) as [string, string];
   const rarityLabel = RARITY_LABELS[plant.rarity as keyof typeof RARITY_LABELS] ?? '★';
   const rarityColor =
@@ -130,7 +131,7 @@ function StoryPoster({ plant, discoveryDate, discoveryCity }: Omit<SharePosterPr
 
       {/* Sprite */}
       <View style={storyStyles.imageArea}>
-        <PlantSprite url={plant.pixel_sprite_url} size={160} borderColor={rarityColor} />
+        <PlantSprite url={plant.pixel_sprite_url} size={160} borderColor={rarityColor} nameJa={plant.name_ja} />
       </View>
 
       {/* Main content */}
@@ -163,7 +164,7 @@ function StoryPoster({ plant, discoveryDate, discoveryCity }: Omit<SharePosterPr
 // LineCard (360x360)
 // ---------------------------------------------------------------------------
 
-function LineCard({ plant, discoveryDate, discoveryCity }: Omit<SharePosterProps, 'format'>) {
+function LineCard({ plant, discoveryDate, discoveryCity }: { plant: SharePosterPlant; discoveryDate?: string; discoveryCity?: string }) {
   const gradientColors = getPlantGradientColors(plant.rarity, plant.bloom_months) as [string, string];
   const rarityLabel = RARITY_LABELS[plant.rarity as keyof typeof RARITY_LABELS] ?? '★';
   const rarityColor =
@@ -183,7 +184,7 @@ function LineCard({ plant, discoveryDate, discoveryCity }: Omit<SharePosterProps
     >
       {/* Horizontal body: sprite left, text right */}
       <View style={lineStyles.body}>
-        <PlantSprite url={plant.pixel_sprite_url} size={120} borderColor={rarityColor} />
+        <PlantSprite url={plant.pixel_sprite_url} size={120} borderColor={rarityColor} nameJa={plant.name_ja} />
 
         <View style={lineStyles.textArea}>
           <Text style={[lineStyles.rarityLabel, { color: rarityColor }]}>{rarityLabel}</Text>
@@ -207,14 +208,39 @@ function LineCard({ plant, discoveryDate, discoveryCity }: Omit<SharePosterProps
 }
 
 // ---------------------------------------------------------------------------
+// SpotPoster (360x360) — sakura spot check-in share card
+// ---------------------------------------------------------------------------
+
+function SpotPoster({ spot }: { spot: SharePosterSpot }) {
+  const borderColor = spot.stamp_variant === 'mankai' ? '#d4a017' : colors.blushPink;
+
+  return (
+    <View style={[spotStyles.canvas, { borderColor, borderWidth: spot.stamp_variant === 'mankai' ? 3 : 0 }]}>
+      <LinearGradient
+        colors={[colors.seasonal.sakura, colors.blushPink]}
+        style={StyleSheet.absoluteFillObject}
+      />
+      <Text style={spotStyles.spotIcon}>{spot.is100sen ? '⭐' : '🌸'}</Text>
+      <Text style={spotStyles.spotName}>{spot.name_ja}</Text>
+      <Text style={spotStyles.prefecture}>{spot.prefecture}</Text>
+      <Text style={spotStyles.date}>{formatDate(spot.checked_in_at)}</Text>
+      <Text style={spotStyles.logo}>Pixel Herbarium</Text>
+    </View>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main export
 // ---------------------------------------------------------------------------
 
 export function SharePoster(props: SharePosterProps) {
-  if (props.format === 'line') {
-    return <LineCard {...props} />;
+  if (props.format === 'spot') {
+    return <SpotPoster spot={props.spot} />;
   }
-  return <StoryPoster {...props} />;
+  if (props.format === 'line') {
+    return <LineCard plant={props.plant} discoveryDate={props.discoveryDate} discoveryCity={props.discoveryCity} />;
+  }
+  return <StoryPoster plant={props.plant} discoveryDate={props.discoveryDate} discoveryCity={props.discoveryCity} />;
 }
 
 // ---------------------------------------------------------------------------
@@ -405,5 +431,26 @@ const lineStyles = StyleSheet.create({
     color: colors.text,
     textAlign: 'center',
     paddingVertical: spacing.sm,
+  },
+});
+
+const spotStyles = StyleSheet.create({
+  canvas: {
+    width: 360, height: 360,
+    alignItems: 'center', justifyContent: 'center',
+    overflow: 'hidden',
+    borderRadius: borderRadius.md,
+  },
+  spotIcon:   { fontSize: 64, marginBottom: 8 },
+  spotName:   {
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.xxl,
+    color: colors.text, textAlign: 'center', marginBottom: spacing.xs,
+  },
+  prefecture: { fontSize: typography.fontSize.sm, color: colors.textSecondary, marginBottom: spacing.sm },
+  date:       { fontSize: typography.fontSize.sm, color: colors.textSecondary, marginBottom: spacing.lg },
+  logo:       {
+    fontSize: typography.fontSize.xs, color: colors.textSecondary,
+    position: 'absolute', bottom: 12, right: 12,
   },
 });

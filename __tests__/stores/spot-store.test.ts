@@ -1,0 +1,144 @@
+// __tests__/stores/spot-store.test.ts
+
+const mockStorage: Record<string, string> = {};
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  __esModule: true,
+  default: {
+    getItem:  jest.fn((k: string) => Promise.resolve(mockStorage[k] ?? null)),
+    setItem:  jest.fn((k: string, v: string) => { mockStorage[k] = v; return Promise.resolve(); }),
+    removeItem: jest.fn((k: string) => { delete mockStorage[k]; return Promise.resolve(); }),
+  },
+}));
+
+const mockSelect = jest.fn();
+const mockEq     = jest.fn();
+const mockRpc    = jest.fn();
+jest.mock('@/services/supabase', () => ({
+  supabase: {
+    from:  jest.fn(() => ({ select: mockSelect })),
+    rpc:   mockRpc,
+    auth:  { getUser: jest.fn(() => Promise.resolve({ data: { user: { id: 'user-abc' } } })) },
+  },
+}));
+
+jest.mock('@/services/content-pack', () => ({
+  loadSpotsData: jest.fn(() => ({
+    version:  1,
+    seasonId: 'sakura',
+    spots: [
+      {
+        id: 1, regionId: 'jp', seasonId: 'sakura', nameJa: '上野恩賜公園', nameEn: 'Ueno Park',
+        prefecture: '東京都', prefectureCode: 13, city: '台東区', category: 'park',
+        treeCount: 800,
+        bloomTypical: { earlyStart: '03-20', peakStart: '03-28', peakEnd: '04-05', lateEnd: '04-12' },
+        latitude: 35.7141, longitude: 139.7734,
+        tags: ['名所100選', '夜桜', '池'],
+      },
+    ],
+  })),
+  getActiveRegion: jest.fn(() => ({
+    id: 'jp',
+    seasons: [{ id: 'sakura', nameKey: 'season.sakura.name', dateRange: ['03-15', '04-20'] }],
+  })),
+}));
+
+import { useSpotStore } from '../../src/stores/spot-store';
+import type { SpotCheckinResult } from '../../src/types/spot';
+
+const makeCheckin = (overrides: Partial<SpotCheckinResult> = {}): SpotCheckinResult => ({
+  id: 'c1', user_id: 'user-abc', spot_id: 1,
+  checked_in_at: '2026-03-28T10:00:00Z',
+  is_mankai: false, stamp_variant: 'normal',
+  bloom_status_at_checkin: null,
+  season_id: 'sakura',
+  ...overrides,
+});
+
+beforeEach(() => {
+  for (const k of Object.keys(mockStorage)) delete mockStorage[k];
+  useSpotStore.setState({ spots: [], checkins: [], loading: false });
+  jest.clearAllMocks();
+});
+
+describe('useSpotStore — spots', () => {
+  it('loads spots from content-pack on init', () => {
+    const store = useSpotStore.getState();
+    store.initSpots();
+    expect(useSpotStore.getState().spots).toHaveLength(1);
+    expect(useSpotStore.getState().spots[0].nameEn).toBe('Ueno Park');
+  });
+});
+
+describe('useSpotStore — loadCheckins', () => {
+  it('loads checkins from Supabase for the given userId', async () => {
+    const data = [makeCheckin()];
+    mockEq.mockResolvedValueOnce({ data, error: null });
+    mockSelect.mockReturnValueOnce({ eq: mockEq });
+
+    await useSpotStore.getState().loadCheckins('user-abc');
+
+    expect(useSpotStore.getState().checkins).toEqual(data);
+    expect(useSpotStore.getState().loading).toBe(false);
+  });
+
+  it('sets loading: false even on error', async () => {
+    mockEq.mockResolvedValueOnce({ data: null, error: new Error('network') });
+    mockSelect.mockReturnValueOnce({ eq: mockEq });
+
+    await useSpotStore.getState().loadCheckins('user-abc');
+
+    expect(useSpotStore.getState().loading).toBe(false);
+  });
+});
+
+describe('useSpotStore — hasCheckedIn', () => {
+  it('returns true for a spot already in checkins', () => {
+    useSpotStore.setState({ checkins: [makeCheckin({ spot_id: 1 })] });
+    expect(useSpotStore.getState().hasCheckedIn(1)).toBe(true);
+  });
+
+  it('returns false for a spot not checked in', () => {
+    useSpotStore.setState({ checkins: [] });
+    expect(useSpotStore.getState().hasCheckedIn(99)).toBe(false);
+  });
+});
+
+describe('useSpotStore — getProgress', () => {
+  it('returns { checked: 1, total: 1 } when 1 spot is loaded and 1 checked in', () => {
+    useSpotStore.getState().initSpots();
+    useSpotStore.setState({ checkins: [makeCheckin({ spot_id: 1 })] });
+    const { checked, total } = useSpotStore.getState().getProgress();
+    expect(checked).toBe(1);
+    expect(total).toBe(1);
+  });
+});
+
+describe('useSpotStore — performCheckin', () => {
+  it('calls supabase.rpc checkin_spot and adds new checkin to state', async () => {
+    const checkinResult = makeCheckin({ is_mankai: true, stamp_variant: 'mankai' });
+    mockRpc.mockResolvedValueOnce({
+      data: { checkin: checkinResult, is_new_row: true },
+      error: null,
+    });
+
+    useSpotStore.getState().initSpots();
+    const result = await useSpotStore.getState().performCheckin(1);
+
+    expect(result.isNew).toBe(true);
+    expect(mockRpc).toHaveBeenCalledWith('checkin_spot', expect.objectContaining({ p_spot_id: 1 }));
+    expect(useSpotStore.getState().checkins).toHaveLength(1);
+  });
+});
+
+describe('useSpotStore — offline queue', () => {
+  it('enqueues checkin to AsyncStorage when rpc fails', async () => {
+    const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+    mockRpc.mockRejectedValueOnce(new Error('offline'));
+
+    useSpotStore.getState().initSpots();
+    await useSpotStore.getState().performCheckin(1).catch(() => {});
+
+    expect(AsyncStorage.setItem).toHaveBeenCalled();
+  });
+});

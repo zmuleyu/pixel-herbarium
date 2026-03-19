@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>PH Sakura Spot Card Generator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 40px;
+    font-family: 'Noto Sans JP', 'Hiragino Maru Gothic ProN', sans-serif;
+  }
+
+  .card {
+    width: 1080px;
+    height: 1080px;
+    background: #f5f4f1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Top decorative bar */
+  .card .top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #f5d5d0, #d4a0a0, #f5d5d0);
+  }
+
+  /* Bottom decorative bar */
+  .card .bottom-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #f5d5d0, #d4a0a0, #f5d5d0);
+  }
+
+  /* Scattered petals - decorative */
+  .card .petal {
+    position: absolute;
+    font-size: 28px;
+    opacity: 0.15;
+    transform: rotate(var(--rot));
+  }
+
+  /* Brand header */
+  .card .brand {
+    margin-top: 80px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .card .brand-icon {
+    font-size: 32px;
+  }
+
+  .card .brand-text {
+    font-size: 22px;
+    font-weight: 500;
+    color: #9fb69f;
+    letter-spacing: 6px;
+  }
+
+  /* Divider line */
+  .card .divider {
+    width: 480px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #c1a89d 20%, #c1a89d 80%, transparent);
+    margin: 16px 0;
+  }
+
+  /* Spot number badge */
+  .card .spot-badge {
+    margin-top: 20px;
+    font-size: 15px;
+    color: #c1a89d;
+    letter-spacing: 3px;
+    font-weight: 500;
+  }
+
+  /* Spot name - Japanese */
+  .card .spot-name-ja {
+    font-size: 64px;
+    font-weight: 700;
+    color: #3a3a3a;
+    margin-top: 20px;
+    letter-spacing: 4px;
+  }
+
+  /* Spot name - English */
+  .card .spot-name-en {
+    font-size: 20px;
+    color: #9a8a7a;
+    letter-spacing: 3px;
+    margin-top: 8px;
+    font-weight: 400;
+  }
+
+  .card .divider-floral {
+    margin: 32px 0;
+    font-size: 18px;
+    color: #c1a89d;
+    letter-spacing: 8px;
+  }
+
+  /* Info grid */
+  .card .info-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .card .info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 22px;
+    color: #5a5a5a;
+  }
+
+  .card .info-icon {
+    font-size: 22px;
+    width: 30px;
+    text-align: center;
+  }
+
+  .card .info-label {
+    font-weight: 400;
+    min-width: 80px;
+  }
+
+  .card .info-value {
+    font-weight: 500;
+    color: #3a3a3a;
+  }
+
+  /* Hanakotoba section */
+  .card .hanakotoba {
+    margin-top: 36px;
+    text-align: center;
+  }
+
+  .card .hanakotoba-label {
+    font-size: 15px;
+    color: #c1a89d;
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+  }
+
+  .card .hanakotoba-text {
+    font-size: 26px;
+    color: #9fb69f;
+    font-weight: 500;
+    letter-spacing: 2px;
+  }
+
+  /* Tags */
+  .card .tags {
+    margin-top: 28px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .card .tag {
+    background: rgba(159, 182, 159, 0.12);
+    color: #7a9a7a;
+    font-size: 14px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(159, 182, 159, 0.25);
+    letter-spacing: 1px;
+  }
+
+  /* Footer */
+  .card .footer {
+    position: absolute;
+    bottom: 40px;
+    text-align: center;
+  }
+
+  .card .footer-divider {
+    width: 360px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d4c4b4 20%, #d4c4b4 80%, transparent);
+    margin: 0 auto 14px;
+  }
+
+  .card .footer-text {
+    font-size: 15px;
+    color: #b0a090;
+    letter-spacing: 3px;
+  }
+
+  /* Category icon mapping */
+  .category-icon {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    font-size: 20px;
+    background: rgba(245, 213, 208, 0.3);
+    border-radius: 50%;
+  }
+</style>
+</head>
+<body>
+
+<script>
+const spots = [
+  {id:1,nameJa:"上野恩賜公園",nameEn:"Ueno Park",prefecture:"東京都",city:"台東区",category:"park",treeCount:800,bloomTypical:{peakStart:"03-28",peakEnd:"04-05"},tags:["名所100選","夜桜","池"]},
+  {id:2,nameJa:"新宿御苑",nameEn:"Shinjuku Gyoen",prefecture:"東京都",city:"新宿区",category:"garden",treeCount:1000,bloomTypical:{peakStart:"03-30",peakEnd:"04-08"},tags:["名所100選","広い芝生","多品種"]},
+  {id:3,nameJa:"目黒川",nameEn:"Meguro River",prefecture:"東京都",city:"目黒区",category:"river",treeCount:800,bloomTypical:{peakStart:"03-28",peakEnd:"04-04"},tags:["夜桜","川沿い","ライトアップ"]},
+  {id:4,nameJa:"嵐山",nameEn:"Arashiyama",prefecture:"京都府",city:"京都市右京区",category:"mountain",treeCount:1500,bloomTypical:{peakStart:"04-01",peakEnd:"04-10"},tags:["名所100選","渡月橋","山桜"]},
+  {id:5,nameJa:"吉野山",nameEn:"Mount Yoshino",prefecture:"奈良県",city:"吉野郡吉野町",category:"mountain",treeCount:30000,bloomTypical:{peakStart:"04-05",peakEnd:"04-15"},tags:["名所100選","世界遺産","一目千本"]},
+  {id:6,nameJa:"千鳥ヶ淵",nameEn:"Chidorigafuchi",prefecture:"東京都",city:"千代田区",category:"park",treeCount:260,bloomTypical:{peakStart:"03-28",peakEnd:"04-04"},tags:["ボート","堀","夜桜"]},
+  {id:7,nameJa:"井の頭恩賜公園",nameEn:"Inokashira Park",prefecture:"東京都",city:"武蔵野市",category:"park",treeCount:450,bloomTypical:{peakStart:"03-29",peakEnd:"04-05"},tags:["池","ボート","吉祥寺"]},
+  {id:8,nameJa:"飛鳥山公園",nameEn:"Asukayama Park",prefecture:"東京都",city:"北区",category:"park",treeCount:650,bloomTypical:{peakStart:"03-26",peakEnd:"04-03"},tags:["名所100選","徳川将軍","モノレール"]},
+  {id:9,nameJa:"熊谷桜堤",nameEn:"Kumagaya Sakura Tsutsumi",prefecture:"埼玉県",city:"熊谷市",category:"river",treeCount:500,bloomTypical:{peakStart:"03-27",peakEnd:"04-03"},tags:["名所100選","荒川沿い","一直線"]},
+  {id:10,nameJa:"三ツ池公園",nameEn:"Mitsuike Park",prefecture:"神奈川県",city:"横浜市鶴見区",category:"park",treeCount:1500,bloomTypical:{peakStart:"03-28",peakEnd:"04-05"},tags:["三つの池","多品種","県立"]},
+  {id:11,nameJa:"鶴岡八幡宮",nameEn:"Tsurugaoka Hachimangu",prefecture:"神奈川県",city:"鎌倉市",category:"shrine",treeCount:200,bloomTypical:{peakStart:"03-27",peakEnd:"04-04"},tags:["段葛","鎌倉","神社"]},
+  {id:12,nameJa:"鶴舞公園",nameEn:"Tsuruma Park",prefecture:"愛知県",city:"名古屋市昭和区",category:"park",treeCount:700,bloomTypical:{peakStart:"03-28",peakEnd:"04-05"},tags:["名古屋","噴水","バラ園"]},
+  {id:13,nameJa:"犬山城",nameEn:"Inuyama Castle",prefecture:"愛知県",city:"犬山市",category:"castle",treeCount:500,bloomTypical:{peakStart:"03-29",peakEnd:"04-06"},tags:["国宝","木曽川","城"]},
+  {id:14,nameJa:"大阪城公園",nameEn:"Osaka Castle Park",prefecture:"大阪府",city:"大阪市中央区",category:"castle",treeCount:3000,bloomTypical:{peakStart:"03-29",peakEnd:"04-06"},tags:["大阪城","西の丸庭園","名所100選"]},
+  {id:15,nameJa:"万博記念公園",nameEn:"Expo Commemoration Park",prefecture:"大阪府",city:"吹田市",category:"park",treeCount:5000,bloomTypical:{peakStart:"03-30",peakEnd:"04-07"},tags:["太陽の塔","さくらまつり","大型公園"]},
+  {id:16,nameJa:"円山公園",nameEn:"Maruyama Park",prefecture:"京都府",city:"京都市東山区",category:"park",treeCount:680,bloomTypical:{peakStart:"03-31",peakEnd:"04-08"},tags:["枝垂れ桜","夜桜","祇園"]},
+  {id:17,nameJa:"哲学の道",nameEn:"Philosopher's Path",prefecture:"京都府",city:"京都市左京区",category:"street",treeCount:500,bloomTypical:{peakStart:"04-01",peakEnd:"04-08"},tags:["散策路","疏水沿い","銀閣寺近く"]},
+  {id:18,nameJa:"醍醐寺",nameEn:"Daigo-ji Temple",prefecture:"京都府",city:"京都市伏見区",category:"shrine",treeCount:1000,bloomTypical:{peakStart:"04-02",peakEnd:"04-10"},tags:["世界遺産","豊臣秀吉","枝垂れ桜"]},
+  {id:19,nameJa:"姫路城",nameEn:"Himeji Castle",prefecture:"兵庫県",city:"姫路市",category:"castle",treeCount:1000,bloomTypical:{peakStart:"03-30",peakEnd:"04-07"},tags:["世界遺産","白鷺城","名所100選"]},
+  {id:20,nameJa:"西公園",nameEn:"Nishi Park",prefecture:"福岡県",city:"福岡市中央区",category:"park",treeCount:1300,bloomTypical:{peakStart:"03-25",peakEnd:"04-01"},tags:["福岡","海が見える","名所100選"]},
+  {id:21,nameJa:"高遠城址公園",nameEn:"Takato Castle Ruins Park",prefecture:"長野県",city:"伊那市",category:"castle",treeCount:1500,bloomTypical:{peakStart:"04-15",peakEnd:"04-22"},tags:["天下第一の桜","高遠コヒガン","名所100選"]},
+  {id:22,nameJa:"弘前城",nameEn:"Hirosaki Castle",prefecture:"青森県",city:"弘前市",category:"castle",treeCount:2600,bloomTypical:{peakStart:"04-23",peakEnd:"05-01"},tags:["名所100選","花びらの絨毯","東北一"]},
+  {id:23,nameJa:"北上展勝地",nameEn:"Kitakami Tenshochi",prefecture:"岩手県",city:"北上市",category:"river",treeCount:10000,bloomTypical:{peakStart:"04-17",peakEnd:"04-25"},tags:["名所100選","北上川沿い","武家屋敷"]},
+  {id:24,nameJa:"角館武家屋敷通り",nameEn:"Kakunodate Samurai District",prefecture:"秋田県",city:"仙北市",category:"street",treeCount:400,bloomTypical:{peakStart:"04-21",peakEnd:"04-28"},tags:["枝垂れ桜","武家屋敷","みちのく小京都"]},
+  {id:25,nameJa:"五稜郭公園",nameEn:"Goryokaku Park",prefecture:"北海道",city:"函館市",category:"castle",treeCount:1600,bloomTypical:{peakStart:"04-29",peakEnd:"05-06"},tags:["星形要塞","北海道","タワー"]}
+];
+
+const categoryIcons = {
+  park: "🌳", river: "🏞️", shrine: "⛩️", castle: "🏯",
+  mountain: "⛰️", street: "🛤️", garden: "🌿"
+};
+
+const hanakotobaMap = {
+  1: "精神の美・優美な女性",
+  2: "高貴・清浄・壮大な美",
+  3: "優れた美人・純潔",
+  4: "心の平安・あなたに微笑む",
+  5: "初恋・あなたに微笑む",
+  6: "精神の美・優美",
+  7: "高尚・純潔",
+  8: "精神の美・心の美しさ",
+  9: "純潔・精神の美",
+  10: "あなたに微笑む・精神美",
+  11: "高潔・淡泊",
+  12: "優美・心の美",
+  13: "精神の美・優れた美人",
+  14: "精神の美・高尚",
+  15: "優美・純潔",
+  16: "優美な女性・精神の美",
+  17: "心の平安・優美",
+  18: "私を忘れないで・崇高",
+  19: "優美・精神の美",
+  20: "精神の美・淡泊",
+  21: "高遠・純潔な心",
+  22: "優れた美人・精神美",
+  23: "純潔・あなたに微笑む",
+  24: "優美・高潔",
+  25: "精神の美・淡泊"
+};
+
+function formatDate(mmdd) {
+  const [m, d] = mmdd.split('-');
+  return `${parseInt(m)}月${parseInt(d)}日`;
+}
+
+function formatTreeCount(n) {
+  if (n >= 10000) return `約${(n/10000).toFixed(0)}万`;
+  if (n >= 1000) return `約${(n/1000).toFixed(0)},${String(n%1000).padStart(3,'0')}`;
+  return `約${n}`;
+}
+
+// Petal positions
+const petalPositions = [
+  {top:'8%',left:'6%',rot:'-15deg'}, {top:'12%',right:'8%',rot:'25deg'},
+  {top:'35%',left:'3%',rot:'-40deg'}, {top:'60%',right:'4%',rot:'15deg'},
+  {bottom:'18%',left:'7%',rot:'-25deg'}, {bottom:'12%',right:'6%',rot:'35deg'},
+  {top:'22%',right:'12%',rot:'-10deg'}, {bottom:'30%',left:'10%',rot:'20deg'}
+];
+
+function renderCard(spot) {
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.id = `card-${spot.id}`;
+
+  const icon = categoryIcons[spot.category] || '🌸';
+  const hanakotoba = hanakotobaMap[spot.id] || '精神の美';
+  const peakRange = `${formatDate(spot.bloomTypical.peakStart)}〜${formatDate(spot.bloomTypical.peakEnd)}ごろ`;
+
+  // Petals
+  let petalsHTML = '';
+  petalPositions.forEach((pos, i) => {
+    const style = Object.entries(pos).map(([k,v]) => k === 'rot' ? `--rot:${v}` : `${k}:${v}`).join(';');
+    petalsHTML += `<div class="petal" style="${style}">🌸</div>`;
+  });
+
+  div.innerHTML = `
+    <div class="top-bar"></div>
+    <div class="bottom-bar"></div>
+    ${petalsHTML}
+
+    <div class="brand">
+      <span class="brand-icon">🌸</span>
+      <span class="brand-text">花 め ぐ り</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="spot-badge">SPOT ${String(spot.id).padStart(2, '0')} / 25</div>
+
+    <div class="spot-name-ja">${spot.nameJa}</div>
+    <div class="spot-name-en">${spot.nameEn}</div>
+
+    <div class="divider-floral">── ✿ ──</div>
+
+    <div class="info-grid">
+      <div class="info-row">
+        <span class="info-icon">${icon}</span>
+        <span class="info-value">${formatTreeCount(spot.treeCount)}本の桜</span>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">📍</span>
+        <span class="info-value">${spot.prefecture}・${spot.city}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">📅</span>
+        <span class="info-value">見頃：${peakRange}</span>
+      </div>
+    </div>
+
+    <div class="hanakotoba">
+      <div class="hanakotoba-label">花 言 葉</div>
+      <div class="hanakotoba-text">${hanakotoba}</div>
+    </div>
+
+    <div class="tags">
+      ${spot.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+    </div>
+
+    <div class="footer">
+      <div class="footer-divider"></div>
+      <div class="footer-text">花図鉑 — Pixel Herbarium</div>
+    </div>
+  `;
+
+  return div;
+}
+
+// URL param: ?id=1 renders only that card, otherwise all
+const params = new URLSearchParams(window.location.search);
+const targetId = params.get('id');
+
+if (targetId) {
+  const spot = spots.find(s => s.id === parseInt(targetId));
+  if (spot) document.body.appendChild(renderCard(spot));
+} else {
+  spots.forEach(spot => document.body.appendChild(renderCard(spot)));
+}
+</script>
+</body>
+</html>

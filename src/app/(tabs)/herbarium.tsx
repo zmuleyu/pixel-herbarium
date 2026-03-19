@@ -20,6 +20,11 @@ import { useAuthStore } from '@/stores/auth-store';
 import { getCurrentSeason } from '@/utils/date';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { GRID_COLUMNS, TOTAL_PLANTS, RARITY_LABELS } from '@/constants/plants';
+import { useSpotStore } from '@/stores/spot-store';
+import SpotStampGrid from '@/components/SpotStampGrid';
+import SpotDetailSheet from '@/components/SpotDetailSheet';
+import type { FlowerSpot } from '@/types/hanami';
+import type { SpotCheckinResult } from '@/types/spot';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CELL_SIZE = Math.floor(SCREEN_WIDTH / GRID_COLUMNS);
@@ -38,6 +43,17 @@ export default function HerbariumScreen() {
   const { plants, collected, loading } = useHerbarium(user?.id ?? '');
   const { filter, setFilter, filteredPlants } = useHerbariumFilter(plants, collected);
   const [hintPlant, setHintPlant] = useState<PlantSlot | null>(null);
+  const [activeTab, setActiveTab]     = useState<'plants' | 'spots'>('plants');
+  const [detailSpot, setDetailSpot]   = useState<FlowerSpot | null>(null);
+  const [detailCheckin, setDetailCheckin] = useState<SpotCheckinResult | null>(null);
+  const [showDetail, setShowDetail]   = useState(false);
+  const { spots, checkins, initSpots, loadCheckins } = useSpotStore();
+
+  useEffect(() => {
+    if (activeTab !== 'spots') return;
+    if (spots.length === 0) initSpots();
+    if (user?.id) loadCheckins(user.id);
+  }, [activeTab]);
 
   function handleCellPress(plant: PlantSlot) {
     if (collected.has(plant.id)) {
@@ -75,53 +91,95 @@ export default function HerbariumScreen() {
         <View style={[styles.progressBarFill, { width: `${(collected.size / TOTAL_PLANTS) * 100}%` as any }]} />
       </View>
 
-      {/* Spring season banner — visible March–May only */}
-      {getCurrentSeason() === 'spring' && (
-        <View style={styles.springBanner}>
-          <Text style={styles.springBannerText}>🌸 {t('herbarium.springBanner')}</Text>
-          <Text style={styles.springBannerSub}>{t('herbarium.springBannerSub')}</Text>
-        </View>
-      )}
+      {/* Tab switcher — 植物 ↔ 桜スポット */}
+      <View style={styles.tabSwitcher}>
+        <TouchableOpacity
+          style={[styles.tabSwitchBtn, activeTab === 'plants' && styles.tabSwitchBtnActive]}
+          onPress={() => setActiveTab('plants')}
+        >
+          <Text style={styles.tabSwitchText}>🌿 {t('sakura.collection.plantTab')} {collected.size}/{TOTAL_PLANTS}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tabSwitchBtn, activeTab === 'spots' && styles.tabSwitchBtnActive]}
+          onPress={() => setActiveTab('spots')}
+        >
+          <Text style={styles.tabSwitchText}>🌸 {t('sakura.collection.tabLabel')} {checkins.length}/100</Text>
+        </TouchableOpacity>
+      </View>
 
-      {/* Filter chips */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterRow}
-      >
-        {FILTER_OPTIONS.filter(opt => opt.value !== 'spring' || getCurrentSeason() === 'spring').map(opt => (
-          <TouchableOpacity
-            key={String(opt.value)}
-            style={[styles.filterChip, filter === opt.value && styles.filterChipActive]}
-            onPress={() => setFilter(opt.value)}
+      {activeTab === 'plants' ? (
+        <>
+          {/* Spring season banner — visible March–May only */}
+          {getCurrentSeason() === 'spring' && (
+            <View style={styles.springBanner}>
+              <Text style={styles.springBannerText}>🌸 {t('herbarium.springBanner')}</Text>
+              <Text style={styles.springBannerSub}>{t('herbarium.springBannerSub')}</Text>
+            </View>
+          )}
+
+          {/* Filter chips */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.filterRow}
           >
-            <Text style={[styles.filterChipText, filter === opt.value && styles.filterChipTextActive]}>
-              {t(opt.labelKey)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+            {FILTER_OPTIONS.filter(opt => opt.value !== 'spring' || getCurrentSeason() === 'spring').map(opt => (
+              <TouchableOpacity
+                key={String(opt.value)}
+                style={[styles.filterChip, filter === opt.value && styles.filterChipActive]}
+                onPress={() => setFilter(opt.value)}
+              >
+                <Text style={[styles.filterChipText, filter === opt.value && styles.filterChipTextActive]}>
+                  {t(opt.labelKey)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
 
-      {/* 6×10 Grid */}
-      <FlatList
-        data={filteredPlants}
-        numColumns={GRID_COLUMNS}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => (
-          <PlantCell
-            plant={item}
-            isCollected={collected.has(item.id)}
-            onPress={() => handleCellPress(item)}
+          {/* 6×10 Grid */}
+          <FlatList
+            data={filteredPlants}
+            numColumns={GRID_COLUMNS}
+            keyExtractor={(item) => String(item.id)}
+            testID="herbarium.grid"
+            renderItem={({ item }) => (
+              <PlantCell
+                plant={item}
+                isCollected={collected.has(item.id)}
+                onPress={() => handleCellPress(item)}
+              />
+            )}
+            contentContainerStyle={styles.grid}
+            showsVerticalScrollIndicator={false}
+            removeClippedSubviews={true}
+            windowSize={5}
+            maxToRenderPerBatch={GRID_COLUMNS * 3}
+            initialNumToRender={GRID_COLUMNS * 4}
+            getItemLayout={(_data, index) => ({
+              length: CELL_SIZE,
+              offset: CELL_SIZE * Math.floor(index / GRID_COLUMNS),
+              index,
+            })}
+            ListEmptyComponent={
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyText}>{t('herbarium.noResults')}</Text>
+              </View>
+            }
           />
-        )}
-        contentContainerStyle={styles.grid}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>{t('herbarium.noResults')}</Text>
-          </View>
-        }
-      />
+        </>
+      ) : (
+        <SpotStampGrid
+          spots={spots}
+          checkins={checkins}
+          onSpotPress={(spot: FlowerSpot, checkin: SpotCheckinResult | null) => {
+            if (checkin) {
+              setDetailSpot(spot);
+              setDetailCheckin(checkin);
+              setShowDetail(true);
+            }
+          }}
+        />
+      )}
 
       {/* Bloom hint bottom sheet for locked cells */}
       {hintPlant && (
@@ -134,6 +192,14 @@ export default function HerbariumScreen() {
           }}
         />
       )}
+
+      <SpotDetailSheet
+        spot={detailSpot}
+        checkin={detailCheckin}
+        visible={showDetail}
+        onClose={() => setShowDetail(false)}
+        onViewOnMap={() => { setShowDetail(false); router.push('/(tabs)/map' as any); }}
+      />
     </View>
   );
 }
@@ -266,6 +332,11 @@ const styles = StyleSheet.create({
   emptyText:           { fontSize: typography.fontSize.sm, color: colors.textSecondary },
 
   grid: { paddingBottom: spacing.lg },
+
+  tabSwitcher:        { flexDirection: 'row', marginHorizontal: spacing.md, marginTop: spacing.xs, marginBottom: spacing.sm, borderRadius: borderRadius.full, overflow: 'hidden', borderWidth: 1, borderColor: colors.border },
+  tabSwitchBtn:       { flex: 1, paddingVertical: spacing.sm, alignItems: 'center' },
+  tabSwitchBtnActive: { backgroundColor: colors.blushPink },
+  tabSwitchText:      { fontSize: typography.fontSize.xs, fontFamily: typography.fontFamily.display, color: colors.text },
 
   cell:                  { width: CELL_SIZE, height: CELL_SIZE, borderWidth: 0.5, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.white },
   cellLocked:            { backgroundColor: '#e8e6e1' },

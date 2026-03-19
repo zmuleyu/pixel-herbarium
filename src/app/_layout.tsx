@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import * as Notifications from 'expo-notifications';
+import * as Linking from 'expo-linking';
 import * as SecureStore from 'expo-secure-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/services/supabase';
@@ -11,6 +12,7 @@ import { colors } from '@/constants/theme';
 import { usePushToken } from '@/hooks/usePushToken';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { OfflineBanner } from '@/components/OfflineBanner';
+import { parseDeepLink } from '@/utils/deep-link';
 import { ONBOARDING_KEY } from './onboarding';
 
 /** Resolves to fallback after ms milliseconds if promise hasn't settled. */
@@ -41,10 +43,36 @@ export default function RootLayout() {
       if (data?.screen === 'plant' && data?.plantId) {
         router.push(`/plant/${data.plantId}` as any);
       } else {
-        router.push('/(tabs)/herbarium' as any);
+        router.push('/(tabs)/footprint' as any);
       }
     });
     return () => subscription.remove();
+  }, []);
+
+  // Handle deep links (custom scheme + universal links)
+  useEffect(() => {
+    function handleTarget(target: ReturnType<typeof parseDeepLink>) {
+      if (!target) return;
+      switch (target.type) {
+        case 'plant':
+          router.push(`/plant/${target.id}` as any);
+          break;
+        case 'spot':
+          router.push('/(tabs)/home' as any);
+          break;
+        case 'invite':
+          router.push(`/invite/${target.code}` as any);
+          break;
+      }
+    }
+
+    Linking.getInitialURL().then((url) => handleTarget(parseDeepLink(url)));
+
+    const sub = Linking.addEventListener('url', ({ url }) => {
+      handleTarget(parseDeepLink(url));
+    });
+
+    return () => sub.remove();
   }, []);
 
   // Bootstrap auth session + language from Supabase on first load
@@ -98,11 +126,11 @@ export default function RootLayout() {
         return;
       }
 
-      if (!session && segments[0] !== '(auth)') {
-        router.replace('/(auth)/login');
-      } else if (session && (segments[0] === '(auth)' || !segments[0] || segments[0] === 'index')) {
-        // !segments[0] catches [] and [''], segments[0]==='index' catches ['index'] — all possible root representations
-        router.replace('/(tabs)/discover');
+      // Guest-first: no forced login. Unauthenticated users go straight to home.
+      if (!session && (!segments[0] || (segments[0] as string) === 'index')) {
+        router.replace('/(tabs)/home');
+      } else if (session && (segments[0] === '(auth)' || !segments[0] || (segments[0] as string) === 'index')) {
+        router.replace('/(tabs)/home');
       }
     }
 

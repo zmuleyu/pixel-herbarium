@@ -1,0 +1,8 @@
+appId: com.pixelherbarium.app
+---
+# Navigate to Check-in tab and verify it is visible (CHECKIN_MODE: replaces hanakotoba flow)
+- runFlow: ./02-login-email.yaml
+- tapOn:
+    text: "打卡"
+- assertVisible:
+    id: "checkin.container"

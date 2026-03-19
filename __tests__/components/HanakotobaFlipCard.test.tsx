@@ -213,3 +213,26 @@ describe('HanakotobaFlipCard – watermark and structure', () => {
     expect(output).toContain('Kindness');
   });
 });
+
+describe('HanakotobaFlipCard – a11y', () => {
+  beforeEach(() => {
+    mockUseFlipCard.mockReturnValue({
+      phase: 0, frontRotation: '0deg', backRotation: '180deg',
+      frontOpacity: 1, backOpacity: 0,
+      handleFlip: mockHandleFlip, showHint: false, hintOpacity: 0,
+    });
+  });
+
+  it('outer container has accessibilityLabel and accessibilityRole="button"', () => {
+    const output = renderToString('優しさ', null);
+    expect(output).toContain('花言葉カード');
+    expect(output).toContain('"button"');
+  });
+
+  it('page dots have testIDs dot-0, dot-1, dot-2', () => {
+    const output = renderToString('優しさ', null);
+    expect(output).toContain('dot-0');
+    expect(output).toContain('dot-1');
+    expect(output).toContain('dot-2');
+  });
+});

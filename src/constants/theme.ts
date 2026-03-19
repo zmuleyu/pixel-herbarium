@@ -53,3 +53,38 @@ export const borderRadius = {
   lg: 20,
   full: 9999,
 } as const;
+
+// Season theme system — used by tab bar, buttons, cards in check-in mode
+export const SEASON_THEMES = {
+  sakura: { primary: '#e8a5b0', accent: '#f5d5d0', bgTint: '#FFF5F3' },
+  ajisai: { primary: '#7B9FCC', accent: '#d4e4f7', bgTint: '#F0F4FF' },
+  himawari: { primary: '#d4a645', accent: '#f5e6a3', bgTint: '#FFFBF0' },
+  momiji: { primary: '#c4764a', accent: '#e8a87c', bgTint: '#FFF5F0' },
+  tsubaki: { primary: '#b07878', accent: '#c9a0a0', bgTint: '#FFF3F3' },
+} as const;
+
+export type SeasonTheme = (typeof SEASON_THEMES)[keyof typeof SEASON_THEMES];
+
+export function getSeasonTheme(seasonId: string): SeasonTheme {
+  return (
+    SEASON_THEMES[seasonId as keyof typeof SEASON_THEMES] ??
+    SEASON_THEMES.sakura
+  );
+}
+
+export const stamp = {
+  padding: 16,
+  opacity: {
+    pixel: 0.93,
+    seal: 0.90,
+    minimal: 1,
+  },
+  pixelBorder: 2,
+  sealDiameter: 72,
+  sealBorder: 2.5,
+  minimalBarWidth: 2.5,
+  defaultPosition: 'bottom-right' as const,
+  defaultStyle: 'pixel' as const,
+  storageKey: 'stamp_style_preference',
+  positionStorageKey: 'stamp_position_preference',
+} as const;

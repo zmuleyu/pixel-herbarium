@@ -1,0 +1,6 @@
+appId: com.pixelherbarium.app
+---
+# Home screen is visible after login (CHECKIN_MODE: home tab is the main screen)
+- runFlow: ./02-login-email.yaml
+- assertVisible:
+    id: "home.container"

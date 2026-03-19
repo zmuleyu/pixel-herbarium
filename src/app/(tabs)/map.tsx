@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,14 @@ import { useRouter } from 'expo-router';
 import { useNearbyDiscoveries, type NearbyDiscovery } from '@/hooks/useNearbyDiscoveries';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import * as Location from 'expo-location';
+import { useSpotStore } from '@/stores/spot-store';
+import { isWithinRadius } from '@/utils/geo';
+import { getBloomStatus } from '@/utils/bloom';
+import PrePermissionScreen from '@/components/PrePermissionScreen';
+import SpotCheckinAnimation from '@/components/SpotCheckinAnimation';
+import { maybeRequestReview } from '@/hooks/useReviewPrompt';
+import type { FlowerSpot } from '@/types/hanami';
 
 // ~5km view delta
 const REGION_DELTA = 0.09;
@@ -34,10 +42,68 @@ export default function MapScreen() {
   const { t } = useTranslation();
   const { discoveries, userLocation, loading, refresh } = useNearbyDiscoveries();
   const [showHeatmap, setShowHeatmap] = useState(false);
+  const [mapLayer, setMapLayer]       = useState<'discoveries' | 'spots'>('discoveries');
+  const [showPrePerm, setShowPrePerm] = useState(false);
+  const [nearbySpot, setNearbySpot]   = useState<FlowerSpot | null>(null);
+  const [animSpot, setAnimSpot]       = useState<FlowerSpot | null>(null);
+  const [animMankai, setAnimMankai]   = useState(false);
+  const proximityTimer                = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const { spots, initSpots, performCheckin, hasCheckedIn } = useSpotStore();
+
   const heatPoints = useMemo(
     () => discoveries.map(d => ({ latitude: d.latitude, longitude: d.longitude, weight: d.rarity })),
     [discoveries],
   );
+
+  function startProximityWatch() {
+    if (proximityTimer.current) return;
+    proximityTimer.current = setInterval(() => {
+      if (!userLocation) return;
+      const nearby = spots.find((s) =>
+        !hasCheckedIn(s.id) &&
+        isWithinRadius(
+          { latitude: userLocation.latitude, longitude: userLocation.longitude },
+          { latitude: s.latitude, longitude: s.longitude },
+          500,
+        )
+      );
+      setNearbySpot(nearby ?? null);
+    }, 5000);
+  }
+
+  useEffect(() => {
+    if (mapLayer !== 'spots') return;
+    if (spots.length === 0) initSpots();
+    (async () => {
+      const { status } = await Location.getForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setShowPrePerm(true);
+        return;
+      }
+      startProximityWatch();
+    })();
+  }, [mapLayer]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    return () => { if (proximityTimer.current) clearInterval(proximityTimer.current); };
+  }, []);
+
+  async function handleCheckin(spot: FlowerSpot) {
+    setNearbySpot(null);
+    try {
+      const { isMankai } = await performCheckin(spot.id);
+      setAnimSpot(spot);
+      setAnimMankai(isMankai);
+      const newCount = useSpotStore.getState().checkins.length;
+      if (newCount === 1 || newCount === 5) {
+        await maybeRequestReview(newCount === 1 ? 'firstCheckin' : 'fiveCheckins');
+      }
+    } catch {
+      setAnimSpot(spot);
+      setAnimMankai(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -68,6 +134,20 @@ export default function MapScreen() {
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
+          <View style={styles.layerToggle}>
+            <TouchableOpacity
+              style={[styles.toggleBtn, mapLayer === 'discoveries' && styles.toggleBtnActive]}
+              onPress={() => setMapLayer('discoveries')}
+            >
+              <Text style={styles.toggleText}>{t('sakura.layerToggle.heatmap')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.toggleBtn, mapLayer === 'spots' && styles.toggleBtnActive]}
+              onPress={() => setMapLayer('spots')}
+            >
+              <Text style={styles.toggleText}>{t('sakura.layerToggle.spots')}</Text>
+            </TouchableOpacity>
+          </View>
           <Text style={styles.headerTitle}>{t('tabs.cityMap')}</Text>
           <Text style={styles.headerCount}>{t('map.discoveryCount', { count: discoveries.length })}</Text>
           <TouchableOpacity
@@ -97,6 +177,18 @@ export default function MapScreen() {
           {showHeatmap && heatPoints.length > 0 && (
             <Heatmap points={heatPoints} radius={50} opacity={0.75} gradient={HEATMAP_GRADIENT} />
           )}
+          {mapLayer === 'spots' && spots.map((spot) => {
+            const checked = hasCheckedIn(spot.id);
+            const is100sen = spot.tags.includes('名所100選');
+            return (
+              <Marker
+                key={spot.id}
+                coordinate={{ latitude: spot.latitude, longitude: spot.longitude }}
+                title={spot.nameJa}
+                pinColor={is100sen ? (checked ? '#d4a017' : '#aaaaaa') : (checked ? colors.blushPink : '#cccccc')}
+              />
+            );
+          })}
         </MapView>
 
         {/* Empty state overlay */}
@@ -109,6 +201,41 @@ export default function MapScreen() {
 
         {/* Rarity legend — hidden in heat map mode */}
         {discoveries.length > 0 && !showHeatmap && <MapLegend />}
+
+        {/* Checkin sheet */}
+        {nearbySpot && (
+          <View style={styles.checkinSheet}>
+            <Text style={styles.checkinSpotName}>{nearbySpot.nameJa}</Text>
+            {nearbySpot.tags.includes('名所100選') && (
+              <Text style={styles.checkin100sen}>さくら名所100選</Text>
+            )}
+            <TouchableOpacity style={styles.checkinButton} onPress={() => handleCheckin(nearbySpot)}>
+              <Text style={styles.checkinButtonText}>{t('sakura.checkinSheet.button')}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Pre-permission screen */}
+        {showPrePerm && (
+          <PrePermissionScreen
+            onAllow={async () => {
+              setShowPrePerm(false);
+              const { status } = await Location.requestForegroundPermissionsAsync();
+              if (status === 'granted') startProximityWatch();
+            }}
+            onSkip={() => setShowPrePerm(false)}
+          />
+        )}
+
+        {/* Animation overlay */}
+        {animSpot && (
+          <SpotCheckinAnimation
+            spot={animSpot}
+            isMankai={animMankai}
+            is100sen={animSpot.tags.includes('名所100選')}
+            onDismiss={() => setAnimSpot(null)}
+          />
+        )}
       </View>
     </ErrorBoundary>
   );
@@ -168,6 +295,35 @@ const styles = StyleSheet.create({
   refreshButton:      { backgroundColor: colors.plantPrimary, borderRadius: borderRadius.sm, paddingHorizontal: spacing.sm, paddingVertical: 4 },
   toggleActive:       { backgroundColor: colors.plantSecondary },
   refreshText:        { color: colors.white, fontSize: typography.fontSize.xs, fontFamily: typography.fontFamily.display },
+
+  // Layer toggle
+  layerToggle: {
+    flexDirection: 'row', backgroundColor: colors.white,
+    borderRadius: borderRadius.full, overflow: 'hidden',
+    borderWidth: 1, borderColor: colors.border,
+  },
+  toggleBtn: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
+  toggleBtnActive: { backgroundColor: colors.blushPink },
+  toggleText: { fontSize: typography.fontSize.sm, color: colors.text, fontFamily: typography.fontFamily.display },
+
+  // Checkin sheet
+  checkinSheet: {
+    position: 'absolute', bottom: spacing.xl * 2, left: spacing.lg, right: spacing.lg,
+    backgroundColor: colors.white, borderRadius: borderRadius.lg,
+    padding: spacing.lg, alignItems: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8,
+  },
+  checkinSpotName: {
+    fontSize: typography.fontSize.lg, fontFamily: typography.fontFamily.display,
+    color: colors.text, marginBottom: spacing.xs,
+  },
+  checkin100sen: { fontSize: typography.fontSize.xs, color: '#d4a017', marginBottom: spacing.md },
+  checkinButton: {
+    backgroundColor: colors.blushPink, paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl, borderRadius: borderRadius.full,
+    width: '100%', alignItems: 'center',
+  },
+  checkinButtonText: { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.md, color: colors.text },
 
   // Callout
   callout:            { minWidth: 140, padding: spacing.sm, gap: 2 },

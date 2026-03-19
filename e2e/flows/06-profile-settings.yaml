@@ -1,0 +1,8 @@
+appId: com.pixelherbarium.app
+---
+# Navigate to Settings tab and verify language selector is visible (CHECKIN_MODE: replaces profile tab)
+- runFlow: ./02-login-email.yaml
+- tapOn:
+    text: "設定"
+- assertVisible:
+    id: "settings.container"

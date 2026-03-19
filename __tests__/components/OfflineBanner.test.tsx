@@ -176,3 +176,15 @@ describe('OfflineBanner – hook integration', () => {
     expect(useNetworkStatus).toHaveBeenCalled();
   });
 });
+
+describe('OfflineBanner – a11y and testID', () => {
+  it('outer container has testID="offline-banner"', () => {
+    const output = renderToString();
+    expect(output).toContain('offline-banner');
+  });
+
+  it('outer container has accessibilityRole="alert"', () => {
+    const output = renderToString();
+    expect(output).toContain('"alert"');
+  });
+});
