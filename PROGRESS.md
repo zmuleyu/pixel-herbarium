@@ -45,12 +45,6 @@ Updated: 2026-03-19 (15:00)
 - [x] **database.ts regenerated** — sakura_spots/spot_checkins types (commit `b3aadb5`)
 - **457 tests passing** | TypeScript 0 errors
 
-### 待做 — 设备测试 + App Store
-- [ ] 真机验证打卡向导（选图 → 選 spot → 预览 → 保存）
-- [ ] App Store Connect 元数据填写（見下）
-- [ ] Production EAS build + submit
-- [ ] **触发 Codemagic 新 build** — EAS binary `100ca731` 已就绪
-
 ### OTA 补充（上线之后）
 - [ ] WatermarkTemplate（叠加水印模板）
 - [ ] PixelTemplate（像素化模板）
@@ -58,24 +52,43 @@ Updated: 2026-03-19 (15:00)
 
 ---
 
-## Layer 2: Codemagic + Maestro E2E — EAS binary 已就绪，待触发新 build
+## ✅ Phase 4: Content Pack Architecture — 完成 (commit `fe38b7ae`)
 
-**当前状态**：Jest + TS ✅ | EAS Simulator `100ca731` ✅ finished | **待手动触发 Codemagic**
+- [x] **M1**: `src/types/region.ts` (RegionConfig/GeoBounds) + `src/data/packs/jp/region.ts`
+- [x] **M1**: sakura.json 移至 `src/data/packs/jp/seasons/` + 所有 spot 添加 `regionId: 'jp'`
+- [x] **M2**: Migration 022 (line_uid to profiles) — ✅ applied to Supabase
+- [x] **M2**: Migration 023 (sakura_spots → flower_spots + region_id + season_id) — ✅ applied to Supabase
+- [x] **M2**: 25 flower spots seeded — ✅ verified (`spot_count: 25`)
+- [x] **M3**: `src/services/content-pack.ts` (getActiveRegion / loadSpotsData)
+- [x] **M3**: `sakura-store.ts` → `spot-store.ts` (useSakuraStore → useSpotStore)
+- [x] **M3**: `types/sakura.ts` → `types/spot.ts` + season_id 字段
+- [x] **M4**: 所有 tab 组件改用 useSpotStore + loadSpotsData
+- [x] **M4**: notify-bloom Edge Function 更新为 flower_spots
+- [x] **492 tests passing** | TypeScript 0 errors
+
+---
+
+## Layer 2: Codemagic + Maestro E2E — 运行中
+
+**当前状态**：Jest + TS ✅ | EAS Simulator `fb6c8451` 🔄 IN_PROGRESS | Codemagic `69bb5e85` 🔄 triggered
 
 ### 已完成
 - [x] Jest mock 修复 + 4 个 testID 新增 + Maestro flows 全量更新 (commit `ae6b2bd`)
 - [x] EAS Simulator build `100ca731` — ✅ finished 2026-03-19 05:19 (commit `4ae8eb7`)
 - [x] Layer 4: GitHub Actions release workflow (`release.yml`)
+- [x] Content Pack git push — ✅ (commit `fe38b7ae` on dev)
+- [x] EAS Simulator build `fb6c8451` — 🔄 IN_PROGRESS (content-pack code)
+- [x] Codemagic build `69bb5e85aaa343c9f4ac9378` — 🔄 triggered 2026-03-19
 
 ### 待做
-- [ ] **在 Codemagic 手动触发新 build** (dev 分支 `133fee8`)，验证 Maestro E2E 通过
-  - ⚠️ 注意：需先 git push，否则 Codemagic 拉不到最新代码
-  - 预期：6/6 PASS（新 binary `100ca731` + 新 flows）
+- [ ] **确认 Codemagic 6/6 PASS** — 预期：Maestro E2E 全通过
 - [ ] Visual regression baselines + Git LFS
 
 ### Build IDs
-- **EAS Simulator**: `100ca731` (commit `4ae8eb7`) — ✅ finished
+- **EAS Simulator (content-pack)**: `fb6c8451` (commit `fe38b7ae`) — ✅ finished
+- **EAS Simulator (prev)**: `100ca731` (commit `4ae8eb7`) — ✅ finished
 - Codemagic App: `69ba556c2217be10dc8b85f8`
+- Codemagic Build: `69bb5e85aaa343c9f4ac9378` — 🔄 triggered
 
 ---
 
@@ -106,7 +119,7 @@ Updated: 2026-03-19 (15:00)
 
 > 登录 appstoreconnect.apple.com → My Apps → 创建 App 后填写
 
-- [ ] **创建 App**：Bundle ID `com.pixelherbarium.app` / SKU `pixel-herbarium`
+- [x] **创建 App** — ✅ ASC App ID: `6760695082`
 - [ ] **App 名称**（日文）：`花図鉑 — ピクセルアート花図鑑`
 - [ ] **副标题**：`花を撮って、ピクセルアートに変えよう`
 - [ ] **关键词**：`花言葉,花図鑑,ピクセルアート,植物識別,花の名前,散歩,桜,コレクション,花束,季節`
