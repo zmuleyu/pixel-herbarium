@@ -36,13 +36,22 @@ workflows:
 
       - name: Boot Simulator & install app
         script: |
-          # Pick first available iPhone simulator (handles any Xcode version)
+          # Pick iPhone 16 Pro Max for App Store screenshots (1320x2868)
+          # Fallback to any available iPhone if Pro Max not found
           DEVICE=$(xcrun simctl list devices available 2>/dev/null \
-            | grep -E "iPhone [0-9]" \
+            | grep "iPhone 16 Pro Max" \
             | grep -v "unavailable" \
-            | tail -1 \
+            | head -1 \
             | sed 's/ *(.*//' \
             | xargs)
+          if [ -z "$DEVICE" ]; then
+            DEVICE=$(xcrun simctl list devices available 2>/dev/null \
+              | grep -E "iPhone 1[5-6] Pro" \
+              | grep -v "unavailable" \
+              | tail -1 \
+              | sed 's/ *(.*//' \
+              | xargs)
+          fi
           echo "Using simulator: $DEVICE"
           xcrun simctl boot "$DEVICE" || true
           APP_PATH=$(find . -name "*.app" -maxdepth 4 | head -1)
