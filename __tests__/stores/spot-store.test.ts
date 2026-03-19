@@ -123,7 +123,7 @@ describe('useSpotStore — performCheckin', () => {
     });
 
     useSpotStore.getState().initSpots();
-    const result = await useSpotStore.getState().performCheckin(1, false);
+    const result = await useSpotStore.getState().performCheckin(1);
 
     expect(result.isNew).toBe(true);
     expect(mockRpc).toHaveBeenCalledWith('checkin_spot', expect.objectContaining({ p_spot_id: 1 }));
@@ -137,7 +137,7 @@ describe('useSpotStore — offline queue', () => {
     mockRpc.mockRejectedValueOnce(new Error('offline'));
 
     useSpotStore.getState().initSpots();
-    await useSpotStore.getState().performCheckin(1, false).catch(() => {});
+    await useSpotStore.getState().performCheckin(1).catch(() => {});
 
     expect(AsyncStorage.setItem).toHaveBeenCalled();
   });
