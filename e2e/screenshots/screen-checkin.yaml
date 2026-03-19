@@ -2,8 +2,12 @@ appId: com.pixelherbarium.app
 ---
 # Screenshot: Check-in tab — spot selection / photo entry screen
 - runFlow: ./screen-guest-login.yaml
+# Navigate to checkin tab via coordinate (2nd of 4 tabs, ~37% from left, ~96% from top)
+# Avoids CJK text matching which fails on Codemagic macOS
 - tapOn:
-    text: "打卡"
+    point:
+      x: 37
+      y: 96
 - waitForAnimationToEnd
 - pause:
     milliseconds: 1500
