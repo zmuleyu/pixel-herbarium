@@ -7,8 +7,9 @@ jest.mock('expo-haptics', () => ({
   ImpactFeedbackStyle: { Light: 'Light' },
 }));
 
-jest.mock('expo-secure-store', () => ({
-  setItemAsync: jest.fn().mockResolvedValue(undefined),
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  setItem: jest.fn().mockResolvedValue(undefined),
+  getItem: jest.fn().mockResolvedValue(null),
 }));
 
 const mockReplace = jest.fn();
@@ -17,7 +18,7 @@ jest.mock('expo-router', () => ({
 }));
 
 import * as Haptics from 'expo-haptics';
-import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -65,7 +66,7 @@ describe('useOnboardingControls — goNext', () => {
     const { result } = renderHook(() => useOnboardingControls(1));
     await act(async () => { result.current.goNext(); });
     expect(result.current.page).toBe(0); // page did not increment
-    expect(SecureStore.setItemAsync).toHaveBeenCalledWith(ONBOARDING_KEY, '1');
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith(ONBOARDING_KEY, '1');
     expect(mockReplace).toHaveBeenCalledWith('/(auth)/login'); // root layout handles session-based redirect
   });
 
@@ -106,10 +107,10 @@ describe('useOnboardingControls — goBack', () => {
 });
 
 describe('useOnboardingControls — finish', () => {
-  it('writes onboarding key to SecureStore', async () => {
+  it('writes onboarding key to AsyncStorage', async () => {
     const { result } = renderHook(() => useOnboardingControls(3));
     await act(async () => { result.current.finish(); });
-    expect(SecureStore.setItemAsync).toHaveBeenCalledWith(ONBOARDING_KEY, '1');
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith(ONBOARDING_KEY, '1');
   });
 
   it('navigates to login (root layout handles session-based redirect)', async () => {
