@@ -85,6 +85,7 @@
 | Supabase | データベース・認証 | https://supabase.com/privacy |
 | Expo | プッシュ通知 | https://expo.dev/privacy |
 | Apple | Sign In with Apple | https://www.apple.com/legal/privacy/ |
+| PlantNet | 植物識別 AI | https://plantnet.org/privacy-policy/ |
 
 #### 5. データの保管
 
@@ -98,6 +99,7 @@
 |--------|---|--------------|------|
 | Supabase Inc. | 米国（EU データセンターも利用） | アカウント情報・位置情報・利用データ | データベース・認証 |
 | Expo Inc. | 米国 | プッシュ通知トークン | 通知配信 |
+| Pl@ntNet（Cirad） | フランス・エストニア | 植物の写真（識別時のみ） | 植物種の識別 |
 
 日本の個人情報保護委員会による当該国の評価については、[個人情報保護委員会のウェブサイト](https://www.ppc.go.jp/)をご参照ください。
 
