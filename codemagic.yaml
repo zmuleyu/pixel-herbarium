@@ -1,7 +1,7 @@
 workflows:
   ios-ci:
     name: iOS CI (Jest + E2E + Visual Regression)
-    max_build_duration: 60
+    max_build_duration: 90
     instance_type: mac_mini_m2
     environment:
       xcode: latest
@@ -23,20 +23,15 @@ workflows:
       - name: TypeScript check
         script: npx tsc --noEmit
 
-      - name: Download EAS Simulator build
+      - name: Build iOS Simulator app locally
         script: |
           npm install -g eas-cli
-          BUILD_URL=$(eas build:list --platform ios --profile simulator --status finished --limit 1 --json \
-            | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); \
-              console.log(d[0]?.artifacts?.buildUrl ?? '')")
-          if [ -z "$BUILD_URL" ]; then
-            echo "No finished simulator build found — triggering new build"
-            eas build --profile simulator --platform ios --non-interactive --wait
-            BUILD_URL=$(eas build:list --platform ios --profile simulator --status finished --limit 1 --json \
-              | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); \
-                console.log(d[0].artifacts.buildUrl)")
-          fi
-          curl -L -o app.tar.gz "$BUILD_URL"
+          # Build locally on this Mac — avoids EAS cloud quota limits and always
+          # uses the current commit's code (no stale binary from EAS cache).
+          # eas build --local generates native files, installs pods, and
+          # compiles with Xcode, outputting a .tar.gz containing the .app file.
+          eas build --local --profile simulator --platform ios --non-interactive \
+            --output app.tar.gz
           tar xzf app.tar.gz || unzip -q app.tar.gz || true
 
       - name: Boot Simulator & install app
