@@ -12,9 +12,17 @@ jest.mock('expo-apple-authentication', () => ({
   AppleAuthenticationButtonType: { SIGN_IN: 0 },
   AppleAuthenticationButtonStyle: { BLACK: 0 },
 }));
+jest.mock('expo-router', () => ({
+  useRouter: () => ({ replace: jest.fn() }),
+}));
 jest.mock('@/services/auth', () => ({
   signInWithApple: jest.fn(),
   signInWithEmail: jest.fn(),
+  signInWithLine: jest.fn(),
+  confirmLinkLine: jest.fn(),
+}));
+jest.mock('@/services/analytics', () => ({
+  trackEvent: jest.fn(),
 }));
 jest.mock('@/stores/auth-store', () => ({
   useAuthStore: () => ({ setError: jest.fn() }),
@@ -89,5 +97,10 @@ describe('LoginScreen', () => {
     // Apple button type SIGN_IN is 0
     expect(output).toContain('AppleAuthenticationButton');
     Object.defineProperty(Platform, 'OS', { get: () => original, configurable: true });
+  });
+
+  it('renders guest continue button with testID auth.continueAsGuest', () => {
+    const output = renderToString();
+    expect(output).toContain('auth.continueAsGuest');
   });
 });
