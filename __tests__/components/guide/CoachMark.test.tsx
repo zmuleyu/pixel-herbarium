@@ -30,13 +30,13 @@ jest.mock('expo-haptics', () => ({
 }));
 
 // Mock React hooks so they work when called outside the reconciler (shallowRender pattern)
+let refIdx = 0;
+let stateIdx = 0;
+let refs: any[] = [];
+let states: any[] = [];
+
 jest.mock('react', () => {
   const actual = jest.requireActual('react');
-  // Provide lightweight hook stubs safe for direct function-call tests
-  const refs: any[] = [];
-  let refIdx = 0;
-  const states: any[] = [];
-  let stateIdx = 0;
 
   return {
     ...actual,
@@ -88,6 +88,10 @@ describe('CoachMark', () => {
   // Reset hook indices before each test so stubs start fresh
   beforeEach(() => {
     jest.resetModules();
+    refIdx = 0;
+    stateIdx = 0;
+    refs = [];
+    states = [];
   });
 
   // Updated baseProps to use the spec-correct API
@@ -131,7 +135,6 @@ describe('CoachMark', () => {
     expect(tree).toContain('ステップ');
   });
 
-  // Fix 6a: onDone is called when GotIt button pressed on last step
   it('onDone is called when GotIt button pressed on last step', () => {
     const mockOnDone = jest.fn();
     const singleStep = [{ targetKey: 'discover.viewfinder', body: 'guide.discover.step1', icon: '📸' }];
@@ -165,7 +168,6 @@ describe('CoachMark', () => {
     expect(mockOnDone).toHaveBeenCalled();
   });
 
-  // Fix 6b: reduce motion — no crash when reduceMotionEnabled resolves true
   it('reduce motion: no crash when reduceMotion enabled', () => {
     // The React mock's useEffect is a no-op, so reduceMotion state stays false (initial).
     // We verify the component renders body text without crashing.
@@ -173,7 +175,6 @@ describe('CoachMark', () => {
     expect(tree).toContain('guide.discover.step1');
   });
 
-  // Fix 6c: tap outside overlay advances to next step
   it('tap outside overlay advances to next step — overlay onPress calls handleNext', () => {
     // Render the component and find the full-screen overlay TouchableOpacity's onPress
     const rendered = shallowRender(React.createElement(CoachMark, baseProps));
