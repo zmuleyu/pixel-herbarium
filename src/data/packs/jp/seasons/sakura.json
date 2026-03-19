@@ -277,6 +277,7 @@
     },
     {
       "id": 14,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "大阪城公園",
       "nameEn": "Osaka Castle Park",
@@ -297,6 +298,7 @@
     },
     {
       "id": 15,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "万博記念公園",
       "nameEn": "Expo Commemoration Park",
@@ -317,6 +319,7 @@
     },
     {
       "id": 16,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "円山公園",
       "nameEn": "Maruyama Park",
@@ -337,6 +340,7 @@
     },
     {
       "id": 17,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "哲学の道",
       "nameEn": "Philosopher's Path",
@@ -357,6 +361,7 @@
     },
     {
       "id": 18,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "醍醐寺",
       "nameEn": "Daigo-ji Temple",
@@ -377,6 +382,7 @@
     },
     {
       "id": 19,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "姫路城",
       "nameEn": "Himeji Castle",
@@ -397,6 +403,7 @@
     },
     {
       "id": 20,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "西公園",
       "nameEn": "Nishi Park",
@@ -417,6 +424,7 @@
     },
     {
       "id": 21,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "高遠城址公園",
       "nameEn": "Takato Castle Ruins Park",
@@ -437,6 +445,7 @@
     },
     {
       "id": 22,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "弘前城",
       "nameEn": "Hirosaki Castle",
@@ -457,6 +466,7 @@
     },
     {
       "id": 23,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "北上展勝地",
       "nameEn": "Kitakami Tenshochi",
@@ -477,6 +487,7 @@
     },
     {
       "id": 24,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "角館武家屋敷通り",
       "nameEn": "Kakunodate Samurai District",
@@ -497,6 +508,7 @@
     },
     {
       "id": 25,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "五稜郭公園",
       "nameEn": "Goryokaku Park",
