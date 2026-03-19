@@ -19,9 +19,9 @@
       "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSCameraUsageDescription": "Pixel Herbarium uses the camera to photograph plants for identification.",
-        "NSLocationWhenInUseUsageDescription": "Pixel Herbarium uses your location to record where plants were discovered.",
-        "NSPhotoLibraryUsageDescription": "Pixel Herbarium accesses the photo library to select plant images.",
+        "NSCameraUsageDescription": "お花を撮影して識別するために、カメラを使用します。",
+        "NSLocationWhenInUseUsageDescription": "お花を見つけた場所を記録するために、位置情報を使用します。",
+        "NSPhotoLibraryUsageDescription": "お花の写真を選ぶために、フォトライブラリにアクセスします。",
         "LSApplicationQueriesSchemes": ["line"]
       }
     },
@@ -35,7 +35,6 @@
       },
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.READ_EXTERNAL_STORAGE",
@@ -56,19 +55,19 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Pixel Herbarium uses the camera to photograph plants for identification."
+          "cameraPermission": "お花を撮影して識別するために、カメラを使用します。"
         }
       ],
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Pixel Herbarium uses your location to record where plants were discovered."
+          "locationWhenInUsePermission": "お花を見つけた場所を記録するために、位置情報を使用します。"
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Pixel Herbarium accesses the photo library to select plant images."
+          "photosPermission": "お花の写真を選ぶために、フォトライブラリにアクセスします。"
         }
       ],
       [
@@ -82,8 +81,8 @@
       [
         "expo-media-library",
         {
-          "photosPermission": "Pixel Herbarium saves poster images to your photo library.",
-          "savePhotosPermission": "Pixel Herbarium saves poster images to your photo library."
+          "photosPermission": "打卡カードを写真に保存するために、フォトライブラリにアクセスします。",
+          "savePhotosPermission": "打卡カードを写真に保存するために、フォトライブラリにアクセスします。"
         }
       ],
       "expo-font",

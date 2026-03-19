@@ -345,7 +345,10 @@ function ResultContent({ status, plant, daysRemaining, onClose, onRetry, t }: Re
 
         {/* Plant image or rarity emoji card */}
         {plant.pixel_sprite_url ? (
-          <Image source={{ uri: plant.pixel_sprite_url }} style={styles.spriteImage} resizeMode="contain" />
+          <>
+            <Image source={{ uri: plant.pixel_sprite_url }} style={styles.spriteImage} resizeMode="contain" />
+            <Text style={styles.aiLabel}>{t('ai.generated')}</Text>
+          </>
         ) : (
           <View style={[styles.spriteEmoji, { borderColor: plant.rarity === 3 ? colors.rarity.rare : plant.rarity === 2 ? colors.rarity.uncommon : colors.rarity.common }]}>
             <Text style={styles.spriteEmojiText}>🌸</Text>
@@ -564,6 +567,7 @@ const styles = StyleSheet.create({
 
   // Plant card image
   spriteImage:        { width: 120, height: 120, borderRadius: borderRadius.md },
+  aiLabel:            { fontSize: 9, color: colors.textSecondary, opacity: 0.7, marginTop: 2 },
   spriteEmoji:        { width: 120, height: 120, borderRadius: borderRadius.md, borderWidth: 2, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center', gap: 4 },
   spriteEmojiText:    { fontSize: 48 },
   spriteEmojiRarity:  { fontSize: typography.fontSize.xs, color: colors.textSecondary },

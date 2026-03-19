@@ -104,7 +104,10 @@ export default function PlantDetailScreen() {
           end={{ x: 0.5, y: 1 }}
         />
         {heroImageUri ? (
-          <Image source={{ uri: heroImageUri }} style={styles.heroImage} resizeMode="contain" />
+          <>
+            <Image source={{ uri: heroImageUri }} style={styles.heroImage} resizeMode="contain" />
+            <Text style={styles.aiLabel}>{t('ai.generated')}</Text>
+          </>
         ) : (
           <View style={[styles.heroPlaceholder, { backgroundColor: rarityColor }]}>
             <Text style={styles.heroPlaceholderText}>🌸</Text>
@@ -301,6 +304,7 @@ const styles = StyleSheet.create({
   heroImage:     { width: 192, height: 192 },
   posterName:    { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.lg, color: colors.text },
   posterHanakotoba: { fontSize: typography.fontSize.xs, color: colors.textSecondary, fontStyle: 'italic' },
+  aiLabel:         { fontSize: 9, color: colors.textSecondary, opacity: 0.7, marginTop: 2 },
   heroPlaceholder: { width: 192, height: 192, borderRadius: borderRadius.sm, alignItems: 'center', justifyContent: 'center' },
   heroPlaceholderText: { fontSize: 80 },
 

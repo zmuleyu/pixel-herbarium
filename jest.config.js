@@ -18,7 +18,7 @@ module.exports = {
         '^expo-secure-store$': '<rootDir>/__mocks__/empty.js',
         '^@supabase/supabase-js$': '<rootDir>/__mocks__/supabase-js.js',
         '^@react-native-community/slider$': '<rootDir>/__mocks__/empty.js',
-        '^expo-haptics$': '<rootDir>/__mocks__/empty.js',
+        '^expo-haptics$': '<rootDir>/__mocks__/expo-haptics.js',
       },
       transform: {
         '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx', resolveJsonModule: true } }],

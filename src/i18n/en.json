@@ -223,6 +223,11 @@
     "size": "Size",
     "share": "Share this moment",
     "saved": "Saved to photos 🌸",
+    "savedShort": "Saved.",
+    "unlockMessage": "{{spot}} · {{season}}, now in your herbarium",
+    "revisitMessage": "Welcome back. You've been here before.",
+    "milestone": "{{count}} encounters collected",
+    "viewCollection": "View footprints",
     "shareError": "Share failed",
     "permissionRequired": "Please allow access to your photo library",
     "photoOld": "This photo was taken {{days}} days ago. Record it as today's encounter?",
@@ -264,6 +269,9 @@
   },
   "error": {
     "loadFailed": "Failed to load"
+  },
+  "ai": {
+    "generated": "AI Generated"
   },
   "common": {
     "loading": "Loading...",

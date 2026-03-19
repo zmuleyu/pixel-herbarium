@@ -19,8 +19,13 @@ import { useCheckinStore } from '@/stores/checkin-store';
 import { useCheckinPhoto } from '@/hooks/useCheckinPhoto';
 import { SpotSelector } from '@/components/checkin/SpotSelector';
 import { StampPreview } from '@/components/stamps';
+import CheckinSuccessOverlay from '@/components/CheckinSuccessOverlay';
 import type { FlowerSpot, SpotsData, StampStyle, StampPosition } from '@/types/hanami';
 import { loadSpotsData } from '@/services/content-pack';
+
+const SEASON_LABELS: Record<string, string> = {
+  sakura: '春', ajisai: '夏', himawari: '夏', momiji: '秋', tsubaki: '冬',
+};
 
 /** Simple ID without extra deps */
 function genId(): string {
@@ -33,13 +38,14 @@ export default function CheckinScreen() {
   const { t } = useTranslation();
   const season = getActiveSeason();
   const theme = getSeasonTheme(season.id);
-  const { addCheckin } = useCheckinStore();
+  const { addCheckin, history } = useCheckinStore();
   const { pickFromCamera, pickFromLibrary, requesting } = useCheckinPhoto();
 
   const [step, setStep] = useState<WizardStep>('photo');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [selectedSpot, setSelectedSpot] = useState<FlowerSpot | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const checkinDate = useRef(new Date());
 
@@ -107,11 +113,7 @@ export default function CheckinScreen() {
         stampStyle,
         stampPosition,
       });
-      setFeedback(t('stamp.saved'));
-      setTimeout(() => {
-        setFeedback(null);
-        router.replace('/(tabs)/footprint');
-      }, 1500);
+      setShowSuccess(true);
     } catch {
       setFeedback(t('checkin.saveError'));
       setTimeout(() => setFeedback(null), 2000);
@@ -204,6 +206,20 @@ export default function CheckinScreen() {
             <Text style={[styles.feedback, { color: theme.primary }]}>{feedback}</Text>
           )}
         </>
+      )}
+
+      {/* ── Success overlay (layered feedback) ── */}
+      {showSuccess && selectedSpot != null && (
+        <CheckinSuccessOverlay
+          spot={selectedSpot}
+          seasonLabel={`${checkinDate.current.getFullYear()} ${SEASON_LABELS[season.id] ?? ''}`}
+          isRevisit={history.filter(r => r.spotId === selectedSpot.id).length > 1}
+          checkinCount={new Set(history.map(r => r.spotId)).size}
+          onDismiss={() => {
+            setShowSuccess(false);
+            router.replace('/(tabs)/footprint');
+          }}
+        />
       )}
     </View>
   );

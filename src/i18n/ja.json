@@ -223,6 +223,11 @@
     "size": "サイズ",
     "share": "この出会いをシェア",
     "saved": "写真に保存しました 🌸",
+    "savedShort": "留めました。",
+    "unlockMessage": "{{spot}} · {{season}}、あなたの図鑑に",
+    "revisitMessage": "おかえりなさい。前にもここに来ましたね。",
+    "milestone": "{{count}} 箇所の出会いを重ねました",
+    "viewCollection": "花の足跡を見る",
     "shareError": "シェアに失敗しました",
     "permissionRequired": "写真ライブラリへのアクセスを許可してください",
     "photoOld": "この写真は{{days}}日前に撮影されました。今日の出会いとして記録しますか？",
@@ -264,6 +269,9 @@
   },
   "error": {
     "loadFailed": "読み込みに失敗しました"
+  },
+  "ai": {
+    "generated": "AI生成"
   },
   "common": {
     "loading": "読み込み中...",
