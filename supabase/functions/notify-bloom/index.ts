@@ -16,7 +16,7 @@ serve(async (_req) => {
 
   // Find spots whose bloom_early_start equals today
   const { data: spots } = await supabase
-    .from('sakura_spots')
+    .from('flower_spots')
     .select('id, name_ja')
     .eq('bloom_early_start', mmdd);
 

@@ -48,7 +48,7 @@ async function run() {
   }));
 
   const { error } = await supabase
-    .from('sakura_spots')
+    .from('flower_spots')
     .upsert(rows, { onConflict: 'id' });
 
   if (error) {
@@ -56,7 +56,7 @@ async function run() {
     process.exit(1);
   }
 
-  console.log(`Seeded ${rows.length} sakura spots`);
+  console.log(`Seeded ${rows.length} flower spots`);
 }
 
 run();
