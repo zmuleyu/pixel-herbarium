@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 interface MinimalStampProps {
@@ -8,22 +7,41 @@ interface MinimalStampProps {
   accentColor: string;
 }
 
+function formatStampDate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}.${m}.${day}`;
+}
+
 export function MinimalStamp({ spotName, cityEn, date, accentColor }: MinimalStampProps) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
   return (
     <View style={styles.container}>
-      <View style={[styles.line, { backgroundColor: accentColor }]} />
-      <Text style={styles.name}>{spotName}</Text>
-      <Text style={styles.sub}>{`${cityEn}  ${year}.${month}.${day}`}</Text>
+      <View style={[styles.bar, { backgroundColor: accentColor }]} />
+      <View style={styles.textGroup}>
+        <Text style={styles.spotName}>{spotName}</Text>
+        <Text style={styles.meta}>{cityEn} · {formatStampDate(date)}</Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { alignItems: 'flex-start' },
-  line: { height: 2, width: 32, marginBottom: 4 },
-  name: { fontSize: 13, fontWeight: '600', color: '#1a1a1a' },
-  sub: { fontSize: 9, color: '#555', marginTop: 2, letterSpacing: 1 },
+  container: { flexDirection: 'row', alignItems: 'stretch' },
+  bar: { width: 2.5, borderRadius: 1, marginRight: 7 },
+  textGroup: { paddingVertical: 3 },
+  spotName: {
+    fontSize: 13, fontWeight: '600',
+    color: 'rgba(255,255,255,0.97)',
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
+  meta: {
+    fontSize: 8, marginTop: 2,
+    color: 'rgba(255,255,255,0.78)',
+    textShadowColor: 'rgba(0,0,0,0.4)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
 });

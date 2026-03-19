@@ -1,5 +1,6 @@
-import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { getStampColors } from '@/utils/stamp-colors';
+import { stamp as stampTheme } from '@/constants/theme';
 
 interface SealStampProps {
   spotName: string;
@@ -10,18 +11,37 @@ interface SealStampProps {
 }
 
 export function SealStamp({ spotName, seasonEmoji, year, seasonLabel, themeColor }: SealStampProps) {
+  const { brandMid } = getStampColors(themeColor);
+  const icons = `${seasonEmoji}${seasonEmoji}${seasonEmoji}`;
+
   return (
-    <View style={[styles.container, { borderColor: themeColor }]}>
-      <Text style={[styles.emoji]}>{seasonEmoji}</Text>
-      <Text style={[styles.name, { color: themeColor }]}>{spotName}</Text>
-      <Text style={[styles.year, { color: themeColor }]}>{`${year} ${seasonLabel}`}</Text>
+    <View style={[styles.container, {
+      borderColor: themeColor,
+      width: stampTheme.sealDiameter,
+      height: stampTheme.sealDiameter,
+      borderRadius: stampTheme.sealDiameter / 2,
+      opacity: stampTheme.opacity.seal,
+    }]}>
+      <Text style={[styles.spotName, { color: themeColor }]} numberOfLines={1}>{spotName}</Text>
+      <Text style={styles.icons}>{icons}</Text>
+      <Text style={[styles.yearSeason, { color: brandMid }]}>{year}{seasonLabel}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { borderWidth: 2, borderRadius: 50, width: 80, height: 80, alignItems: 'center', justifyContent: 'center' },
-  emoji: { fontSize: 20 },
-  name: { fontSize: 9, textAlign: 'center', marginTop: 2 },
-  year: { fontSize: 8, marginTop: 1 },
+  container: {
+    backgroundColor: 'rgba(255,255,255,0.90)',
+    borderWidth: 2.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  spotName: { fontSize: 8, letterSpacing: 1.5, fontWeight: 'bold' },
+  icons: { fontSize: 14, letterSpacing: 2, marginVertical: 2 },
+  yearSeason: { fontSize: 7, letterSpacing: 1 },
 });
