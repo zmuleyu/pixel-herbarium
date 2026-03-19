@@ -16,7 +16,7 @@ interface SpotStore {
 
   initSpots:      (seasonId?: string) => void;
   loadCheckins:   (userId: string) => Promise<void>;
-  performCheckin: (spotId: number, skipNetwork?: boolean) => Promise<{ isNew: boolean; isMankai: boolean }>;
+  performCheckin: (spotId: number) => Promise<{ isNew: boolean; isMankai: boolean }>;
   hasCheckedIn:   (spotId: number) => boolean;
   getProgress:    () => { checked: number; total: number };
   flushOfflineQueue: () => Promise<void>;
