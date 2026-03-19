@@ -1,13 +1,7 @@
 // src/types/region.ts
-<<<<<<< HEAD
 
 // SeasonConfig lives here to prevent circular dependency with constants/seasons.ts.
 // constants/seasons.ts re-exports it for backward compatibility.
-=======
-// SeasonConfig lives here to prevent circular dependency with constants/seasons.ts.
-// constants/seasons.ts re-exports it for backward compatibility.
-
->>>>>>> feat/line-phase1
 export interface SeasonConfig {
   id: string;
   nameKey: string;

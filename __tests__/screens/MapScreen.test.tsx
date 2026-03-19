@@ -4,8 +4,8 @@
  */
 
 // Mock all dependencies BEFORE imports
-jest.mock('@/stores/sakura-store', () => ({
-  useSakuraStore: Object.assign(
+jest.mock('@/stores/spot-store', () => ({
+  useSpotStore: Object.assign(
     jest.fn(() => ({
       spots: [
         {

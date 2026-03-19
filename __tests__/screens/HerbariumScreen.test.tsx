@@ -4,8 +4,8 @@
  */
 
 // Mock all dependencies BEFORE imports
-jest.mock('@/stores/sakura-store', () => ({
-  useSakuraStore: jest.fn(() => ({
+jest.mock('@/stores/spot-store', () => ({
+  useSpotStore: jest.fn(() => ({
     spots: [], checkins: [], loading: false,
     initSpots: jest.fn(), loadCheckins: jest.fn(),
     hasCheckedIn: jest.fn(() => false), getProgress: jest.fn(() => ({ checked: 0, total: 0 })),

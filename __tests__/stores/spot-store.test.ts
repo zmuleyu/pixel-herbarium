@@ -22,23 +22,29 @@ jest.mock('@/services/supabase', () => ({
   },
 }));
 
-jest.mock('@/data/packs/jp/seasons/sakura.json', () => ({
-  version:  1,
-  seasonId: 'sakura',
-  spots: [
-    {
-      id: 1, seasonId: 'sakura', nameJa: '上野恩賜公園', nameEn: 'Ueno Park',
-      prefecture: '東京都', prefectureCode: 13, city: '台東区', category: 'park',
-      treeCount: 800,
-      bloomTypical: { earlyStart: '03-20', peakStart: '03-28', peakEnd: '04-05', lateEnd: '04-12' },
-      latitude: 35.7141, longitude: 139.7734,
-      tags: ['名所100選', '夜桜', '池'],
-    },
-  ],
-}), { virtual: true });
+jest.mock('@/services/content-pack', () => ({
+  loadSpotsData: jest.fn(() => ({
+    version:  1,
+    seasonId: 'sakura',
+    spots: [
+      {
+        id: 1, regionId: 'jp', seasonId: 'sakura', nameJa: '上野恩賜公園', nameEn: 'Ueno Park',
+        prefecture: '東京都', prefectureCode: 13, city: '台東区', category: 'park',
+        treeCount: 800,
+        bloomTypical: { earlyStart: '03-20', peakStart: '03-28', peakEnd: '04-05', lateEnd: '04-12' },
+        latitude: 35.7141, longitude: 139.7734,
+        tags: ['名所100選', '夜桜', '池'],
+      },
+    ],
+  })),
+  getActiveRegion: jest.fn(() => ({
+    id: 'jp',
+    seasons: [{ id: 'sakura', nameKey: 'season.sakura.name', dateRange: ['03-15', '04-20'] }],
+  })),
+}));
 
 import { useSpotStore } from '../../src/stores/spot-store';
-import type { SpotCheckinResult } from '../../src/types/sakura';
+import type { SpotCheckinResult } from '../../src/types/spot';
 
 const makeCheckin = (overrides: Partial<SpotCheckinResult> = {}): SpotCheckinResult => ({
   id: 'c1', user_id: 'user-abc', spot_id: 1,
