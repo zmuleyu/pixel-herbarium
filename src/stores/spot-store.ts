@@ -1,15 +1,15 @@
-// src/stores/sakura-store.ts
+// src/stores/spot-store.ts
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '@/services/supabase';
-import sakuraData from '@/data/seasons/sakura.json';
+import { loadSpotsData, getActiveRegion } from '@/services/content-pack';
 import { getBloomStatus } from '@/utils/bloom';
 import type { FlowerSpot } from '@/types/hanami';
 import type { SpotCheckinResult, OfflineCheckinItem } from '@/types/spot';
 
 const OFFLINE_QUEUE_KEY = 'ph_spot_checkin_queue';
 
-interface SakuraStore {
+interface SpotStore {
   spots:    FlowerSpot[];
   checkins: SpotCheckinResult[];
   loading:  boolean;
