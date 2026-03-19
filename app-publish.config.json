@@ -1,0 +1,55 @@
+{
+  "bundleId": "com.pixelherbarium.app",
+  "appName": "花図鉑",
+  "locale": "ja-JP",
+  "screenshots": {
+    "device": "iphone-6.9",
+    "size": [1320, 2868],
+    "frame": false,
+    "background": "#f5f4f1",
+    "titleFont": "Yu Gothic Medium",
+    "titleSize": 64,
+    "titleColor": "#3d2c1e",
+    "subtitleSize": 36,
+    "subtitleColor": "#7a6b5a",
+    "titleAreaHeight": 320,
+    "slides": [
+      {
+        "file": "01.png",
+        "title": "撮るだけ。花の名前がわかる。",
+        "subtitle": "AIが識別 → ピクセルアートに変換"
+      },
+      {
+        "file": "02.png",
+        "title": "花言葉は、もうひとつの物語。",
+        "subtitle": "日本の花言葉 + 西洋の意味"
+      },
+      {
+        "file": "03.png",
+        "title": "60種の花図鑑を、自分の手で。",
+        "subtitle": "春夏秋冬、季節ごとに出会える花が変わる"
+      },
+      {
+        "file": "04.png",
+        "title": "花束を贈る。言葉の代わりに。",
+        "subtitle": ""
+      },
+      {
+        "file": "05.png",
+        "title": "近くの花を、地図で探しに。",
+        "subtitle": "みんなの発見が集まって、街の花マップができる"
+      },
+      {
+        "file": "06.png",
+        "title": "花束を贈って、気持ちを伝えよう。",
+        "subtitle": ""
+      }
+    ]
+  },
+  "asc": {
+    "issuerId": "d25809ce-3341-4b28-851e-b82de0e92d63",
+    "keyId": "XJHT7346H7",
+    "privateKeyPath": "~/.appstoreconnect/AuthKey_XJHT7346H7.p8",
+    "appId": "6760695082"
+  }
+}
