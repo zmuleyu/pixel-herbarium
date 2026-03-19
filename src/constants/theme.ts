@@ -65,6 +65,11 @@ export const SEASON_THEMES = {
 
 export type SeasonTheme = (typeof SEASON_THEMES)[keyof typeof SEASON_THEMES];
 
+// Stamp overlay layout constants
+export const stamp = {
+  padding: 16,
+} as const;
+
 export function getSeasonTheme(seasonId: string): SeasonTheme {
   return (
     SEASON_THEMES[seasonId as keyof typeof SEASON_THEMES] ??

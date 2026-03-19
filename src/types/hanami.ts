@@ -55,6 +55,10 @@ export interface CheckinRecord {
 
 export type TemplateStyle = 'card' | 'watermark' | 'pixel';
 
+export type StampStyle = 'pixel' | 'seal' | 'minimal';
+
+export type StampPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
 export interface SpotsData {
   version: number;
   seasonId: string;
