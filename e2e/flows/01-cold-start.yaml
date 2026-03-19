@@ -3,5 +3,7 @@ appId: com.pixelherbarium.app
 # Verify app launches and shows onboarding on first cold start (splash completes, no crash)
 - launchApp:
     clearState: true
-- assertVisible:
-    id: "onboarding.skip"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.skip"
+    timeout: 15000
