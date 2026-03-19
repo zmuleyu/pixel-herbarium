@@ -5,9 +5,9 @@ appId: com.pixelherbarium.app
 
 - runFlow: ./02-login-email.yaml
 
-# Navigate to checkin tab
+# Navigate to checkin tab (use testID to avoid CJK encoding issues on CI)
 - tapOn:
-    text: "打卡"
+    id: "tab.checkin"
 - assertVisible:
     id: "checkin.container"
 

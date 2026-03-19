@@ -56,6 +56,7 @@ export default function TabLayout() {
           name={name}
           options={visible ? {
             title: t(labelKey),
+            tabBarTestID: `tab.${name}`,
             tabBarIcon: ({ focused, color, size }) => (
               <Ionicons name={focused ? iconActive : icon} size={size} color={color} />
             ),

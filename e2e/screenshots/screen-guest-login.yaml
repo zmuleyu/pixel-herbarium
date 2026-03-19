@@ -1,0 +1,27 @@
+appId: com.pixelherbarium.app
+---
+# Reusable sub-flow: launch fresh → skip onboarding → continue as guest → arrive at home
+- launchApp:
+    clearState: true
+- runFlow:
+    when:
+      visible: "Would like to access"
+    commands:
+      - tapOn: "Allow"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.skip"
+    timeout: 15000
+- tapOn:
+    id: "onboarding.skip"
+- extendedWaitUntil:
+    visible:
+      id: "auth.continueAsGuest"
+    timeout: 20000
+- tapOn:
+    id: "auth.continueAsGuest"
+- extendedWaitUntil:
+    visible:
+      id: "home.container"
+    timeout: 20000
+- waitForAnimationToEnd

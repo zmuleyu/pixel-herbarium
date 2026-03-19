@@ -1,0 +1,5 @@
+appId: com.pixelherbarium.app
+---
+# Screenshot: Home tab — sakura spot list with season header
+- runFlow: ./screen-guest-login.yaml
+- takeScreenshot: "02-home"

@@ -1,0 +1,12 @@
+appId: com.pixelherbarium.app
+---
+# Screenshot: Footprint tab — check-in history grid
+- runFlow: ./screen-guest-login.yaml
+- tapOn:
+    text: "足跡"
+- extendedWaitUntil:
+    visible:
+      id: "footprint.container"
+    timeout: 10000
+- waitForAnimationToEnd
+- takeScreenshot: "05-footprint"

@@ -1,0 +1,10 @@
+appId: com.pixelherbarium.app
+---
+# Screenshot: Onboarding welcome slide (slide 1/3)
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.skip"
+    timeout: 15000
+- takeScreenshot: "01-onboarding"

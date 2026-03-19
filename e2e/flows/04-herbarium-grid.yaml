@@ -3,6 +3,6 @@ appId: com.pixelherbarium.app
 # Navigate to Footprint tab and verify it is visible (CHECKIN_MODE: replaces herbarium tab)
 - runFlow: ./02-login-email.yaml
 - tapOn:
-    text: "足跡"
+    id: "tab.footprint"
 - assertVisible:
     id: "footprint.container"

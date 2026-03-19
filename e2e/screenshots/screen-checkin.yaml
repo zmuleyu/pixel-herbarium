@@ -1,0 +1,10 @@
+appId: com.pixelherbarium.app
+---
+# Screenshot: Check-in tab — spot selection / photo entry screen
+- runFlow: ./screen-guest-login.yaml
+- tapOn:
+    text: "打卡"
+- waitForAnimationToEnd
+- pause:
+    milliseconds: 1500
+- takeScreenshot: "03-checkin"
