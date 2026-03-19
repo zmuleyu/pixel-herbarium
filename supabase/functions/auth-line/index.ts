@@ -6,8 +6,15 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 
-const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+// Admin client — user management only
+const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+  auth: { autoRefreshToken: false, persistSession: false },
+});
+
+// Anon client — used for verifyOtp to get a real session
+const supabaseAnon = createClient(SUPABASE_URL, ANON_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
@@ -60,32 +67,32 @@ Deno.serve(async (req) => {
       );
     }
 
-    // 1. Verify LINE token (with nonce if provided)
+    // 1. Verify LINE token
     const payload = await verifyLineToken(id_token, nonce);
     const lineUid = payload.sub;
 
+    let userId: string;
+    let userEmail: string;
+
     // 2. Check if user with this line_uid already exists
-    const { data: existingProfile } = await supabase
+    const { data: existingProfile } = await supabaseAdmin
       .from('profiles')
       .select('id')
       .eq('line_uid', lineUid)
       .maybeSingle();
 
-    let userId: string;
-
     if (existingProfile) {
-      // Returning LINE user
+      // Returning LINE user — look up their email
       userId = existingProfile.id;
+      const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+      userEmail = authUser.user?.email ?? `line_${lineUid}@line.users.noreply`;
     } else {
-      // Check if a user with matching verified email already exists (account linking)
+      // Check for account linking via verified email
       if (payload.email && payload.email_verified) {
-        const { data: emailUsers } = await supabase.auth.admin.listUsers();
-        const matchedUser = emailUsers?.users?.find(
-          (u) => u.email === payload.email
-        );
+        const { data: emailUsers } = await supabaseAdmin.auth.admin.listUsers();
+        const matchedUser = emailUsers?.users?.find((u) => u.email === payload.email);
 
         if (matchedUser) {
-          // Email match found — return special response for client-side confirmation
           return Response.json({
             requires_linking: true,
             existing_user_id: matchedUser.id,
@@ -97,12 +104,12 @@ Deno.serve(async (req) => {
       }
 
       // No match — create new user
-      const email = (payload.email && payload.email_verified)
+      userEmail = (payload.email && payload.email_verified)
         ? payload.email
         : `line_${lineUid}@line.users.noreply`;
 
-      const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
-        email,
+      const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
+        email: userEmail,
         email_confirm: true,
         user_metadata: {
           full_name: payload.name ?? '',
@@ -116,17 +123,31 @@ Deno.serve(async (req) => {
       userId = newUser.user.id;
     }
 
-    // 3. Generate session via admin API (avoids confirmation_token NULL issue)
-    const { data: sessionData, error: sessionError } = await supabase.auth.admin.createSession({
-      user_id: userId,
+    // 3. Generate a magic-link OTP and immediately verify it to get a session.
+    //    (supabase-js v2 has no admin.createSession — this is the correct pattern.)
+    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+      type: 'magiclink',
+      email: userEmail,
     });
-    if (sessionError) throw sessionError;
+    if (linkError) throw new Error(`generateLink: ${linkError.message}`);
+
+    const otp = linkData.properties?.email_otp;
+    if (!otp) throw new Error('generateLink returned no email_otp');
+
+    const { data: sessionData, error: sessionError } = await supabaseAnon.auth.verifyOtp({
+      email: userEmail,
+      token: otp,
+      type: 'email',
+    });
+    if (sessionError) throw new Error(`verifyOtp: ${sessionError.message}`);
+    if (!sessionData.session) throw new Error('verifyOtp returned no session');
 
     return Response.json({
       access_token: sessionData.session.access_token,
       refresh_token: sessionData.session.refresh_token,
-      user: { id: userId, email: sessionData.session.user?.email ?? '' },
+      user: { id: userId, email: userEmail },
     }, { headers: corsHeaders });
+
   } catch (err: any) {
     console.error('auth-line error:', err);
     return Response.json(
