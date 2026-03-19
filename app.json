@@ -21,7 +21,8 @@
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "Pixel Herbarium uses the camera to photograph plants for identification.",
         "NSLocationWhenInUseUsageDescription": "Pixel Herbarium uses your location to record where plants were discovered.",
-        "NSPhotoLibraryUsageDescription": "Pixel Herbarium accesses the photo library to select plant images."
+        "NSPhotoLibraryUsageDescription": "Pixel Herbarium accesses the photo library to select plant images.",
+        "LSApplicationQueriesSchemes": ["line"]
       }
     },
     "android": {
@@ -85,7 +86,8 @@
           "savePhotosPermission": "Pixel Herbarium saves poster images to your photo library."
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-web-browser"
     ],
     "updates": {
       "url": "https://u.expo.dev/74427c7e-dba6-4061-9cc9-3651d09fae01"
