@@ -7,6 +7,15 @@ import type { SeasonConfig } from '@/types/region';
 
 export type { SeasonConfig };
 
+/** All configured seasons for the active region. Convenience alias for getSeasons(). */
+export const SEASONS: SeasonConfig[] = (() => {
+  try {
+    return getActiveRegion().seasons;
+  } catch {
+    return [];
+  }
+})();
+
 export function getSeasons(): SeasonConfig[] {
   const seasons = getActiveRegion().seasons;
   if (seasons.length === 0) {

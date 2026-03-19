@@ -60,10 +60,6 @@ export type StampStyle = 'pixel' | 'seal' | 'minimal';
 export type StampPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 export type TemplateStyle = 'pixel' | 'seal' | 'minimal';
 
-export type StampStyle = 'pixel' | 'seal' | 'minimal';
-
-export type StampPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
-
 export interface SpotsData {
   version: number;
   seasonId: string;
