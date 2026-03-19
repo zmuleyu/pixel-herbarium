@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>花図鉑 — 桜スポットでチェックイン</title>
+  <meta name="description" content="花図鉑は、日本各地の桜スポットを巡りながら、スタンプ水印つき写真を作って楽しむアプリです。">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      background: #f5f4f1;
+      color: #3d2c1e;
+      line-height: 1.8;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(160deg, #fff8f5 0%, #fce8e8 60%, #f5e6f0 100%);
+      text-align: center;
+      padding: 60px 24px 48px;
+      border-bottom: 1px solid #e8d5c8;
+    }
+    .app-icon {
+      width: 100px;
+      height: 100px;
+      border-radius: 22px;
+      box-shadow: 0 4px 20px rgba(232,165,176,0.4);
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: 2rem;
+      color: #2d1a0e;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .hero .subtitle {
+      font-size: 1.05rem;
+      color: #7a5a4a;
+      margin-bottom: 28px;
+    }
+    .badge-placeholder {
+      display: inline-block;
+      background: #1a1a1a;
+      color: #fff;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .badge-placeholder small { display: block; font-size: 0.7rem; opacity: 0.7; margin-bottom: 2px; }
+    .badge-placeholder strong { font-size: 1.05rem; }
+
+    /* Screenshots */
+    .screenshots {
+      background: #fff;
+      padding: 40px 24px;
+      text-align: center;
+      overflow-x: auto;
+    }
+    .screenshots-row {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .screen-card {
+      width: 160px;
+      border-radius: 16px;
+      background: #f5f4f1;
+      aspect-ratio: 9/19;
+      border: 2px solid #e8d5c8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: #b8a898;
+      text-align: center;
+      padding: 8px;
+    }
+
+    /* Features */
+    .features {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+    .features h2 {
+      font-size: 1.3rem;
+      color: #2d6a4f;
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: 0.05em;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px 20px;
+      border: 1px solid #e8d5c8;
+      text-align: center;
+    }
+    .feature-emoji { font-size: 2.2rem; margin-bottom: 12px; display: block; }
+    .feature-card h3 { font-size: 1rem; color: #2d1a0e; margin-bottom: 8px; }
+    .feature-card p { font-size: 0.88rem; color: #7a6b5a; line-height: 1.6; }
+
+    /* Season banner */
+    .season-banner {
+      background: linear-gradient(135deg, #fce8e8, #f5e6f0);
+      text-align: center;
+      padding: 32px 24px;
+      border-top: 1px solid #e8d5c8;
+      border-bottom: 1px solid #e8d5c8;
+    }
+    .season-banner p {
+      font-size: 1.05rem;
+      color: #5a3a4a;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* CTA */
+    .cta {
+      text-align: center;
+      padding: 48px 24px;
+      background: #fff;
+    }
+    .cta h2 { font-size: 1.2rem; color: #2d1a0e; margin-bottom: 8px; }
+    .cta p { color: #7a6b5a; font-size: 0.9rem; margin-bottom: 24px; }
+
+    /* Footer */
+    footer {
+      background: #3d2c1e;
+      color: #c8b8a8;
+      text-align: center;
+      padding: 28px 24px;
+      font-size: 0.85rem;
+    }
+    footer a {
+      color: #e8c8b8;
+      text-decoration: none;
+      margin: 0 12px;
+    }
+    footer a:hover { text-decoration: underline; }
+    .footer-links { margin-bottom: 12px; }
+    .footer-copy { opacity: 0.6; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <img class="app-icon" src="./app-icon.png" alt="花図鉑" onerror="this.style.display='none'">
+  <h1>🌸 花図鉑</h1>
+  <p class="subtitle">桜スポットでチェックイン。あなただけのスタンプ写真を作ろう。</p>
+  <a class="badge-placeholder" href="#" id="appstore-link">
+    <small>Download on the</small>
+    <strong>App Store</strong>
+  </a>
+</section>
+
+<!-- Feature Section -->
+<section class="features">
+  <h2>花めぐりを、もっと楽しく</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="feature-emoji">🗺️</span>
+      <h3>桜スポットチェックイン</h3>
+      <p>日本各地 100 箇所の桜名所。スポットを選んで、思い出をスタンプで残そう。</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-emoji">📸</span>
+      <h3>スタンプ水印つき写真</h3>
+      <p>ピクセル・印鑑・ミニマルの 3 スタイル。あなたの写真に特別な一枚をプラス。</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-emoji">🌿</span>
+      <h3>フットプリント</h3>
+      <p>訪れたスポットの記録をグリッドで振り返り。あなただけの花めぐり日誌。</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-emoji">📤</span>
+      <h3>写真シェア</h3>
+      <p>LINE・Instagram・Twitterで、花めぐりのスタンプ写真をシェアしよう。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Season banner -->
+<div class="season-banner">
+  <p>🌸 <strong>2026年 桜シーズン開幕。</strong>今だけの開花状況と、あなたの花めぐりを記録しよう。<br>完全無料・広告なし。</p>
+</div>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>今すぐ始めよう</h2>
+  <p>ログイン不要。ゲストとして、すぐに使えます。</p>
+  <a class="badge-placeholder" href="#" id="appstore-link-2">
+    <small>Download on the</small>
+    <strong>App Store</strong>
+  </a>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-links">
+    <a href="./privacy-policy.html">プライバシーポリシー</a>
+    <a href="./terms.html">利用規約</a>
+    <a href="./support.html">サポート</a>
+  </div>
+  <div class="footer-copy">© 2026 Pixel Herbarium. All rights reserved.</div>
+</footer>
+
+<script>
+  // Update App Store link after submission
+  // document.getElementById('appstore-link').href = 'https://apps.apple.com/app/idXXXXXXXXXX';
+  // document.getElementById('appstore-link-2').href = 'https://apps.apple.com/app/idXXXXXXXXXX';
+</script>
+</body>
+</html>
