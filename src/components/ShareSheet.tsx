@@ -1,4 +1,4 @@
-// src/components/ShareSheet.tsx
+﻿// src/components/ShareSheet.tsx
 // Bottom sheet modal for poster format preview + save/share actions.
 // Renders two off-screen SharePosters (story + line) for capture,
 // and two scaled-down thumbnails for the user to choose between.
@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { SharePoster, type SharePosterPlant } from '@/components/SharePoster';
 import { supabase } from '@/services/supabase';
+import { trackEvent } from '@/services/analytics';
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -145,6 +146,7 @@ export function ShareSheet({ visible, onClose, plant, discoveryDate, discoveryCi
             channel: 'line',
             deep_link: webDeepLink ?? '',
           }).then(() => {});
+          trackEvent('line_share', { plant_id: plantId, channel: 'line' });
         }
         return;
       }

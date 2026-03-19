@@ -12,7 +12,7 @@ import {
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useTranslation } from 'react-i18next';
 import { signInWithApple, signInWithEmail, signInWithLine, confirmLinkLine } from '@/services/auth';
-import \{ trackEvent \} from '@/services/analytics';
+import { trackEvent } from '@/services/analytics';
 import { useAuthStore } from '@/stores/auth-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 
