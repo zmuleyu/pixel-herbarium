@@ -22,7 +22,7 @@ jest.mock('@/services/supabase', () => ({
   },
 }));
 
-jest.mock('@/data/seasons/sakura.json', () => ({
+jest.mock('@/data/packs/jp/seasons/sakura.json', () => ({
   version:  1,
   seasonId: 'sakura',
   spots: [
