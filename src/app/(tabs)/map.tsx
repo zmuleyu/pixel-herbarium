@@ -14,7 +14,7 @@ import { useNearbyDiscoveries, type NearbyDiscovery } from '@/hooks/useNearbyDis
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import * as Location from 'expo-location';
-import { useSakuraStore } from '@/stores/sakura-store';
+import { useSpotStore } from '@/stores/spot-store';
 import { isWithinRadius } from '@/utils/geo';
 import { getBloomStatus } from '@/utils/bloom';
 import PrePermissionScreen from '@/components/PrePermissionScreen';
@@ -49,7 +49,7 @@ export default function MapScreen() {
   const [animMankai, setAnimMankai]   = useState(false);
   const proximityTimer                = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const { spots, initSpots, performCheckin, hasCheckedIn } = useSakuraStore();
+  const { spots, initSpots, performCheckin, hasCheckedIn } = useSpotStore();
 
   const heatPoints = useMemo(
     () => discoveries.map(d => ({ latitude: d.latitude, longitude: d.longitude, weight: d.rarity })),
@@ -95,7 +95,7 @@ export default function MapScreen() {
       const { isMankai } = await performCheckin(spot.id);
       setAnimSpot(spot);
       setAnimMankai(isMankai);
-      const newCount = useSakuraStore.getState().checkins.length;
+      const newCount = useSpotStore.getState().checkins.length;
       if (newCount === 1 || newCount === 5) {
         await maybeRequestReview(newCount === 1 ? 'firstCheckin' : 'fiveCheckins');
       }

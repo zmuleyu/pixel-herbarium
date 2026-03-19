@@ -14,7 +14,7 @@ interface SpotStore {
   checkins: SpotCheckinResult[];
   loading:  boolean;
 
-  initSpots:      () => void;
+  initSpots:      (seasonId?: string) => void;
   loadCheckins:   (userId: string) => Promise<void>;
   performCheckin: (spotId: number, skipNetwork?: boolean) => Promise<{ isNew: boolean; isMankai: boolean }>;
   hasCheckedIn:   (spotId: number) => boolean;
@@ -22,13 +22,15 @@ interface SpotStore {
   flushOfflineQueue: () => Promise<void>;
 }
 
-export const useSakuraStore = create<SakuraStore>((set, get) => ({
+export const useSpotStore = create<SpotStore>((set, get) => ({
   spots:    [],
   checkins: [],
   loading:  false,
 
-  initSpots: () => {
-    set({ spots: sakuraData.spots as FlowerSpot[] });
+  initSpots: (seasonId?: string) => {
+    const sid = seasonId ?? getActiveRegion().seasons[0]?.id ?? 'sakura';
+    const data = loadSpotsData(sid);
+    set({ spots: data?.spots ?? [] });
   },
 
   loadCheckins: async (userId) => {

@@ -20,7 +20,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { getCurrentSeason } from '@/utils/date';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { GRID_COLUMNS, TOTAL_PLANTS, RARITY_LABELS } from '@/constants/plants';
-import { useSakuraStore } from '@/stores/sakura-store';
+import { useSpotStore } from '@/stores/spot-store';
 import SpotStampGrid from '@/components/SpotStampGrid';
 import SpotDetailSheet from '@/components/SpotDetailSheet';
 import type { FlowerSpot } from '@/types/hanami';
@@ -47,7 +47,7 @@ export default function HerbariumScreen() {
   const [detailSpot, setDetailSpot]   = useState<FlowerSpot | null>(null);
   const [detailCheckin, setDetailCheckin] = useState<SpotCheckinResult | null>(null);
   const [showDetail, setShowDetail]   = useState(false);
-  const { spots, checkins, initSpots, loadCheckins } = useSakuraStore();
+  const { spots, checkins, initSpots, loadCheckins } = useSpotStore();
 
   useEffect(() => {
     if (activeTab !== 'spots') return;
