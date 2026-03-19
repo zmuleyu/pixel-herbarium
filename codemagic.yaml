@@ -39,7 +39,7 @@ workflows:
           # Target iPhone 15 Plus (1284x2778) — accepted by ASC 6.5" screenshot slot
           # Priority: 15 Plus > 14 Plus > 13 Pro Max (all give 1284x2778)
           DEVICE=""
-          for MODEL in "iPhone 15 Plus" "iPhone 14 Plus" "iPhone 13 Pro Max" "iPhone 12 Pro Max"; do
+          for MODEL in "iPhone 16 Pro Max" "iPhone 16 Plus" "iPhone 15 Plus" "iPhone 14 Plus" "iPhone 13 Pro Max" "iPhone 12 Pro Max"; do
             DEVICE=$(xcrun simctl list devices available 2>/dev/null \
               | grep "$MODEL" \
               | grep -v "unavailable" \
@@ -102,6 +102,7 @@ workflows:
 
       - name: Run Maestro screenshot flows
         script: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash || true
           export PATH="$PATH:$HOME/.maestro/bin"
           mkdir -p e2e/current
           maestro test e2e/screenshots/ \
