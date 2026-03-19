@@ -29,6 +29,11 @@ appId: com.pixelherbarium.app
       id: "home.container"
     timeout: 20000
 # Navigate to Settings tab → Login (use testID to avoid CJK encoding issues on CI)
+# Wait for tab bar to fully render after navigation
+- extendedWaitUntil:
+    visible:
+      id: "tab.settings"
+    timeout: 10000
 - tapOn:
     id: "tab.settings"
 - extendedWaitUntil:
