@@ -1,0 +1,82 @@
+appId: com.pixelherbarium.app
+---
+# All-in-one screenshot flow: captures 5 screens in a single Maestro session.
+# Avoids: session isolation, deep link dialogs, CJK encoding issues.
+# Navigation: coordinate taps on tab bar (4 tabs at y=96%, x=12/37/62/87%).
+
+# Step 1: Fresh launch → onboarding
+- launchApp:
+    clearState: true
+
+# Dismiss permission dialogs if they appear
+- runFlow:
+    when:
+      visible: "Allow"
+    commands:
+      - tapOn: "Allow"
+- runFlow:
+    when:
+      visible: "Allow"
+    commands:
+      - tapOn: "Allow"
+
+# Wait for onboarding to render
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.skip"
+    timeout: 15000
+
+# Screenshot 1: Onboarding
+- takeScreenshot: "01-onboarding"
+
+# Skip onboarding → navigate to home
+- tapOn:
+    id: "onboarding.skip"
+
+# Wait for home screen
+- extendedWaitUntil:
+    visible:
+      id: "home.container"
+    timeout: 20000
+- waitForAnimationToEnd
+- pause:
+    milliseconds: 1500
+
+# Screenshot 2: Home
+- takeScreenshot: "02-home"
+
+# Navigate to Checkin tab (2nd of 4 tabs, ~37% from left)
+- tapOn:
+    point:
+      x: 37
+      y: 96
+- pause:
+    milliseconds: 2000
+- waitForAnimationToEnd
+
+# Screenshot 3: Checkin
+- takeScreenshot: "03-checkin"
+
+# Navigate to Footprint tab (3rd of 4 tabs, ~62% from left)
+- tapOn:
+    point:
+      x: 62
+      y: 96
+- pause:
+    milliseconds: 2000
+- waitForAnimationToEnd
+
+# Screenshot 4: Footprint
+- takeScreenshot: "04-footprint"
+
+# Navigate to Settings tab (4th of 4 tabs, ~87% from left)
+- tapOn:
+    point:
+      x: 87
+      y: 96
+- pause:
+    milliseconds: 2000
+- waitForAnimationToEnd
+
+# Screenshot 5: Settings
+- takeScreenshot: "05-settings"

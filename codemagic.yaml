@@ -115,53 +115,25 @@ workflows:
             echo "E2E tests had failures — continuing to screenshot flows"
           fi
 
-      - name: Capture App Store screenshots via simctl
+      - name: Capture App Store screenshots
         script: |
           mkdir -p e2e/current
-
-          # Strategy: use xcrun simctl openurl for deep-link navigation (no Maestro needed).
-          # Expo Router supports URL scheme: pixelherbarium://(tabs)/home etc.
-
-          # Screenshot 1: Onboarding — app was already launched in debug step, showing onboarding
-          # Use the debug-app-state.png as onboarding screenshot (already captured)
-          cp e2e/current/debug-app-state.png e2e/current/01-onboarding.png 2>/dev/null || true
-          echo "✓ 01-onboarding (from debug step)"
-
-          # Now skip onboarding and navigate via deep links
-          # First, use Maestro to skip onboarding (single flow that leaves app on home)
           export PATH="$PATH:$HOME/.maestro/bin"
-          maestro test e2e/screenshots/screen-guest-skip.yaml \
+
+          # Single Maestro flow captures all 5 screens in one session.
+          # Avoids: session isolation, deep link confirmation dialogs, CJK issues.
+          # Uses coordinate taps for tab navigation + takeScreenshot.
+          maestro test e2e/screenshots/all-screens.yaml \
             --env E2E_TEST_EMAIL=$E2E_TEST_EMAIL \
             --env E2E_TEST_PASSWORD=$E2E_TEST_PASSWORD 2>&1 || true
-          sleep 3
 
-          # Screenshot 2: Home (app should now be on home after guest-skip)
-          xcrun simctl io booted screenshot e2e/current/02-home.png
-          echo "✓ 02-home"
+          # Collect Maestro screenshots from all test run directories
+          find ~/.maestro/tests -name "*.png" 2>/dev/null | while read f; do
+            cp "$f" e2e/current/ 2>/dev/null || true
+          done
 
-          # Screenshot 3: Checkin tab — deep link navigation
-          xcrun simctl openurl booted "pixelherbarium://(tabs)/checkin" 2>/dev/null || \
-            xcrun simctl openurl booted "pixelherbarium:///checkin" 2>/dev/null || true
-          sleep 3
-          xcrun simctl io booted screenshot e2e/current/03-checkin.png
-          echo "✓ 03-checkin"
-
-          # Screenshot 4: Footprint tab
-          xcrun simctl openurl booted "pixelherbarium://(tabs)/footprint" 2>/dev/null || \
-            xcrun simctl openurl booted "pixelherbarium:///footprint" 2>/dev/null || true
-          sleep 3
-          xcrun simctl io booted screenshot e2e/current/04-footprint.png
-          echo "✓ 04-footprint"
-
-          # Screenshot 5: Settings tab
-          xcrun simctl openurl booted "pixelherbarium://(tabs)/settings" 2>/dev/null || \
-            xcrun simctl openurl booted "pixelherbarium:///settings" 2>/dev/null || true
-          sleep 3
-          xcrun simctl io booted screenshot e2e/current/05-settings.png
-          echo "✓ 05-settings"
-
-          echo "=== Screenshot capture complete ==="
-          ls -la e2e/current/*.png
+          echo "=== Collected screenshots ==="
+          ls -la e2e/current/*.png 2>/dev/null || echo "No screenshots found"
 
       - name: Visual regression check
         script: |
