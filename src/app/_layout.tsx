@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import * as Notifications from 'expo-notifications';
+import * as Linking from 'expo-linking';
 import * as SecureStore from 'expo-secure-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/services/supabase';
@@ -11,6 +12,7 @@ import { colors } from '@/constants/theme';
 import { usePushToken } from '@/hooks/usePushToken';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { OfflineBanner } from '@/components/OfflineBanner';
+import { parseDeepLink } from '@/utils/deep-link';
 import { ONBOARDING_KEY } from './onboarding';
 
 /** Resolves to fallback after ms milliseconds if promise hasn't settled. */
