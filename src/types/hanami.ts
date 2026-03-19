@@ -57,7 +57,10 @@ export interface CheckinRecord {
 }
 
 export type StampStyle = 'pixel' | 'seal' | 'minimal';
-export type StampPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+export type StampPosition =
+  | 'top-left' | 'top-center' | 'top-right'
+  | 'middle-left' | 'center' | 'middle-right'
+  | 'bottom-left' | 'bottom-center' | 'bottom-right';
 export type TemplateStyle = 'pixel' | 'seal' | 'minimal';
 
 export interface SpotsData {
