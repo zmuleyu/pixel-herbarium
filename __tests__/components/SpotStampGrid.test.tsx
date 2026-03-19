@@ -10,7 +10,7 @@ jest.mock('@/constants/theme', () => ({
 import React from 'react';
 import SpotStampGrid from '../../src/components/SpotStampGrid';
 import type { FlowerSpot } from '../../src/types/hanami';
-import type { SpotCheckinResult } from '../../src/types/sakura';
+import type { SpotCheckinResult } from '../../src/types/spot';
 
 const spot: FlowerSpot = {
   id: 1, regionId: 'jp', seasonId: 'sakura', nameJa: '上野恩賜公園', nameEn: 'Ueno Park',
@@ -22,6 +22,7 @@ const checkin: SpotCheckinResult = {
   id: 'c1', user_id: 'u1', spot_id: 1,
   checked_in_at: '2026-03-28T10:00:00Z',
   is_mankai: false, stamp_variant: 'normal', bloom_status_at_checkin: null,
+  season_id: 'sakura',
 };
 
 function shallowRender(el: any, depth = 5): any {

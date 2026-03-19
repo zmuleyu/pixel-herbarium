@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * JIS X 0401 prefecture code → English abbreviation (uppercase).
  * Used by stamp components for city labels.
@@ -51,17 +50,4 @@ export const PREFECTURE_EN: Record<number, string> = {
   45: 'MIYAZAKI',
   46: 'KAGOSHIMA',
   47: 'OKINAWA',
-=======
-export const PREFECTURE_EN: Record<number, string> = {
-  1: 'HOKKAIDO', 2: 'AOMORI', 3: 'IWATE', 4: 'MIYAGI', 5: 'AKITA',
-  6: 'YAMAGATA', 7: 'FUKUSHIMA', 8: 'IBARAKI', 9: 'TOCHIGI', 10: 'GUNMA',
-  11: 'SAITAMA', 12: 'CHIBA', 13: 'TOKYO', 14: 'KANAGAWA', 15: 'NIIGATA',
-  16: 'TOYAMA', 17: 'ISHIKAWA', 18: 'FUKUI', 19: 'YAMANASHI', 20: 'NAGANO',
-  21: 'GIFU', 22: 'SHIZUOKA', 23: 'AICHI', 24: 'MIE', 25: 'SHIGA',
-  26: 'KYOTO', 27: 'OSAKA', 28: 'HYOGO', 29: 'NARA', 30: 'WAKAYAMA',
-  31: 'TOTTORI', 32: 'SHIMANE', 33: 'OKAYAMA', 34: 'HIROSHIMA', 35: 'YAMAGUCHI',
-  36: 'TOKUSHIMA', 37: 'KAGAWA', 38: 'EHIME', 39: 'KOCHI', 40: 'FUKUOKA',
-  41: 'SAGA', 42: 'NAGASAKI', 43: 'KUMAMOTO', 44: 'OITA', 45: 'MIYAZAKI',
-  46: 'KAGOSHIMA', 47: 'OKINAWA',
->>>>>>> feat/line-phase1
 };

@@ -51,6 +51,7 @@ const makeCheckin = (overrides: Partial<SpotCheckinResult> = {}): SpotCheckinRes
   checked_in_at: '2026-03-28T10:00:00Z',
   is_mankai: false, stamp_variant: 'normal',
   bloom_status_at_checkin: null,
+  season_id: 'sakura',
   ...overrides,
 });
 
