@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '@/services/supabase';
-import sakuraData from '@/data/seasons/sakura.json';
+import sakuraData from '@/data/packs/jp/seasons/sakura.json';
 import { getBloomStatus } from '@/utils/bloom';
 import type { FlowerSpot } from '@/types/hanami';
 import type { SpotCheckinResult, OfflineCheckinItem } from '@/types/sakura';

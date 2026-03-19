@@ -8,6 +8,7 @@ import type { FlowerSpot, BloomStatus } from '../../src/types/hanami';
 
 const testSpot: FlowerSpot = {
   id: 1,
+  regionId: 'jp',
   seasonId: 'sakura',
   nameJa: 'テスト公園',
   nameEn: 'Test Park',

@@ -9,7 +9,7 @@
 //   SUPABASE_SERVICE_ROLE_KEY
 
 import { createClient } from '@supabase/supabase-js';
-import sakuraData from '../../src/data/seasons/sakura.json';
+import sakuraData from '../../src/data/packs/jp/seasons/sakura.json';
 
 const url = process.env.SUPABASE_URL ?? process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';

@@ -78,7 +78,9 @@
     "tagline": "Discover plants and transform them into pixel art",
     "orEmail": "or email",
     "error": "Authentication Error",
-    "signIn": "Sign In"
+    "signIn": "Sign In",
+    "signInLine": "Sign in with LINE",
+    "lineError": "Connection failed. Please try again."
   },
   "map": {
     "title": "City Map",

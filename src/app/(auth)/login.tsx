@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useTranslation } from 'react-i18next';
-import { signInWithApple, signInWithEmail } from '@/services/auth';
+import { signInWithApple, signInWithEmail, signInWithLine } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 
@@ -32,6 +32,20 @@ export default function LoginScreen() {
       if (e.code !== 'ERR_REQUEST_CANCELED') {
         setError(e.message);
         Alert.alert(t('auth.error'), e.message);
+      }
+      setSubmitting(false);
+    }
+  }
+
+  async function handleLine() {
+    try {
+      setSubmitting(true);
+      await signInWithLine();
+      // onAuthStateChange in _layout.tsx handles session/user updates.
+    } catch (e: any) {
+      if (!e.message?.includes('cancelled')) {
+        setError(e.message);
+        Alert.alert(t('auth.error'), t('auth.lineError'));
       }
       setSubmitting(false);
     }
@@ -60,7 +74,7 @@ export default function LoginScreen() {
         <Text style={styles.title}>{t('auth.appName')}</Text>
         <Text style={styles.subtitle}>{t('auth.tagline')}</Text>
 
-        {/* Apple Sign-In (iOS only) */}
+        {/* Apple Sign-In (iOS only, shown above LINE) */}
         {Platform.OS === 'ios' && (
           <View testID="auth.apple">
           <AppleAuthentication.AppleAuthenticationButton
@@ -72,6 +86,17 @@ export default function LoginScreen() {
           />
           </View>
         )}
+
+        {/* LINE Sign-In */}
+        <TouchableOpacity
+          style={[styles.lineButton, submitting && styles.buttonDisabled]}
+          onPress={handleLine}
+          disabled={submitting}
+          testID="auth.signInLine"
+        >
+          <Text style={styles.lineButtonIcon}>L</Text>
+          <Text style={styles.lineButtonText}>{t('auth.signInLine')}</Text>
+        </TouchableOpacity>
 
         <Text style={styles.divider}>— {t('auth.orEmail')} —</Text>
 
@@ -161,6 +186,28 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.5,
+  },
+  lineButton: {
+    width: '100%',
+    height: 48,
+    backgroundColor: '#06C755',
+    borderRadius: borderRadius.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+  },
+  lineButtonIcon: {
+    color: colors.white,
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.lg,
+    lineHeight: 24,
+    fontWeight: 'bold',
+  },
+  lineButtonText: {
+    color: colors.white,
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.md,
   },
   buttonText: {
     color: colors.white,

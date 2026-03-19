@@ -13,7 +13,7 @@ import type { FlowerSpot } from '../../src/types/hanami';
 import type { SpotCheckinResult } from '../../src/types/sakura';
 
 const spot: FlowerSpot = {
-  id: 1, seasonId: 'sakura', nameJa: '上野恩賜公園', nameEn: 'Ueno Park',
+  id: 1, regionId: 'jp', seasonId: 'sakura', nameJa: '上野恩賜公園', nameEn: 'Ueno Park',
   prefecture: '東京都', prefectureCode: 13, city: '台東区', category: 'park',
   bloomTypical: { earlyStart: '03-20', peakStart: '03-28', peakEnd: '04-05', lateEnd: '04-12' },
   latitude: 35.7141, longitude: 139.7734, tags: ['名所100選'],
