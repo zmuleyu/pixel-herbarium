@@ -28,7 +28,7 @@ export const useSpotStore = create<SpotStore>((set, get) => ({
   loading:  false,
 
   initSpots: (seasonId?: string) => {
-    const sid = seasonId ?? getActiveRegion().seasons[0]?.id ?? 'sakura';
+    const sid = seasonId ?? getActiveRegion().seasons[0]?.id;
     const data = loadSpotsData(sid);
     set({ spots: data?.spots ?? [] });
   },
