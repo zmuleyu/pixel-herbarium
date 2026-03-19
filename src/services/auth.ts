@@ -80,18 +80,44 @@ export async function signInWithLine() {
     throw new Error('No id_token received from LINE');
   }
 
+  const idToken = tokenResult.idToken;
+
   // Verify token via edge function and get Supabase session
   const { data, error } = await supabase.functions.invoke('auth-line', {
-    body: { id_token: tokenResult.idToken },
+    body: { id_token: idToken },
+  });
+
+  if (error) throw new Error(error.message ?? 'LINE authentication failed');
+
+  // Account linking required — return context for the caller to show confirmation UI
+  if (data?.requires_linking) {
+    return {
+      requires_linking: true as const,
+      id_token: idToken,
+      existing_user_id: data.existing_user_id as string,
+      line_uid: data.line_uid as string,
+    };
+  }
+
+  if (!data?.access_token) throw new Error('LINE authentication failed');
+
+  const { error: sessionError } = await supabase.auth.setSession({
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+  });
+
+  if (sessionError) throw sessionError;
+  return { requires_linking: false as const };
+}
+
+/** Confirms account linking after user approval in the UI. */
+export async function confirmLinkLine(idToken: string, existingUserId: string): Promise<void> {
+  const { data, error } = await supabase.functions.invoke('auth-line', {
+    body: { id_token: idToken, confirm_link: true, existing_user_id: existingUserId },
   });
 
   if (error || !data?.access_token) {
-    throw new Error(error?.message ?? 'LINE authentication failed');
-  }
-
-  // Account linking: if edge function says linking is needed, throw with context
-  if (data.requires_linking) {
-    throw new Error(`LINK_REQUIRED:${data.existing_user_id}:${data.line_uid}`);
+    throw new Error(error?.message ?? 'LINE account linking failed');
   }
 
   const { error: sessionError } = await supabase.auth.setSession({
@@ -100,5 +126,4 @@ export async function signInWithLine() {
   });
 
   if (sessionError) throw sessionError;
-  return data;
 }
