@@ -1,7 +1,7 @@
 appId: com.pixelherbarium.app
 ---
 # Email login flow — fully self-contained: clearState → skip onboarding → login
-# Used as a reusable sub-flow by flows 03–06 via runFlow
+# Used as a reusable sub-flow by flows 03–07 via runFlow
 - launchApp:
     clearState: true
 # Dismiss permission dialogs if they appear (camera / location)
@@ -20,14 +20,28 @@ appId: com.pixelherbarium.app
     visible:
       id: "onboarding.skip"
     timeout: 15000
-# Skip onboarding → app navigates to /(auth)/login directly
+# Skip onboarding → guest-first app navigates to /(tabs)/home
 - tapOn:
     id: "onboarding.skip"
-# Wait for login screen to render after route transition (can take 5-10s on CI)
+# Wait for home screen after onboarding skip
+- extendedWaitUntil:
+    visible:
+      id: "home.container"
+    timeout: 20000
+# Navigate to Settings tab → Login
+- tapOn:
+    text: "設定"
+- extendedWaitUntil:
+    visible:
+      id: "settings.login"
+    timeout: 10000
+- tapOn:
+    id: "settings.login"
+# Wait for login screen to render
 - extendedWaitUntil:
     visible:
       id: "auth.email"
-    timeout: 20000
+    timeout: 15000
 - tapOn:
     id: "auth.email"
 - inputText: "${E2E_TEST_EMAIL}"

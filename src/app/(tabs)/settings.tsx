@@ -46,6 +46,7 @@ export default function SettingsTabScreen() {
       {/* Login (guest-first: only when not logged in) */}
       {!session && (
         <TouchableOpacity
+          testID="settings.login"
           style={styles.menuRow}
           onPress={() => router.push('/(auth)/login' as any)}
         >

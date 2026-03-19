@@ -67,7 +67,7 @@ describe('useOnboardingControls — goNext', () => {
     await act(async () => { result.current.goNext(); });
     expect(result.current.page).toBe(0); // page did not increment
     expect(AsyncStorage.setItem).toHaveBeenCalledWith(ONBOARDING_KEY, '1');
-    expect(mockReplace).toHaveBeenCalledWith('/(auth)/login'); // root layout handles session-based redirect
+    expect(mockReplace).toHaveBeenCalledWith('/(tabs)/home'); // root layout handles session-based redirect
   });
 
   it('triggers haptic when calling finish via goNext on last slide', async () => {
@@ -116,7 +116,7 @@ describe('useOnboardingControls — finish', () => {
   it('navigates to login (root layout handles session-based redirect)', async () => {
     const { result } = renderHook(() => useOnboardingControls(3));
     await act(async () => { result.current.finish(); });
-    expect(mockReplace).toHaveBeenCalledWith('/(auth)/login');
+    expect(mockReplace).toHaveBeenCalledWith('/(tabs)/home');
   });
 
   it('triggers haptic feedback', async () => {

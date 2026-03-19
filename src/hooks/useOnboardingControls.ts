@@ -84,8 +84,8 @@ export function useOnboardingControls(slideCount: number) {
     } catch {
       // Write failed — still navigate (worst case: user sees onboarding again)
     }
-    // Go to login; root layout redirect handles session-based routing
-    router.replace('/(auth)/login');
+    // Guest-first: go straight to home. Login available via Settings tab.
+    router.replace('/(tabs)/home');
   }
 
   function onSwipeEnd(event: NativeSyntheticEvent<NativeScrollEvent>): void {
