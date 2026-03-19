@@ -32,5 +32,8 @@ appId: com.pixelherbarium.app
 - inputText: "${E2E_TEST_PASSWORD}"
 - tapOn:
     id: "auth.signIn"
-- assertVisible:
-    id: "home.container"
+# Supabase auth + redirect can take 10-20s on CI — use extended wait
+- extendedWaitUntil:
+    visible:
+      id: "home.container"
+    timeout: 30000
