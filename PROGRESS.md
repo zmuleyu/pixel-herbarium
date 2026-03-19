@@ -70,29 +70,27 @@ Updated: 2026-03-19 (15:00)
 
 ## Layer 2: Codemagic + Maestro E2E + 截图
 
-**当前状态**：Jest + TS ✅ | EAS Simulator (stamp) `c6652166` 🔄 queued | 待 Codemagic 截图 run
+**当前状态**：Jest + TS ✅ | Codemagic `69bb6fc1c02438a9669bd938` 🔄 running（eas build --local）
 
 ### 已完成
-- [x] Jest mock 修复 + 4 个 testID 新增 + Maestro flows 全量更新 (commit `ae6b2bd`)
-- [x] EAS Simulator build `100ca731` — ✅ finished 2026-03-19 05:19 (commit `4ae8eb7`)
-- [x] EAS Simulator build `fb6c8451` — ✅ finished (content-pack, 无 stamp)
+- [x] Jest mock 修复 + 4 个 testID 新增 + Maestro flows 全量更新
+- [x] EAS Simulator build `fb6c8451` — ✅ finished (含 stamp 代码，PROGRESS 旧注释有误)
 - [x] Layer 4: GitHub Actions release workflow (`release.yml`)
 - [x] stamp PR #1 merged master `85059cd` — ✅
 - [x] 6 个 Maestro 截图 flows — ✅ (e2e/screenshots/)
+- [x] ASC 元数据全部填写 — 推广文本/描述/关键词/联系信息/隐私政策URL ✅
 
 ### 待做
-- [ ] **EAS Simulator build `c6652166` 完成**（含 stamp 代码）— 队列中 ~30-60 min
-- [ ] **触发 Codemagic build**（build 完成后手动触发）— 从 master 拉 stamp binary → 运行截图 flows
+- [ ] **Codemagic build `69bb6fc1c02438a9669bd938` 完成** — 🔄 running ~30-50 min
 - [ ] **下载 artifacts** `e2e/current/*.png`（8 张：discover/herbarium/login/map/profile/stamp×3）
 - [ ] **Canva 后期处理** — 添加文字叠加 + 设备边框
 - [ ] **上传截图到 ASC** — App Store Connect → 花図鉑 → 6.9" 截图
 
 ### Build IDs
-- **EAS Simulator (stamp+master)**: `c6652166-4061-466a-b517-7a9969ae3846` — 🔄 queued 2026-03-19
-- **EAS Simulator (content-pack)**: `fb6c8451` (commit `fe38b7ae`) — ✅ (无 stamp)
+- **Codemagic (screenshot)**: `69bb6fc1c02438a9669bd938` — 🔄 running 2026-03-19
+- **EAS Simulator**: `fb6c8451` (commit `fe38b7ae`) — ✅ (含 stamp)
 - **EAS Preview (stamp)**: `1643f1b6` — ✅ (OTA 已推 preview)
 - Codemagic App: `69ba556c2217be10dc8b85f8`
-- Codemagic Build: `69bb5fbf20d838e1b8c99f47` — ⚠️ 使用旧 binary（无 stamp）
 
 ---
 
