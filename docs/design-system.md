@@ -16,7 +16,7 @@ Adult Kawaii retains the emotional warmth of "cute" (温かさ、治癒、軽さ
 
 ### Why This Works for PH's Audience
 
-Research validation (from `adult-kawaii-japan-app-analysis.md`):
+Research validation (from `research/market/adult-kawaii-japan-app-analysis.md`):
 - Japanese women aged 20-35 prefer "ナチュラル系" (natural-style) color palettes: green × cream
 - Sage green + cream is the dominant color combination in Japanese lifestyle brands targeting this demographic (Niko and..., NATURAL KITCHEN)
 - Aligns with global 2025-2026 "soft naturalism" mobile design trend (Envato, UXPin)

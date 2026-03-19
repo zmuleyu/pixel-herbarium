@@ -210,7 +210,7 @@ Full SOP → `research/platform/instagram-hashtag-research.md`
 2. Search: `桜 アプリ おすすめ 2026` `-RT lang:ja`
 3. Record: sentiment, recurring complaints, feature requests
 
-Full SOP → `补充材料/X_Japan_Hanami_Research_Guide.md`
+Full SOP → `research/platform/x-hanami-research.md`
 
 ### 5.4 Competitor GPlay IDs (verified 2026-03-16)
 
