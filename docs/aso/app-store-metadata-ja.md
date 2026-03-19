@@ -155,3 +155,9 @@
 ```
 4+（すべての年齢に適切）
 ```
+
+## 著作権（ASC: App Information → Copyright）
+
+```
+© 2026 Cybernium
+```
