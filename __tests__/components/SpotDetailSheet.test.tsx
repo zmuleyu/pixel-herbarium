@@ -13,7 +13,7 @@ import type { FlowerSpot } from '../../src/types/hanami';
 import type { SpotCheckinResult } from '../../src/types/sakura';
 
 const spot: FlowerSpot = {
-  id: 1, seasonId: 'sakura', nameJa: '新宿御苑', nameEn: 'Shinjuku Gyoen',
+  id: 1, regionId: 'jp', seasonId: 'sakura', nameJa: '新宿御苑', nameEn: 'Shinjuku Gyoen',
   prefecture: '東京都', prefectureCode: 13, city: '新宿区', category: 'garden',
   bloomTypical: { earlyStart: '03-22', peakStart: '03-30', peakEnd: '04-08', lateEnd: '04-15' },
   latitude: 35.6852, longitude: 139.71, tags: ['名所100選'],

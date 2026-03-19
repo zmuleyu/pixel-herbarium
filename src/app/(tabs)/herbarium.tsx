@@ -24,7 +24,7 @@ import { useSakuraStore } from '@/stores/sakura-store';
 import SpotStampGrid from '@/components/SpotStampGrid';
 import SpotDetailSheet from '@/components/SpotDetailSheet';
 import type { FlowerSpot } from '@/types/hanami';
-import type { SpotCheckinResult } from '@/types/sakura';
+import type { SpotCheckinResult } from '@/types/spot';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CELL_SIZE = Math.floor(SCREEN_WIDTH / GRID_COLUMNS);

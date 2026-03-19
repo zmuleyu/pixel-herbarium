@@ -6,7 +6,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Dimensions } from '
 import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import type { FlowerSpot } from '@/types/hanami';
-import type { SpotCheckinResult } from '@/types/sakura';
+import type { SpotCheckinResult } from '@/types/spot';
 
 const COLS       = 8;
 const GAP        = 4;

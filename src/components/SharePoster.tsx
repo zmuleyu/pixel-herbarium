@@ -11,7 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { RARITY_LABELS } from '@/constants/plants';
 import { getPlantGradientColors } from '@/utils/plant-gradient';
-import type { SharePosterSpot } from '@/types/sakura';
+import type { SharePosterSpot } from '@/types/spot';
 
 // ---------------------------------------------------------------------------
 // Public types

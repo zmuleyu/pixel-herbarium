@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import type { FlowerSpot } from '@/types/hanami';
-import type { SpotCheckinResult } from '@/types/sakura';
+import type { SpotCheckinResult } from '@/types/spot';
 
 interface Props {
   spot:           FlowerSpot | null;
