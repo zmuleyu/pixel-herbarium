@@ -4,6 +4,7 @@
   "spots": [
     {
       "id": 1,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "上野恩賜公園",
       "nameEn": "Ueno Park",
@@ -24,6 +25,7 @@
     },
     {
       "id": 2,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "新宿御苑",
       "nameEn": "Shinjuku Gyoen",
