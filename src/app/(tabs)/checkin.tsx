@@ -20,12 +20,7 @@ import { useCheckinPhoto } from '@/hooks/useCheckinPhoto';
 import { SpotSelector } from '@/components/checkin/SpotSelector';
 import { StampPreview } from '@/components/stamps';
 import type { FlowerSpot, SpotsData, StampStyle, StampPosition } from '@/types/hanami';
-import sakuraData from '@/data/packs/jp/seasons/sakura.json';
-
-// Map seasonId → spots JSON
-const SEASON_SPOTS: Record<string, SpotsData> = {
-  sakura: sakuraData as SpotsData,
-};
+import { loadSpotsData } from '@/services/content-pack';
 
 /** Simple ID without extra deps */
 function genId(): string {
@@ -48,7 +43,7 @@ export default function CheckinScreen() {
 
   const checkinDate = useRef(new Date());
 
-  const spotsData = SEASON_SPOTS[season.id];
+  const spotsData = loadSpotsData(season.id);
   const spots: FlowerSpot[] = spotsData?.spots ?? [];
 
   // ── Photo step handlers ──────────────────────────────────────────────────

@@ -15,18 +15,13 @@ import { colors, typography, spacing, borderRadius, getSeasonTheme } from '@/con
 import { getActiveSeason } from '@/constants/seasons';
 import { useCheckinStore } from '@/stores/checkin-store';
 import type { CheckinRecord } from '@/types/hanami';
-import sakuraData from '@/data/packs/jp/seasons/sakura.json';
 import type { SpotsData } from '@/types/hanami';
+import { loadSpotsData } from '@/services/content-pack';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const COLUMNS = 2;
 const CARD_GAP = spacing.sm;
 const CARD_SIZE = (SCREEN_WIDTH - spacing.md * 2 - CARD_GAP) / COLUMNS;
-
-// Map seasonId → spots for name lookup
-const SEASON_SPOTS: Record<string, SpotsData> = {
-  sakura: sakuraData as SpotsData,
-};
 
 function formatDateShort(iso: string): string {
   const d = new Date(iso);
@@ -35,7 +30,7 @@ function formatDateShort(iso: string): string {
 }
 
 function getSpotName(seasonId: string, spotId: number): string {
-  const data = SEASON_SPOTS[seasonId];
+  const data = loadSpotsData(seasonId);
   if (!data) return String(spotId);
   return data.spots.find((s) => s.id === spotId)?.nameJa ?? String(spotId);
 }
