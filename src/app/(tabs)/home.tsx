@@ -25,13 +25,7 @@ import {
 } from '@/utils/bloom';
 import { useCheckinStore } from '@/stores/checkin-store';
 import type { FlowerSpot } from '@/types/hanami';
-
-import sakuraData from '@/data/packs/jp/seasons/sakura.json';
-
-// Map seasonId to spot data
-const SEASON_SPOTS: Record<string, FlowerSpot[]> = {
-  sakura: sakuraData.spots as FlowerSpot[],
-};
+import { loadSpotsData } from '@/services/content-pack';
 
 function formatJapaneseDate(date: Date): string {
   const m = date.getMonth() + 1;
@@ -46,7 +40,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const season = getActiveSeason();
   const theme = getSeasonTheme(season.id);
-  const spots = SEASON_SPOTS[season.id] ?? [];
+  const spots = loadSpotsData(season.id)?.spots ?? [];
   const featured = getFeaturedSpot(spots);
   const history = useCheckinStore((s) => s.history);
   const loadHistory = useCheckinStore((s) => s.loadHistory);
