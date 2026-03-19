@@ -49,10 +49,9 @@ export async function signInWithLine() {
     throw new Error('LINE_CHANNEL_ID is not configured');
   }
 
-  const redirectUri = AuthSession.makeRedirectUri({
-    scheme: 'pixelherbarium',
-    path: 'auth/line/callback',
-  });
+  // LINE console requires an HTTPS callback URL.
+  // auth-line-callback edge function receives LINE's redirect and bounces to the custom scheme.
+  const redirectUri = 'https://uwdgnueaycatmkzkbxwo.supabase.co/functions/v1/auth-line-callback';
 
   const request = new AuthSession.AuthRequest({
     clientId: LINE_CHANNEL_ID,
