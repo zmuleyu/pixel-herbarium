@@ -1,3 +1,4 @@
+import type { SeasonConfig } from '@/types/region';
 export type { SeasonConfig } from '@/types/region';
 
 export const SEASONS: SeasonConfig[] = [

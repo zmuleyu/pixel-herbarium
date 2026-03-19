@@ -3,6 +3,7 @@
 
 export interface FlowerSpot {
   id: number;
+  regionId: string; // 'jp', 'cn', etc.
   seasonId: string; // links to SeasonConfig.id
   nameJa: string;
   nameEn: string;
