@@ -341,5 +341,38 @@
   },
   "invite": {
     "welcome": "A friend brought you here.\nLet's discover flowers together 🌸"
+  },
+  "guide": {
+    "discover": {
+      "step1": "Photograph plants here ✿",
+      "step2": "Your location is used to record plants nearby",
+      "step3": "Check your remaining shots before capturing"
+    },
+    "stamp": {
+      "step1": "Your photo becomes pixel art",
+      "step2": "Choose stamp position from a 3×3 grid",
+      "step3": "Adjust opacity and size to blend naturally",
+      "step4": "Save and share on social media"
+    },
+    "herbarium": {
+      "step1": "Plants you discover collect here",
+      "step2": "Filter by rarity level"
+    },
+    "map": {
+      "step1": "Switch between discoveries and sakura spots",
+      "step2": "Heatmap shows where plants are most common"
+    },
+    "next": "Next",
+    "done": "Got it",
+    "settings": {
+      "title": "How to Use",
+      "subtitle": "Review how to use each feature",
+      "resetAll": "Reset All",
+      "resetDone": "Guide reset",
+      "featureDiscover": "Discover",
+      "featureStamp": "Stamp",
+      "featureHerbarium": "Herbarium",
+      "featureMap": "Map"
+    }
   }
 }
