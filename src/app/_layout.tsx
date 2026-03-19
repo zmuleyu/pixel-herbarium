@@ -6,7 +6,7 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import * as Linking from 'expo-linking';
-import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/services/supabase';
 import { colors } from '@/constants/theme';
@@ -135,9 +135,9 @@ export default function RootLayout() {
 
       let done: string | null = null;
       try {
-        done = await SecureStore.getItemAsync(ONBOARDING_KEY);
+        done = await AsyncStorage.getItem(ONBOARDING_KEY);
       } catch {
-        done = '1'; // SecureStore error → assume done, don't block user
+        done = '1'; // AsyncStorage error → assume done, don't block user
       }
 
       if (!done) {

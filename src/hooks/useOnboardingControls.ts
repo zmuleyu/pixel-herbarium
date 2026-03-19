@@ -80,7 +80,7 @@ export function useOnboardingControls(slideCount: number) {
   async function finish(): Promise<void> {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
-      await SecureStore.setItemAsync(ONBOARDING_KEY, '1');
+      await AsyncStorage.setItem(ONBOARDING_KEY, '1');
     } catch {
       // Write failed — still navigate (worst case: user sees onboarding again)
     }
