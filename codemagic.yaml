@@ -26,13 +26,13 @@ workflows:
       - name: Download EAS Simulator build
         script: |
           npm install -g eas-cli
-          BUILD_URL=$(eas build:list --platform ios --profile simulator --limit 1 --json \
+          BUILD_URL=$(eas build:list --platform ios --profile simulator --status finished --limit 1 --json \
             | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); \
               console.log(d[0]?.artifacts?.buildUrl ?? '')")
           if [ -z "$BUILD_URL" ]; then
-            echo "No simulator build found — triggering new build"
-            eas build --profile simulator --platform ios --non-interactive
-            BUILD_URL=$(eas build:list --platform ios --profile simulator --limit 1 --json \
+            echo "No finished simulator build found — triggering new build"
+            eas build --profile simulator --platform ios --non-interactive --wait
+            BUILD_URL=$(eas build:list --platform ios --profile simulator --status finished --limit 1 --json \
               | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); \
                 console.log(d[0].artifacts.buildUrl)")
           fi
