@@ -16,8 +16,8 @@ expo-env.d.ts
 # Test coverage reports (auto-generated)
 coverage/
 
-# Cross-project reference docs (not PH-specific)
-docs/reference/
+# Archived: docs/reference/deskbuddy/ and docs/reference/gamification/ → D:/archive/
+# docs/reference/botanical/ kept as local backup (not tracked)
 
 # Supabase CLI temp
 supabase/.branches/
@@ -27,3 +27,4 @@ supabase/.temp/
 e2e/diffs/
 .maestro/tests/
 screenshots/
+docs/reference/
