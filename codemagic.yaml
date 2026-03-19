@@ -26,13 +26,27 @@ workflows:
       - name: Build iOS Simulator app locally
         script: |
           npm install -g eas-cli
+          # Suppress Swift 6 strict concurrency warnings that break RN 0.83 build
+          # with Xcode 16.2. These are warnings in Expo/RN native modules, not our code.
+          export OTHER_SWIFT_FLAGS="-Xfrontend -disable-upcoming-feature -Xfrontend StrictConcurrency"
           # Build locally on this Mac — avoids EAS cloud quota limits and always
           # uses the current commit's code (no stale binary from EAS cache).
-          # eas build --local generates native files, installs pods, and
-          # compiles with Xcode, outputting a .tar.gz containing the .app file.
           eas build --local --profile simulator --platform ios --non-interactive \
             --output app.tar.gz
+          # Verify the build artifact exists before proceeding
+          if [ ! -f app.tar.gz ]; then
+            echo "ERROR: app.tar.gz not found — eas build failed"
+            exit 1
+          fi
           tar xzf app.tar.gz || unzip -q app.tar.gz || true
+          # Verify .app was extracted
+          APP_CHECK=$(find . -name "*.app" -maxdepth 4 | head -1)
+          if [ -z "$APP_CHECK" ]; then
+            echo "ERROR: No .app found after extraction"
+            ls -la
+            exit 1
+          fi
+          echo "Build artifact verified: $APP_CHECK"
 
       - name: Boot Simulator & install app
         script: |
