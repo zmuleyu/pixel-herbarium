@@ -13,6 +13,7 @@ import {
   StyleSheet,
   Dimensions,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';

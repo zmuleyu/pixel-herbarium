@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useTranslation } from 'react-i18next';
-import { signInWithApple, signInWithEmail, signInWithLine } from '@/services/auth';
+import { signInWithApple, signInWithEmail, signInWithLine, confirmLinkLine } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 
@@ -40,8 +40,39 @@ export default function LoginScreen() {
   async function handleLine() {
     try {
       setSubmitting(true);
-      await signInWithLine();
-      // onAuthStateChange in _layout.tsx handles session/user updates.
+      const result = await signInWithLine();
+
+      if (result.requires_linking) {
+        // User has an existing account with matching email — show merge confirmation
+        const { id_token, existing_user_id } = result;
+        Alert.alert(
+          'アカウントが見つかりました',
+          'このメールアドレスのアカウントがすでにあります。LINEと統合しますか？\n\n統合すると、今後LINEでもサインインできるようになります。',
+          [
+            {
+              text: 'キャンセル',
+              style: 'cancel',
+              onPress: () => setSubmitting(false),
+            },
+            {
+              text: '統合する',
+              onPress: async () => {
+                try {
+                  await confirmLinkLine(id_token, existing_user_id);
+                  // onAuthStateChange handles navigation
+                } catch (linkErr: any) {
+                  setError(linkErr.message);
+                  Alert.alert(t('auth.error'), t('auth.lineError'));
+                  setSubmitting(false);
+                }
+              },
+            },
+          ],
+        );
+        return; // submitting stays true until dialog resolves
+      }
+
+      // Normal sign-in — onAuthStateChange handles navigation
     } catch (e: any) {
       if (!e.message?.includes('cancelled')) {
         setError(e.message);
