@@ -1,7 +1,7 @@
 # Competitive Insights
 
 > Quick-reference document for design decisions informed by competitor analysis.
-> Full research: `../补充材料/` | Automated monitoring: `scrapling-mcp/core/ph_monitor.py`
+> Full research: `docs/research/` | Automated monitoring: `scrapling-mcp/core/ph_monitor.py`
 
 ---
 
@@ -161,7 +161,7 @@ Sakura Navi proves seasonal apps can succeed, but also shows the limitation: use
 
 ## 5. Research SOP — Manual Research Platforms
 
-Platforms that cannot be automated (no public API or against ToS) require periodic manual research. Full guides are in `../补充材料/`.
+Platforms that cannot be automated (no public API or against ToS) require periodic manual research. Full guides are in `docs/research/`.
 
 ### 5.1 Platform Automation Status
 
@@ -169,15 +169,15 @@ Platforms that cannot be automated (no public API or against ToS) require period
 |----------|-----------|------|-----------|-------|
 | **App Store JP** | ✅ Automated | `scrapling-mcp appstore-reviews` | Weekly | — |
 | **Google Play JP** | ✅ Automated | `scrapling-mcp gplay-reviews` | Weekly | — |
-| **Yahoo! 知恵袋** | ✅ Automated | `scrapling-mcp chiebukuro-search` | Weekly | `补充材料/日本赏花App_用户评论采集指南_补充平台版.md §6` |
-| **Instagram** | ❌ Manual | Browser + Instaloader (personal) | Monthly | `补充材料/instagram_hashtag_research_guide.md` |
-| **YouTube** | ❌ Manual (Phase 2) | YouTube Data API v3 | Post-launch | `补充材料/youtube_comment_research_japan_hanami.md` |
-| **X (Twitter)** | ❌ Manual | Browser + Advanced Search | Bi-weekly | `补充材料/X_Japan_Hanami_Research_Guide.md` |
-| **LINE** | ❌ Manual | Browser — LINE OpenChat / VOOM | Monthly | `补充材料/LINE_Japan_Hanami_Research_Guide.md` |
+| **Yahoo! 知恵袋** | ✅ Automated | `scrapling-mcp chiebukuro-search` | Weekly | `research/data/user-review-collection-guide.md §6` |
+| **Instagram** | ❌ Manual | Browser + Instaloader (personal) | Monthly | `research/platform/instagram-hashtag-research.md` |
+| **YouTube** | ❌ Manual (Phase 2) | YouTube Data API v3 | Post-launch | `research/platform/youtube-hanami-research.md` |
+| **X (Twitter)** | ❌ Manual | Browser + Advanced Search | Bi-weekly | `research/platform/x-hanami-research.md` |
+| **LINE** | ❌ Manual | Browser — LINE OpenChat / VOOM | Monthly | `research/platform/line-hanami-research.md` |
 | **5ch / 2ch** | ❌ Skip | Wrong demographic (25-50M) | — | — |
 | **TikTok** | ❌ Skip | No public API | — | — |
-| **Ameba Blog** | ❌ Manual | Google site search | Monthly | `补充材料/日本赏花App_用户评论采集指南_补充平台版.md §8` |
-| **Note.com** | ❌ Manual (Phase 2) | Note API | Post-launch | `补充材料/日本赏花App_用户评论采集指南_补充平台版.md §9` |
+| **Ameba Blog** | ❌ Manual | Google site search | Monthly | `research/data/user-review-collection-guide.md §8` |
+| **Note.com** | ❌ Manual (Phase 2) | Note API | Post-launch | `research/data/user-review-collection-guide.md §9` |
 | **Google Maps** | ❌ Skip | Paid API, low ROI | — | — |
 
 ### 5.2 Weekly Automated Run
@@ -203,7 +203,7 @@ Results saved to `~/.scrapling-mcp/data.db` and summarized in `ph-signal-report.
 2. Record: post count, top post engagement, comment themes
 3. Log findings in `ph-signal-report.md` under "Instagram Signals"
 
-Full SOP → `补充材料/instagram_hashtag_research_guide.md`
+Full SOP → `research/platform/instagram-hashtag-research.md`
 
 **X / Twitter (10 min):**
 1. Advanced Search: `(GreenSnap OR PictureThis OR ハナノナ) lang:ja min_faves:3`

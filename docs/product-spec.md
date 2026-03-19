@@ -278,17 +278,16 @@ The three systems form a closed loop:
 
 ## Appendix: Research Material Index
 
-All original research documents are in `../补充材料/`:
+All research documents are in `docs/research/`:
 
 | Document | Content |
 |----------|---------|
-| `adult-kawaii-japan-app-analysis.md` | Adult Kawaii visual style validation |
-| `flowery-app-deep-analysis.md` | FLOWERY competitor deep dive |
-| `pixel-herbarium-app-design-analysis.md` | Cross-competitor UI/UX analysis |
-| `pixel-herbarium-competitive-deep-dive.md` | Market validation + GPS mechanism + data flywheel |
-| `pixel-herbarium-japan-audience-analysis.md` | Japan market TAM/SAM/SOM |
-| `sakura-navi-gps-stamp-deep-dive.md` | GPS stamp card mechanism |
-| `sakura-navi-myspot-calendar-deep-dive.md` | MY SPOT + calendar features |
-| `weathernews-sakura-crowdsourcing-deep-dive.md` | Crowdsourcing data flywheel (HBS case) |
-| `图鉑/layer4_prd_engine_spec.md` | PRD auto-generation engine |
-| `图鉑/line-competitor-analysis-layer*.md` | LINE platform signal extraction pipeline |
+| `research/market/adult-kawaii-japan-app-analysis.md` | Adult Kawaii visual style validation |
+| `research/competitor/flowery-app-deep-analysis.md` | FLOWERY competitor deep dive |
+| `research/competitor/cross-competitor-ui-analysis.md` | Cross-competitor UI/UX analysis |
+| `research/competitor/market-validation-deep-dive.md` | Market validation + GPS mechanism + data flywheel |
+| `research/market/japan-audience-analysis.md` | Japan market TAM/SAM/SOM |
+| `research/competitor/sakura-navi-gps-stamp-deep-dive.md` | GPS stamp card mechanism |
+| `research/competitor/sakura-navi-myspot-calendar-deep-dive.md` | MY SPOT + calendar features |
+| `research/competitor/weathernews-sakura-crowdsourcing-deep-dive.md` | Crowdsourcing data flywheel (HBS case) |
+| `research/platform/line-analysis-layer1~3.md` | LINE platform signal extraction pipeline |
