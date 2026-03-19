@@ -1,52 +1,75 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { borderRadius, spacing } from '@/constants/theme';
-import type { StampStyle } from '@/types/hanami';
-
-const STYLES: { key: StampStyle; labelKey: string }[] = [
-  { key: 'pixel', labelKey: 'stamp.pixel' },
-  { key: 'seal', labelKey: 'stamp.seal' },
-  { key: 'minimal', labelKey: 'stamp.minimal' },
-];
+import { STAMP_STYLES } from '@/constants/stamp-styles';
+import { spacing, borderRadius } from '@/constants/theme';
+import type { StampStyleId } from '@/types/hanami';
 
 interface StyleSelectorProps {
-  selected: StampStyle;
-  onSelect: (style: StampStyle) => void;
+  selected: StampStyleId | string;
+  onSelect: (style: StampStyleId) => void;
   themeColor: string;
 }
 
 export function StyleSelector({ selected, onSelect, themeColor }: StyleSelectorProps) {
   const { t } = useTranslation();
   return (
-    <View style={styles.row}>
-      {STYLES.map(({ key, labelKey }) => {
-        const active = key === selected;
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.scrollContent}
+    >
+      {STAMP_STYLES.map(({ id, nameKey }) => {
+        const active = id === selected;
         return (
           <TouchableOpacity
-            key={key}
-            style={[styles.tab, active
-              ? { backgroundColor: `${themeColor}18`, borderColor: themeColor, borderWidth: 1.5 }
-              : { backgroundColor: '#f8f8f8', borderColor: '#e0e0e0', borderWidth: 1 }
+            key={id}
+            style={[
+              styles.card,
+              active
+                ? { borderColor: themeColor, borderWidth: 1.5, backgroundColor: `${themeColor}15` }
+                : styles.cardInactive,
             ]}
-            onPress={() => onSelect(key)}
+            onPress={() => onSelect(id)}
             activeOpacity={0.7}
             accessibilityRole="tab"
             accessibilityState={{ selected: active }}
-            accessibilityLabel={`${t(labelKey)}${active ? '、選択中' : ''}`}
+            accessibilityLabel={`${t(nameKey)}${active ? '、選択中' : ''}`}
           >
-            <Text style={[styles.label, { color: active ? themeColor : '#999', fontWeight: active ? 'bold' : 'normal' }]}>
-              {t(labelKey)}
+            <Text
+              style={[
+                styles.label,
+                { color: active ? themeColor : '#999', fontWeight: active ? 'bold' : 'normal' },
+              ]}
+            >
+              {t(nameKey)}
             </Text>
           </TouchableOpacity>
         );
       })}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: spacing.sm },
-  tab: { flex: 1, alignItems: 'center', paddingVertical: spacing.sm, borderRadius: borderRadius.sm },
-  label: { fontSize: 12 },
+  scrollContent: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  card: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    backgroundColor: '#f8f8f8',
+  },
+  cardInactive: {
+    borderColor: '#e0e0e0',
+    backgroundColor: '#f8f8f8',
+  },
+  label: {
+    fontSize: 12,
+  },
 });

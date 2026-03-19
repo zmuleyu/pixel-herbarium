@@ -13,7 +13,8 @@ import { SEASONS, getActiveSeason } from '@/constants/seasons';
 import { StampOverlay } from './StampOverlay';
 import { StyleSelector } from './StyleSelector';
 import { PositionSelector } from './PositionSelector';
-import type { FlowerSpot, StampStyle, StampPosition } from '@/types/hanami';
+import type { FlowerSpot, StampStyleId, StampPosition } from '@/types/hanami';
+import { STAMP_STYLE_MIGRATION, DEFAULT_STAMP_STYLE_ID } from '@/constants/stamp-styles';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
@@ -27,12 +28,14 @@ const VALID_POSITIONS: StampPosition[] = [
 const OPACITY_KEY = 'stamp_opacity_preference';
 const SIZE_KEY = 'stamp_size_preference';
 
+const VALID_STYLE_IDS: string[] = ['classic', 'relief', 'postcard', 'medallion', 'window', 'minimal'];
+
 interface StampPreviewProps {
   photoUri: string;
   spot: FlowerSpot;
   date: Date;
   seasonId: string;
-  onSave: (composedUri: string, stampStyle: StampStyle, stampPosition: StampPosition) => void;
+  onSave: (composedUri: string, stampStyle: StampStyleId, stampPosition: StampPosition) => void;
   onShare: (composedUri: string) => void;
 }
 
@@ -43,7 +46,7 @@ export function StampPreview({
   const season = SEASONS.find(s => s.id === seasonId) ?? getActiveSeason();
   const viewShotRef = useRef<View>(null);
 
-  const [stampStyle, setStampStyle] = useState<StampStyle>(stampConst.defaultStyle);
+  const [stampStyle, setStampStyle] = useState<StampStyleId | string>(DEFAULT_STAMP_STYLE_ID);
   const [stampPosition, setStampPosition] = useState<StampPosition>(stampConst.defaultPosition);
   const [opacity, setOpacity] = useState(0.9);
   const [scale, setScale] = useState(1.0);
@@ -62,8 +65,9 @@ export function StampPreview({
         AsyncStorage.getItem(OPACITY_KEY),
         AsyncStorage.getItem(SIZE_KEY),
       ]);
-      if (savedStyle === 'pixel' || savedStyle === 'seal' || savedStyle === 'minimal') {
-        setStampStyle(savedStyle);
+      if (savedStyle) {
+        const migrated = STAMP_STYLE_MIGRATION[savedStyle] ?? savedStyle;
+        if (VALID_STYLE_IDS.includes(migrated)) setStampStyle(migrated as StampStyleId);
       }
       if (savedPos && VALID_POSITIONS.includes(savedPos as StampPosition)) {
         setStampPosition(savedPos as StampPosition);

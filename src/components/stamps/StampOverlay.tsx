@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, type ViewStyle } from 'react-native';
+import { Animated, type ViewStyle } from 'react-native';
 import { stamp as stampTheme } from '@/constants/theme';
 import { StampRenderer } from './StampRenderer';
 import type { StampStyleId, StampPosition, FlowerSpot } from '@/types/hanami';
