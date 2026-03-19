@@ -46,6 +46,7 @@
     },
     {
       "id": 3,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "目黒川",
       "nameEn": "Meguro River",
@@ -66,6 +67,7 @@
     },
     {
       "id": 4,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "嵐山",
       "nameEn": "Arashiyama",
@@ -86,6 +88,7 @@
     },
     {
       "id": 5,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "吉野山",
       "nameEn": "Mount Yoshino",
@@ -106,6 +109,7 @@
     },
     {
       "id": 6,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "千鳥ヶ淵",
       "nameEn": "Chidorigafuchi",
@@ -126,6 +130,7 @@
     },
     {
       "id": 7,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "井の頭恩賜公園",
       "nameEn": "Inokashira Park",
@@ -146,6 +151,7 @@
     },
     {
       "id": 8,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "飛鳥山公園",
       "nameEn": "Asukayama Park",
@@ -166,6 +172,7 @@
     },
     {
       "id": 9,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "熊谷桜堤",
       "nameEn": "Kumagaya Sakura Tsutsumi",
@@ -186,6 +193,7 @@
     },
     {
       "id": 10,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "三ツ池公園",
       "nameEn": "Mitsuike Park",
@@ -206,6 +214,7 @@
     },
     {
       "id": 11,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "鶴岡八幡宮",
       "nameEn": "Tsurugaoka Hachimangu",
@@ -226,6 +235,7 @@
     },
     {
       "id": 12,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "鶴舞公園",
       "nameEn": "Tsuruma Park",
@@ -246,6 +256,7 @@
     },
     {
       "id": 13,
+      "regionId": "jp",
       "seasonId": "sakura",
       "nameJa": "犬山城",
       "nameEn": "Inuyama Castle",
