@@ -29,8 +29,12 @@
 - `superpowers/plans/` — 7 implementation plans
 
 ### App Store & Marketing
-- `app-store-prep/` — Compliance checklist, privacy policy, terms, screenshots (8 files)
+- `app-store-prep/submission-review.md` — **上架審核 Runbook**（提交前必読）
+- `app-store-prep/` — Compliance checklist, privacy policy, terms, screenshots (9 files)
 - `aso/` — Metadata (ja/en), keywords, promotional copy for LINE/X/checkin (6 files)
+
+### Operations & Lifecycle
+- `ops/lifecycle.md` — **開発と運営ライフサイクル総纲**（4 Phase framework）
 
 ### Development
 - `dev-guide/bugfix-workflow.md` — Bug triage and fix process

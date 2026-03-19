@@ -1,5 +1,7 @@
 # App Store 上架合规检查清单
 
+> ⚠️ 本文件是 [submission-review.md](submission-review.md) 的子文档。提交前请从 submission-review.md 开始执行完整流程。
+
 > 基于 Appiary 内置合规检查思路定制，提交前逐项核查。
 > 参考：[App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)
 
