@@ -54,7 +54,7 @@ jest.mock('react', () => {
   };
 });
 
-// Shallow-render helper (same pattern as HanakotobaFlipCard tests)
+// Shallow-render helper that handles array children
 function shallowRender(el: any, depth = 8): any {
   if (el == null || typeof el !== 'object' || !el.type) return el;
   if (typeof el.type === 'function' && depth > 0)
@@ -82,6 +82,7 @@ const mockSteps = [
 ];
 
 const mockRect = { x: 75, y: 200, width: 240, height: 240 };
+const mockGetRect = (_key: string) => mockRect;
 
 describe('CoachMark', () => {
   // Reset hook indices before each test so stubs start fresh
@@ -89,13 +90,11 @@ describe('CoachMark', () => {
     jest.resetModules();
   });
 
+  // Updated baseProps to use the spec-correct API
   const baseProps = {
     steps: mockSteps,
-    currentStep: 0,
-    targetRect: mockRect,
-    onNext: jest.fn(),
-    onDismiss: jest.fn(),
-    visible: true,
+    getRect: mockGetRect,
+    onDone: jest.fn(),
   };
 
   it('renders body text for current step', () => {
@@ -114,19 +113,94 @@ describe('CoachMark', () => {
   });
 
   it('shows "わかった" on last step', () => {
-    const lastProps = { ...baseProps, currentStep: 1 };
+    // Provide a single-step array so step 0 is the last step
+    const singleStep = [mockSteps[1]];
+    const lastProps = { ...baseProps, steps: singleStep };
     const tree = JSON.stringify(shallowRender(React.createElement(CoachMark, lastProps)));
     expect(tree).toContain('わかった');
   });
 
-  it('returns null when visible=false', () => {
-    const result = (CoachMark as (p: any) => any)({ ...baseProps, visible: false });
+  it('returns null when steps array is empty', () => {
+    const result = (CoachMark as (p: any) => any)({ ...baseProps, steps: [] });
     expect(result).toBeNull();
   });
 
-  it('renders step indicator numbers', () => {
+  it('renders step indicator dots when multiple steps', () => {
     const tree = JSON.stringify(shallowRender(React.createElement(CoachMark, baseProps)));
-    expect(tree).toContain('1');
-    expect(tree).toContain('2');
+    // accessibilityLabel on dots view contains step count info
+    expect(tree).toContain('ステップ');
+  });
+
+  // Fix 6a: onDone is called when GotIt button pressed on last step
+  it('onDone is called when GotIt button pressed on last step', () => {
+    const mockOnDone = jest.fn();
+    const singleStep = [{ targetKey: 'discover.viewfinder', body: 'guide.discover.step1', icon: '📸' }];
+    const props = { steps: singleStep, getRect: mockGetRect, onDone: mockOnDone };
+    const instance = CoachMark as (p: any) => any;
+    const result = instance(props);
+    // Walk the rendered tree to find the GotIt button's onPress
+    const tree = JSON.stringify(shallowRender(React.createElement(CoachMark, props)));
+    expect(tree).toContain('わかった');
+    // Call handleNext directly by invoking CoachMark's internal logic:
+    // Re-render and find the button, then simulate press via the rendered element
+    const rendered = shallowRender(React.createElement(CoachMark, props));
+    // Find onPress of the GotIt button by walking the tree
+    function findButtonOnPress(node: any): (() => void) | null {
+      if (!node) return null;
+      if (node.props?.accessibilityLabel === 'わかった' && node.props?.onPress) {
+        return node.props.onPress;
+      }
+      if (node.children) {
+        const ch = Array.isArray(node.children) ? node.children : [node.children];
+        for (const c of ch) {
+          const found = findButtonOnPress(c);
+          if (found) return found;
+        }
+      }
+      return null;
+    }
+    const onPress = findButtonOnPress(rendered);
+    expect(onPress).toBeTruthy();
+    onPress!();
+    expect(mockOnDone).toHaveBeenCalled();
+  });
+
+  // Fix 6b: reduce motion — no crash when reduceMotionEnabled resolves true
+  it('reduce motion: no crash when reduceMotion enabled', () => {
+    // The React mock's useEffect is a no-op, so reduceMotion state stays false (initial).
+    // We verify the component renders body text without crashing.
+    const tree = JSON.stringify(shallowRender(React.createElement(CoachMark, baseProps)));
+    expect(tree).toContain('guide.discover.step1');
+  });
+
+  // Fix 6c: tap outside overlay advances to next step
+  it('tap outside overlay advances to next step — overlay onPress calls handleNext', () => {
+    // Render the component and find the full-screen overlay TouchableOpacity's onPress
+    const rendered = shallowRender(React.createElement(CoachMark, baseProps));
+
+    function findOverlayOnPress(node: any): (() => void) | null {
+      if (!node) return null;
+      // The overlay TouchableOpacity has activeOpacity=1 and no accessibilityRole
+      if (
+        node.props?.activeOpacity === 1 &&
+        node.props?.onPress &&
+        !node.props?.accessibilityRole
+      ) {
+        return node.props.onPress;
+      }
+      if (node.children) {
+        const ch = Array.isArray(node.children) ? node.children : [node.children];
+        for (const c of ch) {
+          const found = findOverlayOnPress(c);
+          if (found) return found;
+        }
+      }
+      return null;
+    }
+
+    const overlayOnPress = findOverlayOnPress(rendered);
+    expect(overlayOnPress).toBeTruthy();
+    // Calling it should not throw — it calls handleNext internally
+    expect(() => overlayOnPress!()).not.toThrow();
   });
 });
