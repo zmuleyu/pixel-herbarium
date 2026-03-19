@@ -38,7 +38,7 @@ jest.mock('@/data/packs/jp/seasons/sakura.json', () => ({
 }), { virtual: true });
 
 import { useSakuraStore } from '../../src/stores/sakura-store';
-import type { SpotCheckinResult } from '../../src/types/sakura';
+import type { SpotCheckinResult } from '../../src/types/spot';
 
 const makeCheckin = (overrides: Partial<SpotCheckinResult> = {}): SpotCheckinResult => ({
   id: 'c1', user_id: 'user-abc', spot_id: 1,
