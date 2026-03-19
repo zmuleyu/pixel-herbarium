@@ -70,7 +70,7 @@ Updated: 2026-03-19 (15:00)
 
 ## Layer 2: Codemagic + Maestro E2E — 运行中
 
-**当前状态**：Jest + TS ✅ | EAS Simulator `fb6c8451` 🔄 IN_PROGRESS | Codemagic `69bb5e85` 🔄 triggered
+**当前状态**：Jest + TS ✅ | EAS Simulator `fb6c8451` ✅ finished | Codemagic **需重新触发**（旧 build 用了旧 binary）
 
 ### 已完成
 - [x] Jest mock 修复 + 4 个 testID 新增 + Maestro flows 全量更新 (commit `ae6b2bd`)
