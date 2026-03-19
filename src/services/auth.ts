@@ -2,8 +2,6 @@ import { supabase } from './supabase';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as AuthSession from 'expo-auth-session';
 
-const LINE_CHANNEL_ID = process.env.EXPO_PUBLIC_LINE_CHANNEL_ID;
-
 const LINE_AUTH_DISCOVERY = {
   authorizationEndpoint: 'https://access.line.me/oauth2/v2.1/authorize',
   tokenEndpoint: 'https://api.line.me/oauth2/v2.1/token',
