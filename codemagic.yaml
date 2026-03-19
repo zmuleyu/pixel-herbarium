@@ -4,7 +4,7 @@ workflows:
     max_build_duration: 90
     instance_type: mac_mini_m2
     environment:
-      xcode: 16.2
+      xcode: 16.1
       node: 20.18.0
       groups:
         - expo_credentials
@@ -26,16 +26,15 @@ workflows:
       - name: Build iOS Simulator app locally
         script: |
           npm install -g eas-cli
-          # Suppress Swift 6 strict concurrency warnings that break RN 0.83 build
-          # with Xcode 16.2. These are warnings in Expo/RN native modules, not our code.
-          export OTHER_SWIFT_FLAGS="-Xfrontend -disable-upcoming-feature -Xfrontend StrictConcurrency"
           # Build locally on this Mac — avoids EAS cloud quota limits and always
           # uses the current commit's code (no stale binary from EAS cache).
+          # Xcode 16.1 chosen: 16.2 has Swift strict concurrency errors with RN 0.83,
+          # 'latest' pulls iOS 26 beta which breaks Expo Router navigation.
           eas build --local --profile simulator --platform ios --non-interactive \
             --output app.tar.gz
           # Verify the build artifact exists before proceeding
           if [ ! -f app.tar.gz ]; then
-            echo "ERROR: app.tar.gz not found — eas build failed"
+            echo "ERROR: app.tar.gz not found — eas build --local failed"
             exit 1
           fi
           tar xzf app.tar.gz || unzip -q app.tar.gz || true
