@@ -56,7 +56,7 @@ export async function signInWithLine() {
   const request = new AuthSession.AuthRequest({
     clientId: LINE_CHANNEL_ID,
     redirectUri,
-    scopes: ['profile', 'openid', 'email'],
+    scopes: ['profile', 'openid'],
     responseType: AuthSession.ResponseType.Code,
     extraParams: { bot_prompt: 'normal' },
   });
