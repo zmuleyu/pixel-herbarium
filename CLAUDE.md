@@ -55,7 +55,7 @@ supabase/
 | `docs/competitive-insights.md` | Key competitor takeaways informing design decisions |
 | `docs/design-system.md` | Visual design system: colors, typography, tone of voice |
 
-Original research materials (14 docs) are in `../补充材料/`.
+Research materials are in `docs/research/` (competitor, market, platform, data, design, launch). See `docs/INDEX.md` for full navigation.
 
 ## Development Notes
 
