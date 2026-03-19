@@ -78,7 +78,12 @@
     "tagline": "植物を発見して、ピクセルアートに変換しよう",
     "orEmail": "またはメールで",
     "error": "認証エラー",
-    "signIn": "サインイン"
+    "signIn": "サインイン",
+    "lineLogin": "LINEで続ける",
+    "lineError": "LINE接続に失敗しました"
+  },
+  "invite": {
+    "welcome": "花めぐりへようこそ\n素敵な花との出会いが\nあなたを待っています"
   },
   "map": {
     "title": "同城マップ",
