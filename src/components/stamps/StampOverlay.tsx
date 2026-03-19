@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, StyleSheet, type ViewStyle } from 'react-native';
 import { stamp as stampTheme } from '@/constants/theme';
 import { PixelStamp } from './PixelStamp';
 import { SealStamp } from './SealStamp';
@@ -14,25 +14,36 @@ interface StampOverlayProps {
   spot: FlowerSpot;
   date: Date;
   season: SeasonConfig;
-  /** User-controlled opacity 0-1 (default: style-specific from theme) */
+  /** User-controlled opacity 0-1 (default: 1) */
   userOpacity?: number;
   /** User-controlled scale factor (default: 1.0) */
   userScale?: number;
 }
 
-function getPositionStyle(pos: StampPosition) {
+/**
+ * Build position style using flexbox centering for center positions.
+ * For center-axis positions, the overlay stretches to fill that axis
+ * and uses alignItems/justifyContent to center the stamp child.
+ */
+function getPositionStyle(pos: StampPosition): ViewStyle {
   const p = stampTheme.padding;
-  switch (pos) {
-    case 'top-left':      return { top: p, left: p };
-    case 'top-center':    return { top: p, left: '50%' as any, transform: [{ translateX: -50 }] };
-    case 'top-right':     return { top: p, right: p };
-    case 'middle-left':   return { top: '50%' as any, left: p, transform: [{ translateY: -20 }] };
-    case 'center':        return { top: '50%' as any, left: '50%' as any, transform: [{ translateX: -50 }, { translateY: -20 }] };
-    case 'middle-right':  return { top: '50%' as any, right: p, transform: [{ translateY: -20 }] };
-    case 'bottom-left':   return { bottom: p, left: p };
-    case 'bottom-center': return { bottom: p, left: '50%' as any, transform: [{ translateX: -50 }] };
-    case 'bottom-right':  return { bottom: p, right: p };
+  const s: ViewStyle = { position: 'absolute' };
+
+  // Vertical axis
+  if (pos.startsWith('top'))       { s.top = p; }
+  else if (pos.startsWith('middle') || pos === 'center') {
+    s.top = 0; s.bottom = 0; s.justifyContent = 'center';
   }
+  else /* bottom */                { s.bottom = p; }
+
+  // Horizontal axis
+  if (pos.endsWith('left'))        { s.left = p; }
+  else if (pos.endsWith('center') || pos === 'center') {
+    s.left = 0; s.right = 0; s.alignItems = 'center';
+  }
+  else /* right */                 { s.right = p; }
+
+  return s;
 }
 
 const SEASON_LABELS: Record<string, string> = {
@@ -41,7 +52,7 @@ const SEASON_LABELS: Record<string, string> = {
 
 export function StampOverlay({
   style, position, spot, date, season,
-  userOpacity, userScale,
+  userOpacity = 1, userScale = 1,
 }: StampOverlayProps) {
   const mountOpacity = useRef(new Animated.Value(0)).current;
   const mountScale = useRef(new Animated.Value(0.8)).current;
@@ -66,30 +77,14 @@ export function StampOverlay({
     }
   })();
 
-  // Merge position style, stripping transform to combine with animated transform
-  const posStyle = getPositionStyle(position);
-  const { transform: posTransform, ...posRest } = posStyle as any;
-
-  // Build combined transform: mount animation + position offset + user scale
-  const combinedTransform: any[] = [
-    { scale: Animated.multiply(mountScale, userScale ?? 1) },
-    ...(posTransform ?? []),
-  ];
-
   return (
-    <Animated.View style={[
-      styles.overlay,
-      posRest,
-      {
-        opacity: Animated.multiply(mountOpacity, userOpacity ?? 1),
-        transform: combinedTransform,
-      },
-    ]}>
-      {stampElement}
+    <Animated.View
+      style={[getPositionStyle(position), { opacity: Animated.multiply(mountOpacity, userOpacity) }]}
+      pointerEvents="none"
+    >
+      <Animated.View style={{ transform: [{ scale: Animated.multiply(mountScale, userScale) }] }}>
+        {stampElement}
+      </Animated.View>
     </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  overlay: { position: 'absolute' },
-});
