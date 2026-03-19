@@ -232,7 +232,9 @@
     "title": "足跡",
     "comingSoon": "もうすぐ",
     "totalCount": "{{count}} 箇所訪れた",
-    "empty": "まだ足跡がありません"
+    "empty": "まだ足あとがありません",
+    "emptySub": "散歩に出かけて、\n季節の花に会いに行きませんか？",
+    "emptyCta": "花を見つけに行く"
   },
   "home": {
     "recentTitle": "最近の記録",

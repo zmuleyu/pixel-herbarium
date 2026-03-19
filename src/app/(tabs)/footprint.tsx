@@ -11,9 +11,11 @@ import {
   Dimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, typography, spacing, borderRadius, getSeasonTheme } from '@/constants/theme';
+import { colors, typography, spacing, borderRadius, fontWeight, shadows, getSeasonTheme } from '@/constants/theme';
 import { getActiveSeason } from '@/constants/seasons';
 import { useCheckinStore } from '@/stores/checkin-store';
+import { PressableCard } from '@/components/PressableCard';
+import { useRouter } from 'expo-router';
 import type { CheckinRecord } from '@/types/hanami';
 import type { SpotsData } from '@/types/hanami';
 import { loadSpotsData } from '@/services/content-pack';
@@ -41,7 +43,7 @@ function CheckinCard({ record }: { record: CheckinRecord }) {
   const spotName = getSpotName(record.seasonId, record.spotId);
 
   return (
-    <View style={[styles.card, { borderColor: theme.accent }]}>
+    <PressableCard style={[styles.card, { borderColor: theme.accent }]}>
       <Image
         source={{ uri: record.composedUri }}
         style={styles.cardImage}
@@ -53,7 +55,7 @@ function CheckinCard({ record }: { record: CheckinRecord }) {
         </Text>
         <Text style={styles.cardDate}>{formatDateShort(record.timestamp)}</Text>
       </View>
-    </View>
+    </PressableCard>
   );
 }
 
@@ -61,6 +63,7 @@ export default function FootprintScreen() {
   const { t } = useTranslation();
   const season = getActiveSeason();
   const theme = getSeasonTheme(season.id);
+  const router = useRouter();
   const { history, loading, loadHistory } = useCheckinStore();
 
   useEffect(() => {
@@ -82,8 +85,15 @@ export default function FootprintScreen() {
       {/* Grid */}
       {history.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyEmoji}>👣</Text>
-          <Text style={styles.emptyText}>{t('footprint.empty')}</Text>
+          <Text style={styles.emptyEmoji}>🌿</Text>
+          <Text style={styles.emptyTitle}>{t('footprint.empty')}</Text>
+          <Text style={styles.emptySub}>{t('footprint.emptySub')}</Text>
+          <PressableCard
+            onPress={() => router.push('/(tabs)/discover')}
+            style={[styles.emptyCta, { backgroundColor: theme.primary }]}
+          >
+            <Text style={styles.emptyCtaText}>{t('footprint.emptyCta')}</Text>
+          </PressableCard>
         </View>
       ) : (
         <FlatList
@@ -114,6 +124,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.display,
     fontSize: typography.fontSize.xl,
     color: colors.text,
+    fontWeight: fontWeight.bold,
   },
 
   count: {
@@ -138,6 +149,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     overflow: 'hidden',
     borderWidth: 1,
+    ...shadows.card,
   },
 
   cardImage: {
@@ -175,12 +187,36 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
 
-  emptyEmoji: { fontSize: 48 },
+  emptyEmoji: { fontSize: 56, opacity: 0.6 },
 
-  emptyText: {
+  emptyTitle: {
     fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.lg,
+    color: colors.text,
+    fontWeight: fontWeight.bold,
+    textAlign: 'center',
+  },
+
+  emptySub: {
     fontSize: typography.fontSize.md,
     color: colors.textSecondary,
     textAlign: 'center',
+    lineHeight: typography.fontSize.md * typography.lineHeight,
+    fontWeight: fontWeight.light,
+  },
+
+  emptyCta: {
+    borderRadius: borderRadius.lg,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    marginTop: spacing.sm,
+    alignItems: 'center',
+  },
+
+  emptyCtaText: {
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.md,
+    color: colors.white,
+    fontWeight: fontWeight.semibold,
   },
 });

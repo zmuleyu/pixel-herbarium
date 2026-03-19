@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import {
   View,
   Text,
+  Animated,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
@@ -15,8 +16,11 @@ import {
   typography,
   spacing,
   borderRadius,
+  fontWeight,
+  shadows,
   getSeasonTheme,
 } from '@/constants/theme';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
   getBloomStatus,
   getBloomStatusLabel,
@@ -24,6 +28,8 @@ import {
   getFeaturedSpot,
 } from '@/utils/bloom';
 import { useCheckinStore } from '@/stores/checkin-store';
+import { useStaggeredEntry } from '@/hooks/useStaggeredEntry';
+import { PressableCard } from '@/components/PressableCard';
 import type { FlowerSpot } from '@/types/hanami';
 import { loadSpotsData } from '@/services/content-pack';
 
@@ -48,6 +54,9 @@ export default function HomeScreen() {
     .filter((h) => h.seasonId === season.id)
     .slice(0, 2);
 
+  // Staggered entry: header(1) + featured(1) + bloom(1) + cta(1) + recents(2) = up to 6 items
+  const { getStyle: entryStyle } = useStaggeredEntry({ count: 6 });
+
   useEffect(() => {
     loadHistory();
   }, []);
@@ -58,18 +67,25 @@ export default function HomeScreen() {
       style={[styles.container, { backgroundColor: theme.bgTint }]}
       contentContainerStyle={styles.content}
     >
-      {/* Season Header */}
-      <View style={styles.header}>
-        <Text style={styles.seasonEmoji}>{season.iconEmoji}</Text>
-        <Text style={[styles.seasonName, { color: theme.primary }]}>
-          {t(season.nameKey)}
-        </Text>
-        <Text style={styles.dateText}>{formatJapaneseDate(new Date())}</Text>
-      </View>
+      {/* Season Header with gradient */}
+      <Animated.View style={entryStyle(0)}>
+        <LinearGradient
+          colors={[theme.bgTint, colors.background]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.headerGradient}
+        >
+          <Text style={styles.seasonEmoji}>{season.iconEmoji}</Text>
+          <Text style={[styles.seasonName, { color: theme.primary }]}>
+            {t(season.nameKey)}
+          </Text>
+          <Text style={styles.dateText}>{formatJapaneseDate(new Date())}</Text>
+        </LinearGradient>
+      </Animated.View>
 
       {/* Featured Spot Card */}
       {featured && (
-        <View style={[styles.featuredCard, { borderColor: theme.accent }]}>
+        <Animated.View style={[styles.featuredCard, { borderColor: theme.accent }, entryStyle(1)]}>
           <Text style={styles.featuredLabel}>
             {t('season.sakura.featuredTitle')}
           </Text>
@@ -92,62 +108,67 @@ export default function HomeScreen() {
               ))}
             </View>
           )}
-        </View>
+        </Animated.View>
       )}
 
       {/* Bloom Status Row */}
       {spots.length > 0 && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.bloomRow}
-        >
-          {spots.slice(0, 8).map((spot) => (
-            <View key={spot.id} style={styles.bloomItem}>
-              <Text style={styles.bloomSpotName} numberOfLines={1}>
-                {spot.nameJa}
-              </Text>
-              <BloomBadge spot={spot} />
-            </View>
-          ))}
-        </ScrollView>
+        <Animated.View style={entryStyle(2)}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.bloomRow}
+          >
+            {spots.slice(0, 8).map((spot) => (
+              <View key={spot.id} style={styles.bloomItem}>
+                <Text style={styles.bloomSpotName} numberOfLines={1}>
+                  {spot.nameJa}
+                </Text>
+                <BloomBadge spot={spot} />
+              </View>
+            ))}
+          </ScrollView>
+        </Animated.View>
       )}
 
       {/* CTA Button */}
-      <TouchableOpacity
-        style={[styles.ctaButton, { backgroundColor: theme.primary }]}
-        onPress={() => router.push('/(tabs)/checkin')}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.ctaText}>
-          {t(`season.${season.id}.cta`)}
-        </Text>
-      </TouchableOpacity>
+      <Animated.View style={entryStyle(3)}>
+        <PressableCard
+          onPress={() => router.push('/(tabs)/checkin')}
+          style={[styles.ctaButton, { backgroundColor: theme.primary }]}
+        >
+          <Text style={styles.ctaText}>
+            {t(`season.${season.id}.cta`)}
+          </Text>
+        </PressableCard>
+      </Animated.View>
 
       {/* Recent Check-ins or Empty State */}
       {recentCheckins.length > 0 ? (
-        <View style={styles.recentSection}>
+        <Animated.View style={[styles.recentSection, entryStyle(4)]}>
           <Text style={styles.sectionTitle}>{t('home.recentTitle')}</Text>
-          {recentCheckins.map((record) => {
+          {recentCheckins.map((record, i) => {
             const spot = spots.find((s) => s.id === record.spotId);
             return (
-              <View key={record.id} style={styles.recentCard}>
-                <Text style={styles.recentSpot}>
-                  {spot?.nameJa ?? `Spot #${record.spotId}`}
-                </Text>
-                <Text style={styles.recentDate}>
-                  {new Date(record.timestamp).toLocaleDateString('ja-JP')}
-                </Text>
-              </View>
+              <Animated.View key={record.id} style={entryStyle(4 + i)}>
+                <PressableCard style={styles.recentCard}>
+                  <Text style={styles.recentSpot}>
+                    {spot?.nameJa ?? `Spot #${record.spotId}`}
+                  </Text>
+                  <Text style={styles.recentDate}>
+                    {new Date(record.timestamp).toLocaleDateString('ja-JP')}
+                  </Text>
+                </PressableCard>
+              </Animated.View>
             );
           })}
-        </View>
+        </Animated.View>
       ) : (
-        <View style={styles.emptyCard}>
+        <Animated.View style={[styles.emptyCard, entryStyle(4)]}>
           <Text style={styles.emptyText}>
             {t(`season.${season.id}.empty`)}
           </Text>
-        </View>
+        </Animated.View>
       )}
     </ScrollView>
   );
@@ -177,15 +198,24 @@ const styles = StyleSheet.create({
   },
 
   // Header
-  header: { alignItems: 'center', gap: spacing.xs },
+  headerGradient: {
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.lg,
+    marginHorizontal: -spacing.lg,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.lg,
+  },
   seasonEmoji: { fontSize: 40 },
   seasonName: {
     fontFamily: typography.fontFamily.display,
     fontSize: typography.fontSize.xxl,
+    fontWeight: fontWeight.heavy,
   },
   dateText: {
     fontSize: typography.fontSize.sm,
     color: colors.textSecondary,
+    fontWeight: fontWeight.light,
   },
 
   // Featured card
@@ -195,6 +225,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     padding: spacing.md,
     gap: spacing.sm,
+    ...shadows.card,
   },
   featuredLabel: {
     fontSize: typography.fontSize.xs,
@@ -206,6 +237,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.display,
     fontSize: typography.fontSize.xl,
     color: colors.text,
+    fontWeight: fontWeight.bold,
   },
   featuredMeta: {
     flexDirection: 'row',
@@ -245,6 +277,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
     minWidth: 90,
+    ...shadows.cardSubtle,
   },
   bloomSpotName: {
     fontSize: typography.fontSize.xs,
@@ -274,6 +307,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.display,
     fontSize: typography.fontSize.lg,
     color: colors.white,
+    fontWeight: fontWeight.bold,
   },
 
   // Recent section
@@ -282,6 +316,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.display,
     fontSize: typography.fontSize.lg,
     color: colors.text,
+    fontWeight: fontWeight.bold,
   },
   recentCard: {
     backgroundColor: colors.white,
@@ -292,6 +327,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    ...shadows.cardSubtle,
   },
   recentSpot: {
     fontFamily: typography.fontFamily.display,

@@ -232,7 +232,9 @@
     "title": "Footprint",
     "comingSoon": "Coming Soon",
     "totalCount": "{{count}} spots visited",
-    "empty": "No footprints yet"
+    "empty": "No footprints yet",
+    "emptySub": "Take a walk and\ndiscover the flowers of the season",
+    "emptyCta": "Find flowers"
   },
   "home": {
     "recentTitle": "Recent Records",

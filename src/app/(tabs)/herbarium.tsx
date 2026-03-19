@@ -18,7 +18,7 @@ import { resolvePlantImage } from '@/utils/plant-image';
 import { useHerbariumFilter, FILTER_OPTIONS } from '@/hooks/useHerbariumFilter';
 import { useAuthStore } from '@/stores/auth-store';
 import { getCurrentSeason } from '@/utils/date';
-import { colors, typography, spacing, borderRadius } from '@/constants/theme';
+import { colors, typography, spacing, borderRadius, fontWeight, shadows } from '@/constants/theme';
 import { GRID_COLUMNS, TOTAL_PLANTS, RARITY_LABELS } from '@/constants/plants';
 import { useSpotStore } from '@/stores/spot-store';
 import SpotStampGrid from '@/components/SpotStampGrid';
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   center:    { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' },
 
   header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
-  headerTitle:    { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.lg, color: colors.text },
+  headerTitle:    { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.lg, color: colors.text, fontWeight: fontWeight.bold },
   headerRight:    { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   headerProgress: { fontSize: typography.fontSize.sm, color: colors.textSecondary },
   recapBtn:       { paddingHorizontal: spacing.xs, paddingVertical: 2 },
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   progressBarTrack: { height: 3, backgroundColor: colors.border, marginHorizontal: 0 },
   progressBarFill:  { height: 3, backgroundColor: colors.plantPrimary },
 
-  springBanner:     { marginHorizontal: spacing.md, marginBottom: spacing.sm, padding: spacing.md, backgroundColor: colors.seasonal.sakura, borderRadius: borderRadius.md },
+  springBanner:     { marginHorizontal: spacing.md, marginBottom: spacing.sm, padding: spacing.md, backgroundColor: colors.seasonal.sakura, borderRadius: borderRadius.md, ...shadows.cardSubtle },
   springBannerText: { fontFamily: typography.fontFamily.display, fontSize: typography.fontSize.md, color: colors.text },
   springBannerSub:  { fontSize: typography.fontSize.xs, color: colors.textSecondary, marginTop: 2 },
 

@@ -47,11 +47,44 @@ export const typography = {
   lineHeight: 1.7, // Japanese user preference: spacious
 } as const;
 
+export const fontWeight = {
+  light: '300' as const,    // Body text, captions
+  regular: '400' as const,  // Default
+  semibold: '600' as const, // Badges, labels
+  bold: '800' as const,     // Section headers
+  heavy: '900' as const,    // Hero display (plant names)
+} as const;
+
 export const borderRadius = {
   sm: 6,
   md: 12,
   lg: 20,
   full: 9999,
+} as const;
+
+// Elevated shadow — deeper, softer blur for cards with presence
+export const shadows = {
+  card: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4, // Android
+  },
+  cardSubtle: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  cardLifted: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.12,
+    shadowRadius: 24,
+    elevation: 6,
+  },
 } as const;
 
 // Season theme system — used by tab bar, buttons, cards in check-in mode
