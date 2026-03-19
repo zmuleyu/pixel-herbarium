@@ -1,6 +1,15 @@
 // Types for the seasonal flower spot check-in system.
 // Generic across all seasons (sakura, ajisai, himawari, momiji, tsubaki).
 
+export interface LandmarkInfo {
+  nameJa: string;   // e.g. "天守閣"
+  nameEn: string;   // e.g. "Tenshu (Main Keep)"
+  /** Asset key for pixel art image (used by ClassicStamp) — added in Phase B */
+  pixelArtKey?: string;
+  /** Asset key for SVG outline (used by Medallion/Window) — added in Phase B */
+  sealSvgKey?: string;
+}
+
 export interface FlowerSpot {
   id: number;
   regionId: string; // 'jp', 'cn', etc.
@@ -17,6 +26,7 @@ export interface FlowerSpot {
   longitude: number;
   description?: string;
   tags: string[];
+  landmark?: LandmarkInfo;
 }
 
 export type SpotCategory =
