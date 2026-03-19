@@ -1,53 +1,61 @@
 {
-  "version": 1,
+  "version": 2,
   "seasonId": "sakura",
   "spots": [
     {
       "id": 1,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "上野恩賜公園",
       "nameEn": "Ueno Park",
       "prefecture": "東京都",
       "prefectureCode": 13,
       "city": "台東区",
       "category": "park",
-      "treeCount": 800,
+      "treeCount": 1200,
       "bloomTypical": {
-        "earlyStart": "03-20",
-        "peakStart": "03-28",
-        "peakEnd": "04-05",
-        "lateEnd": "04-12"
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
       },
       "latitude": 35.7141,
       "longitude": 139.7734,
-      "tags": ["名所100選", "夜桜", "池"]
+      "description": "東京を代表する花見スポット。",
+      "tags": [
+        "定番",
+        "夜桜",
+        "屋台"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 2,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "新宿御苑",
       "nameEn": "Shinjuku Gyoen",
       "prefecture": "東京都",
       "prefectureCode": 13,
       "city": "新宿区",
       "category": "garden",
-      "treeCount": 1000,
+      "treeCount": 1100,
       "bloomTypical": {
         "earlyStart": "03-22",
-        "peakStart": "03-30",
-        "peakEnd": "04-08",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
         "lateEnd": "04-15"
       },
       "latitude": 35.6852,
-      "longitude": 139.7100,
-      "tags": ["名所100選", "広い芝生", "多品種"]
+      "longitude": 139.71,
+      "description": "65種1100本の桜を誇る広大な庭園。",
+      "tags": [
+        "定番",
+        "広大",
+        "多品種"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 3,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "目黒川",
       "nameEn": "Meguro River",
       "prefecture": "東京都",
@@ -57,18 +65,23 @@
       "treeCount": 800,
       "bloomTypical": {
         "earlyStart": "03-22",
-        "peakStart": "03-28",
-        "peakEnd": "04-04",
-        "lateEnd": "04-10"
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
       },
-      "latitude": 35.6440,
+      "latitude": 35.644,
       "longitude": 139.6994,
-      "tags": ["夜桜", "川沿い", "ライトアップ"]
+      "description": "川沿いに続くソメイヨシノのトンネル。",
+      "tags": [
+        "定番",
+        "川沿い",
+        "夜桜"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 4,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "嵐山",
       "nameEn": "Arashiyama",
       "prefecture": "京都府",
@@ -77,40 +90,50 @@
       "category": "mountain",
       "treeCount": 1500,
       "bloomTypical": {
-        "earlyStart": "03-25",
-        "peakStart": "04-01",
-        "peakEnd": "04-10",
-        "lateEnd": "04-18"
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
       },
       "latitude": 35.0094,
       "longitude": 135.6722,
-      "tags": ["名所100選", "渡月橋", "山桜"]
+      "description": "渡月橋と桜の絶景が広がる。",
+      "tags": [
+        "定番",
+        "世界遺産",
+        "絶景"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 5,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "吉野山",
-      "nameEn": "Mount Yoshino",
+      "nameEn": "Yoshinoyama",
       "prefecture": "奈良県",
       "prefectureCode": 29,
       "city": "吉野郡吉野町",
       "category": "mountain",
       "treeCount": 30000,
       "bloomTypical": {
-        "earlyStart": "03-28",
-        "peakStart": "04-05",
-        "peakEnd": "04-15",
-        "lateEnd": "04-25"
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
       },
       "latitude": 34.3672,
       "longitude": 135.8583,
-      "tags": ["名所100選", "世界遺産", "一目千本"]
+      "description": "3万本の桜が山全体を染める日本一の桜の名所。",
+      "tags": [
+        "世界遺産",
+        "絶景",
+        "シロヤマザクラ"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 6,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "千鳥ヶ淵",
       "nameEn": "Chidorigafuchi",
       "prefecture": "東京都",
@@ -119,61 +142,76 @@
       "category": "park",
       "treeCount": 260,
       "bloomTypical": {
-        "earlyStart": "03-21",
-        "peakStart": "03-28",
-        "peakEnd": "04-04",
-        "lateEnd": "04-10"
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
       },
       "latitude": 35.6941,
       "longitude": 139.7484,
-      "tags": ["ボート", "堀", "夜桜"]
+      "description": "皇居のお堀端をボートで花見できる。",
+      "tags": [
+        "定番",
+        "ボート",
+        "夜桜"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 7,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "井の頭恩賜公園",
       "nameEn": "Inokashira Park",
       "prefecture": "東京都",
       "prefectureCode": 13,
       "city": "武蔵野市",
       "category": "park",
-      "treeCount": 450,
+      "treeCount": 500,
       "bloomTypical": {
         "earlyStart": "03-22",
         "peakStart": "03-29",
-        "peakEnd": "04-05",
-        "lateEnd": "04-12"
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
       },
-      "latitude": 35.7020,
+      "latitude": 35.702,
       "longitude": 139.5697,
-      "tags": ["池", "ボート", "吉祥寺"]
+      "description": "池の周りを染める桜並木が人気。",
+      "tags": [
+        "定番",
+        "池",
+        "花見"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 8,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "飛鳥山公園",
       "nameEn": "Asukayama Park",
       "prefecture": "東京都",
       "prefectureCode": 13,
       "city": "北区",
       "category": "park",
-      "treeCount": 650,
+      "treeCount": 600,
       "bloomTypical": {
-        "earlyStart": "03-19",
-        "peakStart": "03-26",
-        "peakEnd": "04-03",
-        "lateEnd": "04-10"
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
       },
       "latitude": 35.7537,
       "longitude": 139.7391,
-      "tags": ["名所100選", "徳川将軍", "モノレール"]
+      "description": "徳川吉宗が整備した江戸時代からの花見の名所。",
+      "tags": [
+        "定番",
+        "歴史",
+        "屋台"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 9,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "熊谷桜堤",
       "nameEn": "Kumagaya Sakura Tsutsumi",
       "prefecture": "埼玉県",
@@ -182,40 +220,50 @@
       "category": "river",
       "treeCount": 500,
       "bloomTypical": {
-        "earlyStart": "03-19",
-        "peakStart": "03-27",
-        "peakEnd": "04-03",
-        "lateEnd": "04-10"
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
       },
       "latitude": 36.1461,
       "longitude": 139.3934,
-      "tags": ["名所100選", "荒川沿い", "一直線"]
+      "description": "荒川の堤防に続く約2km の桜並木。",
+      "tags": [
+        "堤防",
+        "川沿い",
+        "ソメイヨシノ"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 10,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "三ツ池公園",
       "nameEn": "Mitsuike Park",
       "prefecture": "神奈川県",
       "prefectureCode": 14,
       "city": "横浜市鶴見区",
       "category": "park",
-      "treeCount": 1500,
+      "treeCount": 700,
       "bloomTypical": {
-        "earlyStart": "03-21",
-        "peakStart": "03-28",
-        "peakEnd": "04-05",
-        "lateEnd": "04-12"
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
       },
       "latitude": 35.5037,
       "longitude": 139.6509,
-      "tags": ["三つの池", "多品種", "県立"]
+      "description": "3つの池を囲む62品種の桜が楽しめる。",
+      "tags": [
+        "多品種",
+        "池",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 11,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "鶴岡八幡宮",
       "nameEn": "Tsurugaoka Hachimangu",
       "prefecture": "神奈川県",
@@ -224,19 +272,24 @@
       "category": "shrine",
       "treeCount": 200,
       "bloomTypical": {
-        "earlyStart": "03-20",
-        "peakStart": "03-27",
-        "peakEnd": "04-04",
-        "lateEnd": "04-10"
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
       },
       "latitude": 35.3238,
       "longitude": 139.5569,
-      "tags": ["段葛", "鎌倉", "神社"]
+      "description": "鎌倉の総鎮守、段葛の桜並木が有名。",
+      "tags": [
+        "神社",
+        "歴史",
+        "段葛"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 12,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "鶴舞公園",
       "nameEn": "Tsuruma Park",
       "prefecture": "愛知県",
@@ -245,40 +298,50 @@
       "category": "park",
       "treeCount": 700,
       "bloomTypical": {
-        "earlyStart": "03-21",
-        "peakStart": "03-28",
-        "peakEnd": "04-05",
-        "lateEnd": "04-12"
+        "earlyStart": "03-25",
+        "peakStart": "04-02",
+        "peakEnd": "04-10",
+        "lateEnd": "04-18"
       },
       "latitude": 35.1549,
       "longitude": 136.9072,
-      "tags": ["名古屋", "噴水", "バラ園"]
+      "description": "名古屋市内最大の花見スポット。",
+      "tags": [
+        "定番",
+        "広大",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 13,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "犬山城",
       "nameEn": "Inuyama Castle",
       "prefecture": "愛知県",
       "prefectureCode": 23,
       "city": "犬山市",
       "category": "castle",
-      "treeCount": 500,
+      "treeCount": 300,
       "bloomTypical": {
-        "earlyStart": "03-22",
-        "peakStart": "03-29",
-        "peakEnd": "04-06",
-        "lateEnd": "04-13"
+        "earlyStart": "03-25",
+        "peakStart": "04-02",
+        "peakEnd": "04-10",
+        "lateEnd": "04-18"
       },
       "latitude": 35.3837,
       "longitude": 136.9412,
-      "tags": ["国宝", "木曽川", "城"]
+      "description": "国宝天守と桜のコラボが美しい。",
+      "tags": [
+        "城",
+        "国宝",
+        "絶景"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 14,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "大阪城公園",
       "nameEn": "Osaka Castle Park",
       "prefecture": "大阪府",
@@ -288,39 +351,50 @@
       "treeCount": 3000,
       "bloomTypical": {
         "earlyStart": "03-22",
-        "peakStart": "03-29",
-        "peakEnd": "04-06",
-        "lateEnd": "04-13"
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
       },
       "latitude": 34.6873,
       "longitude": 135.5259,
-      "tags": ["大阪城", "西の丸庭園", "名所100選"]
+      "description": "天守閣を背景に3000本の桜が咲く。",
+      "tags": [
+        "城",
+        "定番",
+        "夜桜",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 15,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "万博記念公園",
-      "nameEn": "Expo Commemoration Park",
+      "nameEn": "Expo '70 Commemorative Park",
       "prefecture": "大阪府",
       "prefectureCode": 27,
       "city": "吹田市",
       "category": "park",
-      "treeCount": 5000,
+      "treeCount": 5500,
       "bloomTypical": {
-        "earlyStart": "03-23",
+        "earlyStart": "03-22",
         "peakStart": "03-30",
         "peakEnd": "04-07",
-        "lateEnd": "04-14"
+        "lateEnd": "04-15"
       },
       "latitude": 34.8072,
       "longitude": 135.5247,
-      "tags": ["太陽の塔", "さくらまつり", "大型公園"]
+      "description": "太陽の塔と桜の競演が圧巻。",
+      "tags": [
+        "広大",
+        "太陽の塔",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 16,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "円山公園",
       "nameEn": "Maruyama Park",
       "prefecture": "京都府",
@@ -329,61 +403,77 @@
       "category": "park",
       "treeCount": 680,
       "bloomTypical": {
-        "earlyStart": "03-24",
-        "peakStart": "03-31",
-        "peakEnd": "04-08",
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
         "lateEnd": "04-15"
       },
       "latitude": 35.0036,
       "longitude": 135.7812,
-      "tags": ["枝垂れ桜", "夜桜", "祇園"]
+      "description": "祇園の枝垂れ桜が夜桜のシンボル。",
+      "tags": [
+        "枝垂れ桜",
+        "夜桜",
+        "定番"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 17,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "哲学の道",
       "nameEn": "Philosopher's Path",
       "prefecture": "京都府",
       "prefectureCode": 26,
       "city": "京都市左京区",
       "category": "street",
-      "treeCount": 500,
+      "treeCount": 400,
       "bloomTypical": {
-        "earlyStart": "03-25",
-        "peakStart": "04-01",
-        "peakEnd": "04-08",
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
         "lateEnd": "04-15"
       },
       "latitude": 35.0234,
       "longitude": 135.7932,
-      "tags": ["散策路", "疏水沿い", "銀閣寺近く"]
+      "description": "疏水に沿って続く桜のトンネル。",
+      "tags": [
+        "散歩",
+        "川沿い",
+        "定番"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 18,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "醍醐寺",
-      "nameEn": "Daigo-ji Temple",
+      "nameEn": "Daigoji Temple",
       "prefecture": "京都府",
       "prefectureCode": 26,
       "city": "京都市伏見区",
       "category": "shrine",
-      "treeCount": 1000,
+      "treeCount": 700,
       "bloomTypical": {
-        "earlyStart": "03-26",
-        "peakStart": "04-02",
-        "peakEnd": "04-10",
-        "lateEnd": "04-17"
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
       },
       "latitude": 34.9535,
       "longitude": 135.8046,
-      "tags": ["世界遺産", "豊臣秀吉", "枝垂れ桜"]
+      "description": "秀吉の「醍醐の花見」で知られる世界遺産。",
+      "tags": [
+        "世界遺産",
+        "歴史",
+        "枝垂れ桜",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 19,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "姫路城",
       "nameEn": "Himeji Castle",
       "prefecture": "兵庫県",
@@ -395,16 +485,22 @@
         "earlyStart": "03-22",
         "peakStart": "03-30",
         "peakEnd": "04-07",
-        "lateEnd": "04-14"
+        "lateEnd": "04-15"
       },
       "latitude": 34.8395,
       "longitude": 134.6939,
-      "tags": ["世界遺産", "白鷺城", "名所100選"]
+      "description": "白鷺城と桜のコラボが世界遺産の絶景。",
+      "tags": [
+        "世界遺産",
+        "城",
+        "絶景",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 20,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "西公園",
       "nameEn": "Nishi Park",
       "prefecture": "福岡県",
@@ -413,61 +509,75 @@
       "category": "park",
       "treeCount": 1300,
       "bloomTypical": {
-        "earlyStart": "03-18",
-        "peakStart": "03-25",
+        "earlyStart": "03-15",
+        "peakStart": "03-22",
         "peakEnd": "04-01",
-        "lateEnd": "04-08"
+        "lateEnd": "04-10"
       },
       "latitude": 33.5895,
       "longitude": 130.3725,
-      "tags": ["福岡", "海が見える", "名所100選"]
+      "description": "福岡市内随一の桜の名所。",
+      "tags": [
+        "定番",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 21,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "高遠城址公園",
-      "nameEn": "Takato Castle Ruins Park",
+      "nameEn": "Takatoo Castle Ruins Park",
       "prefecture": "長野県",
       "prefectureCode": 20,
       "city": "伊那市",
       "category": "castle",
       "treeCount": 1500,
       "bloomTypical": {
-        "earlyStart": "04-08",
-        "peakStart": "04-15",
-        "peakEnd": "04-22",
-        "lateEnd": "04-30"
+        "earlyStart": "04-01",
+        "peakStart": "04-08",
+        "peakEnd": "04-15",
+        "lateEnd": "04-23"
       },
       "latitude": 35.8504,
       "longitude": 138.0825,
-      "tags": ["天下第一の桜", "高遠コヒガン", "名所100選"]
+      "description": "日本三大桜の名所。コヒガン桜の薄紅が美しい。",
+      "tags": [
+        "名城",
+        "コヒガン桜",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 22,
-      "regionId": "jp",
-      "seasonId": "sakura",
-      "nameJa": "弘前城",
-      "nameEn": "Hirosaki Castle",
+      "nameJa": "弘前公園",
+      "nameEn": "Hirosaki Park",
       "prefecture": "青森県",
       "prefectureCode": 2,
       "city": "弘前市",
       "category": "castle",
       "treeCount": 2600,
       "bloomTypical": {
-        "earlyStart": "04-16",
-        "peakStart": "04-23",
-        "peakEnd": "05-01",
-        "lateEnd": "05-08"
+        "earlyStart": "04-15",
+        "peakStart": "04-22",
+        "peakEnd": "04-29",
+        "lateEnd": "05-07"
       },
       "latitude": 40.6074,
       "longitude": 140.4637,
-      "tags": ["名所100選", "花びらの絨毯", "東北一"]
+      "description": "日本最大規模の桜の名所。2600本のソメイヨシノ。",
+      "tags": [
+        "定番",
+        "城",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 23,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "北上展勝地",
       "nameEn": "Kitakami Tenshochi",
       "prefecture": "岩手県",
@@ -476,19 +586,23 @@
       "category": "river",
       "treeCount": 10000,
       "bloomTypical": {
-        "earlyStart": "04-10",
-        "peakStart": "04-17",
-        "peakEnd": "04-25",
-        "lateEnd": "05-02"
+        "earlyStart": "04-15",
+        "peakStart": "04-22",
+        "peakEnd": "04-29",
+        "lateEnd": "05-07"
       },
       "latitude": 39.2968,
-      "longitude": 141.1130,
-      "tags": ["名所100選", "北上川沿い", "武家屋敷"]
+      "longitude": 141.113,
+      "description": "北上川沿い2kmに渡る桜並木。",
+      "tags": [
+        "川沿い",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 24,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "角館武家屋敷通り",
       "nameEn": "Kakunodate Samurai District",
       "prefecture": "秋田県",
@@ -497,19 +611,24 @@
       "category": "street",
       "treeCount": 400,
       "bloomTypical": {
-        "earlyStart": "04-14",
-        "peakStart": "04-21",
-        "peakEnd": "04-28",
-        "lateEnd": "05-05"
+        "earlyStart": "04-15",
+        "peakStart": "04-22",
+        "peakEnd": "04-29",
+        "lateEnd": "05-07"
       },
-      "latitude": 39.5980,
-      "longitude": 140.5590,
-      "tags": ["枝垂れ桜", "武家屋敷", "みちのく小京都"]
+      "latitude": 39.598,
+      "longitude": 140.559,
+      "description": "武家屋敷の塀越しにしだれ桜が垂れる。",
+      "tags": [
+        "武家屋敷",
+        "枝垂れ桜",
+        "歴史"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     },
     {
       "id": 25,
-      "regionId": "jp",
-      "seasonId": "sakura",
       "nameJa": "五稜郭公園",
       "nameEn": "Goryokaku Park",
       "prefecture": "北海道",
@@ -518,14 +637,1913 @@
       "category": "castle",
       "treeCount": 1600,
       "bloomTypical": {
-        "earlyStart": "04-22",
-        "peakStart": "04-29",
-        "peakEnd": "05-06",
-        "lateEnd": "05-13"
+        "earlyStart": "04-25",
+        "peakStart": "05-01",
+        "peakEnd": "05-08",
+        "lateEnd": "05-15"
       },
       "latitude": 41.7967,
       "longitude": 140.7571,
-      "tags": ["星形要塞", "北海道", "タワー"]
+      "description": "星型の要塞を彩る1600本の桜。",
+      "tags": [
+        "城",
+        "絶景",
+        "北海道"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 26,
+      "nameJa": "名護城公園",
+      "nameEn": "Nago Castle Park",
+      "prefecture": "沖縄県",
+      "prefectureCode": 47,
+      "city": "名護市",
+      "category": "castle",
+      "treeCount": 20000,
+      "bloomTypical": {
+        "earlyStart": "01-15",
+        "peakStart": "01-25",
+        "peakEnd": "02-05",
+        "lateEnd": "02-20"
+      },
+      "latitude": 26.5854,
+      "longitude": 128.0031,
+      "description": "ヒカンザクラ2万本が1月に咲く。",
+      "tags": [
+        "ヒカンザクラ",
+        "早咲き",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 27,
+      "nameJa": "小城公園",
+      "nameEn": "Ogi Park",
+      "prefecture": "佐賀県",
+      "prefectureCode": 41,
+      "city": "小城市",
+      "category": "park",
+      "treeCount": 3000,
+      "bloomTypical": {
+        "earlyStart": "03-15",
+        "peakStart": "03-22",
+        "peakEnd": "04-01",
+        "lateEnd": "04-10"
+      },
+      "latitude": 33.3061,
+      "longitude": 130.1981,
+      "description": "3000本のソメイヨシノが咲く九州屈指の名所。",
+      "tags": [
+        "日本さくら名所100選",
+        "ソメイヨシノ"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 28,
+      "nameJa": "大村公園",
+      "nameEn": "Omura Park",
+      "prefecture": "長崎県",
+      "prefectureCode": 42,
+      "city": "大村市",
+      "category": "park",
+      "treeCount": 2000,
+      "bloomTypical": {
+        "earlyStart": "03-15",
+        "peakStart": "03-22",
+        "peakEnd": "04-01",
+        "lateEnd": "04-10"
+      },
+      "latitude": 32.9235,
+      "longitude": 129.9609,
+      "description": "大村湾に面した日本最初の「さくら百選」認定地。",
+      "tags": [
+        "日本さくら名所100選",
+        "湾岸"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 29,
+      "nameJa": "岡城公園",
+      "nameEn": "Oka Castle Ruins",
+      "prefecture": "大分県",
+      "prefectureCode": 44,
+      "city": "竹田市",
+      "category": "castle",
+      "treeCount": 3000,
+      "bloomTypical": {
+        "earlyStart": "03-15",
+        "peakStart": "03-22",
+        "peakEnd": "04-01",
+        "lateEnd": "04-10"
+      },
+      "latitude": 32.9667,
+      "longitude": 131.3889,
+      "description": "「荒城の月」の舞台となった天空の城。",
+      "tags": [
+        "城",
+        "日本さくら名所100選",
+        "絶景"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 30,
+      "nameJa": "熊本城",
+      "nameEn": "Kumamoto Castle",
+      "prefecture": "熊本県",
+      "prefectureCode": 43,
+      "city": "熊本市中央区",
+      "category": "castle",
+      "treeCount": 800,
+      "bloomTypical": {
+        "earlyStart": "03-15",
+        "peakStart": "03-22",
+        "peakEnd": "04-01",
+        "lateEnd": "04-10"
+      },
+      "latitude": 32.8061,
+      "longitude": 130.7058,
+      "description": "日本三名城の一つ。石垣と桜の競演。",
+      "tags": [
+        "城",
+        "日本さくら名所100選",
+        "絶景"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 31,
+      "nameJa": "市房ダム湖畔",
+      "nameEn": "Ichifusa Dam Lakeside",
+      "prefecture": "熊本県",
+      "prefectureCode": 43,
+      "city": "球磨郡水上村",
+      "category": "mountain",
+      "treeCount": 4000,
+      "bloomTypical": {
+        "earlyStart": "03-15",
+        "peakStart": "03-22",
+        "peakEnd": "04-01",
+        "lateEnd": "04-10"
+      },
+      "latitude": 32.1985,
+      "longitude": 130.8946,
+      "description": "ダム湖を彩る4000本の桜。",
+      "tags": [
+        "ダム湖",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 32,
+      "nameJa": "水俣市チェリーライン",
+      "nameEn": "Minamata Cherry Line",
+      "prefecture": "熊本県",
+      "prefectureCode": 43,
+      "city": "水俣市",
+      "category": "street",
+      "treeCount": 3000,
+      "bloomTypical": {
+        "earlyStart": "03-15",
+        "peakStart": "03-22",
+        "peakEnd": "04-01",
+        "lateEnd": "04-10"
+      },
+      "latitude": 32.2,
+      "longitude": 130.42,
+      "description": "市内に続く3kmのチェリーライン。",
+      "tags": [
+        "並木道",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 33,
+      "nameJa": "母智丘・関之尾県立自然公園",
+      "nameEn": "Hochikyu-Sekinoo Prefectural Natural Park",
+      "prefecture": "宮崎県",
+      "prefectureCode": 45,
+      "city": "都城市",
+      "category": "mountain",
+      "treeCount": 5000,
+      "bloomTypical": {
+        "earlyStart": "03-15",
+        "peakStart": "03-22",
+        "peakEnd": "04-01",
+        "lateEnd": "04-10"
+      },
+      "latitude": 31.6844,
+      "longitude": 131.0744,
+      "description": "5000本の桜が丘陵を彩る。",
+      "tags": [
+        "自然公園",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 34,
+      "nameJa": "忠元公園",
+      "nameEn": "Tadamoto Park",
+      "prefecture": "鹿児島県",
+      "prefectureCode": 46,
+      "city": "伊佐市",
+      "category": "park",
+      "treeCount": 1200,
+      "bloomTypical": {
+        "earlyStart": "03-15",
+        "peakStart": "03-22",
+        "peakEnd": "04-01",
+        "lateEnd": "04-10"
+      },
+      "latitude": 31.9544,
+      "longitude": 130.612,
+      "description": "菱刈氏の居城跡に広がる桜の公園。",
+      "tags": [
+        "日本さくら名所100選",
+        "城址"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 35,
+      "nameJa": "琴弾公園",
+      "nameEn": "Kotoiki Park",
+      "prefecture": "香川県",
+      "prefectureCode": 37,
+      "city": "観音寺市",
+      "category": "park",
+      "treeCount": 700,
+      "bloomTypical": {
+        "earlyStart": "03-18",
+        "peakStart": "03-25",
+        "peakEnd": "04-03",
+        "lateEnd": "04-12"
+      },
+      "latitude": 34.1267,
+      "longitude": 133.6631,
+      "description": "砂絵「寛永通宝」で知られる公園の桜。",
+      "tags": [
+        "日本さくら名所100選",
+        "砂絵"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 36,
+      "nameJa": "牧野公園",
+      "nameEn": "Makino Park",
+      "prefecture": "高知県",
+      "prefectureCode": 39,
+      "city": "高知市",
+      "category": "park",
+      "treeCount": 3000,
+      "bloomTypical": {
+        "earlyStart": "03-18",
+        "peakStart": "03-25",
+        "peakEnd": "04-03",
+        "lateEnd": "04-12"
+      },
+      "latitude": 33.568,
+      "longitude": 133.55,
+      "description": "牧野富太郎博士にちなむ公園の桜。",
+      "tags": [
+        "日本さくら名所100選",
+        "植物"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 37,
+      "nameJa": "鏡野公園",
+      "nameEn": "Kagamino Park",
+      "prefecture": "高知県",
+      "prefectureCode": 39,
+      "city": "高知市",
+      "category": "park",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "03-18",
+        "peakStart": "03-25",
+        "peakEnd": "04-03",
+        "lateEnd": "04-12"
+      },
+      "latitude": 33.497,
+      "longitude": 133.461,
+      "description": "春の高知を彩る市民の花見スポット。",
+      "tags": [
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 38,
+      "nameJa": "西部公園",
+      "nameEn": "Nishi-bu Park",
+      "prefecture": "徳島県",
+      "prefectureCode": 36,
+      "city": "鳴門市",
+      "category": "park",
+      "treeCount": 500,
+      "bloomTypical": {
+        "earlyStart": "03-18",
+        "peakStart": "03-25",
+        "peakEnd": "04-03",
+        "lateEnd": "04-12"
+      },
+      "latitude": 34.1769,
+      "longitude": 134.609,
+      "description": "鳴門の桜の名所。",
+      "tags": [
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 39,
+      "nameJa": "城山公園",
+      "nameEn": "Shiroyama Park",
+      "prefecture": "愛媛県",
+      "prefectureCode": 38,
+      "city": "松山市",
+      "category": "castle",
+      "treeCount": 300,
+      "bloomTypical": {
+        "earlyStart": "03-18",
+        "peakStart": "03-25",
+        "peakEnd": "04-03",
+        "lateEnd": "04-12"
+      },
+      "latitude": 33.845,
+      "longitude": 132.7658,
+      "description": "松山城の城山を彩る桜。",
+      "tags": [
+        "城",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 40,
+      "nameJa": "千光寺公園",
+      "nameEn": "Senkoji Park",
+      "prefecture": "広島県",
+      "prefectureCode": 34,
+      "city": "尾道市",
+      "category": "mountain",
+      "treeCount": 500,
+      "bloomTypical": {
+        "earlyStart": "03-20",
+        "peakStart": "03-28",
+        "peakEnd": "04-05",
+        "lateEnd": "04-15"
+      },
+      "latitude": 34.411,
+      "longitude": 133.1967,
+      "description": "尾道水道を見下ろす山頂の桜。",
+      "tags": [
+        "絶景",
+        "日本さくら名所100選",
+        "尾道"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 41,
+      "nameJa": "上野公園",
+      "nameEn": "Ueno Park (Mihara)",
+      "prefecture": "広島県",
+      "prefectureCode": 34,
+      "city": "三原市",
+      "category": "park",
+      "treeCount": 2000,
+      "bloomTypical": {
+        "earlyStart": "03-20",
+        "peakStart": "03-28",
+        "peakEnd": "04-05",
+        "lateEnd": "04-15"
+      },
+      "latitude": 34.3967,
+      "longitude": 133.078,
+      "description": "三原市の花見の名所。",
+      "tags": [
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 42,
+      "nameJa": "鶴山公園",
+      "nameEn": "Kakuzan Park",
+      "prefecture": "岡山県",
+      "prefectureCode": 33,
+      "city": "津山市",
+      "category": "castle",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "03-20",
+        "peakStart": "03-28",
+        "peakEnd": "04-05",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.069,
+      "longitude": 133.7738,
+      "description": "津山城の石垣と桜が美しい。",
+      "tags": [
+        "城",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 43,
+      "nameJa": "斐伊川堤防桜並木",
+      "nameEn": "Hiikawa River Sakura Promenade",
+      "prefecture": "島根県",
+      "prefectureCode": 32,
+      "city": "雲南市",
+      "category": "river",
+      "treeCount": 2000,
+      "bloomTypical": {
+        "earlyStart": "03-20",
+        "peakStart": "03-28",
+        "peakEnd": "04-05",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.3028,
+      "longitude": 132.911,
+      "description": "斐伊川の両岸に続く桜並木。",
+      "tags": [
+        "川沿い",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 44,
+      "nameJa": "松江城山公園",
+      "nameEn": "Matsue Castle Park",
+      "prefecture": "島根県",
+      "prefectureCode": 32,
+      "city": "松江市",
+      "category": "castle",
+      "treeCount": 200,
+      "bloomTypical": {
+        "earlyStart": "03-20",
+        "peakStart": "03-28",
+        "peakEnd": "04-05",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.4739,
+      "longitude": 133.0506,
+      "description": "国宝松江城を取り囲む桜。",
+      "tags": [
+        "城",
+        "国宝",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 45,
+      "nameJa": "吉香公園",
+      "nameEn": "Kikko Park",
+      "prefecture": "山口県",
+      "prefectureCode": 35,
+      "city": "岩国市",
+      "category": "park",
+      "treeCount": 3000,
+      "bloomTypical": {
+        "earlyStart": "03-20",
+        "peakStart": "03-28",
+        "peakEnd": "04-05",
+        "lateEnd": "04-15"
+      },
+      "latitude": 34.1526,
+      "longitude": 132.0845,
+      "description": "錦帯橋のほとりに広がる桜の公園。",
+      "tags": [
+        "橋",
+        "日本さくら名所100選",
+        "錦帯橋"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 46,
+      "nameJa": "常盤公園",
+      "nameEn": "Tokiwa Park",
+      "prefecture": "山口県",
+      "prefectureCode": 35,
+      "city": "宇部市",
+      "category": "park",
+      "treeCount": 3000,
+      "bloomTypical": {
+        "earlyStart": "03-20",
+        "peakStart": "03-28",
+        "peakEnd": "04-05",
+        "lateEnd": "04-15"
+      },
+      "latitude": 33.9547,
+      "longitude": 131.2316,
+      "description": "宇部市を代表する総合公園の桜。",
+      "tags": [
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 47,
+      "nameJa": "久松公園",
+      "nameEn": "Hisamatsu Park",
+      "prefecture": "鳥取県",
+      "prefectureCode": 31,
+      "city": "鳥取市",
+      "category": "castle",
+      "treeCount": 700,
+      "bloomTypical": {
+        "earlyStart": "03-20",
+        "peakStart": "03-28",
+        "peakEnd": "04-05",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.5008,
+      "longitude": 134.2364,
+      "description": "鳥取城の城山を彩る桜。",
+      "tags": [
+        "城",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 48,
+      "nameJa": "打吹公園",
+      "nameEn": "Uchifuki Park",
+      "prefecture": "鳥取県",
+      "prefectureCode": 31,
+      "city": "倉吉市",
+      "category": "park",
+      "treeCount": 2000,
+      "bloomTypical": {
+        "earlyStart": "03-20",
+        "peakStart": "03-28",
+        "peakEnd": "04-05",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.4278,
+      "longitude": 133.8279,
+      "description": "打吹山の麓に咲く2000本の桜。",
+      "tags": [
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 49,
+      "nameJa": "御室桜",
+      "nameEn": "Omuro Sakura (Ninnaji)",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市右京区",
+      "category": "shrine",
+      "treeCount": 200,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.0349,
+      "longitude": 135.7153,
+      "description": "背の低い「おたふく桜」が仁和寺に咲く。",
+      "tags": [
+        "遅咲き",
+        "仁和寺",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 50,
+      "nameJa": "笠置山自然公園",
+      "nameEn": "Kasagiyama Natural Park",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "相楽郡笠置町",
+      "category": "mountain",
+      "treeCount": 500,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 34.7517,
+      "longitude": 135.943,
+      "description": "木津川沿いの山に咲く桜。",
+      "tags": [
+        "日本さくら名所100選",
+        "自然"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 51,
+      "nameJa": "造幣局の通り抜け",
+      "nameEn": "Mint Bureau Sakura Walk",
+      "prefecture": "大阪府",
+      "prefectureCode": 27,
+      "city": "大阪市北区",
+      "category": "street",
+      "treeCount": 560,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 34.6942,
+      "longitude": 135.5132,
+      "description": "明治時代から続く花見の風物詩。",
+      "tags": [
+        "大阪",
+        "日本さくら名所100選",
+        "珍しい品種"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 52,
+      "nameJa": "奈良公園",
+      "nameEn": "Nara Park",
+      "prefecture": "奈良県",
+      "prefectureCode": 29,
+      "city": "奈良市",
+      "category": "park",
+      "treeCount": 1700,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 34.6854,
+      "longitude": 135.8397,
+      "description": "鹿と桜が共存する世界遺産の公園。",
+      "tags": [
+        "鹿",
+        "世界遺産",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 53,
+      "nameJa": "郡山城址公園",
+      "nameEn": "Koriyama Castle Ruins Park",
+      "prefecture": "奈良県",
+      "prefectureCode": 29,
+      "city": "大和郡山市",
+      "category": "castle",
+      "treeCount": 1500,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 34.6444,
+      "longitude": 135.7884,
+      "description": "金魚の街の城跡に咲く桜。",
+      "tags": [
+        "城",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 54,
+      "nameJa": "紀三井寺",
+      "nameEn": "Kimiidera Temple",
+      "prefecture": "和歌山県",
+      "prefectureCode": 30,
+      "city": "和歌山市",
+      "category": "shrine",
+      "treeCount": 500,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 34.1628,
+      "longitude": 135.1814,
+      "description": "関西の桜の開花宣言の基準木がある寺。",
+      "tags": [
+        "開花標本木",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 55,
+      "nameJa": "根来寺",
+      "nameEn": "Negoro-ji Temple",
+      "prefecture": "和歌山県",
+      "prefectureCode": 30,
+      "city": "岩出市",
+      "category": "shrine",
+      "treeCount": 500,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 34.2467,
+      "longitude": 135.3306,
+      "description": "大伽藍と桜のコントラストが美しい。",
+      "tags": [
+        "寺院",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 56,
+      "nameJa": "七川ダム",
+      "nameEn": "Nanakawa Dam",
+      "prefecture": "和歌山県",
+      "prefectureCode": 30,
+      "city": "東牟婁郡古座川町",
+      "category": "mountain",
+      "treeCount": 2000,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 33.6178,
+      "longitude": 135.7378,
+      "description": "ダム湖畔に咲く山里の桜。",
+      "tags": [
+        "ダム湖",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 57,
+      "nameJa": "明石公園",
+      "nameEn": "Akashi Park",
+      "prefecture": "兵庫県",
+      "prefectureCode": 28,
+      "city": "明石市",
+      "category": "castle",
+      "treeCount": 1200,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 34.6448,
+      "longitude": 134.9912,
+      "description": "明石城の石垣を包む桜の名所。",
+      "tags": [
+        "城",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 58,
+      "nameJa": "夙川河川敷緑地",
+      "nameEn": "Shukugawa Riverside Green Area",
+      "prefecture": "兵庫県",
+      "prefectureCode": 28,
+      "city": "西宮市",
+      "category": "river",
+      "treeCount": 1600,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 34.7395,
+      "longitude": 135.345,
+      "description": "夙川沿いに続く桜のトンネル。",
+      "tags": [
+        "川沿い",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 59,
+      "nameJa": "海津大崎",
+      "nameEn": "Kaidu-Osaki",
+      "prefecture": "滋賀県",
+      "prefectureCode": 25,
+      "city": "高島市",
+      "category": "mountain",
+      "treeCount": 800,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.5045,
+      "longitude": 136.0297,
+      "description": "琵琶湖畔に咲く800本の桜が絶景。",
+      "tags": [
+        "湖畔",
+        "絶景",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 60,
+      "nameJa": "豊公園",
+      "nameEn": "Toyokoen Park",
+      "prefecture": "滋賀県",
+      "prefectureCode": 25,
+      "city": "長浜市",
+      "category": "castle",
+      "treeCount": 600,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.3842,
+      "longitude": 136.2684,
+      "description": "豊臣秀吉が築いた長浜城の城址公園。",
+      "tags": [
+        "城",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 61,
+      "nameJa": "三多気の桜",
+      "nameEn": "Mitake Sakura",
+      "prefecture": "三重県",
+      "prefectureCode": 24,
+      "city": "津市",
+      "category": "mountain",
+      "treeCount": 2000,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 34.5456,
+      "longitude": 136.1458,
+      "description": "棚田の石垣に咲く里山の桜。",
+      "tags": [
+        "里山",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 62,
+      "nameJa": "宮川堤",
+      "nameEn": "Miyagawa River Embankment",
+      "prefecture": "三重県",
+      "prefectureCode": 24,
+      "city": "伊勢市",
+      "category": "river",
+      "treeCount": 300,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-30",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 34.4819,
+      "longitude": 136.7042,
+      "description": "宮川の堤防沿いに続く桜並木。",
+      "tags": [
+        "川沿い",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 63,
+      "nameJa": "岡崎公園",
+      "nameEn": "Okazaki Park",
+      "prefecture": "愛知県",
+      "prefectureCode": 23,
+      "city": "岡崎市",
+      "category": "castle",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "03-25",
+        "peakStart": "04-02",
+        "peakEnd": "04-10",
+        "lateEnd": "04-18"
+      },
+      "latitude": 34.9557,
+      "longitude": 137.1761,
+      "description": "家康誕生の地、岡崎城を囲む桜。",
+      "tags": [
+        "城",
+        "日本さくら名所100選",
+        "家康"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 64,
+      "nameJa": "五条川",
+      "nameEn": "Gojo River",
+      "prefecture": "愛知県",
+      "prefectureCode": 23,
+      "city": "岩倉市",
+      "category": "river",
+      "treeCount": 1400,
+      "bloomTypical": {
+        "earlyStart": "03-25",
+        "peakStart": "04-02",
+        "peakEnd": "04-10",
+        "lateEnd": "04-18"
+      },
+      "latitude": 35.2789,
+      "longitude": 136.8681,
+      "description": "五条川沿い8kmに続く桜並木。",
+      "tags": [
+        "川沿い",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 65,
+      "nameJa": "山崎川四季の道",
+      "nameEn": "Yamazakigawa Four Seasons Path",
+      "prefecture": "愛知県",
+      "prefectureCode": 23,
+      "city": "名古屋市瑞穂区",
+      "category": "river",
+      "treeCount": 300,
+      "bloomTypical": {
+        "earlyStart": "03-25",
+        "peakStart": "04-02",
+        "peakEnd": "04-10",
+        "lateEnd": "04-18"
+      },
+      "latitude": 35.1326,
+      "longitude": 136.9407,
+      "description": "山崎川沿いの遊歩道に咲く桜。",
+      "tags": [
+        "川沿い",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 66,
+      "nameJa": "霞間ヶ渓",
+      "nameEn": "Kamangakei Gorge",
+      "prefecture": "岐阜県",
+      "prefectureCode": 21,
+      "city": "揖斐郡池田町",
+      "category": "mountain",
+      "treeCount": 1500,
+      "bloomTypical": {
+        "earlyStart": "03-25",
+        "peakStart": "04-02",
+        "peakEnd": "04-10",
+        "lateEnd": "04-18"
+      },
+      "latitude": 35.4944,
+      "longitude": 136.5539,
+      "description": "渓谷を彩る1500本の山桜。",
+      "tags": [
+        "渓谷",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 67,
+      "nameJa": "根尾谷淡墨公園",
+      "nameEn": "Neo Valley Usuzumi Park",
+      "prefecture": "岐阜県",
+      "prefectureCode": 21,
+      "city": "本巣市",
+      "category": "mountain",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "03-25",
+        "peakStart": "04-02",
+        "peakEnd": "04-10",
+        "lateEnd": "04-18"
+      },
+      "latitude": 35.6211,
+      "longitude": 136.5369,
+      "description": "樹齢1500年の「淡墨桜」がある。",
+      "tags": [
+        "樹齢1500年",
+        "淡墨桜",
+        "日本三大桜",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 68,
+      "nameJa": "新境川堤",
+      "nameEn": "Shinsakai River Embankment",
+      "prefecture": "岐阜県",
+      "prefectureCode": 21,
+      "city": "各務原市",
+      "category": "river",
+      "treeCount": 600,
+      "bloomTypical": {
+        "earlyStart": "03-25",
+        "peakStart": "04-02",
+        "peakEnd": "04-10",
+        "lateEnd": "04-18"
+      },
+      "latitude": 35.3874,
+      "longitude": 136.8637,
+      "description": "新境川の堤防沿いに続く桜並木。",
+      "tags": [
+        "川沿い",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 69,
+      "nameJa": "小諸城趾懐古園",
+      "nameEn": "Komoro Castle Ruins Kaikoen",
+      "prefecture": "長野県",
+      "prefectureCode": 20,
+      "city": "小諸市",
+      "category": "castle",
+      "treeCount": 500,
+      "bloomTypical": {
+        "earlyStart": "04-01",
+        "peakStart": "04-08",
+        "peakEnd": "04-15",
+        "lateEnd": "04-23"
+      },
+      "latitude": 36.3298,
+      "longitude": 138.4258,
+      "description": "日本三大桜城址の一つ。城の花見で有名。",
+      "tags": [
+        "城",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 70,
+      "nameJa": "臥竜公園",
+      "nameEn": "Garyu Park",
+      "prefecture": "長野県",
+      "prefectureCode": 20,
+      "city": "須坂市",
+      "category": "park",
+      "treeCount": 900,
+      "bloomTypical": {
+        "earlyStart": "04-01",
+        "peakStart": "04-08",
+        "peakEnd": "04-15",
+        "lateEnd": "04-23"
+      },
+      "latitude": 36.6473,
+      "longitude": 138.3087,
+      "description": "臥竜山の公園に咲く900本の桜。",
+      "tags": [
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 71,
+      "nameJa": "大法師公園",
+      "nameEn": "Oboshi Park",
+      "prefecture": "山梨県",
+      "prefectureCode": 19,
+      "city": "南巨摩郡富士川町",
+      "category": "park",
+      "treeCount": 2000,
+      "bloomTypical": {
+        "earlyStart": "04-01",
+        "peakStart": "04-08",
+        "peakEnd": "04-15",
+        "lateEnd": "04-23"
+      },
+      "latitude": 35.4167,
+      "longitude": 138.4417,
+      "description": "富士川沿いの丘に咲く2000本の桜。",
+      "tags": [
+        "富士山眺望",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 72,
+      "nameJa": "さくらの里",
+      "nameEn": "Sakura no Sato",
+      "prefecture": "静岡県",
+      "prefectureCode": 22,
+      "city": "伊東市",
+      "category": "mountain",
+      "treeCount": 40000,
+      "bloomTypical": {
+        "earlyStart": "03-01",
+        "peakStart": "03-15",
+        "peakEnd": "03-25",
+        "lateEnd": "04-30"
+      },
+      "latitude": 34.9508,
+      "longitude": 139.0872,
+      "description": "40品種4万本の桜が富士山を背景に咲く。",
+      "tags": [
+        "長期開花",
+        "多品種",
+        "富士山",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 73,
+      "nameJa": "冨士霊園",
+      "nameEn": "Fuji Cemetery",
+      "prefecture": "静岡県",
+      "prefectureCode": 22,
+      "city": "駿東郡小山町",
+      "category": "park",
+      "treeCount": 800,
+      "bloomTypical": {
+        "earlyStart": "04-01",
+        "peakStart": "04-08",
+        "peakEnd": "04-15",
+        "lateEnd": "04-23"
+      },
+      "latitude": 35.3383,
+      "longitude": 138.8597,
+      "description": "霊園の桜越しに富士山が望める。",
+      "tags": [
+        "富士山眺望",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 74,
+      "nameJa": "高岡古城公園",
+      "nameEn": "Takaoka Kojyo Park",
+      "prefecture": "富山県",
+      "prefectureCode": 16,
+      "city": "高岡市",
+      "category": "castle",
+      "treeCount": 2000,
+      "bloomTypical": {
+        "earlyStart": "04-02",
+        "peakStart": "04-10",
+        "peakEnd": "04-17",
+        "lateEnd": "04-25"
+      },
+      "latitude": 36.7555,
+      "longitude": 137.0247,
+      "description": "前田利長が築いた城の跡に咲く桜。",
+      "tags": [
+        "城",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 75,
+      "nameJa": "松川公園",
+      "nameEn": "Matsukawa Park",
+      "prefecture": "富山県",
+      "prefectureCode": 16,
+      "city": "富山市",
+      "category": "river",
+      "treeCount": 600,
+      "bloomTypical": {
+        "earlyStart": "04-02",
+        "peakStart": "04-10",
+        "peakEnd": "04-17",
+        "lateEnd": "04-25"
+      },
+      "latitude": 36.6964,
+      "longitude": 137.2136,
+      "description": "松川沿いの桜並木が富山市内で人気。",
+      "tags": [
+        "川沿い",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 76,
+      "nameJa": "兼六園",
+      "nameEn": "Kenrokuen Garden",
+      "prefecture": "石川県",
+      "prefectureCode": 17,
+      "city": "金沢市",
+      "category": "garden",
+      "treeCount": 420,
+      "bloomTypical": {
+        "earlyStart": "04-02",
+        "peakStart": "04-10",
+        "peakEnd": "04-17",
+        "lateEnd": "04-25"
+      },
+      "latitude": 36.5616,
+      "longitude": 136.6617,
+      "description": "日本三名園の一つ。琴柱灯籠と桜が美しい。",
+      "tags": [
+        "日本三名園",
+        "国特別名勝",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 77,
+      "nameJa": "足羽川堤防",
+      "nameEn": "Asuwa River Embankment",
+      "prefecture": "福井県",
+      "prefectureCode": 18,
+      "city": "福井市",
+      "category": "river",
+      "treeCount": 600,
+      "bloomTypical": {
+        "earlyStart": "04-02",
+        "peakStart": "04-10",
+        "peakEnd": "04-17",
+        "lateEnd": "04-25"
+      },
+      "latitude": 36.0674,
+      "longitude": 136.2185,
+      "description": "足羽川の両岸に続く約2.2kmの桜並木。",
+      "tags": [
+        "川沿い",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 78,
+      "nameJa": "霞ヶ城公園（坂井）",
+      "nameEn": "Kasumigajo Park",
+      "prefecture": "福井県",
+      "prefectureCode": 18,
+      "city": "坂井市",
+      "category": "castle",
+      "treeCount": 1200,
+      "bloomTypical": {
+        "earlyStart": "04-02",
+        "peakStart": "04-10",
+        "peakEnd": "04-17",
+        "lateEnd": "04-25"
+      },
+      "latitude": 36.2006,
+      "longitude": 136.2258,
+      "description": "越前松岡城址に咲く1200本の桜。",
+      "tags": [
+        "城",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 79,
+      "nameJa": "高田城址公園",
+      "nameEn": "Takada Castle Ruins Park",
+      "prefecture": "新潟県",
+      "prefectureCode": 15,
+      "city": "上越市",
+      "category": "castle",
+      "treeCount": 4000,
+      "bloomTypical": {
+        "earlyStart": "04-08",
+        "peakStart": "04-15",
+        "peakEnd": "04-22",
+        "lateEnd": "05-01"
+      },
+      "latitude": 37.1291,
+      "longitude": 138.2461,
+      "description": "日本三大夜桜の一つ。4000本のソメイヨシノ。",
+      "tags": [
+        "夜桜",
+        "城",
+        "日本三大夜桜",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 80,
+      "nameJa": "大河津分水路",
+      "nameEn": "Okozu Diversion Channel",
+      "prefecture": "新潟県",
+      "prefectureCode": 15,
+      "city": "燕市",
+      "category": "river",
+      "treeCount": 3000,
+      "bloomTypical": {
+        "earlyStart": "04-08",
+        "peakStart": "04-15",
+        "peakEnd": "04-22",
+        "lateEnd": "05-01"
+      },
+      "latitude": 37.7236,
+      "longitude": 138.7792,
+      "description": "信濃川分水路沿いに咲く桜並木。",
+      "tags": [
+        "川沿い",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 81,
+      "nameJa": "村松公園",
+      "nameEn": "Muramatsu Park",
+      "prefecture": "新潟県",
+      "prefectureCode": 15,
+      "city": "五泉市",
+      "category": "park",
+      "treeCount": 3000,
+      "bloomTypical": {
+        "earlyStart": "04-08",
+        "peakStart": "04-15",
+        "peakEnd": "04-22",
+        "lateEnd": "05-01"
+      },
+      "latitude": 37.7394,
+      "longitude": 139.2375,
+      "description": "菜の花と桜のコラボが美しい。",
+      "tags": [
+        "菜の花",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 82,
+      "nameJa": "隅田公園",
+      "nameEn": "Sumida Park",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "台東区",
+      "category": "park",
+      "treeCount": 600,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.7119,
+      "longitude": 139.8052,
+      "description": "スカイツリーと桜が共演。",
+      "tags": [
+        "スカイツリー",
+        "川沿い",
+        "夜桜",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 83,
+      "nameJa": "小金井公園",
+      "nameEn": "Koganei Park",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "小金井市",
+      "category": "park",
+      "treeCount": 1700,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.7198,
+      "longitude": 139.5078,
+      "description": "75品種1700本の桜が咲く公園。",
+      "tags": [
+        "多品種",
+        "広大",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 84,
+      "nameJa": "大宮公園",
+      "nameEn": "Omiya Park",
+      "prefecture": "埼玉県",
+      "prefectureCode": 11,
+      "city": "さいたま市大宮区",
+      "category": "park",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.9283,
+      "longitude": 139.633,
+      "description": "氷川神社の鎮守の森に広がる花見の名所。",
+      "tags": [
+        "神社",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 85,
+      "nameJa": "長瀞",
+      "nameEn": "Nagatoro",
+      "prefecture": "埼玉県",
+      "prefectureCode": 11,
+      "city": "秩父郡長瀞町",
+      "category": "river",
+      "treeCount": 3000,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 36.1189,
+      "longitude": 139.1119,
+      "description": "荒川上流の渓谷美と桜の景色。",
+      "tags": [
+        "渓谷",
+        "川下り",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 86,
+      "nameJa": "泉自然公園",
+      "nameEn": "Izumi Natural Park",
+      "prefecture": "千葉県",
+      "prefectureCode": 12,
+      "city": "千葉市若葉区",
+      "category": "park",
+      "treeCount": 1500,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.6375,
+      "longitude": 140.1808,
+      "description": "千葉市の豊かな自然の中の桜。",
+      "tags": [
+        "自然公園",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 87,
+      "nameJa": "清水公園",
+      "nameEn": "Shimizu Park",
+      "prefecture": "千葉県",
+      "prefectureCode": 12,
+      "city": "野田市",
+      "category": "park",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.9786,
+      "longitude": 139.8716,
+      "description": "130年以上の歴史を持つ老舗公園。",
+      "tags": [
+        "歴史公園",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 88,
+      "nameJa": "茂原公園",
+      "nameEn": "Mobara Park",
+      "prefecture": "千葉県",
+      "prefectureCode": 12,
+      "city": "茂原市",
+      "category": "park",
+      "treeCount": 900,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.4282,
+      "longitude": 140.2856,
+      "description": "千葉県内でも有数の花見の名所。",
+      "tags": [
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 89,
+      "nameJa": "小田原城址公園",
+      "nameEn": "Odawara Castle Park",
+      "prefecture": "神奈川県",
+      "prefectureCode": 14,
+      "city": "小田原市",
+      "category": "castle",
+      "treeCount": 300,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.2497,
+      "longitude": 139.1597,
+      "description": "小田原城の天守閣と桜が美しい。",
+      "tags": [
+        "城",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 90,
+      "nameJa": "衣笠山公園",
+      "nameEn": "Kinugasayama Park",
+      "prefecture": "神奈川県",
+      "prefectureCode": 14,
+      "city": "横須賀市",
+      "category": "mountain",
+      "treeCount": 5000,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 35.2782,
+      "longitude": 139.6253,
+      "description": "5000本の桜が山を彩る横須賀の名所。",
+      "tags": [
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 91,
+      "nameJa": "太平山県立自然公園",
+      "nameEn": "Taiheizan Prefectural Natural Park",
+      "prefecture": "栃木県",
+      "prefectureCode": 9,
+      "city": "栃木市",
+      "category": "mountain",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 36.3583,
+      "longitude": 139.7256,
+      "description": "関東平野を見渡す山頂の桜。",
+      "tags": [
+        "自然公園",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 92,
+      "nameJa": "日光街道",
+      "nameEn": "Nikko Kaido",
+      "prefecture": "栃木県",
+      "prefectureCode": 9,
+      "city": "日光市",
+      "category": "street",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 36.7487,
+      "longitude": 139.6219,
+      "description": "日光へ続く街道沿いに咲く桜並木。",
+      "tags": [
+        "街道",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 93,
+      "nameJa": "桜山公園",
+      "nameEn": "Sakurayama Park",
+      "prefecture": "群馬県",
+      "prefectureCode": 10,
+      "city": "藤岡市",
+      "category": "mountain",
+      "treeCount": 7000,
+      "bloomTypical": {
+        "earlyStart": "10-20",
+        "peakStart": "11-01",
+        "peakEnd": "11-10",
+        "lateEnd": "11-25"
+      },
+      "latitude": 36.2133,
+      "longitude": 138.9814,
+      "description": "秋に咲く冬桜7000本が有名。",
+      "tags": [
+        "冬桜",
+        "秋桜",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 94,
+      "nameJa": "赤城南面千本桜",
+      "nameEn": "Akagi Nanmen Thousand Cherry Trees",
+      "prefecture": "群馬県",
+      "prefectureCode": 10,
+      "city": "前橋市",
+      "category": "mountain",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 36.4047,
+      "longitude": 139.1594,
+      "description": "赤城山の南斜面に咲く千本桜。",
+      "tags": [
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 95,
+      "nameJa": "日立市かみね公園",
+      "nameEn": "Hitachi Kamine Park",
+      "prefecture": "茨城県",
+      "prefectureCode": 8,
+      "city": "日立市",
+      "category": "park",
+      "treeCount": 800,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 36.5936,
+      "longitude": 140.6562,
+      "description": "太平洋を望む高台に咲く桜。",
+      "tags": [
+        "海眺望",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 96,
+      "nameJa": "静峰ふるさと公園",
+      "nameEn": "Shizumine Furusato Park",
+      "prefecture": "茨城県",
+      "prefectureCode": 8,
+      "city": "那珂市",
+      "category": "park",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "03-22",
+        "peakStart": "03-29",
+        "peakEnd": "04-07",
+        "lateEnd": "04-15"
+      },
+      "latitude": 36.4522,
+      "longitude": 140.4817,
+      "description": "千本の八重桜が有名な公園。",
+      "tags": [
+        "八重桜",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 97,
+      "nameJa": "船岡城址公園",
+      "nameEn": "Funaoka Castle Ruins Park",
+      "prefecture": "宮城県",
+      "prefectureCode": 4,
+      "city": "柴田郡柴田町",
+      "category": "castle",
+      "treeCount": 1200,
+      "bloomTypical": {
+        "earlyStart": "04-08",
+        "peakStart": "04-15",
+        "peakEnd": "04-22",
+        "lateEnd": "05-01"
+      },
+      "latitude": 38.0473,
+      "longitude": 140.7597,
+      "description": "桜のリフトで山頂から望む絶景。",
+      "tags": [
+        "城",
+        "リフト",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 98,
+      "nameJa": "三春滝桜",
+      "nameEn": "Miharu Takizakura",
+      "prefecture": "福島県",
+      "prefectureCode": 7,
+      "city": "田村郡三春町",
+      "category": "mountain",
+      "treeCount": 1,
+      "bloomTypical": {
+        "earlyStart": "04-08",
+        "peakStart": "04-15",
+        "peakEnd": "04-22",
+        "lateEnd": "05-01"
+      },
+      "latitude": 37.4395,
+      "longitude": 140.4131,
+      "description": "推定樹齢1000年、日本三大桜の一つ。",
+      "tags": [
+        "樹齢1000年",
+        "日本三大桜",
+        "紅枝垂桜",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 99,
+      "nameJa": "霞ヶ城公園（二本松）",
+      "nameEn": "Kasumigajo Park (Nihonmatsu)",
+      "prefecture": "福島県",
+      "prefectureCode": 7,
+      "city": "二本松市",
+      "category": "castle",
+      "treeCount": 2500,
+      "bloomTypical": {
+        "earlyStart": "04-08",
+        "peakStart": "04-15",
+        "peakEnd": "04-22",
+        "lateEnd": "05-01"
+      },
+      "latitude": 37.5888,
+      "longitude": 140.4327,
+      "description": "霞ヶ城の石垣を彩る2500本の桜。",
+      "tags": [
+        "城",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
+    },
+    {
+      "id": 100,
+      "nameJa": "鶴ヶ城公園",
+      "nameEn": "Tsurugajo Park",
+      "prefecture": "福島県",
+      "prefectureCode": 7,
+      "city": "会津若松市",
+      "category": "castle",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "04-08",
+        "peakStart": "04-15",
+        "peakEnd": "04-22",
+        "lateEnd": "05-01"
+      },
+      "latitude": 37.4874,
+      "longitude": 139.9303,
+      "description": "会津の名城を彩る千本桜。",
+      "tags": [
+        "城",
+        "日本さくら名所100選"
+      ],
+      "regionId": "jp",
+      "seasonId": "sakura"
     }
   ]
 }
