@@ -44,6 +44,7 @@ export async function signOut() {
 }
 
 export async function signInWithLine() {
+  const LINE_CHANNEL_ID = process.env.EXPO_PUBLIC_LINE_CHANNEL_ID;
   if (!LINE_CHANNEL_ID) {
     throw new Error('LINE_CHANNEL_ID is not configured');
   }
