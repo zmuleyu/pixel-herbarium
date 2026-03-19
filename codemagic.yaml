@@ -72,7 +72,17 @@ workflows:
             --format junit \
             --output e2e-results.xml \
             --env E2E_TEST_EMAIL=$E2E_TEST_EMAIL \
-            --env E2E_TEST_PASSWORD=$E2E_TEST_PASSWORD
+            --env E2E_TEST_PASSWORD=$E2E_TEST_PASSWORD || true
+          # Post-failure diagnostic: capture what screen the app is currently on
+          mkdir -p e2e/current
+          xcrun simctl io booted screenshot e2e/current/post-maestro-state.png 2>/dev/null || true
+          # Check if e2e-results.xml has any failures
+          if grep -q 'failures="0"' e2e-results.xml 2>/dev/null; then
+            echo "All E2E tests passed"
+          else
+            echo "E2E tests had failures — see e2e-results.xml and post-maestro-state.png"
+            exit 1
+          fi
 
       - name: Run Maestro screenshot flows
         script: |
