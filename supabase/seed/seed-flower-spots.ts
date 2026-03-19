@@ -1,8 +1,8 @@
-// supabase/seed/seed-sakura-spots.ts
-// Run once: npx tsx supabase/seed/seed-sakura-spots.ts
+// supabase/seed/seed-flower-spots.ts
+// Run once: npx tsx supabase/seed/seed-flower-spots.ts
 //
 // Transforms camelCase JSON fields → snake_case DB columns and upserts into
-// the sakura_spots table (created by migration 021_sakura_spots.sql).
+// the flower_spots table (created by migration 021, generalized by 023).
 //
 // Required env vars:
 //   SUPABASE_URL             (or EXPO_PUBLIC_SUPABASE_URL)
