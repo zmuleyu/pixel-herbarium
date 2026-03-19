@@ -80,7 +80,8 @@
     "error": "認証エラー",
     "signIn": "サインイン",
     "lineLogin": "LINEで続ける",
-    "lineError": "LINE接続に失敗しました"
+    "lineError": "LINE接続に失敗しました",
+    "continueAsGuest": "ゲストとして続ける"
   },
   "invite": {
     "welcome": "花めぐりへようこそ\n素敵な花との出会いが\nあなたを待っています"
