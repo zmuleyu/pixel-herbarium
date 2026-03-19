@@ -21,54 +21,60 @@ export interface CoachStep {
   spotlightShape?: 'rect' | 'circle';
 }
 
-interface CoachMarkProps {
+// Fix 1: Spec-correct props — component owns step state internally
+interface Props {
   steps: CoachStep[];
-  currentStep: number;
-  /** Resolved rect for the current step's target element */
-  targetRect: { x: number; y: number; width: number; height: number } | null;
-  onNext: () => void;
-  onDismiss: () => void;
-  visible: boolean;
+  getRect: (key: string) => { x: number; y: number; width: number; height: number } | null;
+  onDone: () => void;
   overlayVariant?: 'light' | 'dark';
 }
 
 export function CoachMark({
-  steps, currentStep, targetRect, onNext, onDismiss, visible, overlayVariant = 'light',
-}: CoachMarkProps) {
+  steps, getRect, onDone, overlayVariant = 'light',
+}: Props) {
   const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.92)).current;
   const [reduceMotion, setReduceMotion] = useState(false);
+  // Fix 1: Internal step state
+  const [currentStep, setCurrentStep] = useState(0);
 
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
   }, []);
 
   useEffect(() => {
-    if (!visible) return;
+    // Fix 5: When reduceMotion, skip both animations — set values directly
+    if (reduceMotion) {
+      fadeAnim.setValue(1);
+      scaleAnim.setValue(1);
+      return;
+    }
     fadeAnim.setValue(0);
-    scaleAnim.setValue(reduceMotion ? 1 : 0.92);
+    scaleAnim.setValue(0.92);
     Animated.parallel([
       Animated.timing(fadeAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
       Animated.timing(scaleAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
     ]).start();
-  }, [visible, currentStep, reduceMotion]);
-
-  if (!visible) return null;
+  }, [currentStep, reduceMotion]);
 
   const step = steps[currentStep];
   if (!step) return null;
   const isLast = currentStep === steps.length - 1;
+
+  // Fix 1: Resolve rect via getRect callback or targetRect directly
+  const rect: { x: number; y: number; width: number; height: number } | null =
+    step.targetKey ? getRect(step.targetKey) : step.targetRect ?? null;
 
   const pad = step.spotlightPadding ?? SPOTLIGHT_PAD;
   const overlayColor = overlayVariant === 'dark'
     ? 'rgba(80, 74, 70, 0.65)'
     : 'rgba(159, 146, 140, 0.55)';
 
-  // Compute spotlight rect
-  const sl = targetRect
-    ? { x: targetRect.x - pad, y: targetRect.y - pad, w: targetRect.width + pad * 2, h: targetRect.height + pad * 2 }
-    : { x: SW * 0.1, y: SH * 0.35, w: SW * 0.8, h: SW * 0.8 };
+  // Fix 3: Null rect = full overlay (spotlight dimensions 0,0,0,0 → four rects fill screen)
+  const sl = rect
+    ? { x: rect.x - pad, y: rect.y - pad, w: rect.width + pad * 2, h: rect.height + pad * 2 }
+    : { x: 0, y: 0, w: 0, h: 0 };
 
   // Four rects that form frame around spotlight
   const top =    { left: 0, top: 0, right: 0, height: sl.y };
@@ -80,10 +86,14 @@ export function CoachMark({
   const tooltipBelow = sl.y + sl.h + 60 < SH * 0.75;
   const tooltipTop = tooltipBelow ? sl.y + sl.h + 16 : sl.y - 16 - 120;
 
+  // Fix 1 + Fix 2: handleNext advances step or calls onDone on last step
   function handleNext() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    if (isLast) onDismiss();
-    else onNext();
+    if (isLast) {
+      onDone();
+    } else {
+      setCurrentStep(currentStep + 1);
+    }
   }
 
   return (
@@ -94,8 +104,8 @@ export function CoachMark({
       <View style={[StyleSheet.absoluteFillObject, { backgroundColor: overlayColor }, left as any]} />
       <View style={[StyleSheet.absoluteFillObject, { backgroundColor: overlayColor }, right as any]} />
 
-      {/* Tap outside to dismiss */}
-      <TouchableOpacity style={StyleSheet.absoluteFillObject} onPress={onDismiss} activeOpacity={1} />
+      {/* Fix 2: Tap outside advances step (calls handleNext), not dismiss */}
+      <TouchableOpacity style={StyleSheet.absoluteFillObject} onPress={handleNext} activeOpacity={1} />
 
       {/* Tooltip card */}
       <Animated.View
@@ -106,15 +116,17 @@ export function CoachMark({
         {step.icon && <Text style={styles.icon}>{step.icon}</Text>}
         <Text style={styles.body}>{t(step.body)}</Text>
 
-        {/* Step dots */}
-        <View style={styles.dots} accessibilityLabel={`ステップ ${currentStep + 1}/${steps.length}`}>
-          {steps.map((_, i) => (
-            <View
-              key={i}
-              style={[styles.dot, i === currentStep && styles.dotActive]}
-            />
-          ))}
-        </View>
+        {/* Fix 4: Step dots only when multiple steps */}
+        {steps.length > 1 && (
+          <View style={styles.dots} accessibilityLabel={`ステップ ${currentStep + 1}/${steps.length}`}>
+            {steps.map((_, i) => (
+              <View
+                key={i}
+                style={[styles.dot, i === currentStep && styles.dotActive]}
+              />
+            ))}
+          </View>
+        )}
 
         <TouchableOpacity
           style={styles.btn}
