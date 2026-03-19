@@ -1,0 +1,24 @@
+appId: com.pixelherbarium.app
+---
+# Screenshot flow: Capture stamp preview in all 3 styles
+# Runs after 07-stamp-checkin.yaml — assumes app is in stamp preview state
+
+- runFlow: ../flows/07-stamp-checkin.yaml
+
+# Screenshot: Pixel style (default)
+- tapOn:
+    text: "ピクセル"
+- waitForAnimationToEnd
+- takeScreenshot: "stamp-pixel"
+
+# Screenshot: Seal style
+- tapOn:
+    text: "印章"
+- waitForAnimationToEnd
+- takeScreenshot: "stamp-seal"
+
+# Screenshot: Minimal style
+- tapOn:
+    text: "シンプル"
+- waitForAnimationToEnd
+- takeScreenshot: "stamp-minimal"
