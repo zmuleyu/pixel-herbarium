@@ -23,7 +23,11 @@ appId: com.pixelherbarium.app
 # Skip onboarding → app navigates to /(auth)/login directly
 - tapOn:
     id: "onboarding.skip"
-# Already on login screen — no need to navigate via Settings tab
+# Wait for login screen to render after route transition (can take 5-10s on CI)
+- extendedWaitUntil:
+    visible:
+      id: "auth.email"
+    timeout: 20000
 - tapOn:
     id: "auth.email"
 - inputText: "${E2E_TEST_EMAIL}"

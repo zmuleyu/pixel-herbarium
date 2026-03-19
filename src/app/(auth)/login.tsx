@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useTranslation } from 'react-i18next';
 import { signInWithApple, signInWithEmail, signInWithLine, confirmLinkLine } from '@/services/auth';
+import \{ trackEvent \} from '@/services/analytics';
 import { useAuthStore } from '@/stores/auth-store';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 
@@ -60,6 +61,7 @@ export default function LoginScreen() {
                 try {
                   await confirmLinkLine(id_token, existing_user_id);
                   // onAuthStateChange handles navigation
+                  trackEvent('line_account_linked');
                 } catch (linkErr: any) {
                   setError(linkErr.message);
                   Alert.alert(t('auth.error'), t('auth.lineError'));
@@ -73,6 +75,7 @@ export default function LoginScreen() {
       }
 
       // Normal sign-in — onAuthStateChange handles navigation
+      trackEvent('line_login');
     } catch (e: any) {
       if (!e.message?.includes('cancelled')) {
         setError(e.message);
