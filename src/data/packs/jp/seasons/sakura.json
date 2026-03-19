@@ -26,7 +26,11 @@
         "屋台"
       ],
       "regionId": "jp",
-      "seasonId": "sakura"
+      "seasonId": "sakura",
+      "landmark": {
+        "nameJa": "清水観音堂",
+        "nameEn": "Kiyomizu Kannon-do"
+      }
     },
     {
       "id": 2,
@@ -52,7 +56,11 @@
         "多品種"
       ],
       "regionId": "jp",
-      "seasonId": "sakura"
+      "seasonId": "sakura",
+      "landmark": {
+        "nameJa": "旧洋館御休所",
+        "nameEn": "Former Imperial Rest House"
+      }
     },
     {
       "id": 3,
