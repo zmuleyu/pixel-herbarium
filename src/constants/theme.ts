@@ -71,3 +71,20 @@ export function getSeasonTheme(seasonId: string): SeasonTheme {
     SEASON_THEMES.sakura
   );
 }
+
+export const stamp = {
+  padding: 16,
+  opacity: {
+    pixel: 0.93,
+    seal: 0.90,
+    minimal: 1,
+  },
+  pixelBorder: 2,
+  sealDiameter: 72,
+  sealBorder: 2.5,
+  minimalBarWidth: 2.5,
+  defaultPosition: 'bottom-right' as const,
+  defaultStyle: 'pixel' as const,
+  storageKey: 'stamp_style_preference',
+  positionStorageKey: 'stamp_position_preference',
+} as const;

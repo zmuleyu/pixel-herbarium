@@ -208,6 +208,19 @@
     "permissionRequired": "Please allow access to your photo library",
     "saveError": "Failed to save"
   },
+  "stamp": {
+    "pixel": "Pixel",
+    "seal": "Seal",
+    "minimal": "Minimal",
+    "share": "Share this moment",
+    "saved": "Saved to photos 🌸",
+    "shareError": "Share failed",
+    "permissionRequired": "Please allow access to your photo library",
+    "photoOld": "This photo was taken {{days}} days ago. Record it as today's encounter?",
+    "photoOldUse": "Use this photo",
+    "photoOldReselect": "Choose another",
+    "photoLowRes": "Low resolution — the export may appear blurry"
+  },
   "footprint": {
     "title": "Footprint",
     "comingSoon": "Coming Soon",
