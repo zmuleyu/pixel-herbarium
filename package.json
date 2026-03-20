@@ -14,7 +14,9 @@
     "build:preview:ios": "eas build --profile preview --platform ios",
     "build:prod:ios": "eas build --profile production --platform ios",
     "build:prod:android": "eas build --profile production --platform android",
-    "submit:ios": "eas submit --platform ios --profile production"
+    "submit:ios": "eas submit --platform ios --profile production",
+    "logs:ci": "node tools/codemagic-logs.mjs",
+    "logs:ci:list": "node tools/codemagic-logs.mjs --list"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",

@@ -236,12 +236,15 @@ workflows:
       - name: Build production IPA locally
         script: |
           npm install -g eas-cli
-          # Build locally on this Mac — zero EAS cloud quota consumed.
-          # Same pattern as simulator-screenshot build (proven in ios-ci workflow).
+          mkdir -p /tmp/eas-logs
+          # Capture full output for debugging (no logUrl available in file-based yaml)
           eas build --local --profile production --platform ios --non-interactive \
-            --output production.ipa
-          if [ ! -f production.ipa ]; then
-            echo "ERROR: production.ipa not found — build failed"
+            --output production.ipa 2>&1 | tee /tmp/eas-logs/eas-build.log
+          BUILD_EXIT=${PIPESTATUS[0]}
+          cp /tmp/eas-logs/eas-build.log eas-build.log
+          if [ $BUILD_EXIT -ne 0 ] || [ ! -f production.ipa ]; then
+            echo "ERROR: eas build failed (exit $BUILD_EXIT)"
+            tail -50 eas-build.log
             exit 1
           fi
           echo "Production IPA built: $(ls -lh production.ipa)"
