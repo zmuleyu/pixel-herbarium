@@ -253,4 +253,3 @@ workflows:
 
     artifacts:
       - production.ipa
-      - eas-build.log
