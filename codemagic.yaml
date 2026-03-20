@@ -220,8 +220,10 @@ workflows:
       - e2e/current/*.png
       - e2e/current/*.txt
 
+  # FALLBACK — Primary production pipeline is GitHub Actions (.github/workflows/release.yml)
+  # Kept as manual backup. Trigger via Codemagic Dashboard or API.
   ios-production:
-    name: Production Build + Submit
+    name: Production Build + Submit (FALLBACK)
     max_build_duration: 90
     instance_type: mac_mini_m2
     environment:
