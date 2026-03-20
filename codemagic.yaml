@@ -233,23 +233,17 @@ workflows:
       - name: Install deps
         script: npm ci
 
-      - name: Build production IPA locally
+      - name: Build production IPA (EAS cloud)
         script: |
           npm install -g eas-cli
-          eas build --local --profile production --platform ios --non-interactive \
-            --output production.ipa
-          if [ ! -f production.ipa ]; then
-            echo "ERROR: production.ipa not found — build failed"
-            exit 1
-          fi
-          echo "Production IPA built: $(ls -lh production.ipa)"
+          # EAS cloud build handles Distribution Certificate automatically.
+          # --local failed with "not validated for non-interactive builds".
+          # --wait blocks until build completes (typically 20-40 min).
+          eas build --profile production --platform ios --non-interactive --wait
+          echo "EAS cloud build complete"
 
       - name: Submit to App Store Connect
         script: |
-          eas submit --platform ios \
-            --path production.ipa \
-            --non-interactive
+          # Submit the latest finished EAS build directly (no IPA download needed)
+          eas submit --profile production --platform ios --latest --non-interactive
           echo "Submitted to ASC — check App Store Connect for build status"
-
-    artifacts:
-      - production.ipa
