@@ -15,13 +15,17 @@ describe('FEATURES', () => {
     }
   });
 
-  it('has exactly 2 keys', () => {
-    expect(Object.keys(FEATURES)).toHaveLength(2);
+  it('has exactly 3 keys', () => {
+    expect(Object.keys(FEATURES)).toHaveLength(3);
   });
 
   it('contains the expected keys', () => {
     expect(Object.keys(FEATURES)).toEqual(
-      expect.arrayContaining(['CHECKIN_MODE', 'IDENTIFICATION_MODE']),
+      expect.arrayContaining(['CHECKIN_MODE', 'IDENTIFICATION_MODE', 'SCREENSHOT_MODE']),
     );
+  });
+
+  it('SCREENSHOT_MODE is false by default', () => {
+    expect(FEATURES.SCREENSHOT_MODE).toBe(false);
   });
 });
