@@ -27,6 +27,7 @@ export interface FlowerSpot {
   description?: string;
   tags: string[];
   landmark?: LandmarkInfo;
+  hanakotoba?: string; // flower meaning in Japanese, ≤30 chars
 }
 
 export type SpotCategory =
@@ -79,3 +80,19 @@ export interface SpotsData {
   seasonId: string;
   spots: FlowerSpot[];
 }
+
+export interface CustomOptions {
+  customColor?: string;           // undefined = season theme color
+  effectType: 'none' | 'shadow' | 'glow';
+  textMode: 'none' | 'hanakotoba' | 'custom';
+  customTextValue: string;        // ≤12 chars, used when textMode='custom'
+  decorationKey: 'none' | 'petals' | 'branch' | 'stars';
+}
+
+export const DEFAULT_CUSTOM_OPTIONS: CustomOptions = {
+  customColor: undefined,
+  effectType: 'none',
+  textMode: 'none',
+  customTextValue: '',
+  decorationKey: 'none',
+};

@@ -121,3 +121,15 @@ export const stamp = {
   storageKey: 'stamp_style_preference',
   positionStorageKey: 'stamp_position_preference',
 } as const;
+
+/** 8-color palette for stamp line color customization. Index 0 matches sakura themeColor. */
+export const STAMP_COLOR_PALETTE = [
+  '#e8a5b0', // 桜色 (season default for sakura)
+  '#7B9FCC', // 空色
+  '#d4a645', // 山吹色
+  '#b07090', // 藤色
+  '#6b8f5e', // 萌葱色
+  '#8899aa', // 青鼠色
+  '#c8a060', // 砂色
+  '#aaaaaa', // 薄墨色
+] as const;
