@@ -64,6 +64,16 @@ export default function SettingsTabScreen() {
         <Text style={styles.menuArrow}>›</Text>
       </TouchableOpacity>
 
+      {/* How to Use guide */}
+      <TouchableOpacity
+        style={styles.menuRow}
+        onPress={() => router.push('/guide' as any)}
+        accessibilityRole="button"
+      >
+        <Text style={styles.menuText}>{t('guide.settings.title')}</Text>
+        <Text style={styles.menuArrow}>›</Text>
+      </TouchableOpacity>
+
       {/* Version */}
       <View style={styles.menuRow}>
         <Text style={styles.menuText}>{t('settings.version')}</Text>
