@@ -14,7 +14,7 @@ import { SEASONS, getActiveSeason } from '@/constants/seasons';
 import { StampOverlay } from './StampOverlay';
 import { StyleSelector } from './StyleSelector';
 import { PositionSelector } from './PositionSelector';
-import type { FlowerSpot, StampStyle, StampStyleId, StampPosition } from '@/types/hanami';
+import type { FlowerSpot, StampStyleId, StampPosition } from '@/types/hanami';
 import { STAMP_STYLE_MIGRATION, DEFAULT_STAMP_STYLE_ID } from '@/constants/stamp-styles';
 
 const { width: SCREEN_W } = Dimensions.get('window');
@@ -36,7 +36,8 @@ interface StampPreviewProps {
   spot: FlowerSpot;
   date: Date;
   seasonId: string;
-  onSave: (composedUri: string, stampStyle: StampStyleId, stampPosition: StampPosition) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onSave: (composedUri: string, stampStyle: any, stampPosition: StampPosition) => void;
   onShare: (composedUri: string) => void;
 }
 
