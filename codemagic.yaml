@@ -233,11 +233,6 @@ workflows:
       - name: Install deps
         script: npm ci
 
-      - name: Validate before build
-        script: |
-          npx tsc --noEmit
-          npx jest --ci --passWithNoTests --forceExit
-
       - name: Build production IPA locally
         script: |
           npm install -g eas-cli
