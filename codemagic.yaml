@@ -30,7 +30,7 @@ workflows:
           # uses the current commit's code (no stale binary from EAS cache).
           # xcode: latest required — 16.1/16.2 have Swift strict concurrency errors
           # with RN 0.83 Expo modules. Boot step below forces iOS 18 simulator.
-          eas build --local --profile simulator --platform ios --non-interactive \
+          eas build --local --profile simulator-screenshot --platform ios --non-interactive \
             --output app.tar.gz
           # Verify the build artifact exists before proceeding
           if [ ! -f app.tar.gz ]; then

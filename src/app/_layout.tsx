@@ -14,6 +14,7 @@ import { usePushToken } from '@/hooks/usePushToken';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { parseDeepLink } from '@/utils/deep-link';
+import { useScreenshotMode } from '@/hooks/useScreenshotMode';
 import { ONBOARDING_KEY } from './onboarding';
 
 /** Resolves to fallback after ms milliseconds if promise hasn't settled. */
@@ -53,6 +54,7 @@ export default function RootLayout() {
   const segments = useSegments();
   const { session, loading, setSession, setUser, setLoading } = useAuthStore();
   usePushToken();
+  useScreenshotMode();
 
   // Handle push notification taps — navigate to herbarium
   useEffect(() => {
