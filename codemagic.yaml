@@ -217,3 +217,46 @@ workflows:
       - e2e/diffs/*.png
       - e2e/current/*.png
       - e2e/current/*.txt
+
+  ios-production:
+    name: Production Build + Submit
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    environment:
+      xcode: latest
+      node: 20.18.0
+      groups:
+        - expo_credentials
+    triggering:
+      events: []
+    scripts:
+      - name: Install deps
+        script: npm ci
+
+      - name: Validate before build
+        script: |
+          npx tsc --noEmit
+          npx jest --ci --passWithNoTests --forceExit
+
+      - name: Build production IPA locally
+        script: |
+          npm install -g eas-cli
+          # Build locally on this Mac — zero EAS cloud quota consumed.
+          # Same pattern as simulator-screenshot build (proven in ios-ci workflow).
+          eas build --local --profile production --platform ios --non-interactive \
+            --output production.ipa
+          if [ ! -f production.ipa ]; then
+            echo "ERROR: production.ipa not found — build failed"
+            exit 1
+          fi
+          echo "Production IPA built: $(ls -lh production.ipa)"
+
+      - name: Submit to App Store Connect
+        script: |
+          eas submit --platform ios \
+            --path production.ipa \
+            --non-interactive
+          echo "Submitted to ASC — check App Store Connect for build status"
+
+    artifacts:
+      - production.ipa
