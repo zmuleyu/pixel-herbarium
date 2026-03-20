@@ -149,22 +149,46 @@ interface CustomizationPanelProps {
 - `customColor` overrides `themeColor` (Classic/Relief/Postcard/Medallion/Window) or `accentColor` (Minimal) when defined. `StampRenderer` passes `customColor` as the relevant prop for each component's signature.
 - `customText` renders as extra subtitle line at stamp bottom (font-size: small, muted color)
 - `effectType` applies via `style` prop on stamp's outermost wrapper View (see Effect Rendering section)
-- `decorationKey` renders `<StampDecoration>` as an absolutely-positioned overlay **inside** the stamp's wrapper View — it must be within the `viewShotRef` boundary so it appears in the saved PNG
+- `decorationKey` is forwarded to `StampRenderer` only. Individual stamp components do NOT render `<StampDecoration>` directly (see below).
 
 ### New Sub-component: `StampDecoration.tsx`
 
 **Location**: `src/components/stamps/StampDecoration.tsx`
 
-Renders static SVG decoration based on `decorationKey`:
+**Placement**: Rendered in `StampRenderer` as a `position: 'absolute'` sibling **wrapping the stamp component**, NOT as a child inside individual stamp components. This avoids the `overflow: 'hidden'` clipping present on ReliefStamp, PostcardStamp, MedallionStamp, and WindowStamp.
+
+```typescript
+// StampRenderer renders:
+<View style={{ position: 'relative' }}>
+  <ClassicStamp ... />   {/* or whichever style */}
+  {decorationKey !== 'none' && (
+    <StampDecoration
+      decorationKey={decorationKey}
+      color={resolvedColor}
+      styleId={styleId}
+    />
+  )}
+</View>
+```
+
+Props:
 ```typescript
 interface StampDecorationProps {
-  decorationKey: 'none' | 'petals' | 'branch' | 'stars';
-  color: string;       // uses resolved stamp color (custom or season)
-  stampSize: { width: number; height: number };
+  decorationKey: 'petals' | 'branch' | 'stars';  // 'none' filtered out before render
+  color: string;   // resolved color: customColor ?? themeColor (or accentColor for Minimal)
+  styleId: StampStyleId;  // used to look up per-style size constants
 }
 ```
 
-Uses react-native-svg. All elements positioned absolutely relative to stamp container. Opacity 0.3–0.5 to remain non-intrusive.
+Size mapping lives inside `StampDecoration` using a constant map indexed by `styleId`. Known stamp sizes:
+- `medallion`: 72×72 (DIAMETER constant)
+- `classic`: 130 min-width (use 130×96)
+- `relief`: 120×90
+- `postcard`: 120×auto (use 120×130)
+- `window`: 116×auto (use 116×130)
+- `minimal`: no fixed size (no corner decorations; render a simple inline petal row)
+
+SVG elements are contained within the stamp bounds (no bleed beyond edges). Opacity 0.3–0.5. Uses react-native-svg. This component is rendered within the `viewShotRef` boundary so decorations appear in the saved PNG.
 
 ---
 

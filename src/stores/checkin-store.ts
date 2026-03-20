@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { CheckinRecord } from '@/types/hanami';
+import { FEATURES } from '@/constants/features';
+import { DEMO_CHECKIN_RECORDS } from '@/constants/demo-data';
 
 const STORAGE_KEY = 'ph_checkin_history';
 
@@ -13,10 +15,13 @@ interface CheckinStore {
 }
 
 export const useCheckinStore = create<CheckinStore>((set, get) => ({
-  history: [],
+  // Screenshot mode: pre-load demo records at store init (before any render)
+  history: FEATURES.SCREENSHOT_MODE ? DEMO_CHECKIN_RECORDS : [],
   loading: false,
 
   loadHistory: async () => {
+    // Screenshot mode: demo data already loaded at init, skip AsyncStorage
+    if (FEATURES.SCREENSHOT_MODE) return;
     set({ loading: true });
     try {
       const raw = await AsyncStorage.getItem(STORAGE_KEY);
