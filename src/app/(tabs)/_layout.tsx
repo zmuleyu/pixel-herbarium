@@ -18,7 +18,7 @@ interface TabConfig {
 const ALL_TABS: (TabConfig & { visible: boolean })[] = [
   { name: 'home',      labelKey: 'tabs.home',      icon: 'home-outline',      iconActive: 'home',      visible: true },
   { name: 'checkin',   labelKey: 'tabs.checkin',    icon: 'camera-outline',    iconActive: 'camera',    visible: true },
-  { name: 'footprint', labelKey: 'tabs.footprint',  icon: 'footsteps-outline', iconActive: 'footsteps', visible: true },
+  { name: 'footprint', labelKey: 'tabs.footprint',  icon: 'footsteps-outline', iconActive: 'footsteps', visible: false },
   { name: 'settings',  labelKey: 'tabs.settings',   icon: 'settings-outline',  iconActive: 'settings',  visible: true },
   { name: 'discover',  labelKey: 'tabs.discover',   icon: 'camera-outline',    iconActive: 'camera',    visible: false },
   { name: 'herbarium', labelKey: 'tabs.herbarium',  icon: 'leaf-outline',      iconActive: 'leaf',      visible: false },
