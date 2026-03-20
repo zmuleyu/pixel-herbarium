@@ -48,14 +48,6 @@ function getEffectStyle(effectType: CustomOptions['effectType'], resolvedColor: 
   return {};
 }
 
-// Stamp component types — customText will be added in Task 4; cast until then
-const ClassicStampAny = ClassicStamp as React.FC<any>;
-const ReliefStampAny = ReliefStamp as React.FC<any>;
-const PostcardStampAny = PostcardStamp as React.FC<any>;
-const MedallionStampAny = MedallionStamp as React.FC<any>;
-const WindowStampAny = WindowStamp as React.FC<any>;
-const MinimalStampAny = MinimalStamp as React.FC<any>;
-
 export function StampRenderer({ styleId, spot, date, season, customOptions }: StampRendererProps) {
   // Migrate legacy style IDs (pixel → classic, seal → medallion)
   const resolvedId: StampStyleId = (
@@ -89,7 +81,7 @@ export function StampRenderer({ styleId, spot, date, season, customOptions }: St
   switch (resolvedId) {
     case 'classic':
       stampElement = (
-        <ClassicStampAny
+        <ClassicStamp
           spotName={spot.nameJa}
           cityEn={cityEn}
           date={date}
@@ -101,7 +93,7 @@ export function StampRenderer({ styleId, spot, date, season, customOptions }: St
       break;
     case 'relief':
       stampElement = (
-        <ReliefStampAny
+        <ReliefStamp
           spotName={spot.nameJa}
           seasonLabel={seasonLabel}
           themeColor={resolvedColor}
@@ -112,7 +104,7 @@ export function StampRenderer({ styleId, spot, date, season, customOptions }: St
       break;
     case 'postcard':
       stampElement = (
-        <PostcardStampAny
+        <PostcardStamp
           spotName={spot.nameJa}
           seasonLabel={seasonLabel}
           themeColor={resolvedColor}
@@ -123,7 +115,7 @@ export function StampRenderer({ styleId, spot, date, season, customOptions }: St
       break;
     case 'medallion':
       stampElement = (
-        <MedallionStampAny
+        <MedallionStamp
           spotName={spot.nameJa}
           seasonLabel={seasonLabel}
           themeColor={resolvedColor}
@@ -134,7 +126,7 @@ export function StampRenderer({ styleId, spot, date, season, customOptions }: St
       break;
     case 'window':
       stampElement = (
-        <WindowStampAny
+        <WindowStamp
           spotName={spot.nameJa}
           seasonLabel={seasonLabel}
           themeColor={resolvedColor}
@@ -145,7 +137,7 @@ export function StampRenderer({ styleId, spot, date, season, customOptions }: St
       break;
     case 'minimal':
       stampElement = (
-        <MinimalStampAny
+        <MinimalStamp
           spotName={spot.nameJa}
           cityEn={cityEn}
           date={date}
@@ -156,7 +148,7 @@ export function StampRenderer({ styleId, spot, date, season, customOptions }: St
       break;
     default:
       stampElement = (
-        <ClassicStampAny
+        <ClassicStamp
           spotName={spot.nameJa}
           cityEn={cityEn}
           date={date}
@@ -168,10 +160,7 @@ export function StampRenderer({ styleId, spot, date, season, customOptions }: St
   }
 
   return (
-    <View
-      style={[{ position: 'relative' }, effectStyle]}
-      accessibilityLabel={customText}
-    >
+    <View style={[{ position: 'relative' }, effectStyle]}>
       {stampElement}
       {decorationKey !== 'none' && (
         <StampDecoration
