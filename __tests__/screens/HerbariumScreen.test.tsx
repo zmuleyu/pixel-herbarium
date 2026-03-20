@@ -4,6 +4,15 @@
  */
 
 // Mock all dependencies BEFORE imports
+jest.mock('@/components/guide', () => ({
+  GuideWrapper: ({ children }: { children: any }) => children,
+  MeasuredView: ({ children, style }: { children: any; style?: any }) => {
+    const React = jest.requireActual('react');
+    const { View } = jest.requireActual('react-native');
+    return React.createElement(View, { style }, children);
+  },
+}));
+
 jest.mock('@/stores/spot-store', () => ({
   useSpotStore: jest.fn(() => ({
     spots: [], checkins: [], loading: false,
