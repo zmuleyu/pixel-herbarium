@@ -1,4 +1,5 @@
 import '../i18n'; // initialize i18n before any screen renders
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { restoreLanguage } from '../i18n';
 import { useEffect } from 'react';
 import * as Updates from 'expo-updates';
@@ -167,10 +168,12 @@ export default function RootLayout() {
   }
 
   return (
-    <ErrorBoundary>
-      <OfflineBanner />
-      <Slot />
-    </ErrorBoundary>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ErrorBoundary>
+        <OfflineBanner />
+        <Slot />
+      </ErrorBoundary>
+    </GestureHandlerRootView>
   );
 }
 
