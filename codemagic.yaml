@@ -117,72 +117,32 @@ workflows:
 
       - name: Capture App Store screenshots
         script: |
+          mkdir -p /tmp/screenshots
           mkdir -p e2e/current
           export PATH="$PATH:$HOME/.maestro/bin"
 
-          # After E2E step, app is on home screen with demo data (SCREENSHOT_MODE).
-          # Take screenshots by navigating tabs via Maestro flows WITHOUT launchApp.
-          # Each flow only does coordinate taps — no launchApp, no testID, no deep links.
-          # xcrun simctl screenshot after each navigation = reliable output.
+          # Pre-warm: ensure app is launched with SCREENSHOT_MODE data loaded
+          xcrun simctl launch booted com.pixelherbarium.app
+          sleep 8
 
-          # Screenshot 1: Home (already visible after E2E)
-          xcrun simctl io booted screenshot e2e/current/01-home.png
-          echo "✓ 01-home"
+          # Single maestro test → single session → all tabs → absolute path screenshots.
+          # Key fixes from 10-build iteration:
+          # - clearState:false preserves demo data (満開 + records)
+          # - takeScreenshot: /tmp/screenshots/xx writes to absolute path
+          # - No find/cp from ~/.maestro needed
+          maestro test e2e/screenshots/all-screens.yaml \
+            --env E2E_TEST_EMAIL=$E2E_TEST_EMAIL \
+            --env E2E_TEST_PASSWORD=$E2E_TEST_PASSWORD 2>&1 || true
 
-          # Screenshot 2: Checkin tab (2nd tab, ~37% x, ~96% y)
-          cat > /tmp/nav-checkin.yaml << 'FLOW'
-          appId: com.pixelherbarium.app
-          ---
-          - tapOn:
-              point: {x: 37, y: 96}
-          - pause: {milliseconds: 2000}
-          FLOW
-          maestro test /tmp/nav-checkin.yaml 2>/dev/null || true
-          sleep 2
-          xcrun simctl io booted screenshot e2e/current/02-checkin.png
-          echo "✓ 02-checkin"
+          # Copy from absolute path to artifacts directory
+          cp /tmp/screenshots/*.png e2e/current/ 2>/dev/null || true
 
-          # Screenshot 3: Footprint tab (3rd tab, ~62% x)
-          cat > /tmp/nav-footprint.yaml << 'FLOW'
-          appId: com.pixelherbarium.app
-          ---
-          - tapOn:
-              point: {x: 62, y: 96}
-          - pause: {milliseconds: 2000}
-          FLOW
-          maestro test /tmp/nav-footprint.yaml 2>/dev/null || true
-          sleep 2
-          xcrun simctl io booted screenshot e2e/current/03-footprint.png
-          echo "✓ 03-footprint"
-
-          # Screenshot 4: Settings tab (4th tab, ~87% x)
-          cat > /tmp/nav-settings.yaml << 'FLOW'
-          appId: com.pixelherbarium.app
-          ---
-          - tapOn:
-              point: {x: 87, y: 96}
-          - pause: {milliseconds: 2000}
-          FLOW
-          maestro test /tmp/nav-settings.yaml 2>/dev/null || true
-          sleep 2
-          xcrun simctl io booted screenshot e2e/current/04-settings.png
-          echo "✓ 04-settings"
-
-          # Screenshot 5: Back to Home tab (1st tab, ~12% x)
-          cat > /tmp/nav-home.yaml << 'FLOW'
-          appId: com.pixelherbarium.app
-          ---
-          - tapOn:
-              point: {x: 12, y: 96}
-          - pause: {milliseconds: 2000}
-          FLOW
-          maestro test /tmp/nav-home.yaml 2>/dev/null || true
-          sleep 2
-          xcrun simctl io booted screenshot e2e/current/05-home-final.png
-          echo "✓ 05-home-final"
-
-          echo "=== Screenshot capture complete ==="
-          ls -la e2e/current/*.png 2>/dev/null
+          # Verify
+          echo "=== Screenshots ==="
+          ls -la e2e/current/*.png 2>/dev/null || echo "No screenshots from Maestro"
+          ls -la /tmp/screenshots/*.png 2>/dev/null || echo "No screenshots in /tmp"
+          COUNT=$(ls /tmp/screenshots/*.png 2>/dev/null | wc -l)
+          echo "Total Maestro screenshots: $COUNT"
 
       - name: Visual regression check
         script: |

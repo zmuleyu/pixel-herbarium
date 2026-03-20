@@ -1,12 +1,19 @@
 appId: com.pixelherbarium.app
 ---
-# All-in-one screenshot flow: captures 5 screens in a single Maestro session.
-# Avoids: session isolation, deep link dialogs, CJK encoding issues.
-# Navigation: coordinate taps on tab bar (4 tabs at y=96%, x=12/37/62/87%).
+# All-in-one screenshot flow: single Maestro session, all tabs, absolute paths.
+#
+# Key fixes (from 10-build iteration):
+# - clearState: false → preserves SCREENSHOT_MODE demo data (満開 + records)
+# - stopApp: false → doesn't kill running process
+# - takeScreenshot: /tmp/screenshots/xx → absolute path, no find needed
+# - coordinate taps for tab nav → avoids testID (broken on iOS 26) and deep links (dialog)
 
-# Step 1: Fresh launch → onboarding
 - launchApp:
-    clearState: true
+    clearState: false
+    stopApp: false
+
+- waitForAnimationToEnd:
+    timeout: 3000
 
 # Dismiss permission dialogs if they appear
 - runFlow:
@@ -20,63 +27,55 @@ appId: com.pixelherbarium.app
     commands:
       - tapOn: "Allow"
 
-# Wait for onboarding to render
-- extendedWaitUntil:
-    visible:
-      id: "onboarding.skip"
-    timeout: 15000
+# Handle onboarding: skip if visible, otherwise already on home
+- runFlow:
+    when:
+      visible:
+        id: "onboarding.skip"
+    commands:
+      - tapOn:
+          id: "onboarding.skip"
+      - extendedWaitUntil:
+          visible:
+            id: "home.container"
+          timeout: 20000
+      - waitForAnimationToEnd
+      - pause:
+          milliseconds: 1500
 
-# Screenshot 1: Onboarding
-- takeScreenshot: "01-onboarding"
-
-# Skip onboarding → navigate to home
-- tapOn:
-    id: "onboarding.skip"
-
-# Wait for home screen
-- extendedWaitUntil:
-    visible:
-      id: "home.container"
-    timeout: 20000
-- waitForAnimationToEnd
+# Ensure home is loaded (if onboarding was already skipped)
 - pause:
-    milliseconds: 1500
+    milliseconds: 2000
 
-# Screenshot 2: Home
-- takeScreenshot: "02-home"
+# Screenshot 1: Home (満開 + checkin records)
+- takeScreenshot: /tmp/screenshots/01-home
 
-# Navigate to Checkin tab (2nd of 4 tabs, ~37% from left)
+# Navigate to Checkin tab (2nd of 4 tabs, ~37% from left, ~96% from top)
 - tapOn:
-    point:
-      x: 37
-      y: 96
+    point: "37%,96%"
 - pause:
     milliseconds: 2000
 - waitForAnimationToEnd
 
-# Screenshot 3: Checkin
-- takeScreenshot: "03-checkin"
+# Screenshot 2: Checkin
+- takeScreenshot: /tmp/screenshots/02-checkin
 
 # Navigate to Footprint tab (3rd of 4 tabs, ~62% from left)
 - tapOn:
-    point:
-      x: 62
-      y: 96
+    point: "62%,96%"
 - pause:
     milliseconds: 2000
 - waitForAnimationToEnd
 
-# Screenshot 4: Footprint
-- takeScreenshot: "04-footprint"
+# Screenshot 3: Footprint
+- takeScreenshot: /tmp/screenshots/03-footprint
 
 # Navigate to Settings tab (4th of 4 tabs, ~87% from left)
 - tapOn:
-    point:
-      x: 87
-      y: 96
+    point: "87%,96%"
 - pause:
     milliseconds: 2000
 - waitForAnimationToEnd
 
-# Screenshot 5: Settings
-- takeScreenshot: "05-settings"
+# Screenshot 4: Settings
+- takeScreenshot: /tmp/screenshots/04-settings
