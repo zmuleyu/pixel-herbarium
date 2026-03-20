@@ -129,10 +129,16 @@ workflows:
           # - No YAML flows, no session management, no path guessing
           # - Designed for headless CI automation
 
-          # Install idb
-          brew tap facebook/fb
-          brew install idb-companion 2>/dev/null || true
-          pip3 install fb-idb 2>/dev/null || true
+          # Install idb (Facebook iOS Development Bridge)
+          echo "=== Installing idb ==="
+          brew tap facebook/fb 2>&1 || echo "WARN: brew tap failed"
+          brew install idb-companion 2>&1 || echo "WARN: brew install idb-companion failed"
+          pip3 install fb-idb 2>&1 || echo "WARN: pip3 install fb-idb failed"
+
+          # Verify installation
+          echo "=== idb version check ==="
+          which idb && idb --help 2>&1 | head -5 || echo "ERROR: idb not found in PATH"
+          idb_companion --version 2>&1 || echo "ERROR: idb_companion not found"
 
           # Get booted simulator UDID
           UDID=$(xcrun simctl list devices booted | grep "Booted" | head -1 | grep -oE '[A-F0-9-]{36}')
@@ -140,41 +146,53 @@ workflows:
 
           if [ -z "$UDID" ]; then
             echo "ERROR: No booted simulator found"
-            # Fallback: just use xcrun simctl screenshot of current screen
             xcrun simctl io booted screenshot e2e/current/01-home.png 2>/dev/null || true
             exit 0
           fi
 
           # Connect idb to simulator
-          idb connect "$UDID" 2>&1 || true
+          echo "=== Connecting idb ==="
+          idb connect "$UDID" 2>&1 || echo "WARN: idb connect failed"
+
+          # Verify connection
+          idb list-targets 2>&1 || echo "WARN: idb list-targets failed"
 
           # App should already be running from debug step (on home screen).
           # Tab bar: 4 tabs (ホーム/打卡/足跡/設定) at bottom.
-          # iPhone 17 Pro Max: 1320x2868 pixels
-          # Tab bar y ≈ 2800px (bottom area), each tab at 25% intervals
-          # x positions: 165 (home), 495 (checkin), 825 (footprint), 1155 (settings)
+          #
+          # COORDINATE SYSTEM: idb uses POINT coordinates (not pixels!)
+          # iPhone 17 Pro Max: 440×956 points (@3x = 1320×2868 pixels)
+          # Tab bar: y ≈ 935pt (bottom), 4 tabs evenly at x = 55/165/275/385 pt
+          #
+          # Tab 1 (ホーム):  x=55,  y=935
+          # Tab 2 (打卡):    x=165, y=935
+          # Tab 3 (足跡):    x=275, y=935
+          # Tab 4 (設定):    x=385, y=935
 
           # Screenshot 1: Home (already visible, 満開 + records)
           idb screenshot e2e/current/01-home.png 2>&1 || \
             xcrun simctl io booted screenshot e2e/current/01-home.png
           echo "✓ 01-home"
 
-          # Tap checkin tab and screenshot
-          idb ui tap 495 2800 2>&1 || true
+          # Tap checkin tab (point coordinates) and screenshot
+          echo "Tapping checkin tab at 165,935..."
+          idb ui tap 165 935 2>&1 || echo "WARN: idb tap failed"
           sleep 3
           idb screenshot e2e/current/02-checkin.png 2>&1 || \
             xcrun simctl io booted screenshot e2e/current/02-checkin.png
           echo "✓ 02-checkin"
 
           # Tap footprint tab and screenshot
-          idb ui tap 825 2800 2>&1 || true
+          echo "Tapping footprint tab at 275,935..."
+          idb ui tap 275 935 2>&1 || echo "WARN: idb tap failed"
           sleep 3
           idb screenshot e2e/current/03-footprint.png 2>&1 || \
             xcrun simctl io booted screenshot e2e/current/03-footprint.png
           echo "✓ 03-footprint"
 
           # Tap settings tab and screenshot
-          idb ui tap 1155 2800 2>&1 || true
+          echo "Tapping settings tab at 385,935..."
+          idb ui tap 385 935 2>&1 || echo "WARN: idb tap failed"
           sleep 3
           idb screenshot e2e/current/04-settings.png 2>&1 || \
             xcrun simctl io booted screenshot e2e/current/04-settings.png
