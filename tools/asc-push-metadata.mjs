@@ -94,9 +94,9 @@ const METADATA = {
 桜の季節は、毎年やってきます。
 今年の花めぐりを、花図鉑と一緒に残していきましょう。`,
   keywords:        '桜,花めぐり,チェックイン,スタンプ,花スポット,ピクセルアート,写真,散歩,季節,花言葉',
-  marketingUrl:    'https://zmuleyu.github.io/pixel-herbarium/index.html',
-  supportUrl:      'https://zmuleyu.github.io/pixel-herbarium/support.html',
-  privacyPolicyUrl:'https://zmuleyu.github.io/pixel-herbarium/privacy-policy.html',
+  marketingUrl:    'https://pixel-herbarium.app/',
+  supportUrl:      'https://pixel-herbarium.app/support',
+  privacyPolicyUrl:'https://pixel-herbarium.app/privacy-policy',
   // Promotional text goes on the version localization (updated without review)
   promotionalText: '🌸 2026年 桜シーズン開幕。日本各地の桜名所でチェックイン、スタンプ水印つき写真を作ろう。完全無料・広告なし。',
 };

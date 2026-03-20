@@ -14,13 +14,8 @@
 1. 在 pixel-herbarium repo 创建 gh-pages 分支
 2. 将 privacy-policy.html（本文件的 HTML 版）推送到分支根目录
 3. GitHub Settings → Pages → Source: gh-pages branch
-4. URL: https://zmuleyu.github.io/pixel-herbarium/privacy-policy
-   (或自定义域名: https://pixelherbarium.app/privacy)
+4. URL: https://pixel-herbarium.app/privacy-policy ✅（pixel-herbarium.app 专属域名）
 ```
-
-备选方案：
-- Supabase Storage 公开桶：`https://uwdgnueaycatmkzkbxwo.supabase.co/storage/v1/object/public/public/privacy-policy.html`
-- cybernium.cn 子路径：`https://cybernium.cn/privacy/pixel-herbarium`
 
 ---
 

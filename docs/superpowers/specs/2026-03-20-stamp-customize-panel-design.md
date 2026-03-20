@@ -70,12 +70,14 @@ const DEFAULT_CUSTOM_OPTIONS: CustomOptions = {
 
 ### AsyncStorage Keys
 
+Follows existing convention (`_preference` suffix matches `stamp_opacity_preference`, `stamp_size_preference`):
+
 | Key | Type | Default |
 |-----|------|---------|
-| `stamp_custom_color` | `string \| 'undefined'` | `'undefined'` |
-| `stamp_effect_type` | `'none' \| 'shadow' \| 'glow'` | `'none'` |
-| `stamp_text_mode` | `'none' \| 'hanakotoba' \| 'custom'` | `'none'` |
-| `stamp_decoration_key` | `'none' \| 'petals' \| 'branch' \| 'stars'` | `'none'` |
+| `stamp_custom_color_preference` | `string \| 'undefined'` | `'undefined'` |
+| `stamp_effect_type_preference` | `'none' \| 'shadow' \| 'glow'` | `'none'` |
+| `stamp_text_mode_preference` | `'none' \| 'hanakotoba' \| 'custom'` | `'none'` |
+| `stamp_decoration_key_preference` | `'none' \| 'petals' \| 'branch' \| 'stars'` | `'none'` |
 
 Note: `customTextValue` is NOT persisted (transient per session, TextInput manages it).
 
