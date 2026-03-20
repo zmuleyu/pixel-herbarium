@@ -279,7 +279,20 @@
     "title": "設定",
     "language": "言語",
     "version": "バージョン",
-    "login": "ログイン"
+    "login": "ログイン",
+    "accountSection": "アカウント",
+    "dataSection": "データ管理",
+    "generalSection": "一般",
+    "otherSection": "その他",
+    "exportData": "データのエクスポート",
+    "exportDataDesc": "打卡履歴をJSONファイルで保存",
+    "deleteData": "データの削除",
+    "deleteDataConfirm": "すべてのローカルデータを削除しますか？この操作は取り消せません。",
+    "deleteDataDone": "データを削除しました",
+    "feedback": "フィードバックを送る",
+    "signOut": "ログアウト",
+    "deleteAccount": "アカウントを削除",
+    "deleteAccountConfirm": "アカウントを完全に削除しますか？\nこの操作は取り消せません。"
   },
   "offline": {
     "banner": "📵 オフライン — 接続を確認してください"
