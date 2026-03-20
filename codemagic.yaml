@@ -115,34 +115,75 @@ workflows:
             echo "E2E tests had failures — continuing to screenshot flows"
           fi
 
-      - name: Capture App Store screenshots
+      - name: Capture App Store screenshots via idb
         script: |
-          mkdir -p /tmp/screenshots
           mkdir -p e2e/current
-          export PATH="$PATH:$HOME/.maestro/bin"
 
-          # Pre-warm: ensure app is launched with SCREENSHOT_MODE data loaded
-          xcrun simctl launch booted com.pixelherbarium.app
-          sleep 8
+          # 11 builds proved Maestro cannot reliably navigate tabs on iOS 26:
+          # - takeScreenshot paths unpredictable (Builds #36-40)
+          # - session isolation restarts app (Builds #38,42)
+          # - clearState:false + absolute paths still no output (Build #43)
+          #
+          # Switch to Facebook idb (iOS Development Bridge):
+          # - Direct tap + screenshot commands via persistent connection
+          # - No YAML flows, no session management, no path guessing
+          # - Designed for headless CI automation
 
-          # Single maestro test → single session → all tabs → absolute path screenshots.
-          # Key fixes from 10-build iteration:
-          # - clearState:false preserves demo data (満開 + records)
-          # - takeScreenshot: /tmp/screenshots/xx writes to absolute path
-          # - No find/cp from ~/.maestro needed
-          maestro test e2e/screenshots/all-screens.yaml \
-            --env E2E_TEST_EMAIL=$E2E_TEST_EMAIL \
-            --env E2E_TEST_PASSWORD=$E2E_TEST_PASSWORD 2>&1 || true
+          # Install idb
+          brew tap facebook/fb
+          brew install idb-companion 2>/dev/null || true
+          pip3 install fb-idb 2>/dev/null || true
 
-          # Copy from absolute path to artifacts directory
-          cp /tmp/screenshots/*.png e2e/current/ 2>/dev/null || true
+          # Get booted simulator UDID
+          UDID=$(xcrun simctl list devices booted | grep "Booted" | head -1 | grep -oE '[A-F0-9-]{36}')
+          echo "Simulator UDID: $UDID"
 
-          # Verify
-          echo "=== Screenshots ==="
-          ls -la e2e/current/*.png 2>/dev/null || echo "No screenshots from Maestro"
-          ls -la /tmp/screenshots/*.png 2>/dev/null || echo "No screenshots in /tmp"
-          COUNT=$(ls /tmp/screenshots/*.png 2>/dev/null | wc -l)
-          echo "Total Maestro screenshots: $COUNT"
+          if [ -z "$UDID" ]; then
+            echo "ERROR: No booted simulator found"
+            # Fallback: just use xcrun simctl screenshot of current screen
+            xcrun simctl io booted screenshot e2e/current/01-home.png 2>/dev/null || true
+            exit 0
+          fi
+
+          # Connect idb to simulator
+          idb connect "$UDID" 2>&1 || true
+
+          # App should already be running from debug step (on home screen).
+          # Tab bar: 4 tabs (ホーム/打卡/足跡/設定) at bottom.
+          # iPhone 17 Pro Max: 1320x2868 pixels
+          # Tab bar y ≈ 2800px (bottom area), each tab at 25% intervals
+          # x positions: 165 (home), 495 (checkin), 825 (footprint), 1155 (settings)
+
+          # Screenshot 1: Home (already visible, 満開 + records)
+          idb screenshot e2e/current/01-home.png 2>&1 || \
+            xcrun simctl io booted screenshot e2e/current/01-home.png
+          echo "✓ 01-home"
+
+          # Tap checkin tab and screenshot
+          idb ui tap 495 2800 2>&1 || true
+          sleep 3
+          idb screenshot e2e/current/02-checkin.png 2>&1 || \
+            xcrun simctl io booted screenshot e2e/current/02-checkin.png
+          echo "✓ 02-checkin"
+
+          # Tap footprint tab and screenshot
+          idb ui tap 825 2800 2>&1 || true
+          sleep 3
+          idb screenshot e2e/current/03-footprint.png 2>&1 || \
+            xcrun simctl io booted screenshot e2e/current/03-footprint.png
+          echo "✓ 03-footprint"
+
+          # Tap settings tab and screenshot
+          idb ui tap 1155 2800 2>&1 || true
+          sleep 3
+          idb screenshot e2e/current/04-settings.png 2>&1 || \
+            xcrun simctl io booted screenshot e2e/current/04-settings.png
+          echo "✓ 04-settings"
+
+          echo "=== Screenshot capture complete ==="
+          ls -la e2e/current/*.png 2>/dev/null
+          COUNT=$(ls e2e/current/0*.png 2>/dev/null | wc -l)
+          echo "Total tab screenshots: $COUNT"
 
       - name: Visual regression check
         script: |

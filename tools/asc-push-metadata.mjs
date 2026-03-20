@@ -114,6 +114,7 @@ function makeJWT() {
 
 // ── HTTP helper ───────────────────────────────────────────────────────────────
 async function asc(method, path, body) {
+  await new Promise(r => setTimeout(r, 1200));
   const url = `https://api.appstoreconnect.apple.com/v1${path}`;
   const opts = {
     method,
