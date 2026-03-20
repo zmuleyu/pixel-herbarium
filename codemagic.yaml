@@ -235,16 +235,14 @@ workflows:
 
       - name: Build production IPA locally
         script: |
-          set -x
           npm install -g eas-cli
-          echo "=== EAS CLI version ==="
-          eas --version
-          echo "=== EXPO env vars ==="
-          env | grep EXPO | grep -v PASSWORD || true
-          echo "=== Starting eas build ==="
           eas build --local --profile production --platform ios --non-interactive \
             --output production.ipa
-          echo "=== Build complete: $(ls -lh production.ipa 2>/dev/null || echo 'IPA not found') ==="
+          if [ ! -f production.ipa ]; then
+            echo "ERROR: production.ipa not found — build failed"
+            exit 1
+          fi
+          echo "Production IPA built: $(ls -lh production.ipa)"
 
       - name: Submit to App Store Connect
         script: |
