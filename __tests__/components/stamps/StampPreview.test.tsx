@@ -89,6 +89,10 @@ jest.mock('@/components/stamps/StampOverlay', () => ({
   StampOverlay: () => null,
 }));
 
+jest.mock('@/components/stamps/CustomizationPanel', () => ({
+  CustomizationPanel: () => null,
+}));
+
 jest.mock('@/components/stamps/PositionSelector', () => ({
   PositionSelector: () => null,
 }));
@@ -180,5 +184,12 @@ describe('StampPreview', () => {
     const json = JSON.stringify(tree);
     // Batch A2: StyleSelector now renders 6 new styles; check for classic style key
     expect(json).toContain('stamp.styleClassic');
+  });
+
+  it('still renders CTA button after CustomizationPanel integration', () => {
+    // CustomizationPanel is mocked to null; verifies StampPreview renders without error
+    const tree = shallowRender(React.createElement(StampPreview, defaultProps));
+    const json = JSON.stringify(tree);
+    expect(json).toContain('stamp.share');
   });
 });

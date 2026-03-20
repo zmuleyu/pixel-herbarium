@@ -12,9 +12,11 @@ import * as Haptics from 'expo-haptics';
 import { colors, spacing, borderRadius, stamp as stampConst } from '@/constants/theme';
 import { SEASONS, getActiveSeason } from '@/constants/seasons';
 import { StampOverlay } from './StampOverlay';
+import { CustomizationPanel } from './CustomizationPanel';
 import { StyleSelector } from './StyleSelector';
 import { PositionSelector } from './PositionSelector';
-import type { FlowerSpot, StampStyleId, StampPosition } from '@/types/hanami';
+import type { FlowerSpot, StampStyleId, StampPosition, CustomOptions } from '@/types/hanami';
+import { DEFAULT_CUSTOM_OPTIONS } from '@/types/hanami';
 import { STAMP_STYLE_MIGRATION, DEFAULT_STAMP_STYLE_ID } from '@/constants/stamp-styles';
 
 const { width: SCREEN_W } = Dimensions.get('window');
@@ -28,6 +30,10 @@ const VALID_POSITIONS: StampPosition[] = [
 
 const OPACITY_KEY = 'stamp_opacity_preference';
 const SIZE_KEY = 'stamp_size_preference';
+const CUSTOM_COLOR_KEY    = 'stamp_custom_color_preference';
+const EFFECT_TYPE_KEY     = 'stamp_effect_type_preference';
+const TEXT_MODE_KEY       = 'stamp_text_mode_preference';
+const DECORATION_KEY      = 'stamp_decoration_key_preference';
 
 const VALID_STYLE_IDS: string[] = ['classic', 'relief', 'postcard', 'medallion', 'window', 'minimal'];
 
@@ -53,6 +59,7 @@ export function StampPreview({
   const [opacity, setOpacity] = useState(0.9);
   const [scale, setScale] = useState(1.0);
   const [busy, setBusy] = useState(false);
+  const [customOptions, setCustomOptions] = useState<CustomOptions>(DEFAULT_CUSTOM_OPTIONS);
 
   // Track previous haptic thresholds to avoid repeated triggers
   const prevOpacityHalf = useRef(false);
@@ -61,11 +68,18 @@ export function StampPreview({
   // Restore preferences
   useEffect(() => {
     (async () => {
-      const [savedStyle, savedPos, savedOpacity, savedSize] = await Promise.all([
+      const [
+        savedStyle, savedPos, savedOpacity, savedSize,
+        savedColor, savedEffect, savedTextMode, savedDecoration,
+      ] = await Promise.all([
         AsyncStorage.getItem(stampConst.storageKey),
         AsyncStorage.getItem(stampConst.positionStorageKey),
         AsyncStorage.getItem(OPACITY_KEY),
         AsyncStorage.getItem(SIZE_KEY),
+        AsyncStorage.getItem(CUSTOM_COLOR_KEY),
+        AsyncStorage.getItem(EFFECT_TYPE_KEY),
+        AsyncStorage.getItem(TEXT_MODE_KEY),
+        AsyncStorage.getItem(DECORATION_KEY),
       ]);
       if (savedStyle) {
         const migrated = STAMP_STYLE_MIGRATION[savedStyle] ?? savedStyle;
@@ -76,6 +90,24 @@ export function StampPreview({
       }
       if (savedOpacity) setOpacity(parseFloat(savedOpacity));
       if (savedSize) setScale(parseFloat(savedSize));
+
+      // Restore custom options
+      const restoredColor =
+        savedColor === null || savedColor === 'undefined' ? undefined : savedColor;
+      const restoredEffect: CustomOptions['effectType'] =
+        (savedEffect === 'shadow' || savedEffect === 'glow') ? savedEffect : 'none';
+      const restoredTextMode: CustomOptions['textMode'] =
+        (savedTextMode === 'hanakotoba' || savedTextMode === 'custom') ? savedTextMode : 'none';
+      const restoredDecoration: CustomOptions['decorationKey'] =
+        (savedDecoration === 'petals' || savedDecoration === 'branch' || savedDecoration === 'stars')
+          ? savedDecoration : 'none';
+      setCustomOptions({
+        customColor: restoredColor,
+        effectType: restoredEffect,
+        textMode: restoredTextMode,
+        customTextValue: '',      // not persisted, always starts empty
+        decorationKey: restoredDecoration,
+      });
     })();
   }, []);
 
@@ -124,6 +156,26 @@ export function StampPreview({
     AsyncStorage.setItem(SIZE_KEY, String(rounded));
   }, []);
 
+  const handleCustomChange = useCallback((patch: Partial<CustomOptions>) => {
+    setCustomOptions(prev => {
+      const next = { ...prev, ...patch };
+      // Persist relevant keys (not customTextValue)
+      if ('customColor' in patch) {
+        AsyncStorage.setItem(CUSTOM_COLOR_KEY, next.customColor ?? 'undefined');
+      }
+      if ('effectType' in patch) {
+        AsyncStorage.setItem(EFFECT_TYPE_KEY, next.effectType);
+      }
+      if ('textMode' in patch) {
+        AsyncStorage.setItem(TEXT_MODE_KEY, next.textMode);
+      }
+      if ('decorationKey' in patch) {
+        AsyncStorage.setItem(DECORATION_KEY, next.decorationKey);
+      }
+      return next;
+    });
+  }, []);
+
   const handleCTA = useCallback(async () => {
     if (busy || !viewShotRef.current) return;
     setBusy(true);
@@ -160,6 +212,7 @@ export function StampPreview({
             season={season}
             userOpacity={opacity}
             userScale={scale}
+            customOptions={customOptions}
           />
         </View>
         {/* Position dots are outside viewShotRef — not captured in export */}
@@ -213,6 +266,12 @@ export function StampPreview({
           />
           <Text style={styles.sliderValue}>{Math.round(scale * 100)}%</Text>
         </View>
+
+        <CustomizationPanel
+          options={customOptions}
+          onChange={handleCustomChange}
+          seasonColor={season.themeColor}
+        />
 
         <MeasuredView measureKey="stamp.saveButton">
           <TouchableOpacity
