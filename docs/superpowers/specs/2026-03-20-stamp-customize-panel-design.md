@@ -115,7 +115,7 @@ The first color in the palette that matches the current season's primary color s
 interface CustomizationPanelProps {
   options: CustomOptions;
   onChange: (patch: Partial<CustomOptions>) => void;
-  seasonColor: string;   // current season primary for default badge
+  seasonColor: string;   // always season.themeColor, regardless of stamp style (matches STAMP_COLOR_PALETTE[0])
 }
 ```
 
