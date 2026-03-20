@@ -158,7 +158,7 @@ async function main() {
   }
 
   console.log('\n── Step 3: get app store version localizations ──');
-  const versionsRes = await asc('GET', `/apps/${APP_ID}/appStoreVersions?filter[appStoreState]=PREPARE_FOR_SUBMISSION,REJECTED,METADATA_REJECTED,WAITING_FOR_REVIEW,DEVELOPER_REJECTED&limit=5`);
+  const versionsRes = await asc('GET', `/apps/${APP_ID}/appStoreVersions?filter%5BappStoreState%5D=PREPARE_FOR_SUBMISSION,REJECTED,METADATA_REJECTED,WAITING_FOR_REVIEW,DEVELOPER_REJECTED&limit=5`);
   if (!versionsRes.data.length) {
     // Try to get any version
     const allVersions = await asc('GET', `/apps/${APP_ID}/appStoreVersions?limit=5`);
