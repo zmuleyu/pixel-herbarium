@@ -279,7 +279,20 @@
     "title": "Settings",
     "language": "Language",
     "version": "Version",
-    "login": "Sign In"
+    "login": "Sign In",
+    "accountSection": "Account",
+    "dataSection": "Data Management",
+    "generalSection": "General",
+    "otherSection": "Other",
+    "exportData": "Export Data",
+    "exportDataDesc": "Save your diary as a JSON file",
+    "deleteData": "Delete Local Data",
+    "deleteDataConfirm": "Delete all local data? This cannot be undone.",
+    "deleteDataDone": "Data deleted",
+    "feedback": "Send Feedback",
+    "signOut": "Sign Out",
+    "deleteAccount": "Delete Account",
+    "deleteAccountConfirm": "Permanently delete your account?\nThis cannot be undone."
   },
   "offline": {
     "banner": "📵 Offline — Check your connection"
