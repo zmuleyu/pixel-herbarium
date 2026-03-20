@@ -8,6 +8,8 @@ export const FEATURES = {
   CHECKIN_MODE: true,
   /** AI plant identification. Code preserved, hidden via href:null. */
   IDENTIFICATION_MODE: false,
+  /** Demo data injection for App Store screenshots (peak bloom + mock checkins). */
+  SCREENSHOT_MODE: process.env.EXPO_PUBLIC_SCREENSHOT_MODE === 'true',
 } as const;
 
 export type FeatureKey = keyof typeof FEATURES;
