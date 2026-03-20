@@ -72,7 +72,7 @@
 
 ### B3. 隐私政策
 
-- [ ] URL 可访问：`curl -s -o /dev/null -w "%{http_code}" https://pixel-herbarium.app/privacy-policy`（期望 200）
+- [ ] URL 可访问：`curl -s -o /dev/null -w "%{http_code}" https://pixel-herbarium.com/privacy-policy`（期望 200）
 - [ ] 内容覆盖：数据类型、使用目的、第三方共享、用户权利、账号删除
 - [ ] App 内 Settings → Privacy Settings 可跳转
 

@@ -38,8 +38,8 @@ npx eas submit --platform ios --latest
 | **宣传文本** | （见樱花季版本）| 同上（可随时改，无需审核）|
 | **描述** | 日文版全文 | `docs/aso/app-store-metadata-ja.md` |
 | **关键词** | `花言葉,花図鑑,ピクセルアート,植物識別,花の名前,散歩,桜,コレクション,花束,季節` | 同上 |
-| **Support URL** | `https://pixel-herbarium.app/support` | ✅ |
-| **Privacy Policy URL** | `https://pixel-herbarium.app/privacy-policy` | ✅ |
+| **Support URL** | `https://pixel-herbarium.com/support` | ✅ |
+| **Privacy Policy URL** | `https://pixel-herbarium.com/privacy-policy` | ✅ |
 | **版本号** | `1.0.0` | `app.json` |
 | **年龄分级** | `4+` | — |
 

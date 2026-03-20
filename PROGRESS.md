@@ -112,7 +112,7 @@ Updated: 2026-03-19 (15:00)
 | 冷启动闪屏修复 | ✅ (index.tsx spinner) |
 | Privacy Policy HTML | ✅ `docs/app-store-prep/privacy-policy.html` |
 | Privacy Policy 托管 | ✅ GitHub Pages 已启用 2026-03-18 |
-| **Privacy Policy URL** | ✅ `https://pixel-herbarium.app/privacy-policy` |
+| **Privacy Policy URL** | ✅ `https://pixel-herbarium.com/privacy-policy` |
 | 内部 build 已安装测试 | ✅ build `ed606d36` 已在 iPhone 安装 |
 
 ---
@@ -127,8 +127,8 @@ Updated: 2026-03-19 (15:00)
 - [ ] **关键词**：`花言葉,花図鑑,ピクセルアート,植物識別,花の名前,散歩,桜,コレクション,花束,季節`
 - [ ] **描述**（日文 ≤4000字）：见 `docs/aso/app-store-metadata-ja.md`
 - [ ] **宣传文本**（3-4月桜版）：见 `docs/aso/app-store-metadata-ja.md`
-- [x] **Support URL**：`https://pixel-herbarium.app/support`
-- [ ] **Privacy Policy URL**：`https://pixel-herbarium.app/privacy-policy`
+- [x] **Support URL**：`https://pixel-herbarium.com/support`
+- [ ] **Privacy Policy URL**：`https://pixel-herbarium.com/privacy-policy`
 - [ ] **年龄分级**：4+
 - [ ] **App Privacy 营养标签**：见 `docs/app-store-prep/compliance-checklist.md` §4 表格
 
@@ -183,6 +183,6 @@ Updated: 2026-03-19 (15:00)
 | ASO 元数据（日文） | `docs/aso/app-store-metadata-ja.md` |
 | 合规检查清单 | `docs/app-store-prep/compliance-checklist.md` |
 | 隐私政策（HTML） | `docs/app-store-prep/privacy-policy.html` |
-| 隐私政策（线上） | `https://pixel-herbarium.app/privacy-policy` |
+| 隐私政策（线上） | `https://pixel-herbarium.com/privacy-policy` |
 | App Store Connect | `https://appstoreconnect.apple.com` |
 | EAS Dashboard | `https://expo.dev/accounts/cbnium/projects/pixel-herbarium` |

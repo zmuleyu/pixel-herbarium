@@ -94,9 +94,9 @@ const METADATA = {
 桜の季節は、毎年やってきます。
 今年の花めぐりを、花図鉑と一緒に残していきましょう。`,
   keywords:        '桜,花めぐり,チェックイン,スタンプ,花スポット,ピクセルアート,写真,散歩,季節,花言葉',
-  marketingUrl:    'https://pixel-herbarium.app/',
-  supportUrl:      'https://pixel-herbarium.app/support',
-  privacyPolicyUrl:'https://pixel-herbarium.app/privacy-policy',
+  marketingUrl:    'https://pixel-herbarium.com/',
+  supportUrl:      'https://pixel-herbarium.com/support',
+  privacyPolicyUrl:'https://pixel-herbarium.com/privacy-policy',
   // Promotional text goes on the version localization (updated without review)
   promotionalText: '🌸 2026年 桜シーズン開幕。日本各地の桜名所でチェックイン、スタンプ水印つき写真を作ろう。完全無料・広告なし。',
 };
@@ -135,8 +135,8 @@ async function main() {
   console.log('appInfo id:', liveInfo.id, '| state:', liveInfo.attributes.appStoreState);
 
   const locs = await asc('GET', `/appInfos/${liveInfo.id}/appInfoLocalizations`);
-  const jaLoc = locs.data.find(l => l.attributes.locale === 'ja-JP');
-  const enLoc = locs.data.find(l => l.attributes.locale === 'en-US');
+  const jaLoc = locs.data.find(l => l.attributes.locale === 'ja' || l.attributes.locale === 'ja-JP');
+  const enLoc = locs.data.find(l => l.attributes.locale === 'en' || l.attributes.locale === 'en-US');
   console.log('ja-JP localization id:', jaLoc?.id ?? 'NOT FOUND');
   console.log('en-US localization id:', enLoc?.id ?? 'NOT FOUND');
 
@@ -172,7 +172,7 @@ async function main() {
   console.log('Version:', version.attributes.versionString, '|', version.attributes.appStoreState, '| id:', version.id);
 
   const vLocRes = await asc('GET', `/appStoreVersions/${version.id}/appStoreVersionLocalizations`);
-  const jaVLoc = vLocRes.data.find(l => l.attributes.locale === 'ja-JP');
+  const jaVLoc = vLocRes.data.find(l => l.attributes.locale === 'ja' || l.attributes.locale === 'ja-JP');
   console.log('ja-JP version localization id:', jaVLoc?.id ?? 'NOT FOUND');
 
   if (jaVLoc) {

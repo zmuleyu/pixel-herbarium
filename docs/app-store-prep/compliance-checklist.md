@@ -85,8 +85,8 @@
 - [ ] 描述：日文 ≤4000字，英文 ≤4000字 → 见 `docs/aso/` 目录
 - [ ] 关键词：日文 ≤100字 ✓
 - [ ] 宣传文本：≤170字（可随时更新，无需审核）
-- [x] **Support URL**：`https://pixel-herbarium.app/support` ✅
-- [x] **Privacy Policy URL**：`https://pixel-herbarium.app/privacy-policy` ✅
+- [x] **Support URL**：`https://pixel-herbarium.com/support` ✅
+- [x] **Privacy Policy URL**：`https://pixel-herbarium.com/privacy-policy` ✅
 - [ ] 截图：至少覆盖 6.9"（iPhone 16 Pro Max），见 `screenshot-plan.md`
 - [ ] App Icon：已在 `assets/icon.png` 配置 ✓（1024×1024 PNG，无圆角，无透明）
 

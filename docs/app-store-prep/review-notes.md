@@ -68,7 +68,7 @@ All login methods are optional — the app is usable in guest mode.
 
 ## Privacy & Data
 
-- **Privacy Policy**: https://pixel-herbarium.app/privacy-policy
+- **Privacy Policy**: https://pixel-herbarium.com/privacy-policy
 - **Account Deletion**: Settings → Privacy Settings → "アカウント削除" (30-day soft-delete with cancellation window)
 - **Data Export**: Settings → Privacy Settings → "データをエクスポート" (JSON download)
 
