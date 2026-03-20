@@ -10,6 +10,7 @@ interface ClassicStampProps {
   date: Date;
   themeColor: string;
   landmark?: LandmarkInfo;
+  customText?: string;
 }
 
 function formatStampDate(d: Date): string {
@@ -19,7 +20,7 @@ function formatStampDate(d: Date): string {
   return `${y}.${m}.${day}`;
 }
 
-export function ClassicStamp({ spotName, cityEn, date, themeColor, landmark }: ClassicStampProps) {
+export function ClassicStamp({ spotName, cityEn, date, themeColor, landmark, customText }: ClassicStampProps) {
   const { brandDeep, brandMid } = getStampColors(themeColor);
   return (
     <View style={[styles.container, { borderColor: themeColor }]}>
@@ -34,6 +35,9 @@ export function ClassicStamp({ spotName, cityEn, date, themeColor, landmark }: C
       <Text style={[styles.meta, { color: brandMid }]}>
         {formatStampDate(date)} · {cityEn}
       </Text>
+      {customText ? (
+        <Text style={[styles.customText, { color: brandMid }]}>{customText}</Text>
+      ) : null}
     </View>
   );
 }
@@ -64,5 +68,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     marginTop: 3,
     letterSpacing: 0.3,
+  },
+  customText: {
+    fontSize: 9,
+    marginTop: 2,
+    letterSpacing: 0.3,
+    fontStyle: 'italic',
   },
 });

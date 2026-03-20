@@ -9,6 +9,7 @@ interface PostcardStampProps {
   seasonLabel: string;
   themeColor: string;
   landmark?: LandmarkInfo;
+  customText?: string;
 }
 
 /**
@@ -33,7 +34,7 @@ function ToriiIllustration({ color }: { color: string }) {
   );
 }
 
-export function PostcardStamp({ spotName, seasonLabel, themeColor, landmark }: PostcardStampProps) {
+export function PostcardStamp({ spotName, seasonLabel, themeColor, landmark, customText }: PostcardStampProps) {
   const { brandDeep, brandMid } = getStampColors(themeColor);
   const bgIllustration = `${themeColor}20`;
   return (
@@ -59,6 +60,9 @@ export function PostcardStamp({ spotName, seasonLabel, themeColor, landmark }: P
           <Text style={[styles.seasonLabel, { color: brandMid }]}>
             {seasonLabel}
           </Text>
+          {customText ? (
+            <Text style={[styles.customText, { color: brandMid }]}>{customText}</Text>
+          ) : null}
         </View>
       </View>
     </View>
@@ -109,4 +113,5 @@ const styles = StyleSheet.create({
     marginTop: 2,
     letterSpacing: 0.4,
   },
+  customText: { fontSize: 9, marginTop: 2, letterSpacing: 0.3, fontStyle: 'italic' },
 });

@@ -5,6 +5,7 @@ interface MinimalStampProps {
   cityEn: string;
   date: Date;
   accentColor: string;
+  customText?: string;
 }
 
 function formatStampDate(d: Date): string {
@@ -14,13 +15,16 @@ function formatStampDate(d: Date): string {
   return `${y}.${m}.${day}`;
 }
 
-export function MinimalStamp({ spotName, cityEn, date, accentColor }: MinimalStampProps) {
+export function MinimalStamp({ spotName, cityEn, date, accentColor, customText }: MinimalStampProps) {
   return (
     <View style={styles.container}>
       <View style={[styles.bar, { backgroundColor: accentColor }]} />
       <View style={styles.textGroup}>
         <Text style={styles.spotName}>{spotName}</Text>
         <Text style={styles.meta}>{cityEn} · {formatStampDate(date)}</Text>
+        {customText ? (
+          <Text style={styles.customText}>{customText}</Text>
+        ) : null}
       </View>
     </View>
   );
@@ -43,5 +47,13 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0,0,0,0.4)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
+  },
+  customText: {
+    fontSize: 8, marginTop: 1,
+    color: 'rgba(255,255,255,0.72)',
+    textShadowColor: 'rgba(0,0,0,0.4)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+    fontStyle: 'italic',
   },
 });

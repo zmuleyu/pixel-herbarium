@@ -10,6 +10,7 @@ interface MedallionStampProps {
   seasonLabel: string;
   themeColor: string;
   landmark?: LandmarkInfo;
+  customText?: string;
 }
 
 const DIAMETER = stampTheme.sealDiameter; // 72
@@ -37,7 +38,7 @@ function BuildingSilhouette({ color }: { color: string }) {
   );
 }
 
-export function MedallionStamp({ spotName, seasonLabel, themeColor, landmark }: MedallionStampProps) {
+export function MedallionStamp({ spotName, seasonLabel, themeColor, landmark, customText }: MedallionStampProps) {
   const { brandDeep, brandMid } = getStampColors(themeColor);
   const radius = DIAMETER / 2;
   return (
@@ -66,6 +67,9 @@ export function MedallionStamp({ spotName, seasonLabel, themeColor, landmark }: 
       <Text style={[styles.seasonLabel, { color: brandMid }]}>
         {seasonLabel}
       </Text>
+      {customText ? (
+        <Text style={[styles.customText, { color: brandMid }]}>{customText}</Text>
+      ) : null}
     </View>
   );
 }
@@ -99,4 +103,5 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginTop: 1,
   },
+  customText: { fontSize: 8, marginTop: 2, letterSpacing: 0.3, fontStyle: 'italic' },
 });

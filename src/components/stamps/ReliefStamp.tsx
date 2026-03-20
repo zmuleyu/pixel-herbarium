@@ -9,6 +9,7 @@ interface ReliefStampProps {
   seasonLabel: string;
   themeColor: string;
   landmark?: LandmarkInfo;
+  customText?: string;
 }
 
 /**
@@ -38,7 +39,7 @@ function PagodaWatermark({ color }: { color: string }) {
   );
 }
 
-export function ReliefStamp({ spotName, seasonLabel, themeColor, landmark }: ReliefStampProps) {
+export function ReliefStamp({ spotName, seasonLabel, themeColor, landmark, customText }: ReliefStampProps) {
   const { brandDeep, brandMid } = getStampColors(themeColor);
   return (
     <View style={[styles.container, { borderColor: themeColor }]}>
@@ -59,6 +60,9 @@ export function ReliefStamp({ spotName, seasonLabel, themeColor, landmark }: Rel
         <Text style={[styles.seasonLabel, { color: brandMid }]}>
           {seasonLabel}
         </Text>
+        {customText ? (
+          <Text style={[styles.customText, { color: brandMid }]}>{customText}</Text>
+        ) : null}
       </View>
     </View>
   );
@@ -103,4 +107,5 @@ const styles = StyleSheet.create({
     marginTop: 3,
     letterSpacing: 0.5,
   },
+  customText: { fontSize: 9, marginTop: 2, letterSpacing: 0.3, fontStyle: 'italic' },
 });

@@ -9,6 +9,7 @@ interface WindowStampProps {
   seasonLabel: string;
   themeColor: string;
   landmark?: LandmarkInfo;
+  customText?: string;
 }
 
 /**
@@ -37,7 +38,7 @@ function WindowShape({ color }: { color: string }) {
   );
 }
 
-export function WindowStamp({ spotName, seasonLabel, themeColor, landmark }: WindowStampProps) {
+export function WindowStamp({ spotName, seasonLabel, themeColor, landmark, customText }: WindowStampProps) {
   const { brandDeep, brandMid } = getStampColors(themeColor);
   const bgPink = `${themeColor}15`;
   return (
@@ -59,6 +60,9 @@ export function WindowStamp({ spotName, seasonLabel, themeColor, landmark }: Win
         <Text style={[styles.seasonLabel, { color: brandMid }]}>
           {seasonLabel}
         </Text>
+        {customText ? (
+          <Text style={[styles.customText, { color: brandMid }]}>{customText}</Text>
+        ) : null}
       </View>
     </View>
   );
@@ -99,4 +103,5 @@ const styles = StyleSheet.create({
     marginTop: 2,
     letterSpacing: 0.4,
   },
+  customText: { fontSize: 9, marginTop: 2, letterSpacing: 0.3, fontStyle: 'italic' },
 });
