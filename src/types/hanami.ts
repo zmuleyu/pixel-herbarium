@@ -67,6 +67,13 @@ export interface CheckinRecord {
   stampPosition?: StampPosition; // optional for backward compat with old records
 }
 
+export interface StampTransform {
+  x: number;
+  y: number;
+  scale: number;
+  rotation: number; // radians
+}
+
 export type StampStyle = 'pixel' | 'seal' | 'minimal';
 export type StampStyleId = 'classic' | 'relief' | 'postcard' | 'medallion' | 'window' | 'minimal';
 export type StampPosition =
