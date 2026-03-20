@@ -257,7 +257,12 @@
   },
   "home": {
     "recentTitle": "最近の記録",
-    "noSpotsLoaded": "スポットデータを読み込み中…"
+    "noSpotsLoaded": "スポットデータを読み込み中…",
+    "captureCta": "花を撮る 📷",
+    "diaryTitle": "わたしの花日記",
+    "diaryCount": "{{count}}枚",
+    "emptyTitle": "最初の一枚を撮ってみましょう",
+    "emptySub": "お花の写真にスタンプを押して、\nあなただけの花日記を始めましょう 🌿"
   },
   "onboarding": {
     "skip": "スキップ",
