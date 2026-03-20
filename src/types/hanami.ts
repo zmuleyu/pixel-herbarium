@@ -65,6 +65,7 @@ export interface CheckinRecord {
   synced: boolean;
   stampStyle?: StampStyle | StampStyleId;  // optional for backward compat with old records
   stampPosition?: StampPosition; // optional for backward compat with old records
+  stampTransform?: StampTransform;
 }
 
 export interface StampTransform {
