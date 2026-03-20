@@ -1,136 +1,103 @@
-# Pixel Herbarium — Documentation Index
+# Pixel Herbarium 文档索引
 
-> **docs/ = Single Source of Truth** for all project knowledge.
-> Claude session startup: read this file + `../CLAUDE.md` + `../PROGRESS.md`
-
----
-
-## Quick Access
-
-| Need | Document |
-|------|----------|
-| What is PH? | [product-spec.md](product-spec.md) |
-| Visual rules | [design-system.md](design-system.md) |
-| Competitor matrix | [competitive-insights.md](competitive-insights.md) |
-| Current progress | [../PROGRESS.md](../PROGRESS.md) |
-| Tech stack & directory | [development-status.md](development-status.md) |
+> 五域导航：Product · Design · Dev · Launch · Ops
+> **docs/ = Single Source of Truth** · Session 开始时读本文件 + `../CLAUDE.md`
 
 ---
 
-## Living Documents (frequently updated)
+## D1 · Product（产品）
 
-### Product & Design
-- `product-spec.md` — Core loop, rarity system, FOMO rules, sharing formats
-- `design-system.md` — Colors, typography, Adult Kawaii definition
-- `competitive-insights.md` — Competitor matrix, monitoring setup, scrapling integration
+| 文件 | 说明 |
+|------|------|
+| [product/product-spec.md](product/product-spec.md) | Core Loop · 稀有度 · FOMO规则 · 分享格式 |
+| [product/competitive-insights.md](product/competitive-insights.md) | 竞品矩阵 · 监控配置 · scrapling集成 |
+| [product/research/](product/research/) | 26份调研报告（competitor/market/platform/data/design/launch） |
 
-### Feature Specs & Plans
-- `superpowers/specs/` — 12 design specs (YYYY-MM-DD format)
-- `superpowers/plans/` — 7 implementation plans
-
-### App Store & Marketing
-- `app-store-prep/submission-review.md` — **上架審核 Runbook**（提交前必読）
-- `app-store-prep/` — Compliance checklist, privacy policy, terms, screenshots (9 files)
-- `aso/` — Metadata (ja/en), keywords, promotional copy for LINE/X/checkin (6 files)
-
-### Operations & Lifecycle
-- `ops/lifecycle.md` — **開発と運営ライフサイクル総纲**（4 Phase framework）
-
-### Development
-- `dev-guide/bugfix-workflow.md` — Bug triage and fix process
-- `dev-guide/spring-flower-identification.md` — Botanical data validation reference
-- `development-status.md` — Architecture overview, directory structure
-- `postmortems/` — Incident retrospectives
-
-### Operations
-- `ops/line-oa-setup.md` — LINE Official Account channel configuration
-- `ops/testflight-guide.md` — TestFlight distribution setup
+**研究快查：**
+- `product/research/competitor/` — 6份竞品深度分析（FLOWERY、桜ナビ、Weathernews众包等）
+- `product/research/market/` — Adult Kawaii验证 · 日本市场TAM/SAM/SOM
+- `product/research/platform/` — Instagram/X/LINE/YouTube搜索策略
+- `product/research/data/` — 景点数据源合规指南 · 用户评论收集SOP
+- `product/research/design/` — 印章设计 · 樱花UI资源
+- `product/research/launch/` — 本土化checklist
 
 ---
 
-## Research Archive (read-only, consult as needed)
+## D2 · Design（设计）
 
-### Competitor Deep Dives (`research/competitor/`, 6 files)
-- `flowery-app-deep-analysis.md` — FLOWERY plant photo sharing app
-- `cross-competitor-ui-analysis.md` — Multi-app UI/UX comparison
-- `market-validation-deep-dive.md` — Market validation + GPS + data flywheel
-- `sakura-navi-gps-stamp-deep-dive.md` — GPS stamp card mechanism
-- `sakura-navi-myspot-calendar-deep-dive.md` — MY SPOT + calendar
-- `weathernews-sakura-crowdsourcing-deep-dive.md` — Crowdsourcing data flywheel
+| 文件 | 说明 |
+|------|------|
+| [design/design-system.md](design/design-system.md) | 颜色 · 字体 · Adult Kawaii定义 · 组件规范 |
+| [design/specs/](design/specs/) | 14份功能设计文档（YYYY-MM-DD格式） |
 
-### Market & Audience (`research/market/`, 3 files)
-- `adult-kawaii-japan-app-analysis.md` — Adult Kawaii visual style validation
-- `japan-audience-analysis.md` — Japan market TAM/SAM/SOM
-- `japan-research-plan.md` — Multi-platform user research framework
-
-### Platform Search Strategies (`research/platform/`, 7 files)
-- `instagram-hashtag-research.md` — Instagram seasonal hashtag matrix
-- `x-hanami-research.md` — X/Twitter search syntax & seasonal calendar
-- `line-hanami-research.md` — LINE OpenChat/VOOM/Blog research
-- `line-analysis-layer1.md` — LINE data accessibility map
-- `line-analysis-layer2.md` — LINE competitor signal extraction
-- `line-analysis-layer3.md` — LINE pattern recognition & insights
-- `youtube-hanami-research.md` — YouTube comment mining guide
-
-### Data Collection (`research/data/`, 4 files)
-- `sakura-sources-guide.md` — Sakura spot data sources (compliance guide)
-- `spot-crawl-guide.md` — Weathernews 1400-spot crawl procedure
-- `user-review-collection-guide.md` — 10-platform review collection SOP
-- `line-data-collection-technical.md` — LINE data pipeline technical plan
-
-### Design Reference (`research/design/`, 2 files)
-- `photo-stamp-design-v2.md` — Stamp watermark editor interaction design
-- `cherry-blossom-ui-design-resources.md` — Cherry blossom UI resource collection
-
-### Launch Preparation (`research/launch/`, 1 file)
-- `localization-checklist.md` — Full Japan market localization checklist
+**设计规格速查：**
+- `design/specs/2026-03-20-*.md` — 最新：stamp-b2 · in-app-guidance · screenshots-pipeline
+- `design/specs/2026-03-18-*.md` — content-pack · onboarding · share-poster · hanakotoba-flip
+- `design/specs/2026-03-17-*.md` — check-in-mvp · herbarium-collection · spot-discovery
+- `design/specs/2026-03-15-*.md` — i18n · ota-update · auth-flow
 
 ---
 
-## External Data Sources
+## D3 · Dev（开发）
 
-| System | What it stores | How to access |
-|--------|---------------|---------------|
-| Claude Memory | Design constraints, mobile dev rules, CI config | Auto-injected per session |
-| scrapling-mcp | Competitor reviews, market signals, trend data | `scrapling` MCP tools |
-| Supabase | Flower spot data (100 spots), user data | `supabase` MCP / dashboard |
-| Codemagic | E2E test results, screenshots | Dashboard / artifacts |
+| 文件 | 说明 |
+|------|------|
+| [dev/architecture.md](dev/architecture.md) | 技术架构 · 目录结构 · 开发状态 |
+| [dev/guide/bugfix-workflow.md](dev/guide/bugfix-workflow.md) | Bug分类与修复流程 |
+| [dev/guide/spring-flower-identification.md](dev/guide/spring-flower-identification.md) | 植物数据校验参考（六姐妹物候时序） |
+| [dev/postmortems/](dev/postmortems/) | 事故复盘（2026-03-18 infinite-spinner） |
 
-### Scrapling Data Flow
-
-```
-scrapling cron (automated)
-├── ph-daily  → App Store reviews + snapshots → data.db
-├── ph-weekly → Trend keywords + Twitter     → data.db
-└── ph-enrichment → Signal classification    → data.db
-
-MCP tools (on-demand from Claude sessions)
-├── ph_health_check       → Quick status
-├── appstore_reviews       → Latest reviews
-├── trend_summary          → Keyword trends
-└── ph_export_content_pack → Export to JSON/MD
-
-Manual export (for deep analysis)
-└── ph_export → docs/research/data/latest-export-YYYY-MM.md
-```
+**关键约束（开发必读）：**
+- OTA 不能改变 hook 数量 → 新增 useState/useEffect 必须 native build
+- `auth-store.ts` 初始 `loading: true`（不是 false）
+- Apple Sign-In 只在 catch 中重置 submitting（不在 finally）
 
 ---
 
-## Memory ↔ Docs Boundary
+## D4 · Launch（上架）
 
-| Memory (auto-injected) | Docs (authority) | Purpose |
-|------------------------|------------------|---------|
-| `pixel-herbarium-spec.md` | `product-spec.md` | Memory = cheat sheet, Docs = full spec |
-| `ph-mobile-dev.md` | `dev-guide/` | Memory = trap rules, Docs = procedures |
-| `ph-codemagic-setup.md` | N/A | CI secrets, memory-only |
-| `pretool-context` | `design-system.md` | pretool = guardrails, Docs = explanation |
+| 文件 | 说明 |
+|------|------|
+| [launch/app-store-prep/submission-review.md](launch/app-store-prep/submission-review.md) | **上架审核 Runbook**（提交前必读） |
+| [launch/app-store-prep/](launch/app-store-prep/) | 合规checklist · 隐私政策 · 服务条款 · 截图规格（6文件） |
+| [launch/aso/](launch/aso/) | 元数据(ja/en) · 关键词策略 · LINE/X/打卡推广文案（6文件） |
+| [launch/privacy-policy-ja.md](launch/privacy-policy-ja.md) | 隐私政策日文版 |
 
-**Rules:**
-1. Memory never exceeds 250 lines — extract detail to docs/, keep pointers
-2. Memory stores "how to apply" rules; docs stores "what" and "why"
-3. No duplicate data tables — reference by path instead
-4. Postmortem lessons → memory; full incident records → `docs/postmortems/`
+**P0 阻塞（上线前必须完成）：**
+- C3：満開home截图替换 → ASC上传 6.9" iPhone 16 Pro Max（手动）
+- Production Build：`eas build --profile production --platform ios`（EAS额度4/1重置后）
 
 ---
 
-*Last updated: 2026-03-19*
+## D5 · Ops（运营）
+
+| 文件 | 说明 |
+|------|------|
+| [ops/lifecycle.md](ops/lifecycle.md) | 开发与运营生命周期总纲（4 Phase框架） |
+| [ops/testflight-guide.md](ops/testflight-guide.md) | TestFlight分发配置 |
+| [ops/line-oa-setup.md](ops/line-oa-setup.md) | LINE Official Account频道配置 |
+| [ops/monitoring-baseline.md](ops/monitoring-baseline.md) | 运营监控指标基线（上线后建立） |
+| [ops/review-reply-guide.md](ops/review-reply-guide.md) | App Store评论回复规范（日语模板） |
+| [ops/season-calendar.md](ops/season-calendar.md) | 季节内容更新日历（全年运营节奏） |
+
+---
+
+## 归档
+
+- [`.archive/completed-plans/`](.archive/completed-plans/) — 已完成的实施计划（9份）
+
+---
+
+## 外部数据源
+
+| 系统 | 存储内容 | 访问方式 |
+|------|---------|---------|
+| Claude Memory | 设计约束 · 移动端规则 · CI配置 | Session自动注入 |
+| scrapling-mcp | 竞品评论 · 市场信号 · 趋势数据 | `scrapling` MCP工具 |
+| Supabase | 花卉景点数据(519条) · 用户数据 | `supabase` MCP / Dashboard |
+| Codemagic | E2E测试结果 · CI截图 | Dashboard / artifacts |
+| app-status.json | 阶段进度 · Gate状态 · 运营指标 | `~/.claude/data/app-status/app-herbarium.json` |
+
+---
+
+*文档体系版本 v2.0 · 五域重组 · 2026-03-20*
