@@ -1,8 +1,8 @@
 appId: com.pixelherbarium.app
 ---
-# Navigate to Footprint tab and verify it is visible (CHECKIN_MODE: replaces herbarium tab)
+# Navigate to Home tab and verify it is visible (CHECKIN_MODE: home tab shows bloom feed)
 - runFlow: ./02-login-email.yaml
 - tapOn:
-    id: "tab.footprint"
+    id: "tab.home"
 - assertVisible:
-    id: "footprint.container"
+    id: "home.container"
