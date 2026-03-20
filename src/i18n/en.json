@@ -257,7 +257,12 @@
   },
   "home": {
     "recentTitle": "Recent Records",
-    "noSpotsLoaded": "Loading spot data…"
+    "noSpotsLoaded": "Loading spot data…",
+    "captureCta": "Capture a Flower 📷",
+    "diaryTitle": "My Flower Diary",
+    "diaryCount": "{{count}} photos",
+    "emptyTitle": "Take your first photo",
+    "emptySub": "Stamp your flower photos\nand start your own flower diary 🌿"
   },
   "onboarding": {
     "skip": "Skip",
