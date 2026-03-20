@@ -93,6 +93,15 @@ jest.mock('@/components/stamps/PositionSelector', () => ({
   PositionSelector: () => null,
 }));
 
+jest.mock('@/components/guide', () => ({
+  GuideWrapper: ({ children }: { children: any }) => children,
+  MeasuredView: ({ children, style }: { children: any; style?: any }) => {
+    const React = jest.requireActual('react');
+    const { View } = jest.requireActual('react-native');
+    return React.createElement(View, { style }, children);
+  },
+}));
+
 import React from 'react';
 import { StampPreview } from '../../../src/components/stamps/StampPreview';
 import type { FlowerSpot } from '../../../src/types/hanami';
@@ -166,9 +175,10 @@ describe('StampPreview', () => {
     expect(json).toContain('stamp.share');
   });
 
-  it('renders StyleSelector with stamp.pixel text', () => {
+  it('renders StyleSelector with stamp.styleClassic text', () => {
     const tree = shallowRender(React.createElement(StampPreview, defaultProps));
     const json = JSON.stringify(tree);
-    expect(json).toContain('stamp.pixel');
+    // Batch A2: StyleSelector now renders 6 new styles; check for classic style key
+    expect(json).toContain('stamp.styleClassic');
   });
 });

@@ -75,6 +75,14 @@ jest.mock('react-native-maps', () => ({
 jest.mock('@/components/ErrorBoundary', () => ({
   ErrorBoundary: ({ children }: any) => children,
 }));
+jest.mock('@/components/guide', () => ({
+  GuideWrapper: ({ children }: { children: any }) => children,
+  MeasuredView: ({ children, style }: { children: any; style?: any }) => {
+    const React = jest.requireActual('react');
+    const { View } = jest.requireActual('react-native');
+    return React.createElement(View, { style }, children);
+  },
+}));
 jest.mock('@/constants/theme', () => ({
   colors: {
     background: '#f5f4f1', plantPrimary: '#9fb69f', text: '#3a3a3a',
@@ -91,6 +99,11 @@ jest.mock('@/constants/theme', () => ({
   },
   spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 },
   borderRadius: { sm: 6, md: 12, lg: 20, full: 9999 },
+  shadows: {
+    card: { shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 4 },
+    cardSubtle: { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
+    cardLifted: { shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.12, shadowRadius: 24, elevation: 6 },
+  },
 }));
 
 import React from 'react';

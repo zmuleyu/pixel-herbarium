@@ -1,7 +1,9 @@
 /**
  * StyleSelector component tests.
  * Uses the shallowRender pattern (plain function calls, no fiber).
- * Verifies that all 3 style tabs render with their i18n keys.
+ * Verifies that all 6 style cards render with their i18n keys.
+ * Updated for Batch A2: 6 styles (classic/relief/postcard/medallion/window/minimal).
+ * Legacy style IDs (pixel/seal) are migrated via STAMP_STYLE_MIGRATION.
  */
 
 jest.mock('react-i18next', () => ({
@@ -20,7 +22,7 @@ jest.mock('@/constants/theme', () => ({
 
 import React from 'react';
 import { StyleSelector } from '../../../src/components/stamps/StyleSelector';
-import type { StampStyle } from '../../../src/types/hanami';
+import type { StampStyleId } from '../../../src/types/hanami';
 
 function shallowRender(el: any, depth = 8): any {
   if (el == null || typeof el !== 'object' || !el.type) return el;
@@ -40,33 +42,35 @@ function shallowRender(el: any, depth = 8): any {
 describe('StyleSelector', () => {
   const onSelect = jest.fn();
   const defaultProps = {
-    selected: 'pixel' as StampStyle,
+    selected: 'classic' as StampStyleId,
     onSelect,
     themeColor: '#e8a5b0',
   };
 
-  it('renders all 3 style tab keys', () => {
+  it('renders all 6 style card keys', () => {
     const tree = shallowRender(
       React.createElement(StyleSelector, defaultProps)
     );
     const json = JSON.stringify(tree);
-    expect(json).toContain('stamp.pixel');
-    expect(json).toContain('stamp.seal');
-    expect(json).toContain('stamp.minimal');
+    expect(json).toContain('stamp.styleClassic');
+    expect(json).toContain('stamp.styleRelief');
+    expect(json).toContain('stamp.stylePostcard');
+    expect(json).toContain('stamp.styleMedallion');
+    expect(json).toContain('stamp.styleWindow');
+    expect(json).toContain('stamp.styleMinimal');
   });
 
-  it('marks pixel tab as selected when selected="pixel"', () => {
+  it('marks classic tab as selected when selected="classic"', () => {
     const tree = shallowRender(
-      React.createElement(StyleSelector, { ...defaultProps, selected: 'pixel' })
+      React.createElement(StyleSelector, { ...defaultProps, selected: 'classic' })
     );
     const json = JSON.stringify(tree);
-    // The active tab has accessibilityState { selected: true }
     expect(json).toContain('"selected":true');
   });
 
-  it('marks seal tab as selected when selected="seal"', () => {
+  it('marks medallion tab as selected when selected="medallion"', () => {
     const tree = shallowRender(
-      React.createElement(StyleSelector, { ...defaultProps, selected: 'seal' })
+      React.createElement(StyleSelector, { ...defaultProps, selected: 'medallion' })
     );
     const json = JSON.stringify(tree);
     expect(json).toContain('"selected":true');
