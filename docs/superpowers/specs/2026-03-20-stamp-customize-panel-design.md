@@ -274,9 +274,10 @@ Applied to the stamp's outermost wrapper `<View>` via the `style` prop. Compatib
 ## OTA Safety
 
 - `CustomizationPanel` manages expand/collapse with its own internal `useState` — no new hooks added to `StampPreview`
-- AsyncStorage load uses `useEffect` already present in `StampPreview` (extend existing effect or add alongside)
-- If `StampPreview` currently has no `useEffect`, adding one is a hook count change → must ship in a native build
-- **Recommendation**: Verify `StampPreview`'s current hook count before deciding OTA vs native build
+- `StampPreview` already has **one `useEffect`** (line 62) that loads style/position/opacity/size from AsyncStorage using `Promise.all`
+- The 4 new custom option keys should be added to this **same existing `useEffect`** (extend the `Promise.all` array) — this keeps hook count unchanged and is OTA safe
+- Do NOT add a separate `useEffect` for custom options — adding a second `useEffect` changes the hook execution order and requires a native build
+- **Action**: In `StampPreview`'s existing `useEffect`, add 4 new `AsyncStorage.getItem` calls to the existing `Promise.all`
 
 ---
 
@@ -284,18 +285,19 @@ Applied to the stamp's outermost wrapper `<View>` via the `style` prop. Compatib
 
 | File | Change |
 |------|--------|
-| `src/types/hanami.ts` | Add `CustomOptions` interface + `DEFAULT_CUSTOM_OPTIONS` |
+| `src/types/hanami.ts` | Add `hanakotoba?` to `FlowerSpot`; add `CustomOptions` interface + `DEFAULT_CUSTOM_OPTIONS` |
 | `src/constants/theme.ts` | Add `STAMP_COLOR_PALETTE` |
 | `src/components/stamps/CustomizationPanel.tsx` | **New** |
 | `src/components/stamps/StampDecoration.tsx` | **New** |
-| `src/components/stamps/StampPreview.tsx` | Add state + AsyncStorage + CustomizationPanel |
-| `src/components/stamps/StampRenderer.tsx` | Forward `customOptions` |
+| `src/components/stamps/StampPreview.tsx` | Extend existing `useEffect` + add state + AsyncStorage + CustomizationPanel |
+| `src/components/stamps/StampOverlay.tsx` | Add `customOptions?` prop + forward to StampRenderer |
+| `src/components/stamps/StampRenderer.tsx` | Accept + forward `customOptions` |
 | `src/components/stamps/ClassicStamp.tsx` | Add custom* props |
 | `src/components/stamps/ReliefStamp.tsx` | Add custom* props |
 | `src/components/stamps/PostcardStamp.tsx` | Add custom* props |
 | `src/components/stamps/MedallionStamp.tsx` | Add custom* props |
 | `src/components/stamps/WindowStamp.tsx` | Add custom* props |
-| `src/components/stamps/MinimalStamp.tsx` | Add custom* props |
+| `src/components/stamps/MinimalStamp.tsx` | Add custom* props (accentColor override) |
 | `src/i18n/ja.json` | Add `customize.*` keys |
 | `src/i18n/en.json` | Add `customize.*` keys |
 
@@ -304,14 +306,15 @@ Applied to the stamp's outermost wrapper `<View>` via the `style` prop. Compatib
 ## Testing
 
 1. `npx jest` — all existing suites pass
-2. Custom color overrides season color in rendered stamp
-3. `textMode = 'hanakotoba'` truncates to 12 chars, graceful when `spot.hanakotoba` is undefined
-4. `textMode = 'custom'` persists TextInput value on blur
-5. AsyncStorage persistence: close/reopen preview, options restore correctly
-6. `decorationKey` renders expected SVG elements visible in screenshot
-7. `effectType = 'shadow'` / `'glow'` visible in Expo Go + captured in view-shot PNG
-8. Expo Go: expand/collapse animation smooth, save button shifts down cleanly
-9. OTA safety check: confirm no hook count change in `StampPreview`
+2. Custom color overrides season color in rendered stamp (ClassicStamp's `themeColor`, MinimalStamp's `accentColor`)
+3. `textMode = 'hanakotoba'` truncates to 12 chars; no crash when `spot.hanakotoba` is undefined (renders nothing)
+4. `textMode = 'custom'` TextInput has `maxLength={12}`; value persists across panel close/reopen within session
+5. AsyncStorage persistence: navigate away and back to preview step, all 4 options restore correctly
+6. `decorationKey='petals'/'branch'/'stars'` renders expected SVG elements inside the stamp boundary; captured in view-shot PNG
+7. `effectType='shadow'` visible with drop shadow in Expo Go and in saved PNG
+8. `effectType='glow'` visible with outer glow in Expo Go and in saved PNG
+9. Expo Go: expand/collapse is smooth; save button shifts down when expanded
+10. OTA check: `StampPreview.tsx` hook count before and after change is identical (only extended existing `useEffect`, no new hooks added)
 
 ---
 
