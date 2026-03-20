@@ -134,9 +134,9 @@ interface CustomizationPanelProps {
 - Render `<CustomizationPanel>` between position/opacity controls and save button
 - Pass `customOptions` to `StampOverlay`
 
-**`StampOverlay.tsx`** (if exists) or **`StampRenderer.tsx`**:
-- Accept `customOptions?: CustomOptions`
-- Forward to individual stamp components
+**`StampOverlay.tsx`**: Add `customOptions?: CustomOptions` to `StampOverlayProps`; forward to `StampRenderer`.
+
+**`StampRenderer.tsx`**: Accept `customOptions?: CustomOptions`; forward to individual stamp components.
 
 **Individual stamp components** (ClassicStamp, ReliefStamp, PostcardStamp, MedallionStamp, WindowStamp, MinimalStamp):
 - New optional props:
@@ -146,10 +146,10 @@ interface CustomizationPanelProps {
   customText?: string;       // derived: textMode='custom' → customTextValue, textMode='hanakotoba' → spot.hanakotoba?.slice(0,12)
   decorationKey?: 'none' | 'petals' | 'branch' | 'stars';
   ```
-- `customColor` overrides `themeColor` when defined
+- `customColor` overrides `themeColor` (Classic/Relief/Postcard/Medallion/Window) or `accentColor` (Minimal) when defined. `StampRenderer` passes `customColor` as the relevant prop for each component's signature.
 - `customText` renders as extra subtitle line at stamp bottom (font-size: small, muted color)
-- `effectType` applies via `style` prop: `shadow` = drop shadow, `glow` = outer glow
-- `decorationKey` renders `<StampDecoration>` overlay around stamp
+- `effectType` applies via `style` prop on stamp's outermost wrapper View (see Effect Rendering section)
+- `decorationKey` renders `<StampDecoration>` as an absolutely-positioned overlay **inside** the stamp's wrapper View — it must be within the `viewShotRef` boundary so it appears in the saved PNG
 
 ### New Sub-component: `StampDecoration.tsx`
 
@@ -170,23 +170,51 @@ Uses react-native-svg. All elements positioned absolutely relative to stamp cont
 
 ## 添え文字 Logic
 
-```
-textMode = 'none'        → no extra text rendered
-textMode = 'hanakotoba'  → spot.hanakotoba?.slice(0, 12) ?? ''
-                           (if spot has no hanakotoba: shows nothing, does not error)
-textMode = 'custom'      → customTextValue (max 12 chars, set via TextInput)
+### 花言葉 Data Source
+
+`FlowerSpot` does not currently have a `hanakotoba` field. This spec requires adding:
+
+```typescript
+// src/types/hanami.ts — add to FlowerSpot interface
+hanakotoba?: string;  // flower meaning in Japanese, ≤30 chars
 ```
 
-Derived `customText` string is computed in `StampPreview` and passed as a prop. Stamp components receive final string only, no mode logic.
+The field is optional. When undefined or empty, `textMode = 'hanakotoba'` silently renders nothing (no crash, no placeholder). Content pack JSON files can populate this field incrementally.
+
+### Derivation Logic
+
+```
+textMode = 'none'        → customText = undefined (no rendering)
+textMode = 'hanakotoba'  → customText = spot.hanakotoba?.slice(0, 12) ?? undefined
+textMode = 'custom'      → customText = customTextValue (max 12 chars, set via TextInput)
+```
+
+Derived `customText` string is computed in `StampPreview` and passed as a single optional `string` prop to stamp components. Stamp components receive final string only, no mode logic.
 
 ---
 
 ## Effect Rendering
 
+React Native shadow requires `{ width, height }` (not `{ x, y }`), plus `shadowOpacity` on iOS and `elevation` on Android:
+
 ```
 effectType = 'none'    → no additional style
-effectType = 'shadow'  → { shadowColor: '#00000022', shadowOffset: {x:2,y:2}, shadowRadius: 4 }
-effectType = 'glow'    → { shadowColor: resolvedColor + '66', shadowOffset: {x:0,y:0}, shadowRadius: 8 }
+
+effectType = 'shadow'  → {
+  shadowColor: '#000000',
+  shadowOffset: { width: 2, height: 2 },
+  shadowOpacity: 0.13,
+  shadowRadius: 4,
+  elevation: 3,
+}
+
+effectType = 'glow'    → {
+  shadowColor: resolvedColor,   // resolved custom or season color
+  shadowOffset: { width: 0, height: 0 },
+  shadowOpacity: 0.40,
+  shadowRadius: 8,
+  elevation: 6,
+}
 ```
 
 Applied to the stamp's outermost wrapper `<View>` via the `style` prop. Compatible with `react-native-view-shot` (shadow is captured in PNG).
