@@ -25,7 +25,7 @@ import { useCheckinPhoto } from '@/hooks/useCheckinPhoto';
 import { SpotSelector } from '@/components/checkin/SpotSelector';
 import { StampPreview } from '@/components/stamps';
 import CheckinSuccessOverlay from '@/components/CheckinSuccessOverlay';
-import type { FlowerSpot, SpotsData, StampStyle, StampPosition } from '@/types/hanami';
+import type { FlowerSpot, SpotsData, StampStyle, StampPosition, StampTransform } from '@/types/hanami';
 import { loadSpotsData } from '@/services/content-pack';
 import { getPreviousVisitYears } from '@/utils/stamp-position';
 
@@ -97,8 +97,8 @@ export default function CheckinScreen() {
 
   async function handleStampSave(
     composedUri: string,
-    stampStyle: StampStyle,
-    stampPosition: StampPosition,
+    stampStyle: string,
+    stampTransform?: StampTransform,
   ) {
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
@@ -117,8 +117,8 @@ export default function CheckinScreen() {
         templateId: stampStyle,
         timestamp: checkinDate.current.toISOString(),
         synced: false,
-        stampStyle,
-        stampPosition,
+        stampStyle: stampStyle as StampStyle,
+        stampTransform,
       });
       setShowSuccess(true);
     } catch {

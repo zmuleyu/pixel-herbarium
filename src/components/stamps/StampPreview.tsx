@@ -117,7 +117,7 @@ export function StampPreview({
       // 1. Settle the transform — currentTransform already updated via onTransformChange
       setIsCapturing(true);
       // 2. Wait a frame for the static render to complete
-      await new Promise<void>(r => requestAnimationFrame(r));
+      await new Promise<void>(r => requestAnimationFrame(() => r()));
       // 3. captureRef now captures the static style (not Reanimated UI-thread state)
       const composedUri = await captureRef(viewShotRef, { format: 'png', quality: 1 });
       setIsCapturing(false);
