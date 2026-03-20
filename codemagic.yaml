@@ -235,15 +235,17 @@ workflows:
 
       - name: Build production IPA (EAS cloud)
         script: |
+          set -e
           npm install -g eas-cli
           # EAS cloud build handles Distribution Certificate automatically.
-          # --local failed with "not validated for non-interactive builds".
           # --wait blocks until build completes (typically 20-40 min).
+          # Credentials MUST be pre-configured via `eas credentials` (interactive).
           eas build --profile production --platform ios --non-interactive --wait
           echo "EAS cloud build complete"
 
       - name: Submit to App Store Connect
         script: |
+          set -e
           # Submit the latest finished EAS build directly (no IPA download needed)
           eas submit --profile production --platform ios --latest --non-interactive
           echo "Submitted to ASC — check App Store Connect for build status"
