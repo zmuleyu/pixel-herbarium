@@ -9,9 +9,7 @@ export const FEATURES = {
   /** AI plant identification. Code preserved, hidden via href:null. */
   IDENTIFICATION_MODE: false,
   /** Demo data injection for App Store screenshots (peak bloom + mock checkins). */
-  // TEMP: hardcoded true for OTA screenshot capture (EAS quota exhausted until 4/1)
-  // Original: process.env.EXPO_PUBLIC_SCREENSHOT_MODE === 'true'
-  SCREENSHOT_MODE: true,
+  SCREENSHOT_MODE: process.env.EXPO_PUBLIC_SCREENSHOT_MODE === 'true',
 } as const;
 
 export type FeatureKey = keyof typeof FEATURES;
