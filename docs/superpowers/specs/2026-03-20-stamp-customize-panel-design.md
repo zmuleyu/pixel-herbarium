@@ -149,7 +149,7 @@ interface CustomizationPanelProps {
   decorationKey?: 'none' | 'petals' | 'branch' | 'stars';
   ```
 - `customColor` overrides `themeColor` (Classic/Relief/Postcard/Medallion/Window) or `accentColor` (Minimal) when defined. `StampRenderer` passes `customColor` as the relevant prop for each component's signature.
-- `customText` renders as extra subtitle line at stamp bottom (font-size: small, muted color)
+- `customText` renders as extra subtitle line at stamp bottom (font-size: small, muted color). For `MinimalStamp` (horizontal row layout), `customText` appears as an additional `Text` below the `meta` line inside `textGroup`. If `MinimalStamp`'s layout makes this awkward to implement, `customText` may be omitted from `MinimalStamp` only — document with a `// customText not supported in Minimal layout` comment.
 - `effectType` applies via `style` prop on stamp's outermost wrapper View (see Effect Rendering section)
 - `decorationKey` is forwarded to `StampRenderer` only. Individual stamp components do NOT render `<StampDecoration>` directly (see below).
 
@@ -237,7 +237,7 @@ const resolvedColor = customColor ?? accentColor;
 
 ### Effect Styles
 
-Applied to the stamp's outermost wrapper `<View>`. React Native uses `{ width, height }` for `shadowOffset`, `shadowOpacity` on iOS, and `elevation` on Android:
+Applied to the **`StampRenderer`'s new wrapper `<View>`** (the one added for C1 fix: `<View style={{ position: 'relative' }}>`), NOT to the stamp component's internal View. This avoids shadow/elevation rendering artifacts inside `StampOverlay`'s `Animated.View` scale transform. React Native uses `{ width, height }` for `shadowOffset`, `shadowOpacity` on iOS, and `elevation` on Android:
 
 ```
 effectType = 'none'    → no additional style
