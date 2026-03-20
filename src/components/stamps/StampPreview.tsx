@@ -162,11 +162,13 @@ export function StampPreview({
           />
         </View>
         {/* Position dots are outside viewShotRef — not captured in export */}
-        <PositionSelector
-          selected={stampPosition}
-          onSelect={handlePositionChange}
-          themeColor={season.themeColor}
-        />
+        <MeasuredView measureKey="stamp.positionGrid">
+          <PositionSelector
+            selected={stampPosition}
+            onSelect={handlePositionChange}
+            themeColor={season.themeColor}
+          />
+        </MeasuredView>
       </View>
 
       {/* Controls */}
@@ -178,7 +180,7 @@ export function StampPreview({
         />
 
         {/* Opacity slider */}
-        <View style={styles.sliderRow}>
+        <MeasuredView measureKey="stamp.opacitySlider" style={styles.sliderRow}>
           <Text style={styles.sliderLabel}>{t('stamp.opacity')}</Text>
           <Slider
             style={styles.slider}
@@ -192,7 +194,7 @@ export function StampPreview({
             thumbTintColor={season.themeColor}
           />
           <Text style={styles.sliderValue}>{Math.round(opacity * 100)}%</Text>
-        </View>
+        </MeasuredView>
 
         {/* Size slider */}
         <View style={styles.sliderRow}>
@@ -211,19 +213,21 @@ export function StampPreview({
           <Text style={styles.sliderValue}>{Math.round(scale * 100)}%</Text>
         </View>
 
-        <TouchableOpacity
-          style={[styles.cta, { backgroundColor: season.themeColor }]}
-          onPress={handleCTA}
-          disabled={busy}
-          activeOpacity={0.8}
-          accessibilityLabel={t('stamp.share')}
-        >
-          {busy ? (
-            <ActivityIndicator color={colors.white} size="small" />
-          ) : (
-            <Text style={styles.ctaText}>{t('stamp.share')} →</Text>
-          )}
-        </TouchableOpacity>
+        <MeasuredView measureKey="stamp.saveButton">
+          <TouchableOpacity
+            style={[styles.cta, { backgroundColor: season.themeColor }]}
+            onPress={handleCTA}
+            disabled={busy}
+            activeOpacity={0.8}
+            accessibilityLabel={t('stamp.share')}
+          >
+            {busy ? (
+              <ActivityIndicator color={colors.white} size="small" />
+            ) : (
+              <Text style={styles.ctaText}>{t('stamp.share')} →</Text>
+            )}
+          </TouchableOpacity>
+        </MeasuredView>
       </View>
     </View>
   );

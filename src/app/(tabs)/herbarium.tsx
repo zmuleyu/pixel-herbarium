@@ -11,6 +11,8 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
+import { GuideWrapper, MeasuredView } from '@/components/guide';
+import { HERBARIUM_STEPS } from '@/constants/guide-steps';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useHerbarium, type PlantSlot } from '@/hooks/useHerbarium';
@@ -72,6 +74,7 @@ export default function HerbariumScreen() {
   }
 
   return (
+    <GuideWrapper featureKey="herbarium" steps={HERBARIUM_STEPS} overlayVariant="light">
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
@@ -118,54 +121,58 @@ export default function HerbariumScreen() {
           )}
 
           {/* Filter chips */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.filterRow}
-          >
-            {FILTER_OPTIONS.filter(opt => opt.value !== 'spring' || getCurrentSeason() === 'spring').map(opt => (
-              <TouchableOpacity
-                key={String(opt.value)}
-                style={[styles.filterChip, filter === opt.value && styles.filterChipActive]}
-                onPress={() => setFilter(opt.value)}
-              >
-                <Text style={[styles.filterChipText, filter === opt.value && styles.filterChipTextActive]}>
-                  {t(opt.labelKey)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          <MeasuredView measureKey="herbarium.filterBar">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.filterRow}
+            >
+              {FILTER_OPTIONS.filter(opt => opt.value !== 'spring' || getCurrentSeason() === 'spring').map(opt => (
+                <TouchableOpacity
+                  key={String(opt.value)}
+                  style={[styles.filterChip, filter === opt.value && styles.filterChipActive]}
+                  onPress={() => setFilter(opt.value)}
+                >
+                  <Text style={[styles.filterChipText, filter === opt.value && styles.filterChipTextActive]}>
+                    {t(opt.labelKey)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </MeasuredView>
 
           {/* 6×10 Grid */}
-          <FlatList
-            data={filteredPlants}
-            numColumns={GRID_COLUMNS}
-            keyExtractor={(item) => String(item.id)}
-            testID="herbarium.grid"
-            renderItem={({ item }) => (
-              <PlantCell
-                plant={item}
-                isCollected={collected.has(item.id)}
-                onPress={() => handleCellPress(item)}
-              />
-            )}
-            contentContainerStyle={styles.grid}
-            showsVerticalScrollIndicator={false}
-            removeClippedSubviews={true}
-            windowSize={5}
-            maxToRenderPerBatch={GRID_COLUMNS * 3}
-            initialNumToRender={GRID_COLUMNS * 4}
-            getItemLayout={(_data, index) => ({
-              length: CELL_SIZE,
-              offset: CELL_SIZE * Math.floor(index / GRID_COLUMNS),
-              index,
-            })}
-            ListEmptyComponent={
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>{t('herbarium.noResults')}</Text>
-              </View>
-            }
-          />
+          <MeasuredView measureKey="herbarium.collection" style={{ flex: 1 }}>
+            <FlatList
+              data={filteredPlants}
+              numColumns={GRID_COLUMNS}
+              keyExtractor={(item) => String(item.id)}
+              testID="herbarium.grid"
+              renderItem={({ item }) => (
+                <PlantCell
+                  plant={item}
+                  isCollected={collected.has(item.id)}
+                  onPress={() => handleCellPress(item)}
+                />
+              )}
+              contentContainerStyle={styles.grid}
+              showsVerticalScrollIndicator={false}
+              removeClippedSubviews={true}
+              windowSize={5}
+              maxToRenderPerBatch={GRID_COLUMNS * 3}
+              initialNumToRender={GRID_COLUMNS * 4}
+              getItemLayout={(_data, index) => ({
+                length: CELL_SIZE,
+                offset: CELL_SIZE * Math.floor(index / GRID_COLUMNS),
+                index,
+              })}
+              ListEmptyComponent={
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyText}>{t('herbarium.noResults')}</Text>
+                </View>
+              }
+            />
+          </MeasuredView>
         </>
       ) : (
         <SpotStampGrid
@@ -201,6 +208,7 @@ export default function HerbariumScreen() {
         onViewOnMap={() => { setShowDetail(false); router.push('/(tabs)/map' as any); }}
       />
     </View>
+    </GuideWrapper>
   );
 }
 
