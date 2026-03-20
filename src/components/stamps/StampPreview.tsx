@@ -4,6 +4,7 @@ import {
   ActivityIndicator, Platform,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
+import { MeasuredView } from '@/components/guide';
 import { useTranslation } from 'react-i18next';
 import { captureRef } from 'react-native-view-shot';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,7 +14,7 @@ import { SEASONS, getActiveSeason } from '@/constants/seasons';
 import { StampOverlay } from './StampOverlay';
 import { StyleSelector } from './StyleSelector';
 import { PositionSelector } from './PositionSelector';
-import type { FlowerSpot, StampStyleId, StampPosition } from '@/types/hanami';
+import type { FlowerSpot, StampStyle, StampStyleId, StampPosition } from '@/types/hanami';
 import { STAMP_STYLE_MIGRATION, DEFAULT_STAMP_STYLE_ID } from '@/constants/stamp-styles';
 
 const { width: SCREEN_W } = Dimensions.get('window');

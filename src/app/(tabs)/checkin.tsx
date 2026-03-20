@@ -2,6 +2,8 @@
 // 3-step flow using local state; no navigation between tabs until done.
 
 import { useState, useRef } from 'react';
+import { GuideWrapper, MeasuredView } from '@/components/guide';
+import { STAMP_STEPS } from '@/constants/guide-steps';
 import {
   View,
   Text,
@@ -128,6 +130,7 @@ export default function CheckinScreen() {
   // ── Render ───────────────────────────────────────────────────────────────
 
   return (
+    <GuideWrapper featureKey="stamp" steps={STAMP_STEPS} overlayVariant="light">
     <View testID="checkin.container" style={[styles.container, { backgroundColor: theme.bgTint }]}>
       {/* Header */}
       <View style={styles.header}>
@@ -222,6 +225,7 @@ export default function CheckinScreen() {
         />
       )}
     </View>
+    </GuideWrapper>
   );
 }
 

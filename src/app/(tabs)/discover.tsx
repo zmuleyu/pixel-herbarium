@@ -11,6 +11,8 @@ import {
   Platform,
 } from 'react-native';
 import { CameraView } from 'expo-camera';
+import { GuideWrapper, MeasuredView } from '@/components/guide';
+import { DISCOVER_STEPS } from '@/constants/guide-steps';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
@@ -149,36 +151,39 @@ export default function DiscoverScreen() {
 
   return (
     <ErrorBoundary fallbackLabel={t('discover.cameraError')}>
+    <GuideWrapper featureKey="discover" steps={DISCOVER_STEPS} overlayVariant="dark">
     <View style={styles.container}>
 
       {/* ── Camera viewfinder ─────────────────────────────────────── */}
-      <CameraView ref={cameraRef} style={styles.camera} facing="back">
+      <MeasuredView measureKey="discover.viewfinder" style={styles.camera}>
+        <CameraView ref={cameraRef} style={styles.camera} facing="back">
 
-        {/* GPS badge */}
-        <View style={styles.gpsBadge}>
-          {capture.status === 'ready' ? (
-            <Text style={styles.gpsText}>
-              📍 {capture.location?.latitude.toFixed(4)}, {capture.location?.longitude.toFixed(4)}
-            </Text>
-          ) : (
-            <Text style={styles.gpsText}>📡 {t('discover.gpsAcquiring')}</Text>
+          {/* GPS badge */}
+          <MeasuredView measureKey="discover.gpsIndicator" style={styles.gpsBadge}>
+            {capture.status === 'ready' ? (
+              <Text style={styles.gpsText}>
+                📍 {capture.location?.latitude.toFixed(4)}, {capture.location?.longitude.toFixed(4)}
+              </Text>
+            ) : (
+              <Text style={styles.gpsText}>📡 {t('discover.gpsAcquiring')}</Text>
+            )}
+          </MeasuredView>
+
+          {/* Seasonal event banner */}
+          <EventBanner />
+
+          {/* Viewfinder frame */}
+          <ViewfinderFrame isReady={capture.status === 'ready' && !isProcessing} />
+
+          {/* Processing overlay */}
+          {isProcessing && (
+            <View style={styles.processingOverlay}>
+              <ActivityIndicator size="large" color={colors.plantPrimary} />
+              <Text style={styles.processingText}>{processingLabel(discovery.status, t)}</Text>
+            </View>
           )}
-        </View>
-
-        {/* Seasonal event banner */}
-        <EventBanner />
-
-        {/* Viewfinder frame */}
-        <ViewfinderFrame isReady={capture.status === 'ready' && !isProcessing} />
-
-        {/* Processing overlay */}
-        {isProcessing && (
-          <View style={styles.processingOverlay}>
-            <ActivityIndicator size="large" color={colors.plantPrimary} />
-            <Text style={styles.processingText}>{processingLabel(discovery.status, t)}</Text>
-          </View>
-        )}
-      </CameraView>
+        </CameraView>
+      </MeasuredView>
 
       {/* ── Bottom controls ───────────────────────────────────────── */}
       <View style={styles.controls}>
@@ -199,9 +204,11 @@ export default function DiscoverScreen() {
             {quotaRemaining === 0 ? (
               <Text style={styles.quotaExhausted}>{t('discover.quotaExhausted')}</Text>
             ) : quotaRemaining !== null && (
-              <Text style={[styles.quotaHint, quotaRemaining <= 2 && styles.quotaHintLow]}>
-                {t('discover.quotaRemaining', { count: quotaRemaining })}
-              </Text>
+              <MeasuredView measureKey="discover.quotaDisplay">
+                <Text style={[styles.quotaHint, quotaRemaining <= 2 && styles.quotaHintLow]}>
+                  {t('discover.quotaRemaining', { count: quotaRemaining })}
+                </Text>
+              </MeasuredView>
             )}
           </>
         )}
@@ -242,6 +249,7 @@ export default function DiscoverScreen() {
         </View>
       </Modal>
     </View>
+    </GuideWrapper>
     </ErrorBoundary>
   );
 }
