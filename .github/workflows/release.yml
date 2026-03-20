@@ -3,6 +3,12 @@ name: Release to App Store
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      skip_validate:
+        description: 'Skip validation (TypeScript + Jest)'
+        type: boolean
+        default: false
 
 # Prevent duplicate release runs for the same tag
 concurrency:
@@ -12,6 +18,7 @@ concurrency:
 jobs:
   validate:
     name: Validate (TypeScript + Jest)
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_validate }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -25,22 +32,49 @@ jobs:
       - run: npx jest --ci --passWithNoTests
 
   build-submit:
-    name: EAS Build + Submit to App Store Connect
+    name: Build IPA (local) + Submit to ASC
     needs: validate
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+    if: ${{ !cancelled() && (needs.validate.result == 'success' || needs.validate.result == 'skipped') }}
+    runs-on: macos-latest
+    timeout-minutes: 90
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EXPO_APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.EXPO_APPLE_APP_SPECIFIC_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
-      - uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20.18.0'
           cache: 'npm'
+
       - run: npm ci
-      # Build production IPA and auto-submit to App Store Connect in one step.
-      # Requires: EXPO_TOKEN (GitHub Secret) + Apple credentials stored in EAS
-      # (set up once via: npx eas submit --platform ios, then select "Save credentials to EAS")
-      - run: eas build --profile production --platform ios --non-interactive --auto-submit
+
+      # eas-cli is in devDependencies (^18.4.0), installed by npm ci.
+      # Credentials are downloaded from EAS servers via EXPO_TOKEN.
+      # Distribution Certificate + App Store Provisioning Profile configured 2026-03-20.
+      - name: Build production IPA locally
+        run: |
+          set -e
+          npx eas build --local \
+            --profile production \
+            --platform ios \
+            --non-interactive \
+            --output production.ipa
+          ls -lh production.ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: production-ipa-${{ github.sha }}
+          path: production.ipa
+          retention-days: 7
+
+      - name: Submit to App Store Connect
+        run: |
+          set -e
+          npx eas submit \
+            --platform ios \
+            --path production.ipa \
+            --non-interactive
