@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 16.0.0"
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "base": {
@@ -37,7 +38,9 @@
     },
     "simulator": {
       "node": "20.18.0",
-      "ios": { "simulator": true },
+      "ios": {
+        "simulator": true
+      },
       "env": {
         "EXPO_PUBLIC_SUPABASE_URL": "https://uwdgnueaycatmkzkbxwo.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3ZGdudWVheWNhdG1remtieHdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTEwMTIsImV4cCI6MjA4OTA2NzAxMn0.ShB7IWQCZ1L3OQi53PqbVVNIJmvUSml0t7Dy15g_clg",
@@ -47,7 +50,9 @@
     },
     "simulator-screenshot": {
       "extends": "base",
-      "ios": { "simulator": true },
+      "ios": {
+        "simulator": true
+      },
       "env": {
         "EXPO_PUBLIC_SUPABASE_URL": "https://uwdgnueaycatmkzkbxwo.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3ZGdudWVheWNhdG1remtieHdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTEwMTIsImV4cCI6MjA4OTA2NzAxMn0.ShB7IWQCZ1L3OQi53PqbVVNIJmvUSml0t7Dy15g_clg",

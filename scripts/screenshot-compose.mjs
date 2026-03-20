@@ -19,9 +19,9 @@ const OUTPUT_HEIGHT = 2868;
 
 const SCREENSHOTS = [
   {
-    input: 'e2e/current/01-map.png',
-    title_ja: '今年の桜、どこで見る？',
-    output: 'e2e/composed/canvas/01-map.png',
+    input: 'e2e/current/01-home.png',
+    title_ja: '花めぐりの記録、はじめよう',
+    output: 'e2e/composed/canvas/01-home.png',
   },
   {
     input: 'e2e/current/02-checkin.png',
@@ -29,19 +29,19 @@ const SCREENSHOTS = [
     output: 'e2e/composed/canvas/02-checkin.png',
   },
   {
-    input: 'e2e/current/03-home.png',
-    title_ja: '全国の桜名所をリアルタイムで',
-    output: 'e2e/composed/canvas/03-home.png',
+    input: 'e2e/current/03-stamp.png',
+    title_ja: '世界でひとつの花スタンプ',
+    output: 'e2e/composed/canvas/03-stamp.png',
   },
   {
-    input: 'e2e/current/04-footprint.png',
-    title_ja: 'お花見の足跡を残そう',
-    output: 'e2e/composed/canvas/04-footprint.png',
+    input: 'e2e/current/04-settings.png',
+    title_ja: 'あなたの花旅をカスタマイズ',
+    output: 'e2e/composed/canvas/04-settings.png',
   },
   {
-    input: 'e2e/current/05-share.png',
-    title_ja: 'SNSで桜をシェアしよう',
-    output: 'e2e/composed/canvas/05-share.png',
+    input: 'e2e/current/05-onboarding.png',
+    title_ja: '季節の花を見つけに行こう',
+    output: 'e2e/composed/canvas/05-onboarding.png',
   },
 ];
 

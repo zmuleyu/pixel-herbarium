@@ -158,45 +158,47 @@ workflows:
           idb list-targets 2>&1 || echo "WARN: idb list-targets failed"
 
           # App should already be running from debug step (on home screen).
-          # Tab bar: 4 tabs (ホーム/打卡/足跡/設定) at bottom.
+          # v1.1 Tab bar: 3 tabs (ホーム/打卡/設定) — footprint hidden.
           #
           # COORDINATE SYSTEM: idb uses POINT coordinates (not pixels!)
           # iPhone 17 Pro Max: 440×956 points (@3x = 1320×2868 pixels)
-          # Tab bar: y ≈ 935pt (bottom), 4 tabs evenly at x = 55/165/275/385 pt
+          # Tab bar: y ≈ 935pt (bottom), 3 tabs evenly at x = 73/220/367 pt
           #
-          # Tab 1 (ホーム):  x=55,  y=935
-          # Tab 2 (打卡):    x=165, y=935
-          # Tab 3 (足跡):    x=275, y=935
-          # Tab 4 (設定):    x=385, y=935
+          # Tab 1 (ホーム):  x=73,  y=935
+          # Tab 2 (打卡):    x=220, y=935
+          # Tab 3 (設定):    x=367, y=935
 
-          # Screenshot 1: Home (already visible, 満開 + records)
+          # Screenshot 1: Home (season header + diary grid)
           idb screenshot e2e/current/01-home.png 2>&1 || \
             xcrun simctl io booted screenshot e2e/current/01-home.png
           echo "✓ 01-home"
 
-          # Tap checkin tab (point coordinates) and screenshot
-          echo "Tapping checkin tab at 165,935..."
-          idb ui tap 165 935 2>&1 || echo "WARN: idb tap failed"
+          # Screenshot 2: Checkin tab (photo step with seasonal CTA)
+          echo "Tapping checkin tab at 220,935..."
+          idb ui tap 220 935 2>&1 || echo "WARN: idb tap failed"
           sleep 3
           idb screenshot e2e/current/02-checkin.png 2>&1 || \
             xcrun simctl io booted screenshot e2e/current/02-checkin.png
           echo "✓ 02-checkin"
 
-          # Tap footprint tab and screenshot
-          echo "Tapping footprint tab at 275,935..."
-          idb ui tap 275 935 2>&1 || echo "WARN: idb tap failed"
+          # Screenshot 3: Settings tab
+          echo "Tapping settings tab at 367,935..."
+          idb ui tap 367 935 2>&1 || echo "WARN: idb tap failed"
           sleep 3
-          idb screenshot e2e/current/03-footprint.png 2>&1 || \
-            xcrun simctl io booted screenshot e2e/current/03-footprint.png
-          echo "✓ 03-footprint"
+          idb screenshot e2e/current/03-settings.png 2>&1 || \
+            xcrun simctl io booted screenshot e2e/current/03-settings.png
+          echo "✓ 03-settings"
 
-          # Tap settings tab and screenshot
-          echo "Tapping settings tab at 385,935..."
-          idb ui tap 385 935 2>&1 || echo "WARN: idb tap failed"
-          sleep 3
-          idb screenshot e2e/current/04-settings.png 2>&1 || \
-            xcrun simctl io booted screenshot e2e/current/04-settings.png
-          echo "✓ 04-settings"
+          # Screenshot 4: Back to home, tap a checkin card if any
+          echo "Tapping home tab at 73,935..."
+          idb ui tap 73 935 2>&1 || echo "WARN: idb tap failed"
+          sleep 2
+          # Tap first card area (center of grid, ~180,500pt)
+          idb ui tap 180 500 2>&1 || echo "WARN: card tap failed"
+          sleep 2
+          idb screenshot e2e/current/04-detail.png 2>&1 || \
+            xcrun simctl io booted screenshot e2e/current/04-detail.png
+          echo "✓ 04-detail"
 
           echo "=== Screenshot capture complete ==="
           ls -la e2e/current/*.png 2>/dev/null
@@ -233,19 +235,21 @@ workflows:
       - name: Install deps
         script: npm ci
 
-      - name: Build production IPA (EAS cloud)
+      - name: Build production IPA (local on Codemagic Mac)
         script: |
           set -e
           npm install -g eas-cli
-          # EAS cloud build handles Distribution Certificate automatically.
-          # --wait blocks until build completes (typically 20-40 min).
-          # Credentials MUST be pre-configured via `eas credentials` (interactive).
-          eas build --profile production --platform ios --non-interactive --wait
-          echo "EAS cloud build complete"
+          # Build locally on Codemagic Mac M2 — bypasses EAS cloud quota limits.
+          # Credentials are downloaded from EAS servers (configured via `eas credentials`).
+          # App Store Distribution cert + provisioning profile R82P6892TZ set up 2026-03-20.
+          eas build --local --profile production --platform ios --non-interactive \
+            --output production.ipa
+          ls -lh production.ipa
+          echo "Local build complete: production.ipa"
 
       - name: Submit to App Store Connect
         script: |
           set -e
-          # Submit the latest finished EAS build directly (no IPA download needed)
-          eas submit --profile production --platform ios --latest --non-interactive
+          # Submit the locally-built IPA to ASC via Transporter
+          eas submit --platform ios --path production.ipa --non-interactive
           echo "Submitted to ASC — check App Store Connect for build status"
