@@ -81,6 +81,8 @@ Follows existing convention (`_preference` suffix matches `stamp_opacity_prefere
 
 Note: `customTextValue` is NOT persisted (transient per session, TextInput manages it).
 
+**Restore logic**: After `AsyncStorage.getItem(CUSTOM_COLOR_KEY)`, check if result `=== null` (never set) OR `=== 'undefined'` (explicitly cleared). Both cases → use `undefined` (season default). For enum keys (effectType/textMode/decorationKey), treat `null` as the default value.
+
 ### Color Palette
 
 8 fixed colors added to `src/constants/theme.ts`:
@@ -215,11 +217,27 @@ textMode = 'custom'      → customText = customTextValue (max 12 chars, set via
 
 Derived `customText` string is computed in `StampPreview` and passed as a single optional `string` prop to stamp components. Stamp components receive final string only, no mode logic.
 
+`customTextValue` is held in `StampPreview` state. Collapsing and re-expanding `CustomizationPanel` does NOT lose the value (the panel's `useState` only controls visibility, not data).
+
 ---
 
 ## Effect Rendering
 
-React Native shadow requires `{ width, height }` (not `{ x, y }`), plus `shadowOpacity` on iOS and `elevation` on Android:
+### Resolved Color
+
+Before applying effects, compute `resolvedColor` in each stamp component:
+
+```typescript
+// For ClassicStamp, ReliefStamp, PostcardStamp, MedallionStamp, WindowStamp:
+const resolvedColor = customColor ?? themeColor;
+
+// For MinimalStamp:
+const resolvedColor = customColor ?? accentColor;
+```
+
+### Effect Styles
+
+Applied to the stamp's outermost wrapper `<View>`. React Native uses `{ width, height }` for `shadowOffset`, `shadowOpacity` on iOS, and `elevation` on Android:
 
 ```
 effectType = 'none'    → no additional style
@@ -233,7 +251,7 @@ effectType = 'shadow'  → {
 }
 
 effectType = 'glow'    → {
-  shadowColor: resolvedColor,   // resolved custom or season color
+  shadowColor: resolvedColor,   // color-tinted glow
   shadowOffset: { width: 0, height: 0 },
   shadowOpacity: 0.40,
   shadowRadius: 8,
@@ -241,11 +259,33 @@ effectType = 'glow'    → {
 }
 ```
 
-Applied to the stamp's outermost wrapper `<View>` via the `style` prop. Compatible with `react-native-view-shot` (shadow is captured in PNG).
+Compatible with `react-native-view-shot` (shadow is captured in PNG).
 
 ---
 
 ## i18n Keys
+
+Key names to use (use `t('customize.XXX')` in component):
+
+| Key | ja | en |
+|-----|----|----|
+| `customize.title` | ✎ カスタマイズ | ✎ Customize |
+| `customize.lineColor` | 線の色 | Line Color |
+| `customize.seasonDefault` | 季節色 | Season |
+| `customize.effect` | 効果 | Effect |
+| `customize.effectNone` | なし | None |
+| `customize.effectShadow` | 淡い影 | Soft Shadow |
+| `customize.effectGlow` | 柔光 | Glow |
+| `customize.addText` | 添え文字 | Caption |
+| `customize.textNone` | なし | None |
+| `customize.textHanakotoba` | 花言葉 | Flower Meaning |
+| `customize.textCustom` | 自由入力 | Custom |
+| `customize.textPlaceholder` | 12文字以内 | Up to 12 chars |
+| `customize.decoration` | 装飾 | Decoration |
+| `customize.decorNone` | なし | None |
+| `customize.decorPetals` | 花びら | Petals |
+| `customize.decorBranch` | 枝 | Branch |
+| `customize.decorStars` | 星 | Stars |
 
 ```json
 // ja.json additions
@@ -341,6 +381,14 @@ Applied to the stamp's outermost wrapper `<View>` via the `style` prop. Compatib
 10. OTA check: `StampPreview.tsx` hook count before and after change is identical (only extended existing `useEffect`, no new hooks added)
 
 ---
+
+## Notes on Excluded Files
+
+`PixelStamp.tsx` and `SealStamp.tsx` exist in the stamps directory but are dead code — `StampRenderer` remaps `pixel → classic` and `seal → medallion` via a migration map and never renders them. They are intentionally excluded from the files affected table.
+
+## Color Row Default Indicator
+
+When `customColor` is `undefined` (season default active), the season color circle in the palette should display a subtle "季" badge (small text label below the circle) or a thin checkmark ring in `theme.primary`. No circle should appear pre-selected when `customColor` is set to a non-season color. The implementer may choose the precise visual form; the constraint is that the season default state is visually distinguishable from the explicitly-selected-same-color state.
 
 ## Out of Scope (Phase B2+)
 
