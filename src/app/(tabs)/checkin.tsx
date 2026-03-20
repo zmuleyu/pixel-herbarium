@@ -10,7 +10,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
+
+const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 import { useTranslation } from 'react-i18next';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
@@ -24,6 +27,7 @@ import { StampPreview } from '@/components/stamps';
 import CheckinSuccessOverlay from '@/components/CheckinSuccessOverlay';
 import type { FlowerSpot, SpotsData, StampStyle, StampPosition } from '@/types/hanami';
 import { loadSpotsData } from '@/services/content-pack';
+import { getPreviousVisitYears } from '@/utils/stamp-position';
 
 const SEASON_LABELS: Record<string, string> = {
   sakura: '春', ajisai: '夏', himawari: '夏', momiji: '秋', tsubaki: '冬',
@@ -48,6 +52,7 @@ export default function CheckinScreen() {
   const [selectedSpot, setSelectedSpot] = useState<FlowerSpot | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [lastStampPosition, setLastStampPosition] = useState<StampPosition>('bottom-right');
 
   const checkinDate = useRef(new Date());
 

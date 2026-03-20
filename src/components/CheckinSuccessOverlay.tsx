@@ -1,8 +1,10 @@
-// Layered feedback overlay shown after stamp save:
-// T+0ms     Toast "留めました。"
-// T+1200ms  Herbarium unlock animation (petal burst → card)
-// T+3500ms  Milestone prompt (if applicable)
-// T+4500ms  Auto-dismiss → footprint tab
+// Layered feedback overlay shown after stamp save — Method C timing:
+// T+0ms     Overlay + Toast "留めました。" fade in
+// T+2200ms  Toast fades out; petal burst (new spot) + elastic card from bottom
+// T+2800ms  Card fully visible
+// T+4500ms  Milestone badge fades in (if applicable)
+// T+6000ms  Dismiss button becomes visible
+// T+15000ms Auto-close fallback
 
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -12,36 +14,54 @@ import {
 import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
-import type { FlowerSpot } from '@/types/hanami';
+import type { FlowerSpot, StampPosition } from '@/types/hanami';
+import { gridPositionToCoords } from '@/utils/stamp-position';
 
 const { width: SW, height: SH } = Dimensions.get('window');
 const PETAL_COUNT = 8;
 
 interface Props {
   spot: FlowerSpot;
-  seasonLabel: string;      // e.g. "2026 春"
-  isRevisit: boolean;       // same spot previously checked in
-  checkinCount: number;     // total spots visited after this check-in
+  seasonLabel: string;                          // e.g. "2026 春"
+  isRevisit: boolean;
+  checkinCount: number;
+  stampPosition?: StampPosition;               // for anchoring petals
+  containerSize?: { width: number; height: number }; // for petal origin calc
+  previousVisitYears?: number[];               // shown as year pills in revisit mode
   onDismiss: () => void;
 }
 
 const MILESTONES = [5, 10, 25, 50, 100];
 
 export default function CheckinSuccessOverlay({
-  spot, seasonLabel, isRevisit, checkinCount, onDismiss,
+  spot,
+  seasonLabel,
+  isRevisit,
+  checkinCount,
+  stampPosition = 'bottom-right',
+  containerSize,
+  previousVisitYears,
+  onDismiss,
 }: Props) {
   const { t } = useTranslation();
   const [phase, setPhase] = useState<'toast' | 'unlock' | 'milestone' | 'done'>('toast');
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [showButton, setShowButton] = useState(false);
 
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   const toastOpacity = useRef(new Animated.Value(0)).current;
   const cardSlide = useRef(new Animated.Value(300)).current;
+  const cardOpacity = useRef(new Animated.Value(0)).current;
   const milestoneOpacity = useRef(new Animated.Value(0)).current;
+
+  const cw = containerSize?.width ?? SW;
+  const ch = containerSize?.height ?? SH;
+  const origin = gridPositionToCoords(stampPosition, cw, ch);
+
   const petals = useRef(
     Array.from({ length: PETAL_COUNT }, () => ({
-      x: new Animated.Value(SW * 0.3 + Math.random() * SW * 0.4), // start from center area
-      y: new Animated.Value(SH * 0.5),
+      x: new Animated.Value(origin.x),
+      y: new Animated.Value(origin.y),
       opacity: new Animated.Value(1),
     }))
   ).current;
@@ -53,27 +73,27 @@ export default function CheckinSuccessOverlay({
   }, []);
 
   useEffect(() => {
-    // Phase 1: Toast
+    // T+0: Overlay + Toast fade in
     Animated.timing(overlayOpacity, { toValue: 1, duration: 200, useNativeDriver: true }).start();
     Animated.timing(toastOpacity, { toValue: 1, duration: 300, useNativeDriver: true }).start();
 
-    // Phase 2: Unlock card (T+1200ms)
-    const unlockTimer = setTimeout(() => {
+    // T+2200: Toast out, petal burst (new spot, no reduce motion), elastic card entry
+    const t1 = setTimeout(() => {
       setPhase('unlock');
       Animated.timing(toastOpacity, { toValue: 0, duration: 200, useNativeDriver: true }).start();
 
       if (!reduceMotion && !isRevisit) {
-        // Petal burst: scatter from center outward
+        // Petal burst anchored to stamp position, scattering downward-ish
         Animated.parallel([
           ...petals.map((p) =>
             Animated.parallel([
               Animated.timing(p.x, {
-                toValue: Math.random() * SW,
+                toValue: Math.random() * cw,
                 duration: 800,
                 useNativeDriver: true,
               }),
               Animated.timing(p.y, {
-                toValue: -60 + Math.random() * SH * 0.3,
+                toValue: origin.y + 60 + Math.random() * ch * 0.3,
                 duration: 800,
                 useNativeDriver: true,
               }),
@@ -91,20 +111,18 @@ export default function CheckinSuccessOverlay({
             damping: 18,
             stiffness: 120,
           }),
+          Animated.timing(cardOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
         ]).start();
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       } else {
-        // Revisit or reduce motion: gentle card slide only
-        Animated.timing(cardSlide, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }).start();
+        // Revisit or reduce motion: gentle fade only (no spring)
+        Animated.timing(cardOpacity, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+        Animated.timing(cardSlide, { toValue: 0, duration: 1, useNativeDriver: true }).start();
       }
-    }, 1200);
+    }, 2200);
 
-    // Phase 3: Milestone (T+3500ms) if applicable
-    const milestoneTimer = milestone
+    // T+4500: Milestone badge
+    const t2 = milestone
       ? setTimeout(() => {
           setPhase('milestone');
           Animated.timing(milestoneOpacity, {
@@ -112,18 +130,24 @@ export default function CheckinSuccessOverlay({
             duration: 300,
             useNativeDriver: true,
           }).start();
-        }, 3500)
+        }, 4500)
       : null;
 
-    // Phase 4: Auto-dismiss (T+4500ms, or T+3500ms if no milestone)
-    const dismissTimer = setTimeout(() => {
+    // T+6000: Dismiss button visible
+    const t3 = setTimeout(() => {
+      setShowButton(true);
+    }, 6000);
+
+    // T+15000: Auto-close fallback
+    const t4 = setTimeout(() => {
       setPhase('done');
-    }, milestone ? 5500 : 4000);
+    }, 15000);
 
     return () => {
-      clearTimeout(unlockTimer);
-      if (milestoneTimer) clearTimeout(milestoneTimer);
-      clearTimeout(dismissTimer);
+      clearTimeout(t1);
+      if (t2) clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
     };
   }, [reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -132,8 +156,10 @@ export default function CheckinSuccessOverlay({
   }, [phase, onDismiss]);
 
   const unlockMessage = isRevisit
-    ? t('stamp.revisitMessage')
+    ? t('stamp.unlockMessage', { spot: spot.nameJa, season: seasonLabel })
     : t('stamp.unlockMessage', { spot: spot.nameJa, season: seasonLabel });
+
+  const visibleYears = previousVisitYears?.slice(0, 5) ?? [];
 
   return (
     <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
@@ -142,7 +168,7 @@ export default function CheckinSuccessOverlay({
         <Text style={styles.toastText}>{t('stamp.savedShort')}</Text>
       </Animated.View>
 
-      {/* Petal burst (new spot only) */}
+      {/* Petal burst (new spot only, no reduce motion) */}
       {!reduceMotion && !isRevisit && petals.map((p, i) => (
         <Animated.Text
           key={i}
@@ -157,10 +183,39 @@ export default function CheckinSuccessOverlay({
 
       {/* Unlock / Revisit card */}
       {phase !== 'toast' && (
-        <Animated.View style={[styles.card, { transform: [{ translateY: cardSlide }] }]}>
+        <Animated.View
+          style={[
+            styles.card,
+            {
+              transform: [{ translateY: cardSlide }],
+              opacity: cardOpacity,
+            },
+          ]}
+        >
           <Text style={styles.cardIcon}>{isRevisit ? '🌿' : '🌸'}</Text>
           <Text style={styles.cardSpotName}>{spot.nameJa}</Text>
-          <Text style={styles.cardMessage}>{unlockMessage}</Text>
+
+          {isRevisit ? (
+            <>
+              <Text style={styles.cardMessage}>{t('stamp.revisitTitle')}</Text>
+              <Text style={styles.cardMessage}>{t('stamp.revisitMessage')}</Text>
+
+              {/* Year pills */}
+              {visibleYears.length > 0 && (
+                <View style={styles.yearsRow}>
+                  {visibleYears.map((year) => (
+                    <View key={year} style={styles.yearPill}>
+                      <Text style={styles.yearPillText}>{year}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </>
+          ) : (
+            <Text style={styles.cardMessage}>
+              {t('stamp.unlockMessage', { spot: spot.nameJa, season: seasonLabel })}
+            </Text>
+          )}
 
           {/* Milestone badge */}
           {milestone && phase === 'milestone' && (
@@ -171,9 +226,12 @@ export default function CheckinSuccessOverlay({
             </Animated.View>
           )}
 
-          <TouchableOpacity onPress={onDismiss} style={styles.dismissBtn}>
-            <Text style={styles.dismissText}>{t('stamp.viewCollection')} →</Text>
-          </TouchableOpacity>
+          {/* Dismiss button — shown after T+6000 */}
+          {showButton && (
+            <TouchableOpacity onPress={onDismiss} style={styles.dismissBtn}>
+              <Text style={styles.dismissText}>{t('stamp.viewCollection')} →</Text>
+            </TouchableOpacity>
+          )}
         </Animated.View>
       )}
     </Animated.View>
@@ -236,7 +294,27 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: typography.fontSize.sm * 1.6,
+    marginBottom: spacing.xs,
+  },
+  // Year pills (revisit mode)
+  yearsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
     marginBottom: spacing.md,
+  },
+  yearPill: {
+    backgroundColor: 'rgba(0,0,0,0.06)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: borderRadius.sm,
+  },
+  yearPillText: {
+    fontSize: typography.fontSize.xs,
+    color: colors.textSecondary,
+    fontFamily: typography.fontFamily.display,
   },
   // Milestone
   milestoneBadge: {
@@ -244,6 +322,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.sm,
+    marginTop: spacing.xs,
     marginBottom: spacing.md,
   },
   milestoneText: {
@@ -253,6 +332,7 @@ const styles = StyleSheet.create({
   },
   // Dismiss
   dismissBtn: {
+    marginTop: spacing.md,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,
   },
