@@ -386,5 +386,24 @@
       "featureHerbarium": "花図鉑",
       "featureMap": "マップ機能"
     }
+  },
+  "customize": {
+    "title": "カスタマイズ",
+    "lineColor": "線の色",
+    "seasonDefault": "季節色",
+    "effect": "効果",
+    "effectNone": "なし",
+    "effectShadow": "淡い影",
+    "effectGlow": "柔光",
+    "addText": "添え文字",
+    "textNone": "なし",
+    "textHanakotoba": "花言葉",
+    "textCustom": "自由入力",
+    "textPlaceholder": "12文字以内",
+    "decoration": "装飾",
+    "decorNone": "なし",
+    "decorPetals": "花びら",
+    "decorBranch": "枝",
+    "decorStars": "星"
   }
 }

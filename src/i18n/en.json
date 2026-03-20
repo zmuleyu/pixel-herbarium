@@ -386,5 +386,24 @@
       "featureHerbarium": "Herbarium",
       "featureMap": "Map"
     }
+  },
+  "customize": {
+    "title": "Customize",
+    "lineColor": "Line Color",
+    "seasonDefault": "Season",
+    "effect": "Effect",
+    "effectNone": "None",
+    "effectShadow": "Soft Shadow",
+    "effectGlow": "Glow",
+    "addText": "Caption",
+    "textNone": "None",
+    "textHanakotoba": "Flower Meaning",
+    "textCustom": "Custom",
+    "textPlaceholder": "Up to 12 chars",
+    "decoration": "Decoration",
+    "decorNone": "None",
+    "decorPetals": "Petals",
+    "decorBranch": "Branch",
+    "decorStars": "Stars"
   }
 }

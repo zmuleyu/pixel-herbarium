@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, type ViewStyle } from 'react-native';
 import { stamp as stampTheme } from '@/constants/theme';
 import { StampRenderer } from './StampRenderer';
-import type { StampStyleId, StampPosition, FlowerSpot } from '@/types/hanami';
+import type { StampStyleId, StampPosition, FlowerSpot, CustomOptions } from '@/types/hanami';
 import type { SeasonConfig } from '@/constants/seasons';
 
 interface StampOverlayProps {
@@ -16,6 +16,8 @@ interface StampOverlayProps {
   userOpacity?: number;
   /** User-controlled scale factor (default: 1.0) */
   userScale?: number;
+  /** Customization options for stamp styling */
+  customOptions?: CustomOptions;
 }
 
 /**
@@ -46,7 +48,7 @@ function getPositionStyle(pos: StampPosition): ViewStyle {
 
 export function StampOverlay({
   style, position, spot, date, season,
-  userOpacity = 1, userScale = 1,
+  userOpacity = 1, userScale = 1, customOptions,
 }: StampOverlayProps) {
   const mountOpacity = useRef(new Animated.Value(0)).current;
   const mountScale = useRef(new Animated.Value(0.8)).current;
@@ -57,7 +59,7 @@ export function StampOverlay({
   }, []);
 
   const stampElement = (
-    <StampRenderer styleId={style} spot={spot} date={date} season={season} />
+    <StampRenderer styleId={style} spot={spot} date={date} season={season} customOptions={customOptions} />
   );
 
   return (
