@@ -85,16 +85,26 @@ jest.mock('@/constants/seasons', () => ({
   }),
 }));
 
-jest.mock('@/components/stamps/StampOverlay', () => ({
-  StampOverlay: () => null,
+jest.mock('@/components/stamps/GestureStampOverlay', () => ({
+  GestureStampOverlay: () => null,
 }));
 
 jest.mock('@/components/stamps/CustomizationPanel', () => ({
   CustomizationPanel: () => null,
 }));
 
-jest.mock('@/components/stamps/PositionSelector', () => ({
-  PositionSelector: () => null,
+jest.mock('react-native-gesture-handler', () => ({
+  Gesture: { Pan: () => ({ onChange: () => ({ onEnd: () => ({}) }), onEnd: () => ({}) }), Pinch: () => ({ onChange: () => ({ onEnd: () => ({}) }), onEnd: () => ({}) }), Rotation: () => ({ onChange: () => ({ onEnd: () => ({}) }), onEnd: () => ({}) }), Simultaneous: () => ({}) },
+  GestureDetector: ({ children }: { children: any }) => children,
+}));
+
+jest.mock('react-native-reanimated', () => ({
+  __esModule: true,
+  default: { View: 'View' },
+  useSharedValue: (init: any) => ({ value: init }),
+  useAnimatedStyle: (factory: () => any) => factory(),
+  withSpring: (val: any) => val,
+  runOnJS: (fn: any) => fn,
 }));
 
 jest.mock('@/components/guide', () => ({
