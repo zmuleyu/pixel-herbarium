@@ -64,7 +64,7 @@ export default function RootLayout() {
       if (data?.screen === 'plant' && data?.plantId) {
         router.push(`/plant/${data.plantId}` as any);
       } else {
-        router.push('/(tabs)/footprint' as any);
+        router.push('/(tabs)/home' as any);
       }
     });
     return () => subscription.remove();

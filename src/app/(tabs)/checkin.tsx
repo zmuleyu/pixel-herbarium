@@ -227,7 +227,7 @@ export default function CheckinScreen() {
           previousVisitYears={getPreviousVisitYears(history, selectedSpot.id, season.id)}
           onDismiss={() => {
             setShowSuccess(false);
-            router.replace('/(tabs)/footprint');
+            router.replace('/(tabs)/home');
           }}
         />
       )}
