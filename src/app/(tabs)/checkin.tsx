@@ -223,6 +223,8 @@ export default function CheckinScreen() {
           seasonLabel={`${checkinDate.current.getFullYear()} ${SEASON_LABELS[season.id] ?? ''}`}
           isRevisit={history.filter(r => r.spotId === selectedSpot.id).length > 1}
           checkinCount={new Set(history.map(r => r.spotId)).size}
+          stampPosition={lastStampPosition}
+          previousVisitYears={getPreviousVisitYears(history, selectedSpot.id, season.id)}
           onDismiss={() => {
             setShowSuccess(false);
             router.replace('/(tabs)/footprint');

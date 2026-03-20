@@ -27,7 +27,7 @@ interface Props {
   checkinCount: number;
   stampPosition?: StampPosition;               // for anchoring petals
   containerSize?: { width: number; height: number }; // for petal origin calc
-  previousVisitYears?: number[];               // shown as year pills in revisit mode
+  previousVisitYears?: string[];               // shown as year pills in revisit mode
   onDismiss: () => void;
 }
 
@@ -155,10 +155,6 @@ export default function CheckinSuccessOverlay({
     if (phase === 'done') onDismiss();
   }, [phase, onDismiss]);
 
-  const unlockMessage = isRevisit
-    ? t('stamp.unlockMessage', { spot: spot.nameJa, season: seasonLabel })
-    : t('stamp.unlockMessage', { spot: spot.nameJa, season: seasonLabel });
-
   const visibleYears = previousVisitYears?.slice(0, 5) ?? [];
 
   return (
@@ -197,7 +193,6 @@ export default function CheckinSuccessOverlay({
 
           {isRevisit ? (
             <>
-              <Text style={styles.cardMessage}>{t('stamp.revisitTitle')}</Text>
               <Text style={styles.cardMessage}>{t('stamp.revisitMessage')}</Text>
 
               {/* Year pills */}

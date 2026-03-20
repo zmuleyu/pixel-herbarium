@@ -94,44 +94,55 @@ describe('getPreviousVisitYears', () => {
     expect(getPreviousVisitYears([], 1, 'sakura')).toEqual([]);
   });
 
-  it('returns [] when no record matches spotId or seasonId', () => {
+  it('returns [] when no record matches spotId', () => {
     const history: CheckinRecord[] = [
       makeRecord({ spotId: 99, seasonId: 'sakura', timestamp: '2024-04-01T00:00:00Z' }),
-      makeRecord({ spotId: 1,  seasonId: 'momiji', timestamp: '2024-11-01T00:00:00Z' }),
     ];
     expect(getPreviousVisitYears(history, 1, 'sakura')).toEqual([]);
   });
 
-  it('deduplicates multiple visits in the same year', () => {
+  it('deduplicates multiple visits in the same year-season', () => {
     const history: CheckinRecord[] = [
-      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2025-03-28T00:00:00Z' }),
-      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2025-04-02T00:00:00Z' }),
+      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2024-03-28T00:00:00Z' }),
+      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2024-04-02T00:00:00Z' }),
     ];
-    expect(getPreviousVisitYears(history, 1, 'sakura')).toEqual([2025]);
+    expect(getPreviousVisitYears(history, 1, 'momiji')).toEqual(['2024 春']);
   });
 
-  it('returns multiple distinct years sorted descending', () => {
+  it('includes visits across different seasons for same spot', () => {
     const history: CheckinRecord[] = [
-      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2023-04-05T00:00:00Z' }),
-      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2025-03-30T00:00:00Z' }),
-      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2024-04-10T00:00:00Z' }),
-    ];
-    expect(getPreviousVisitYears(history, 1, 'sakura')).toEqual([2025, 2024, 2023]);
-  });
-
-  it('excludes records with a different seasonId', () => {
-    const history: CheckinRecord[] = [
-      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2025-04-01T00:00:00Z' }),
+      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2024-04-01T00:00:00Z' }),
       makeRecord({ spotId: 1, seasonId: 'momiji', timestamp: '2024-11-01T00:00:00Z' }),
     ];
-    expect(getPreviousVisitYears(history, 1, 'sakura')).toEqual([2025]);
+    expect(getPreviousVisitYears(history, 1, 'sakura')).toEqual(['2024 春', '2024 秋']);
+  });
+
+  it('returns labels sorted ascending', () => {
+    const history: CheckinRecord[] = [
+      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2025-04-01T00:00:00Z' }),
+      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2023-04-01T00:00:00Z' }),
+      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2024-04-01T00:00:00Z' }),
+    ];
+    expect(getPreviousVisitYears(history, 1, 'momiji')).toEqual(['2023 春', '2024 春', '2025 春']);
   });
 
   it('excludes records with a different spotId', () => {
     const history: CheckinRecord[] = [
-      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2025-04-01T00:00:00Z' }),
+      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2024-04-01T00:00:00Z' }),
       makeRecord({ spotId: 2, seasonId: 'sakura', timestamp: '2024-04-01T00:00:00Z' }),
     ];
-    expect(getPreviousVisitYears(history, 1, 'sakura')).toEqual([2025]);
+    expect(getPreviousVisitYears(history, 1, 'momiji')).toEqual(['2024 春']);
+  });
+
+  it('excludes the current year-season from results', () => {
+    // Simulate a revisit: current year is dynamic, so use a year clearly in the past
+    const history: CheckinRecord[] = [
+      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2020-04-01T00:00:00Z' }),
+      makeRecord({ spotId: 1, seasonId: 'sakura', timestamp: '2021-04-01T00:00:00Z' }),
+    ];
+    // currentSeasonId=sakura, but current year won't be 2020 or 2021, so none excluded
+    const result = getPreviousVisitYears(history, 1, 'sakura');
+    expect(result).toContain('2020 春');
+    expect(result).toContain('2021 春');
   });
 });

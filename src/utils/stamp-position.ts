@@ -25,17 +25,27 @@ export function gridPositionToCoords(
   };
 }
 
+const SEASON_LABEL: Record<string, string> = {
+  sakura: '春', ajisai: '夏', himawari: '夏', momiji: '秋', tsubaki: '冬',
+};
+
 /**
- * Returns the unique calendar years in which the user checked in at a given spot
- * within a given season, sorted descending. Used for the revisit animation.
+ * Returns unique 'YYYY 春/夏/秋/冬' labels for all prior visits at a spot,
+ * across all seasons, excluding the current year-season.
+ * Sorted ascending (earliest first). Used for revisit year pills.
  */
 export function getPreviousVisitYears(
   history: CheckinRecord[],
   spotId: number,
-  seasonId: string,
-): number[] {
-  const years = history
-    .filter(r => r.spotId === spotId && r.seasonId === seasonId)
-    .map(r => new Date(r.timestamp).getFullYear());
-  return [...new Set(years)].sort((a, b) => b - a);
+  currentSeasonId: string,
+): string[] {
+  const currentLabel = `${new Date().getFullYear()} ${SEASON_LABEL[currentSeasonId] ?? currentSeasonId}`;
+  const labels = new Set<string>();
+  for (const r of history) {
+    if (r.spotId !== spotId) continue;
+    const year = new Date(r.timestamp).getFullYear();
+    const label = `${year} ${SEASON_LABEL[r.seasonId] ?? r.seasonId}`;
+    if (label !== currentLabel) labels.add(label);
+  }
+  return [...labels].sort();
 }
