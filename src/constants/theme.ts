@@ -23,6 +23,13 @@ export const colors = {
   },
 } as const;
 
+// Brand accent layer — stronger pink for icons, CTAs, and watermark borders.
+// Does NOT replace seasonal/UI colors above; those stay for backgrounds and cards.
+export const brand = {
+  accent: '#D4537E',   // App icon text, CTA buttons, watermark borders
+  dark: '#A05070',     // Pressed/hover states of brand elements
+} as const;
+
 export const spacing = {
   xs: 4,
   sm: 8,
