@@ -1,10 +1,18 @@
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import TabBarIcon, { type TabIconName } from '@/components/TabBarIcon';
 import { colors, typography, getSeasonTheme } from '@/constants/theme';
 import { getActiveSeason } from '@/constants/seasons';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+// Custom SVG icons for visible tabs; Ionicons kept as fallback for hidden tabs
+const CUSTOM_ICON_MAP: Record<string, TabIconName> = {
+  home: 'home',
+  checkin: 'checkin',
+  settings: 'settings',
+};
 
 interface TabConfig {
   name: string;
@@ -57,9 +65,13 @@ export default function TabLayout() {
           options={visible ? {
             title: t(labelKey),
             ...({ tabBarTestID: `tab.${name}` } as any),
-            tabBarIcon: ({ focused, color, size }) => (
-              <Ionicons name={focused ? iconActive : icon} size={size} color={color} />
-            ),
+            tabBarIcon: ({ focused, color, size }) => {
+              const customIcon = CUSTOM_ICON_MAP[name];
+              if (customIcon) {
+                return <TabBarIcon name={customIcon} focused={focused} color={color} size={size} />;
+              }
+              return <Ionicons name={focused ? iconActive : icon} size={size} color={color} />;
+            },
           } : { href: null }}
         />
       ))}
