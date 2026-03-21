@@ -5,7 +5,7 @@ workflows:
     instance_type: mac_mini_m2
     environment:
       xcode: latest
-      node: 20.18.0
+      node: 20.19.4
       groups:
         - expo_credentials
     triggering:
@@ -228,7 +228,7 @@ workflows:
     instance_type: mac_mini_m2
     environment:
       xcode: latest
-      node: 20.18.0
+      node: 20.19.4
       groups:
         - expo_credentials
     triggering:

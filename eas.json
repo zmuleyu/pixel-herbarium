@@ -5,7 +5,7 @@
   },
   "build": {
     "base": {
-      "node": "20.18.0",
+      "node": "20.19.4",
       "env": {
         "EXPO_PUBLIC_SUPABASE_URL": "https://uwdgnueaycatmkzkbxwo.supabase.co"
       },
@@ -37,7 +37,7 @@
       "channel": "preview"
     },
     "simulator": {
-      "node": "20.18.0",
+      "node": "20.19.4",
       "ios": {
         "simulator": true
       },
