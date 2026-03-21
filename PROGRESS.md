@@ -2,12 +2,15 @@
 Updated: 2026-03-21
 
 ## 当前阶段
-v1.1.0 已提交 ASC 审核 · 品牌视觉体系 Layer 1-2 实施完成 · Layer 3-4 待开
+v1.1.0 GHA 构建管线迁移完成 · Build IPA 进行中（Run 23370592595）
 
 ## 待办
-- [ ] Layer 3: 弹窗/权限/引导 UI 规范落地（日本APP规范文档已就绪）
-- [ ] Layer 4: v2 水印编辑器（3风格）+ 个人图鉴系统（赏花日记v2产品设计指引已就绪）
-- [ ] 等 v1.1 ASC 审核通过 → 真机截图 → canvas合成 → 提交 v1.2
+- [ ] 检查 GHA Run 23370592595 结果（`gh run view 23370592595`）
+- [ ] 成功 → 验证 TestFlight 收到 binary → 打 v1.1.0 tag 正式发布
+- [ ] 失败 → 读 GHA 日志诊断（完整日志可用）
+- [ ] 截图准备：demo-data.ts + canvas 合成 + ASC 上传
+- [ ] Layer 3: 弹窗/权限/引导 UI 规范落地
+- [ ] Layer 4: v2 水印编辑器 + 图鉴系统
 
 ## 已完成（本次 session）
 - [x] App Icon SVG 设计（雅致图鉴本+植物学樱花+像素点缀）
