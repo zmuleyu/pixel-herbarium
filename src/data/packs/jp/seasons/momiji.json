@@ -1,0 +1,3141 @@
+{
+  "version": 2,
+  "seasonId": "momiji",
+  "spots": [
+    {
+      "id": 215,
+      "nameJa": "定山渓(定山渓温泉)の紅葉",
+      "nameEn": "",
+      "prefecture": "北海道",
+      "prefectureCode": 1,
+      "city": "札幌市南区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 42.9915302,
+      "longitude": 141.3340896,
+      "description": "紅葉の名所、定山渓温泉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 216,
+      "nameJa": "北大イチョウ並木の紅葉",
+      "nameEn": "",
+      "prefecture": "北海道",
+      "prefectureCode": 1,
+      "city": "札幌市北区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 43.1139657,
+      "longitude": 141.3043966,
+      "description": "黄金のトンネルが彩る札幌の秋",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 217,
+      "nameJa": "定山渓ダム下流園地の紅葉",
+      "nameEn": "",
+      "prefecture": "北海道",
+      "prefectureCode": 1,
+      "city": "札幌市南区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 42.9915302,
+      "longitude": 141.3340896,
+      "description": "定山渓ダム下流の自然林を美しく彩る紅葉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 218,
+      "nameJa": "支笏湖の紅葉",
+      "nameEn": "",
+      "prefecture": "北海道",
+      "prefectureCode": 1,
+      "city": "千歳市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 42.8209335,
+      "longitude": 141.6509612,
+      "description": "透明度の高い支笏湖に映る色鮮やかな紅葉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 219,
+      "nameJa": "京極町ふきだし公園の紅葉",
+      "nameEn": "",
+      "prefecture": "北海道",
+      "prefectureCode": 1,
+      "city": "虻田郡京極町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 42.8590003,
+      "longitude": 140.8690466,
+      "description": "湧水池に映える木々の色づきは感動的",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 220,
+      "nameJa": "登別(地獄谷)の紅葉",
+      "nameEn": "",
+      "prefecture": "北海道",
+      "prefectureCode": 1,
+      "city": "登別市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 42.4127547,
+      "longitude": 141.1064964,
+      "description": "白い湯けむりに鮮やかな紅葉が映える",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 221,
+      "nameJa": "銀河・流星の滝の紅葉",
+      "nameEn": "",
+      "prefecture": "北海道",
+      "prefectureCode": 1,
+      "city": "上川郡上川町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 43.14153,
+      "longitude": 142.4167505,
+      "description": "2本の滝が絶壁・不動岩の左右を流れ落ちる",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 222,
+      "nameJa": "三国峠～糠平湖の紅葉",
+      "nameEn": "",
+      "prefecture": "北海道",
+      "prefectureCode": 1,
+      "city": "河東郡上士幌町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 43.5773387,
+      "longitude": 143.1262759,
+      "description": "三国峠から望む大樹海の紅葉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 223,
+      "nameJa": "円山公園の紅葉",
+      "nameEn": "",
+      "prefecture": "北海道",
+      "prefectureCode": 1,
+      "city": "札幌市中央区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 43.0609096,
+      "longitude": 141.3460696,
+      "description": "札幌中心街を彩る紅葉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 224,
+      "nameJa": "西岡公園の紅葉",
+      "nameEn": "",
+      "prefecture": "北海道",
+      "prefectureCode": 1,
+      "city": "札幌市豊平区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 43.0424532,
+      "longitude": 141.3612066,
+      "description": "水源池から望む色とりどりの紅葉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 225,
+      "nameJa": "鳴子峡の紅葉",
+      "nameEn": "",
+      "prefecture": "宮城県",
+      "prefectureCode": 4,
+      "city": "大崎市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 38.5776571,
+      "longitude": 140.9557224,
+      "description": "断崖絶壁の上から見るV字峡谷の紅葉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 226,
+      "nameJa": "栗駒山(宮城県)の紅葉",
+      "nameEn": "",
+      "prefecture": "宮城県",
+      "prefectureCode": 4,
+      "city": "栗原市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 38.7300697,
+      "longitude": 141.0209417,
+      "description": "「神の絨毯」と称される紅葉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 227,
+      "nameJa": "蔵王エコーラインの紅葉",
+      "nameEn": "",
+      "prefecture": "宮城県",
+      "prefectureCode": 4,
+      "city": "刈田郡七ヶ宿町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 38.1266343,
+      "longitude": 140.3819744,
+      "description": "蔵王連峰が赤や黄に色づく",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 228,
+      "nameJa": "磊々峡の紅葉",
+      "nameEn": "",
+      "prefecture": "宮城県",
+      "prefectureCode": 4,
+      "city": "仙台市太白区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 38.19044,
+      "longitude": 140.8999143,
+      "description": "壮大な渓谷の景色が紅葉に彩られる",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 229,
+      "nameJa": "秋保大滝の紅葉",
+      "nameEn": "",
+      "prefecture": "宮城県",
+      "prefectureCode": 4,
+      "city": "仙台市太白区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 38.19044,
+      "longitude": 140.8999143,
+      "description": "豪快な瀑布と紅葉の風景が美しい",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 230,
+      "nameJa": "長老湖の紅葉",
+      "nameEn": "",
+      "prefecture": "宮城県",
+      "prefectureCode": 4,
+      "city": "刈田郡七ヶ宿町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 38.0308697,
+      "longitude": 140.4801686,
+      "description": "不忘山の山裾から湖にかけて広がる錦秋",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 231,
+      "nameJa": "瑞鳳殿の紅葉",
+      "nameEn": "",
+      "prefecture": "宮城県",
+      "prefectureCode": 4,
+      "city": "仙台市青葉区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 38.2522323,
+      "longitude": 140.8808055,
+      "description": "伊達政宗公を始めとした伊達家三藩主の霊廟",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 232,
+      "nameJa": "定義如来西方寺(定義さん)の紅葉",
+      "nameEn": "",
+      "prefecture": "宮城県",
+      "prefectureCode": 4,
+      "city": "仙台市青葉区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 38.2522323,
+      "longitude": 140.8808055,
+      "description": "平家ゆかりの寺院で紅葉が鮮やかに色づく",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 233,
+      "nameJa": "鳳鳴四十八滝の紅葉",
+      "nameEn": "",
+      "prefecture": "宮城県",
+      "prefectureCode": 4,
+      "city": "仙台市青葉区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 38.2522323,
+      "longitude": 140.8808055,
+      "description": "清澄な水と豊かな森に囲まれた隠れた仙台の名瀑布",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 234,
+      "nameJa": "長瀞の紅葉",
+      "nameEn": "",
+      "prefecture": "埼玉県",
+      "prefectureCode": 11,
+      "city": "秩父郡長瀞町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 36.0952949,
+      "longitude": 139.1124969,
+      "description": "長瀞を紅葉が彩る",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 235,
+      "nameJa": "熊谷スポーツ文化公園の紅葉",
+      "nameEn": "",
+      "prefecture": "埼玉県",
+      "prefectureCode": 11,
+      "city": "熊谷市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 36.1472472,
+      "longitude": 139.3886141,
+      "description": "スポーツと紅葉を同時に楽しめるスポット",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 236,
+      "nameJa": "大血川渓谷(金蔵落し)の紅葉",
+      "nameEn": "",
+      "prefecture": "埼玉県",
+      "prefectureCode": 11,
+      "city": "秩父市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.9914509,
+      "longitude": 139.0857612,
+      "description": "渓谷を赤く染める関東近郊の絶景",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 237,
+      "nameJa": "秩父華厳の滝の紅葉",
+      "nameEn": "",
+      "prefecture": "埼玉県",
+      "prefectureCode": 11,
+      "city": "秩父郡皆野町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 36.0844,
+      "longitude": 139.041562,
+      "description": "紅葉ライトアップでは、紅葉と光の幻想的な滝を鑑賞",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 238,
+      "nameJa": "平林寺の紅葉",
+      "nameEn": "",
+      "prefecture": "埼玉県",
+      "prefectureCode": 11,
+      "city": "新座市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.7931194,
+      "longitude": 139.5657258,
+      "description": "紅葉に包まれる静寂の禅寺",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 239,
+      "nameJa": "中津峡の紅葉",
+      "nameEn": "",
+      "prefecture": "埼玉県",
+      "prefectureCode": 11,
+      "city": "秩父市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.9914509,
+      "longitude": 139.0857612,
+      "description": "奥秩父随一の美観と称賛される名勝地",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 240,
+      "nameJa": "黒山三滝の紅葉",
+      "nameEn": "",
+      "prefecture": "埼玉県",
+      "prefectureCode": 11,
+      "city": "入間郡越生町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.9409028,
+      "longitude": 139.2455501,
+      "description": "滝を巡りながら紅葉狩りを楽しむ",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 241,
+      "nameJa": "滝沢ダムの紅葉",
+      "nameEn": "",
+      "prefecture": "埼玉県",
+      "prefectureCode": 11,
+      "city": "秩父市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.9914509,
+      "longitude": 139.0857612,
+      "description": "秩父の山々の紅葉とダム湖が織りなす絶景",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 242,
+      "nameJa": "加須はなさき公園の紅葉",
+      "nameEn": "",
+      "prefecture": "埼玉県",
+      "prefectureCode": 11,
+      "city": "加須市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 36.1308572,
+      "longitude": 139.603225,
+      "description": "見事に黄色く染まるイチョウ並木",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 243,
+      "nameJa": "亀山湖の紅葉",
+      "nameEn": "",
+      "prefecture": "千葉県",
+      "prefectureCode": 12,
+      "city": "君津市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.3302375,
+      "longitude": 139.902551,
+      "description": "いくつもの橋の上から紅葉狩りが楽しめる",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 244,
+      "nameJa": "本土寺の紅葉",
+      "nameEn": "",
+      "prefecture": "千葉県",
+      "prefectureCode": 12,
+      "city": "松戸市",
+      "category": "park",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.787267,
+      "longitude": 139.9049043,
+      "description": "約1000本のモミジが境内を彩る",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 245,
+      "nameJa": "もみじロードの紅葉",
+      "nameEn": "",
+      "prefecture": "千葉県",
+      "prefectureCode": 12,
+      "city": "富津市",
+      "category": "park",
+      "treeCount": 1000,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.3039146,
+      "longitude": 139.8570499,
+      "description": "延長約10キロにわたって、約1000本のモミジが生い茂る",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 246,
+      "nameJa": "千葉県立北総花の丘公園の紅葉",
+      "nameEn": "",
+      "prefecture": "千葉県",
+      "prefectureCode": 12,
+      "city": "印西市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.8322582,
+      "longitude": 140.1452981,
+      "description": "水辺と森に囲まれた園内で、花や木の実で秋探し",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 247,
+      "nameJa": "成田山新勝寺 成田山公園の紅葉",
+      "nameEn": "",
+      "prefecture": "千葉県",
+      "prefectureCode": 12,
+      "city": "成田市",
+      "category": "park",
+      "treeCount": 250,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.7767683,
+      "longitude": 140.3183376,
+      "description": "広大な敷地で約250本の紅葉を楽しめる",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 248,
+      "nameJa": "養老渓谷の紅葉",
+      "nameEn": "",
+      "prefecture": "千葉県",
+      "prefectureCode": 12,
+      "city": "夷隅郡大多喜町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.28563,
+      "longitude": 140.25279,
+      "description": "紅葉観賞が楽しめるハイキングスポット",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 249,
+      "nameJa": "明治神宮外苑の紅葉",
+      "nameEn": "",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "新宿区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.6937632,
+      "longitude": 139.7036319,
+      "description": "イチョウ並木が作る黄金ロード",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 250,
+      "nameJa": "六義園の紅葉",
+      "nameEn": "",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "文京区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.7080255,
+      "longitude": 139.7523066,
+      "description": "歴史ある日本庭園が紅葉で趣深く",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 251,
+      "nameJa": "御殿山庭園の紅葉",
+      "nameEn": "",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "品川区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.6092008,
+      "longitude": 139.7301982,
+      "description": "「御殿山トラストシティ」内にある、自然豊かなお散歩スポット",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 252,
+      "nameJa": "御岳渓谷の紅葉",
+      "nameEn": "",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "青梅市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.7880531,
+      "longitude": 139.2753553,
+      "description": "駅からすぐの渓谷で紅葉を眺めながら清流散策",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 253,
+      "nameJa": "小金井公園の紅葉",
+      "nameEn": "",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "小金井市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.7041083,
+      "longitude": 139.5106759,
+      "description": "玉川上水沿いにある大規模総合公園の紅葉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 254,
+      "nameJa": "芝公園の紅葉",
+      "nameEn": "",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "港区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.6580089,
+      "longitude": 139.7515137,
+      "description": "芝公園の紅葉に縁取られた東京タワーは圧巻",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 255,
+      "nameJa": "国立科学博物館附属自然教育園の紅葉",
+      "nameEn": "",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "港区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.6580089,
+      "longitude": 139.7515137,
+      "description": "東京中心部の自然豊かな紅葉スポット",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 256,
+      "nameJa": "東京都庭園美術館の紅葉",
+      "nameEn": "",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "港区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.6580089,
+      "longitude": 139.7515137,
+      "description": "アール・デコ様式の建築に映える庭園の紅葉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 257,
+      "nameJa": "水元公園の紅葉",
+      "nameEn": "",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "葛飾区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.7433912,
+      "longitude": 139.8473472,
+      "description": "都内最大級の水郷公園が鮮やかなレンガ色に染まる",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 258,
+      "nameJa": "有栖川宮記念公園の紅葉",
+      "nameEn": "",
+      "prefecture": "東京都",
+      "prefectureCode": 13,
+      "city": "港区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.6580089,
+      "longitude": 139.7515137,
+      "description": "麻布台地の傾斜を紅葉が美しく彩る",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 259,
+      "nameJa": "大雄山最乗寺の紅葉",
+      "nameEn": "",
+      "prefecture": "神奈川県",
+      "prefectureCode": 14,
+      "city": "南足柄市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.3205738,
+      "longitude": 139.0992405,
+      "description": "鮮やかな紅葉のもと参道散策",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 260,
+      "nameJa": "箱根小涌園 蓬莱園の紅葉",
+      "nameEn": "",
+      "prefecture": "神奈川県",
+      "prefectureCode": 14,
+      "city": "足柄下郡箱根町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.239237,
+      "longitude": 139.0464578,
+      "description": "広大な敷地でツツジやサツキが見頃を迎える",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 261,
+      "nameJa": "三溪園の紅葉",
+      "nameEn": "",
+      "prefecture": "神奈川県",
+      "prefectureCode": 14,
+      "city": "横浜市中区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.4542824,
+      "longitude": 139.6442523,
+      "description": "古都のような風情ある紅葉を横浜で楽しめる",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 262,
+      "nameJa": "大山寺・大山阿夫利神社下社の紅葉",
+      "nameEn": "",
+      "prefecture": "神奈川県",
+      "prefectureCode": 14,
+      "city": "伊勢原市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.4030614,
+      "longitude": 139.3150172,
+      "description": "真っ赤なモミジのトンネル階段と絶景",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 263,
+      "nameJa": "箱根(湯本)の紅葉",
+      "nameEn": "",
+      "prefecture": "神奈川県",
+      "prefectureCode": 14,
+      "city": "足柄下郡箱根町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.2333709,
+      "longitude": 139.1036639,
+      "description": "最後まで箱根の紅葉を楽しめる場所",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 264,
+      "nameJa": "出山鉄橋(早川橋梁)の紅葉",
+      "nameEn": "",
+      "prefecture": "神奈川県",
+      "prefectureCode": 14,
+      "city": "足柄下郡箱根町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.2341684,
+      "longitude": 139.0871233,
+      "description": "登録有形文化財認定の橋梁から見える絶景",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 265,
+      "nameJa": "長谷寺の紅葉",
+      "nameEn": "",
+      "prefecture": "神奈川県",
+      "prefectureCode": 14,
+      "city": "鎌倉市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.3192808,
+      "longitude": 139.5469627,
+      "description": "水面に映る美しい紅葉を堪能",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 266,
+      "nameJa": "保土ケ谷公園の紅葉",
+      "nameEn": "",
+      "prefecture": "神奈川県",
+      "prefectureCode": 14,
+      "city": "横浜市保土ケ谷区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.4500178,
+      "longitude": 139.585529,
+      "description": "黄色いイチョウ並木が美しい",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 267,
+      "nameJa": "鐘山の滝の紅葉",
+      "nameEn": "",
+      "prefecture": "山梨県",
+      "prefectureCode": 19,
+      "city": "富士吉田市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.4874565,
+      "longitude": 138.8078281,
+      "description": "2条の滝と四季折々の自然が織りなす絶景を楽しめる穴場スポット",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 268,
+      "nameJa": "清里高原の紅葉",
+      "nameEn": "",
+      "prefecture": "山梨県",
+      "prefectureCode": 19,
+      "city": "北杜市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.7764838,
+      "longitude": 138.4235673,
+      "description": "赤、黄、緑の景観が造る秋の絶景",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 269,
+      "nameJa": "西沢渓谷の紅葉",
+      "nameEn": "",
+      "prefecture": "山梨県",
+      "prefectureCode": 19,
+      "city": "山梨市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.6928452,
+      "longitude": 138.6871263,
+      "description": "国内屈指の渓谷美を誇る西沢渓谷",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 270,
+      "nameJa": "紅葉台の紅葉",
+      "nameEn": "",
+      "prefecture": "山梨県",
+      "prefectureCode": 19,
+      "city": "南都留郡鳴沢村",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.4748424,
+      "longitude": 138.6665877,
+      "description": "富士山を望む紅葉の景色を堪能",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 271,
+      "nameJa": "瑞牆山・本谷川渓谷の紅葉",
+      "nameEn": "",
+      "prefecture": "山梨県",
+      "prefectureCode": 19,
+      "city": "北杜市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.7764838,
+      "longitude": 138.4235673,
+      "description": "それぞれのスポットから美しい紅葉が眺められる",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 272,
+      "nameJa": "富士山5合目(山梨側)の紅葉",
+      "nameEn": "",
+      "prefecture": "山梨県",
+      "prefectureCode": 19,
+      "city": "富士吉田市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.4874565,
+      "longitude": 138.8078281,
+      "description": "スバルライン沿線を彩る変化に富んだ車窓風景",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 273,
+      "nameJa": "河口湖の紅葉",
+      "nameEn": "",
+      "prefecture": "山梨県",
+      "prefectureCode": 19,
+      "city": "南都留郡富士河口湖町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.4748424,
+      "longitude": 138.6665877,
+      "description": "ライトアップされたもみじ回廊で、紅葉越しの富士山が楽しめる",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 274,
+      "nameJa": "みずがき湖周辺の紅葉",
+      "nameEn": "",
+      "prefecture": "山梨県",
+      "prefectureCode": 19,
+      "city": "北杜市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.7764838,
+      "longitude": 138.4235673,
+      "description": "みずがき湖から望む増富大橋と紅葉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 275,
+      "nameJa": "戸隠高原鏡池の紅葉",
+      "nameEn": "",
+      "prefecture": "長野県",
+      "prefectureCode": 20,
+      "city": "長野市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 36.6485851,
+      "longitude": 138.1947664,
+      "description": "水面に四季折々の美しさを映し出す池",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 276,
+      "nameJa": "千畳敷カール(中央アルプス駒ヶ岳ロープウェイ)の紅葉",
+      "nameEn": "",
+      "prefecture": "長野県",
+      "prefectureCode": 20,
+      "city": "駒ヶ根市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.7296709,
+      "longitude": 137.9389254,
+      "description": "山肌一面が黄金色に輝く千畳敷カール",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 277,
+      "nameJa": "美ケ原高原の紅葉",
+      "nameEn": "",
+      "prefecture": "長野県",
+      "prefectureCode": 20,
+      "city": "松本市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 36.2382047,
+      "longitude": 137.9687141,
+      "description": "広大な高原を飾る秋の色",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 278,
+      "nameJa": "八方尾根の紅葉",
+      "nameEn": "",
+      "prefecture": "長野県",
+      "prefectureCode": 20,
+      "city": "北安曇郡白馬村",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 36.7009493,
+      "longitude": 137.8426668,
+      "description": "雄大な山岳景観と紅葉を楽しむ",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 279,
+      "nameJa": "志賀高原の紅葉",
+      "nameEn": "",
+      "prefecture": "長野県",
+      "prefectureCode": 20,
+      "city": "下高井郡山ノ内町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 36.7355107,
+      "longitude": 138.5130907,
+      "description": "針葉樹と広葉樹のコントラストが美しい",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 280,
+      "nameJa": "松川渓谷の紅葉",
+      "nameEn": "",
+      "prefecture": "長野県",
+      "prefectureCode": 20,
+      "city": "上高井郡高山村",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.0144813,
+      "longitude": 135.762475,
+      "description": "深い色の彩りに包まれる松川渓谷",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 281,
+      "nameJa": "白駒の池の紅葉",
+      "nameEn": "",
+      "prefecture": "長野県",
+      "prefectureCode": 20,
+      "city": "南佐久郡小海町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 36.0556674,
+      "longitude": 138.3556889,
+      "description": "日本最高所にある湖を彩る紅葉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 282,
+      "nameJa": "富士見台高原の紅葉",
+      "nameEn": "",
+      "prefecture": "長野県",
+      "prefectureCode": 20,
+      "city": "下伊那郡阿智村",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.4820418,
+      "longitude": 137.6291925,
+      "description": "空中散歩で味わう絶景",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 283,
+      "nameJa": "栂池自然園の紅葉",
+      "nameEn": "",
+      "prefecture": "長野県",
+      "prefectureCode": 20,
+      "city": "北安曇郡小谷村",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.0144813,
+      "longitude": 135.762475,
+      "description": "初冠雪があれば三段紅葉が楽しめる",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 284,
+      "nameJa": "上高地(大正池、河童橋周辺)の紅葉",
+      "nameEn": "",
+      "prefecture": "長野県",
+      "prefectureCode": 20,
+      "city": "松本市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 36.2382047,
+      "longitude": 137.9687141,
+      "description": "黄金色のカラマツがシーズン終盤を演出",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 285,
+      "nameJa": "家康公大願成就の祈願所 小國神社宮川の紅葉",
+      "nameEn": "",
+      "prefecture": "静岡県",
+      "prefectureCode": 22,
+      "city": "周智郡森町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.84523,
+      "longitude": 137.9287139,
+      "description": "小國神社の秋詣で『感謝』と『祈り』のまごころを",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 286,
+      "nameJa": "アクト通りの紅葉",
+      "nameEn": "",
+      "prefecture": "静岡県",
+      "prefectureCode": 22,
+      "city": "浜松市中央区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.7387885,
+      "longitude": 137.6496097,
+      "description": "ロケ地としても知られる浜松市の美しい街並み",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 287,
+      "nameJa": "修善寺温泉「竹林の小径」と「修禅寺」の紅葉",
+      "nameEn": "",
+      "prefecture": "静岡県",
+      "prefectureCode": 22,
+      "city": "伊豆市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.9764551,
+      "longitude": 138.9467078,
+      "description": "小径沿いのカエデやお寺ならではの風情を味わえる",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 288,
+      "nameJa": "方広寺の紅葉",
+      "nameEn": "",
+      "prefecture": "静岡県",
+      "prefectureCode": 22,
+      "city": "浜松市浜名区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.8185336,
+      "longitude": 137.7905463,
+      "description": "晩秋の静かな境内で、様々な姿の紅葉が楽しめる",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 289,
+      "nameJa": "明神峡の紅葉",
+      "nameEn": "",
+      "prefecture": "静岡県",
+      "prefectureCode": 22,
+      "city": "浜松市天竜区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.864877,
+      "longitude": 137.8193,
+      "description": "渓谷一帯を染める鮮やかな紅葉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 290,
+      "nameJa": "龍潭寺の紅葉",
+      "nameEn": "",
+      "prefecture": "静岡県",
+      "prefectureCode": 22,
+      "city": "浜松市浜名区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.8185336,
+      "longitude": 137.7905463,
+      "description": "龍潭寺の紅葉情報",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 291,
+      "nameJa": "富士山富士宮口五合目(静岡側)及び富士山スカイラインの紅葉",
+      "nameEn": "",
+      "prefecture": "静岡県",
+      "prefectureCode": 22,
+      "city": "富士宮市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.2221369,
+      "longitude": 138.6214683,
+      "description": "長期間楽しめるさまざまな富士山の姿",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 292,
+      "nameJa": "寸又峡の紅葉",
+      "nameEn": "",
+      "prefecture": "静岡県",
+      "prefectureCode": 22,
+      "city": "榛原郡川根本町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.1113218,
+      "longitude": 138.0873421,
+      "description": "エメラルドグリーンの川面に紅葉が映える",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 293,
+      "nameJa": "井川湖の紅葉",
+      "nameEn": "",
+      "prefecture": "静岡県",
+      "prefectureCode": 22,
+      "city": "静岡市葵区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.9816349,
+      "longitude": 138.3850215,
+      "description": "紅葉と南アルプスの迫力の大パノラマ",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 294,
+      "nameJa": "香嵐渓の紅葉",
+      "nameEn": "",
+      "prefecture": "愛知県",
+      "prefectureCode": 23,
+      "city": "豊田市",
+      "category": "park",
+      "treeCount": 3000,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.0834524,
+      "longitude": 137.156737,
+      "description": "約3000本のモミジが巴川の川面を美しく彩る",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 295,
+      "nameJa": "岩屋堂公園の紅葉",
+      "nameEn": "",
+      "prefecture": "愛知県",
+      "prefectureCode": 23,
+      "city": "瀬戸市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.2238601,
+      "longitude": 137.0840005,
+      "description": "川沿いに鮮やかな紅葉のアーチが架かる",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 296,
+      "nameJa": "くらがり渓谷の紅葉",
+      "nameEn": "",
+      "prefecture": "愛知県",
+      "prefectureCode": 23,
+      "city": "岡崎市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.9548784,
+      "longitude": 137.1728226,
+      "description": "渓谷一帯を赤や黄に染める自然美を堪能",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 297,
+      "nameJa": "白鳥庭園の紅葉",
+      "nameEn": "",
+      "prefecture": "愛知県",
+      "prefectureCode": 23,
+      "city": "名古屋市熱田区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.128689,
+      "longitude": 136.910254,
+      "description": "中部地方をモチーフにした日本庭園の秋",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 298,
+      "nameJa": "徳川園の紅葉",
+      "nameEn": "",
+      "prefecture": "愛知県",
+      "prefectureCode": 23,
+      "city": "名古屋市東区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.1698444,
+      "longitude": 136.9094626,
+      "description": "「錦を纏う 徳川園紅葉祭」で美しい日本庭園の紅葉を楽しむ",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 299,
+      "nameJa": "巴川の紅葉",
+      "nameEn": "",
+      "prefecture": "愛知県",
+      "prefectureCode": 23,
+      "city": "新城市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.8988809,
+      "longitude": 137.4977484,
+      "description": "清流と紅葉が織りなす景色は見事",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 300,
+      "nameJa": "メタセコイア並木の紅葉",
+      "nameEn": "",
+      "prefecture": "滋賀県",
+      "prefectureCode": 25,
+      "city": "高島市",
+      "category": "park",
+      "treeCount": 500,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.3529199,
+      "longitude": 136.0356518,
+      "description": "約500本のメタセコイアと直線道路が造り出す絶景",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 301,
+      "nameJa": "石山寺の紅葉",
+      "nameEn": "",
+      "prefecture": "滋賀県",
+      "prefectureCode": 25,
+      "city": "大津市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.0177852,
+      "longitude": 135.8548122,
+      "description": "天然記念物と美しい紅葉のコラボレーション",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 302,
+      "nameJa": "西教寺の紅葉",
+      "nameEn": "",
+      "prefecture": "滋賀県",
+      "prefectureCode": 25,
+      "city": "大津市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.0177852,
+      "longitude": 135.8548122,
+      "description": "参道は真っ赤に染まった圧巻のもみじトンネル",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 303,
+      "nameJa": "国宝彦根城・名勝玄宮楽々園の紅葉",
+      "nameEn": "",
+      "prefecture": "滋賀県",
+      "prefectureCode": 25,
+      "city": "彦根市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.2744066,
+      "longitude": 136.2596539,
+      "description": "名園で池に映える紅葉を楽しむ",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 304,
+      "nameJa": "比叡山の紅葉",
+      "nameEn": "",
+      "prefecture": "滋賀県",
+      "prefectureCode": 25,
+      "city": "大津市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.0177852,
+      "longitude": 135.8548122,
+      "description": "深山の紅葉を眺めながら比叡山延暦寺へ",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 305,
+      "nameJa": "大本山 永源寺の紅葉",
+      "nameEn": "",
+      "prefecture": "滋賀県",
+      "prefectureCode": 25,
+      "city": "東近江市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.112415,
+      "longitude": 136.2073154,
+      "description": "色とりどりのモミジが境内を彩る伝統と格式の古刹",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 306,
+      "nameJa": "湖東三山 西明寺の紅葉",
+      "nameEn": "",
+      "prefecture": "滋賀県",
+      "prefectureCode": 25,
+      "city": "犬上郡甲良町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.1833433,
+      "longitude": 136.28475,
+      "description": "紅葉と桜を同時に楽しめる歴史ある寺院",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 307,
+      "nameJa": "湖東三山 百済寺(国史跡)の紅葉",
+      "nameEn": "",
+      "prefecture": "滋賀県",
+      "prefectureCode": 25,
+      "city": "東近江市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.112415,
+      "longitude": 136.2073154,
+      "description": "日本の紅葉百選にも選ばれる聖徳太子創健の寺院",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 308,
+      "nameJa": "胡宮神社の紅葉",
+      "nameEn": "",
+      "prefecture": "滋賀県",
+      "prefectureCode": 25,
+      "city": "犬上郡多賀町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.2152804,
+      "longitude": 136.2866748,
+      "description": "神社に続く遊歩道を真っ赤なモミジが彩る",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 309,
+      "nameJa": "清瀧寺徳源院の紅葉",
+      "nameEn": "",
+      "prefecture": "滋賀県",
+      "prefectureCode": 25,
+      "city": "米原市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.3150312,
+      "longitude": 136.2916051,
+      "description": "庭園を赤色に染まったモミジが美しく彩る",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 310,
+      "nameJa": "永観堂 禅林寺の紅葉",
+      "nameEn": "",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市左京区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.0298258,
+      "longitude": 135.7793142,
+      "description": "多宝塔を紅葉が包み込む",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 311,
+      "nameJa": "嵯峨野トロッコ列車の紅葉",
+      "nameEn": "",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市右京区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.0000455,
+      "longitude": 135.7216055,
+      "description": "名勝嵐山を渡るトロッコ列車",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 312,
+      "nameJa": "大本山 東福寺の紅葉",
+      "nameEn": "",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市東山区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.9851935,
+      "longitude": 135.77329,
+      "description": "通天橋から望む渓谷に広がる紅葉は圧巻",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 313,
+      "nameJa": "毘沙門堂の紅葉",
+      "nameEn": "",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市山科区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.9919034,
+      "longitude": 135.819528,
+      "description": "静謐な場所で秋の景色を楽しむ",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 314,
+      "nameJa": "東山(清水寺)の紅葉",
+      "nameEn": "",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市東山区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.9851935,
+      "longitude": 135.77329,
+      "description": "紅葉する木々と美しい町並みの共演が見事",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 315,
+      "nameJa": "岩倉実相院門跡の紅葉",
+      "nameEn": "",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市左京区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.0298258,
+      "longitude": 135.7793142,
+      "description": "磨き上げられた黒い床が映す紅葉風景",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 316,
+      "nameJa": "笠置山もみじ公園の紅葉",
+      "nameEn": "",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "相楽郡笠置町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.7606142,
+      "longitude": 135.9404603,
+      "description": "辺り一面を真っ赤に染める笠置山のモミジ",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 317,
+      "nameJa": "醍醐寺の紅葉",
+      "nameEn": "",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市伏見区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.9291714,
+      "longitude": 135.7184444,
+      "description": "落葉広葉樹が魅せる見事な紅葉",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 318,
+      "nameJa": "嵐山の紅葉",
+      "nameEn": "",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市右京区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.0000455,
+      "longitude": 135.7216055,
+      "description": "深紅に染まる嵐山の木々を背景に、秋の渡月橋を満喫",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 319,
+      "nameJa": "鷹峯(源光庵)の紅葉",
+      "nameEn": "",
+      "prefecture": "京都府",
+      "prefectureCode": 26,
+      "city": "京都市北区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.0513825,
+      "longitude": 135.7649499,
+      "description": "2つの有名な窓から眺める紅葉が見物",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 320,
+      "nameJa": "大阪府民の森ほしだ園地の紅葉",
+      "nameEn": "",
+      "prefecture": "大阪府",
+      "prefectureCode": 27,
+      "city": "交野市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.7879544,
+      "longitude": 135.6799638,
+      "description": "冒険の森で紅葉とパノラマを楽しむ",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 321,
+      "nameJa": "牛滝山の紅葉",
+      "nameEn": "",
+      "prefecture": "大阪府",
+      "prefectureCode": 27,
+      "city": "岸和田市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.4644,
+      "longitude": 135.385237,
+      "description": "滝や重要文化財が立ち並ぶモミジの名所",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 322,
+      "nameJa": "箕面公園の紅葉",
+      "nameEn": "",
+      "prefecture": "大阪府",
+      "prefectureCode": 27,
+      "city": "箕面市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.8269554,
+      "longitude": 135.4704617,
+      "description": "大滝、紅葉、名刹を一度に楽しめる国定公園",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 323,
+      "nameJa": "箕面(勝尾寺)の紅葉",
+      "nameEn": "",
+      "prefecture": "大阪府",
+      "prefectureCode": 27,
+      "city": "箕面市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.8269554,
+      "longitude": 135.4704617,
+      "description": "絵画のような絶景が望める勝運の寺",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 324,
+      "nameJa": "摂津峡公園の紅葉",
+      "nameEn": "",
+      "prefecture": "大阪府",
+      "prefectureCode": 27,
+      "city": "高槻市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.8464785,
+      "longitude": 135.6172204,
+      "description": "紅葉を眺めながら芥川沿いの渓谷ハイキングを楽しむ",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 325,
+      "nameJa": "太山寺の紅葉",
+      "nameEn": "",
+      "prefecture": "兵庫県",
+      "prefectureCode": 28,
+      "city": "神戸市西区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.7808923,
+      "longitude": 135.0088079,
+      "description": "神戸市で唯一の国宝建造物の本堂があるお寺",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 326,
+      "nameJa": "瑞宝寺公園の紅葉",
+      "nameEn": "",
+      "prefecture": "兵庫県",
+      "prefectureCode": 28,
+      "city": "神戸市北区",
+      "category": "park",
+      "treeCount": 2500,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.8546836,
+      "longitude": 135.2167875,
+      "description": "2500本のカエデが見事な秀吉ゆかりの「日暮の庭」",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 327,
+      "nameJa": "安泰山 大國寺の紅葉",
+      "nameEn": "",
+      "prefecture": "兵庫県",
+      "prefectureCode": 28,
+      "city": "丹波篠山市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.075757,
+      "longitude": 135.2193373,
+      "description": "大化年間に開創された紅葉の名所",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 328,
+      "nameJa": "書寫山圓教寺の紅葉",
+      "nameEn": "",
+      "prefecture": "兵庫県",
+      "prefectureCode": 28,
+      "city": "姫路市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.8153529,
+      "longitude": 134.6854793,
+      "description": "紅葉が彩る荘厳な伽藍は、映画やドラマの舞台にも",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 329,
+      "nameJa": "王地山公園の紅葉",
+      "nameEn": "",
+      "prefecture": "兵庫県",
+      "prefectureCode": 28,
+      "city": "丹波篠山市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.075757,
+      "longitude": 135.2193373,
+      "description": "歴史を感じさせるもみじ谷の紅葉",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 330,
+      "nameJa": "原不動滝の紅葉",
+      "nameEn": "",
+      "prefecture": "兵庫県",
+      "prefectureCode": 28,
+      "city": "宍粟市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.0043515,
+      "longitude": 134.5495517,
+      "description": "色とりどりの紅葉に囲まれた美しい名滝",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 331,
+      "nameJa": "石龕寺の紅葉",
+      "nameEn": "",
+      "prefecture": "兵庫県",
+      "prefectureCode": 28,
+      "city": "丹波市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.1771828,
+      "longitude": 135.0363959,
+      "description": "国の重要文化財と紅葉を楽しめる足利氏ゆかりの古刹",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 332,
+      "nameJa": "高源寺の紅葉",
+      "nameEn": "",
+      "prefecture": "兵庫県",
+      "prefectureCode": 28,
+      "city": "丹波市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.1771828,
+      "longitude": 135.0363959,
+      "description": "古刹の境内を覆いつくす天目カエデ",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 333,
+      "nameJa": "白毫寺の紅葉",
+      "nameEn": "",
+      "prefecture": "兵庫県",
+      "prefectureCode": 28,
+      "city": "丹波市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.1771828,
+      "longitude": 135.0363959,
+      "description": "赤く色づいたモミジとムクロジの葉の黄色が鮮やか",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 334,
+      "nameJa": "神戸布引ハーブ園／ロープウェイの紅葉",
+      "nameEn": "",
+      "prefecture": "兵庫県",
+      "prefectureCode": 28,
+      "city": "神戸市中央区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.690441,
+      "longitude": 135.197856,
+      "description": "ロープウェイで空中散歩。神戸の絶景と楽しむ「布引の紅葉」",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 335,
+      "nameJa": "談山神社の紅葉",
+      "nameEn": "",
+      "prefecture": "奈良県",
+      "prefectureCode": 29,
+      "city": "桜井市",
+      "category": "park",
+      "treeCount": 3000,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.5186316,
+      "longitude": 135.8434724,
+      "description": "3000本のカエデが圧巻",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 336,
+      "nameJa": "吉野山(奥千本)の紅葉",
+      "nameEn": "",
+      "prefecture": "奈良県",
+      "prefectureCode": 29,
+      "city": "吉野郡吉野町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.3707543,
+      "longitude": 135.8578059,
+      "description": "桜の名所は秋の紅葉も絶景",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 337,
+      "nameJa": "吉野山(上千本)の紅葉",
+      "nameEn": "",
+      "prefecture": "奈良県",
+      "prefectureCode": 29,
+      "city": "吉野郡吉野町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.3707543,
+      "longitude": 135.8578059,
+      "description": "桜の名所は秋の紅葉も絶景",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 338,
+      "nameJa": "大台ヶ原(東大台、西大台)の紅葉",
+      "nameEn": "",
+      "prefecture": "奈良県",
+      "prefectureCode": 29,
+      "city": "吉野郡上北山村",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.0045298,
+      "longitude": 135.9804578,
+      "description": "大自然のパノラマや断崖絶壁と紅葉を一度に楽しむ",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 339,
+      "nameJa": "奈良公園の紅葉",
+      "nameEn": "",
+      "prefecture": "奈良県",
+      "prefectureCode": 29,
+      "city": "奈良市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.6845445,
+      "longitude": 135.8048359,
+      "description": "紅葉と常緑樹のコントラストが鮮やか",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 340,
+      "nameJa": "正暦寺の紅葉",
+      "nameEn": "",
+      "prefecture": "奈良県",
+      "prefectureCode": 29,
+      "city": "奈良市",
+      "category": "park",
+      "treeCount": 3000,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.6845445,
+      "longitude": 135.8048359,
+      "description": "約3000本のカエデが美しく色づく",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 341,
+      "nameJa": "名勝依水園の紅葉",
+      "nameEn": "",
+      "prefecture": "奈良県",
+      "prefectureCode": 29,
+      "city": "奈良市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.6845445,
+      "longitude": 135.8048359,
+      "description": "江戸と明治、異なる時代に作られた2つの庭園",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 342,
+      "nameJa": "奈良県立竜田公園の紅葉",
+      "nameEn": "",
+      "prefecture": "奈良県",
+      "prefectureCode": 29,
+      "city": "生駒郡斑鳩町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.6070692,
+      "longitude": 135.7172355,
+      "description": "歌人も称えた紅葉の名所「竜田川」で絶景を楽しむ",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 343,
+      "nameJa": "吉野山(下千本)の紅葉",
+      "nameEn": "",
+      "prefecture": "奈良県",
+      "prefectureCode": 29,
+      "city": "吉野郡吉野町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.3707543,
+      "longitude": 135.8578059,
+      "description": "桜の名所は秋の紅葉も絶景",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 344,
+      "nameJa": "吉野山(中千本)の紅葉",
+      "nameEn": "",
+      "prefecture": "奈良県",
+      "prefectureCode": 29,
+      "city": "吉野郡吉野町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 34.3707543,
+      "longitude": 135.8578059,
+      "description": "桜の名所は秋の紅葉も絶景",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 345,
+      "nameJa": "雷山千如寺大悲王院の紅葉",
+      "nameEn": "",
+      "prefecture": "福岡県",
+      "prefectureCode": 40,
+      "city": "糸島市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 33.5571816,
+      "longitude": 130.196231,
+      "description": "雷山の秋を彩る樹齢400年の大楓",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 346,
+      "nameJa": "竈門神社の紅葉",
+      "nameEn": "",
+      "prefecture": "福岡県",
+      "prefectureCode": 40,
+      "city": "太宰府市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 33.5288297,
+      "longitude": 130.5524449,
+      "description": "参道が紅葉のトンネルに",
+      "tags": [
+        "night",
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 347,
+      "nameJa": "呑山観音寺の紅葉",
+      "nameEn": "",
+      "prefecture": "福岡県",
+      "prefectureCode": 40,
+      "city": "糟屋郡篠栗町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 33.6588993,
+      "longitude": 130.5681729,
+      "description": "多種多様の木々が境内や参道を真っ赤に染める",
+      "tags": [
+        "festival"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 348,
+      "nameJa": "友泉亭公園の紅葉",
+      "nameEn": "",
+      "prefecture": "福岡県",
+      "prefectureCode": 40,
+      "city": "福岡市城南区",
+      "category": "park",
+      "treeCount": 150,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 33.5628549,
+      "longitude": 130.3762942,
+      "description": "日本庭園を彩る150本のカエデ",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 349,
+      "nameJa": "清水寺本坊庭園の紅葉",
+      "nameEn": "",
+      "prefecture": "福岡県",
+      "prefectureCode": 40,
+      "city": "みやま市",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.0144813,
+      "longitude": 135.762475,
+      "description": "自然豊かな風景が色づく庭園",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 350,
+      "nameJa": "皿倉山・皿倉山ケーブルカーの紅葉",
+      "nameEn": "",
+      "prefecture": "福岡県",
+      "prefectureCode": 40,
+      "city": "北九州市八幡東区",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 33.869701,
+      "longitude": 130.8264587,
+      "description": "市街地からアクセス容易な絶景スポット",
+      "tags": [
+        "night"
+      ],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    },
+    {
+      "id": 351,
+      "nameJa": "英彦山大権現の紅葉",
+      "nameEn": "",
+      "prefecture": "福岡県",
+      "prefectureCode": 40,
+      "city": "田川郡添田町",
+      "category": "park",
+      "treeCount": 0,
+      "bloomTypical": {
+        "earlyStart": "10-15",
+        "peakStart": "11-01",
+        "peakEnd": "11-25",
+        "lateEnd": "12-05"
+      },
+      "latitude": 35.5352831,
+      "longitude": 134.8197489,
+      "description": "山峰を活かした枯山水と紅葉の調和が美しい庭園",
+      "tags": [],
+      "regionId": "jp",
+      "seasonId": "momiji"
+    }
+  ]
+}
