@@ -289,6 +289,7 @@
     "deleteData": "データの削除",
     "deleteDataConfirm": "すべてのローカルデータを削除しますか？この操作は取り消せません。",
     "deleteDataDone": "データを削除しました",
+    "privacyPolicy": "プライバシーポリシー",
     "feedback": "フィードバックを送る",
     "signOut": "ログアウト",
     "deleteAccount": "アカウントを削除",
