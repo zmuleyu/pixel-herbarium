@@ -46,6 +46,12 @@ jobs:
           sed -i '' 's/: @MainActor ExpoSwiftUI\.ViewWrapper/: ExpoSwiftUI.ViewWrapper/' "$VIRTUAL"
           sed -i '' 's/extension UIView: @MainActor AnyArgument {/extension UIView: AnyArgument {/' "$VIEWDEF"
 
+          # 3. Patch RNReanimated for Folly coroutine compatibility (Xcode 26+)
+          #    RNReanimated.podspec hardcodes folly_flags without FOLLY_CFG_NO_COROUTINES=1,
+          #    causing 'folly/coro/Coroutine.h' file not found on compilers with C++20 coroutine support.
+          RNREANIMATED_PODSPEC="node_modules/react-native-reanimated/RNReanimated.podspec"
+          sed -i '' 's/-DFOLLY_NO_CONFIG/-DFOLLY_NO_CONFIG -DFOLLY_CFG_NO_COROUTINES=1/' "$RNREANIMATED_PODSPEC"
+
           echo "=== Podspec ==="
           grep "swift_version" node_modules/expo-modules-core/ExpoModulesCore.podspec
           echo "=== SwiftUIHostingView.swift:45 ==="
@@ -54,6 +60,8 @@ jobs:
           sed -n '196p' "$VIRTUAL"
           echo "=== ViewDefinition.swift:121 ==="
           sed -n '121p' "$VIEWDEF"
+          echo "=== RNReanimated folly_flags ==="
+          grep "folly_flags" "$RNREANIMATED_PODSPEC"
 
       - name: Build simulator-screenshot app locally
         run: |

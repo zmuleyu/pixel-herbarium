@@ -23,13 +23,31 @@ workflows:
       - name: TypeScript check
         script: npx tsc --noEmit
 
+      - name: Patch native modules for Xcode 26 compatibility
+        script: |
+          # expo-modules-core: downgrade Swift 6.0 → 5.9, remove @MainActor conformance syntax
+          sed -i '' "s/s\.swift_version  = '6\.0'/s.swift_version  = '5.9'/" \
+            node_modules/expo-modules-core/ExpoModulesCore.podspec
+          HOSTING="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIHostingView.swift"
+          VIRTUAL="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIVirtualView.swift"
+          VIEWDEF="node_modules/expo-modules-core/ios/Core/Views/ViewDefinition.swift"
+          sed -i '' 's/, @MainActor AnyExpoSwiftUIHostingView/, AnyExpoSwiftUIHostingView/' "$HOSTING"
+          sed -i '' 's/: @MainActor ExpoSwiftUI\.ViewWrapper/: ExpoSwiftUI.ViewWrapper/' "$VIRTUAL"
+          sed -i '' 's/extension UIView: @MainActor AnyArgument {/extension UIView: AnyArgument {/' "$VIEWDEF"
+          # react-native-reanimated: inject FOLLY_CFG_NO_COROUTINES=1 into folly_flags
+          # (prevents 'folly/coro/Coroutine.h' file not found on C++20-capable compilers)
+          sed -i '' 's/-DFOLLY_NO_CONFIG/-DFOLLY_NO_CONFIG -DFOLLY_CFG_NO_COROUTINES=1/' \
+            node_modules/react-native-reanimated/RNReanimated.podspec
+          echo "=== Patches applied ==="
+          grep "swift_version" node_modules/expo-modules-core/ExpoModulesCore.podspec
+          grep "folly_flags" node_modules/react-native-reanimated/RNReanimated.podspec
+
       - name: Build iOS Simulator app locally
         script: |
           npm install -g eas-cli
           # Build locally on this Mac — avoids EAS cloud quota limits and always
           # uses the current commit's code (no stale binary from EAS cache).
-          # xcode: latest required — 16.1/16.2 have Swift strict concurrency errors
-          # with RN 0.83 Expo modules. Boot step below forces iOS 18 simulator.
+          # xcode: latest on Codemagic = Xcode 26.x; patches above handle Swift + Folly compat.
           eas build --local --profile simulator-screenshot --platform ios --non-interactive \
             --output app.tar.gz
           # Verify the build artifact exists before proceeding
