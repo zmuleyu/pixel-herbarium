@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build IPA for Screenshots
-    runs-on: macos-15
+    runs-on: macos-latest
     timeout-minutes: 90
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
