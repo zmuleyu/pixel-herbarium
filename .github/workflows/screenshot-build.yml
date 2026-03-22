@@ -1,0 +1,38 @@
+name: Screenshot Build (preview-screenshot)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build IPA for Screenshots
+    runs-on: macos-latest
+    timeout-minutes: 90
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.4'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Build preview-screenshot IPA locally
+        run: |
+          set -e
+          npx eas build --local \
+            --profile preview-screenshot \
+            --platform ios \
+            --non-interactive \
+            --output screenshot.ipa
+          ls -lh screenshot.ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot-ipa-${{ github.sha }}
+          path: screenshot.ipa
+          retention-days: 3
