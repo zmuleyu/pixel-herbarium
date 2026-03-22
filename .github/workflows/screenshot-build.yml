@@ -13,8 +13,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Show Xcode version
-        run: xcodebuild -version
+      - name: Select Xcode 26 (required for Expo SDK 55)
+        run: |
+          echo "Available Xcode installations:"
+          ls /Applications/ | grep -i xcode || true
+          # Prefer Xcode 26.x (Apple year versioning, released fall 2025)
+          XCODE26=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          LATEST=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+          TARGET="${XCODE26:-$LATEST}"
+          echo "Selecting: $TARGET"
+          sudo xcode-select -s "$TARGET/Contents/Developer"
+          xcodebuild -version
 
       - uses: actions/setup-node@v4
         with:
@@ -22,25 +31,6 @@ jobs:
           cache: 'npm'
 
       - run: npm ci
-
-      - name: Patch expo-modules-core for Swift 5.9 compatibility
-        run: |
-          # 1. Downgrade Swift version: 6.0 -> 5.9 in podspec
-          sed -i '' "s/s\.swift_version  = '6\.0'/s.swift_version  = '5.9'/" \
-            node_modules/expo-modules-core/ExpoModulesCore.podspec
-
-          # 2. Remove @MainActor from conformance lists (Swift 6 syntax, not valid in 5.9)
-          HOSTING="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIHostingView.swift"
-          VIRTUAL="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIVirtualView.swift"
-          sed -i '' 's/, @MainActor AnyExpoSwiftUIHostingView/, AnyExpoSwiftUIHostingView/' "$HOSTING"
-          sed -i '' 's/: @MainActor ExpoSwiftUI\.ViewWrapper/: ExpoSwiftUI.ViewWrapper/' "$VIRTUAL"
-
-          echo "=== Podspec ==="
-          grep "swift_version" node_modules/expo-modules-core/ExpoModulesCore.podspec
-          echo "=== SwiftUIHostingView.swift:45 ==="
-          sed -n '45p' "$HOSTING"
-          echo "=== SwiftUIVirtualView.swift:196 ==="
-          sed -n '196p' "$VIRTUAL"
 
       - name: Build preview-screenshot IPA locally
         run: |
