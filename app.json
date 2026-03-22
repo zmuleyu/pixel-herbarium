@@ -64,7 +64,7 @@
         "expo-build-properties",
         {
           "ios": {
-            "extraPodfileContent": "post_install do |installer|\n  installer.pods_project.targets.each do |target|\n    target.build_configurations.each do |config|\n      xcc = config.base_configuration_reference&.real_path\n      if xcc&.exist?\n        content = xcc.read\n        content = content.gsub(/^SWIFT_VERSION = .*$/, 'SWIFT_VERSION = 5.0')\n        xcc.write(content)\n      end\n      config.build_settings['SWIFT_STRICT_CONCURRENCY'] = 'minimal'\n      config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'\n      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']\n      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_HAS_COROUTINES=0'\n    end\n  end\nend"
+            "extraPodfileContent": "post_install do |installer|\n  installer.pods_project.targets.each do |target|\n    target.build_configurations.each do |config|\n      config.build_settings['SWIFT_STRICT_CONCURRENCY'] = 'minimal'\n      config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'\n      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']\n      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_HAS_COROUTINES=0'\n    end\n  end\nend"
           }
         }
       ],
