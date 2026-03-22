@@ -23,6 +23,25 @@ jobs:
 
       - run: npm ci
 
+      - name: Patch expo-modules-core for Swift 5.9 compatibility
+        run: |
+          # 1. Downgrade Swift version: 6.0 -> 5.9 in podspec
+          sed -i '' "s/s\.swift_version  = '6\.0'/s.swift_version  = '5.9'/" \
+            node_modules/expo-modules-core/ExpoModulesCore.podspec
+
+          # 2. Remove @MainActor from conformance lists (Swift 6 syntax, not valid in 5.9)
+          HOSTING="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIHostingView.swift"
+          VIRTUAL="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIVirtualView.swift"
+          sed -i '' 's/, @MainActor AnyExpoSwiftUIHostingView/, AnyExpoSwiftUIHostingView/' "$HOSTING"
+          sed -i '' 's/: @MainActor ExpoSwiftUI\.ViewWrapper/: ExpoSwiftUI.ViewWrapper/' "$VIRTUAL"
+
+          echo "=== Podspec ==="
+          grep "swift_version" node_modules/expo-modules-core/ExpoModulesCore.podspec
+          echo "=== SwiftUIHostingView.swift:45 ==="
+          sed -n '45p' "$HOSTING"
+          echo "=== SwiftUIVirtualView.swift:196 ==="
+          sed -n '196p' "$VIRTUAL"
+
       - name: Build preview-screenshot IPA locally
         run: |
           set -e
