@@ -69,9 +69,10 @@ describe('getCurrentSeason', () => {
     expect(result).toBeNull();
   });
 
-  it('returns null for July 1 (no season active)', () => {
+  it('returns ajisai for July 1 (within ajisai 06-01–07-15)', () => {
     const result = getCurrentSeason(new Date(2026, 6, 1));
-    expect(result).toBeNull();
+    expect(result).not.toBeNull();
+    expect(result!.id).toBe('ajisai');
   });
 
   // Boundary tests for sakura dateRange: ['03-15', '04-20']
