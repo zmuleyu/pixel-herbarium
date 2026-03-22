@@ -32,6 +32,7 @@
         "NSCameraUsageDescription": "お花を撮影して識別するために、カメラを使用します。",
         "NSLocationWhenInUseUsageDescription": "お花を見つけた場所を記録するために、位置情報を使用します。",
         "NSPhotoLibraryUsageDescription": "お花の写真を選ぶために、フォトライブラリにアクセスします。",
+        "NSPhotoLibraryAddUsageDescription": "スタンプカードや共有ポスターを写真ライブラリに保存するために使用します。",
         "LSApplicationQueriesSchemes": ["line"]
       }
     },
