@@ -1,11 +1,11 @@
-name: Screenshot Build (preview-screenshot)
+name: Screenshot Build (simulator-screenshot)
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    name: Build IPA for Screenshots
+    name: Build Simulator App for Screenshots
     runs-on: macos-latest
     timeout-minutes: 90
     env:
@@ -32,19 +32,42 @@ jobs:
 
       - run: npm ci
 
-      - name: Build preview-screenshot IPA locally
+      - name: Patch expo-modules-core for Swift 5.9 compatibility
+        run: |
+          # 1. Downgrade Swift version: 6.0 -> 5.9 in podspec
+          sed -i '' "s/s\.swift_version  = '6\.0'/s.swift_version  = '5.9'/" \
+            node_modules/expo-modules-core/ExpoModulesCore.podspec
+
+          # 2. Remove @MainActor from conformance lists (Swift 6 syntax, not valid in 5.9)
+          HOSTING="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIHostingView.swift"
+          VIRTUAL="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIVirtualView.swift"
+          VIEWDEF="node_modules/expo-modules-core/ios/Core/Views/ViewDefinition.swift"
+          sed -i '' 's/, @MainActor AnyExpoSwiftUIHostingView/, AnyExpoSwiftUIHostingView/' "$HOSTING"
+          sed -i '' 's/: @MainActor ExpoSwiftUI\.ViewWrapper/: ExpoSwiftUI.ViewWrapper/' "$VIRTUAL"
+          sed -i '' 's/extension UIView: @MainActor AnyArgument {/extension UIView: AnyArgument {/' "$VIEWDEF"
+
+          echo "=== Podspec ==="
+          grep "swift_version" node_modules/expo-modules-core/ExpoModulesCore.podspec
+          echo "=== SwiftUIHostingView.swift:45 ==="
+          sed -n '45p' "$HOSTING"
+          echo "=== SwiftUIVirtualView.swift:196 ==="
+          sed -n '196p' "$VIRTUAL"
+          echo "=== ViewDefinition.swift:121 ==="
+          sed -n '121p' "$VIEWDEF"
+
+      - name: Build simulator-screenshot app locally
         run: |
           set -e
           npx eas build --local \
-            --profile preview-screenshot \
+            --profile simulator-screenshot \
             --platform ios \
             --non-interactive \
-            --output screenshot.ipa
-          ls -lh screenshot.ipa
+            --output screenshot-sim.tar.gz
+          ls -lh screenshot-sim.tar.gz
 
-      - name: Upload IPA artifact
+      - name: Upload simulator app artifact
         uses: actions/upload-artifact@v4
         with:
-          name: screenshot-ipa-${{ github.sha }}
-          path: screenshot.ipa
+          name: screenshot-sim-${{ github.sha }}
+          path: screenshot-sim.tar.gz
           retention-days: 3
