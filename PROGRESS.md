@@ -1,13 +1,13 @@
 # Progress — pixel-herbarium
-Updated: 2026-03-22
+Updated: 2026-03-23
 
 ## 当前阶段
-v1.1.0 app-review Phase A/B PASS · GHA screenshot build #23405055269 进行中（Swift fix）
+v1.1.0 app-review Phase A/B PASS · GHA screenshot-build workflow 已改写（xcodebuild 直接构建），待触发新 run
 
 ## 待办
-- [ ] 确认 GHA Run #23405055269 成功（`gh run view 23405055269 --repo zmuleyu/pixel-herbarium`）
-  - 成功 → 下载 IPA → TestFlight 安装 → 截图 5 张 → 放入 e2e/current/ → /screenshots compose
-  - 失败 → 读日志继续排查 Swift 问题
+- [ ] 触发新 GHA screenshot-build run（`gh workflow run screenshot-build.yml --repo zmuleyu/pixel-herbarium --ref dev`）
+  - 成功 → 下载 IPA → `gh run download <run_id>` → 放入 e2e/current/ → /screenshots compose
+  - 失败 → 读日志继续排查 xcodebuild 配置
 - [ ] app-review Phase C：截图生成后继续（C14 ASC 字段确认、C-jp2 日文检查）
 - [ ] app-review Phase D：production build + Reviewer Run + eas submit
 - [ ] DB migration：apply 026/027/028 到 Supabase production
