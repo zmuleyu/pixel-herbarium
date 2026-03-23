@@ -7,7 +7,7 @@ jobs:
   build:
     name: Build Simulator App for Screenshots
     runs-on: macos-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       # Screenshot-mode env vars (from eas.json simulator-screenshot profile)
