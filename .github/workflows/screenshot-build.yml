@@ -50,13 +50,8 @@ jobs:
           sed -i '' 's/: @MainActor ExpoSwiftUI\.ViewWrapper/: ExpoSwiftUI.ViewWrapper/' "$VIRTUAL"
           sed -i '' 's/extension UIView: @MainActor AnyArgument {/extension UIView: AnyArgument {/' "$VIEWDEF"
 
-          # 3. Inject FOLLY_CFG_NO_COROUTINES into RNReanimated podspec
-          sed -i '' 's/-DFOLLY_NO_CONFIG/-DFOLLY_NO_CONFIG -DFOLLY_CFG_NO_COROUTINES=1/' \
-            node_modules/react-native-reanimated/RNReanimated.podspec
-
           echo "=== Verification ==="
           grep "swift_version" node_modules/expo-modules-core/ExpoModulesCore.podspec
-          grep "folly_flags" node_modules/react-native-reanimated/RNReanimated.podspec
 
       - name: Generate native iOS project
         run: npx expo prebuild --platform ios --clean
