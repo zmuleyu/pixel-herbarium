@@ -157,89 +157,40 @@ workflows:
             echo "E2E tests had failures — continuing to screenshot flows"
           fi
 
-      - name: Capture App Store screenshots via idb
+      - name: Capture App Store screenshots
         script: |
           mkdir -p e2e/current
 
-          # 11 builds proved Maestro cannot reliably navigate tabs on iOS 26:
-          # - takeScreenshot paths unpredictable (Builds #36-40)
-          # - session isolation restarts app (Builds #38,42)
-          # - clearState:false + absolute paths still no output (Build #43)
-          #
-          # Switch to Facebook idb (iOS Development Bridge):
-          # - Direct tap + screenshot commands via persistent connection
-          # - No YAML flows, no session management, no path guessing
-          # - Designed for headless CI automation
+          # App auto-navigates tabs via useScreenshotSequence hook:
+          #   T+0s:  home (start)
+          #   T+8s:  checkin
+          #   T+13s: settings
+          #   T+18s: back to home
+          # CI just captures at known offsets — no external navigation needed.
 
-          # Install idb (Facebook iOS Development Bridge)
-          echo "=== Installing idb ==="
-          brew tap facebook/fb 2>&1 || echo "WARN: brew tap failed"
-          brew install idb-companion 2>&1 || echo "WARN: brew install idb-companion failed"
-          pip3 install fb-idb 2>&1 || echo "WARN: pip3 install fb-idb failed"
+          # App should already be running from debug step
+          echo "App running — auto-navigation sequence active"
 
-          # Verify installation
-          echo "=== idb version check ==="
-          which idb && idb --help 2>&1 | head -5 || echo "ERROR: idb not found in PATH"
-          idb_companion --version 2>&1 || echo "ERROR: idb_companion not found"
-
-          # Get booted simulator UDID
-          UDID=$(xcrun simctl list devices booted | grep "Booted" | head -1 | grep -oE '[A-F0-9-]{36}')
-          echo "Simulator UDID: $UDID"
-
-          if [ -z "$UDID" ]; then
-            echo "ERROR: No booted simulator found"
-            xcrun simctl io booted screenshot e2e/current/01-home.png 2>/dev/null || true
-            exit 0
-          fi
-
-          # Connect idb to simulator
-          echo "=== Connecting idb ==="
-          idb connect "$UDID" 2>&1 || echo "WARN: idb connect failed"
-
-          # Verify connection
-          idb list-targets 2>&1 || echo "WARN: idb list-targets failed"
-
-          # App should already be running from debug step (on home screen).
-          # v1.1 Tab bar: 3 tabs (ホーム/打卡/設定) — footprint hidden.
-          #
-          # COORDINATE SYSTEM: idb uses POINT coordinates (not pixels!)
-          # iPhone 17 Pro Max: 440×956 points (@3x = 1320×2868 pixels)
-          # Tab bar: y ≈ 935pt (bottom), 3 tabs evenly at x = 73/220/367 pt
-          #
-          # Tab 1 (ホーム):  x=73,  y=935
-          # Tab 2 (打卡):    x=220, y=935
-          # Tab 3 (設定):    x=367, y=935
-
-          # Screenshot 1: Home (season header + diary grid)
-          idb screenshot e2e/current/01-home.png 2>&1 || \
-            xcrun simctl io booted screenshot e2e/current/01-home.png
+          # Screenshot 1: Home (already on home from debug step launch)
+          sleep 5
+          xcrun simctl io booted screenshot e2e/current/01-home.png
           echo "✓ 01-home"
 
-          # Screenshot 2: Checkin tab (photo step with seasonal CTA)
-          echo "Tapping checkin tab at 220,935..."
-          idb ui tap 220 935 2>&1 || echo "WARN: idb tap failed"
-          sleep 3
-          idb screenshot e2e/current/02-checkin.png 2>&1 || \
-            xcrun simctl io booted screenshot e2e/current/02-checkin.png
+          # Screenshot 2: Checkin (app navigated at T+8s from launch)
+          sleep 10
+          xcrun simctl io booted screenshot e2e/current/02-checkin.png
           echo "✓ 02-checkin"
 
-          # Screenshot 3: Settings tab
-          echo "Tapping settings tab at 367,935..."
-          idb ui tap 367 935 2>&1 || echo "WARN: idb tap failed"
-          sleep 3
-          idb screenshot e2e/current/03-settings.png 2>&1 || \
-            xcrun simctl io booted screenshot e2e/current/03-settings.png
+          # Screenshot 3: Settings (app navigated at T+13s from launch)
+          sleep 5
+          xcrun simctl io booted screenshot e2e/current/03-settings.png
           echo "✓ 03-settings"
 
-          # Screenshot 4: Back to home, tap a checkin card if any
-          echo "Tapping home tab at 73,935..."
-          idb ui tap 73 935 2>&1 || echo "WARN: idb tap failed"
-          sleep 2
-          # Tap first card area (center of grid, ~180,500pt)
-          idb ui tap 180 500 2>&1 || echo "WARN: card tap failed"
-          sleep 2
-          idb screenshot e2e/current/04-detail.png 2>&1 || \
-            xcrun simctl io booted screenshot e2e/current/04-detail.png
+          # Screenshot 4: Home again (app navigated at T+18s), tap card for detail
+          sleep 5
+          xcrun simctl ui booted tap 180 500 2>/dev/null || echo "WARN: card tap failed"
+          sleep 3
+          xcrun simctl io booted screenshot e2e/current/04-detail.png
           echo "✓ 04-detail"
 
           echo "=== Screenshot capture complete ==="

@@ -170,40 +170,40 @@ jobs:
         run: |
           mkdir -p e2e/current
 
-          # Launch app and wait for full initialization (demo data + animation)
+          # App auto-navigates tabs via useScreenshotSequence hook:
+          #   T+0s:  home (start)
+          #   T+8s:  checkin
+          #   T+13s: settings
+          #   T+18s: back to home
+          # CI just captures at known offsets — no external navigation needed.
+
           xcrun simctl launch booted com.pixelherbarium.app
-          echo "Waiting 20s for app to load..."
+          echo "App launched — auto-navigation sequence active"
+
+          # Screenshot 1: Home (wait for app init + demo data + render)
+          echo "Waiting 20s for app init..."
           sleep 20
-
-          # Screenshot 1: Home tab (season header + diary grid)
           xcrun simctl io booted screenshot e2e/current/01-home.png
-          echo "✓ 01-home"
+          echo "✓ 01-home (T+20s)"
 
-          # iOS 26 simulator: xcrun simctl ui booted tap is unreliable for tab bar.
-          # Use Expo Router native path format: pixelherbarium:///(tabs)/route
-          # (3 slashes = scheme + empty host + absolute path — bypasses parseDeepLink)
-          W=$DEVICE_WIDTH
-
-          # Screenshot 2: Checkin tab via Expo Router path
-          xcrun simctl openurl booted "pixelherbarium:///(tabs)/checkin"
-          sleep 5
+          # Screenshot 2: Checkin (app navigated at T+8s, capture at T+30s)
+          sleep 10
           xcrun simctl io booted screenshot e2e/current/02-checkin.png
-          echo "✓ 02-checkin"
+          echo "✓ 02-checkin (T+30s)"
 
-          # Screenshot 3: Settings tab via Expo Router path
-          xcrun simctl openurl booted "pixelherbarium:///(tabs)/settings"
-          sleep 4
+          # Screenshot 3: Settings (app navigated at T+13s, capture at T+35s)
+          sleep 5
           xcrun simctl io booted screenshot e2e/current/03-settings.png
-          echo "✓ 03-settings"
+          echo "✓ 03-settings (T+35s)"
 
-          # Screenshot 4: Home tab → tap diary card for detail view
-          xcrun simctl openurl booted "pixelherbarium:///(tabs)/home"
-          sleep 3
+          # Screenshot 4: Home again (app navigated at T+18s), tap card for detail
+          sleep 5
+          W=$DEVICE_WIDTH
           CARD_X=$(( W / 2 ))
           xcrun simctl ui booted tap $CARD_X 500 2>/dev/null || echo "WARN: card tap failed"
           sleep 3
           xcrun simctl io booted screenshot e2e/current/04-detail.png
-          echo "✓ 04-detail"
+          echo "✓ 04-detail (T+43s)"
 
           ls -la e2e/current/*.png 2>/dev/null
           echo "Total: $(ls e2e/current/*.png 2>/dev/null | wc -l | tr -d ' ') screenshots"
