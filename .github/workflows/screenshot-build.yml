@@ -53,6 +53,13 @@ jobs:
           echo "=== Verification ==="
           grep "swift_version" node_modules/expo-modules-core/ExpoModulesCore.podspec
 
+      - name: Enable screenshot mode in .env.local
+        run: |
+          # Metro reads EXPO_PUBLIC_* from .env files, not from the process env directly.
+          # Ensure .env.local has the screenshot mode flag active (uncommented).
+          sed -i '' 's/^# EXPO_PUBLIC_SCREENSHOT_MODE=true/EXPO_PUBLIC_SCREENSHOT_MODE=true/' .env.local
+          grep SCREENSHOT_MODE .env.local
+
       - name: Generate native iOS project
         run: npx expo prebuild --platform ios --clean
 
