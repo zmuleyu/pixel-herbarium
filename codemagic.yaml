@@ -42,28 +42,53 @@ workflows:
           grep "swift_version" node_modules/expo-modules-core/ExpoModulesCore.podspec
           grep "folly_flags" node_modules/react-native-reanimated/RNReanimated.podspec
 
-      - name: Build iOS Simulator app locally
+      - name: Generate native iOS project
         script: |
-          npm install -g eas-cli
-          # Build locally on this Mac — avoids EAS cloud quota limits and always
-          # uses the current commit's code (no stale binary from EAS cache).
-          # xcode: latest on Codemagic = Xcode 26.x; patches above handle Swift + Folly compat.
-          eas build --local --profile simulator-screenshot --platform ios --non-interactive \
-            --output app.tar.gz
-          # Verify the build artifact exists before proceeding
-          if [ ! -f app.tar.gz ]; then
-            echo "ERROR: app.tar.gz not found — eas build --local failed"
+          export EXPO_PUBLIC_SCREENSHOT_MODE=true
+          export APP_VARIANT=development
+          npx expo prebuild --platform ios --clean
+
+      - name: Install CocoaPods
+        script: cd ios && pod install && cd ..
+
+      - name: Patch folly headers (disable coroutines for Xcode 26+)
+        script: |
+          # ReactNativeDependencies bundles folly as a pre-built XCFramework.
+          # Clang module caching ignores consumer compiler flags, so patch headers directly.
+          PATCHED=0
+          for f in $(find ios/Pods -name '*.h' -path '*/folly/*' 2>/dev/null); do
+            if grep -q '#if FOLLY_HAS_COROUTINES' "$f" 2>/dev/null; then
+              sed -i '' 's/#if FOLLY_HAS_COROUTINES/#if 0 \/* FOLLY_HAS_COROUTINES disabled *\//' "$f"
+              echo "Patched: $f"
+              PATCHED=$((PATCHED + 1))
+            fi
+          done
+          echo "Total files patched: $PATCHED"
+
+      - name: Build iOS Simulator app
+        script: |
+          set -e
+          cd ios
+          xcodebuild \
+            -workspace app.xcworkspace \
+            -scheme app \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -derivedDataPath build \
+            ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build 2>&1 | tail -50
+          echo "=== Build complete ==="
+
+      - name: Package simulator app
+        script: |
+          set -e
+          APP=$(find ios/build -name "*.app" -type d | head -1)
+          if [ -z "$APP" ]; then
+            echo "ERROR: No .app found"
             exit 1
           fi
-          tar xzf app.tar.gz || unzip -q app.tar.gz || true
-          # Verify .app was extracted
-          APP_CHECK=$(find . -name "*.app" -maxdepth 4 | head -1)
-          if [ -z "$APP_CHECK" ]; then
-            echo "ERROR: No .app found after extraction"
-            ls -la
-            exit 1
-          fi
-          echo "Build artifact verified: $APP_CHECK"
+          echo "Build artifact verified: $APP"
 
       - name: Boot Simulator & install app
         script: |
