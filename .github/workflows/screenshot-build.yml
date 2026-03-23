@@ -180,23 +180,24 @@ jobs:
           echo "✓ 01-home"
 
           # iOS 26 simulator: xcrun simctl ui booted tap is unreliable for tab bar.
-          # Use URL scheme navigation instead — directly opens the target route.
+          # Use Expo Router native path format: pixelherbarium:///(tabs)/route
+          # (3 slashes = scheme + empty host + absolute path — bypasses parseDeepLink)
           W=$DEVICE_WIDTH
 
-          # Screenshot 2: Checkin tab via URL scheme
-          xcrun simctl openurl booted "pixelherbarium://checkin"
+          # Screenshot 2: Checkin tab via Expo Router path
+          xcrun simctl openurl booted "pixelherbarium:///(tabs)/checkin"
           sleep 5
           xcrun simctl io booted screenshot e2e/current/02-checkin.png
           echo "✓ 02-checkin"
 
-          # Screenshot 3: Settings tab via URL scheme
-          xcrun simctl openurl booted "pixelherbarium://settings"
+          # Screenshot 3: Settings tab via Expo Router path
+          xcrun simctl openurl booted "pixelherbarium:///(tabs)/settings"
           sleep 4
           xcrun simctl io booted screenshot e2e/current/03-settings.png
           echo "✓ 03-settings"
 
           # Screenshot 4: Home tab → tap diary card for detail view
-          xcrun simctl openurl booted "pixelherbarium://home"
+          xcrun simctl openurl booted "pixelherbarium:///(tabs)/home"
           sleep 3
           CARD_X=$(( W / 2 ))
           xcrun simctl ui booted tap $CARD_X 500 2>/dev/null || echo "WARN: card tap failed"
