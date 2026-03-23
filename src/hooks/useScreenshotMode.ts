@@ -2,6 +2,8 @@ import { FEATURES } from '@/constants/features';
 import { SCREENSHOT_DATE, DEMO_CHECKIN_RECORDS } from '@/constants/demo-data';
 import { useCheckinStore } from '@/stores/checkin-store';
 import { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ONBOARDING_KEY } from '@/hooks/useOnboardingControls';
 
 /**
  * Hook to inject demo data when SCREENSHOT_MODE is active.
@@ -33,6 +35,9 @@ export function useScreenshotMode() {
         return mockNow;
       }
     } as any;
+
+    // Bypass onboarding gate so CI reaches tab UI directly
+    AsyncStorage.setItem(ONBOARDING_KEY, '1').catch(() => {});
 
     // Inject demo checkin records
     useCheckinStore.setState({ history: DEMO_CHECKIN_RECORDS });

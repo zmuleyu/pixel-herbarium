@@ -17,6 +17,7 @@ import { OfflineBanner } from '@/components/OfflineBanner';
 import { parseDeepLink } from '@/utils/deep-link';
 import { useScreenshotMode } from '@/hooks/useScreenshotMode';
 import { ONBOARDING_KEY } from './onboarding';
+import { FEATURES } from '@/constants/features';
 
 /** Resolves to fallback after ms milliseconds if promise hasn't settled. */
 function withTimeout<T>(p: Promise<T>, ms: number, fallback: T): Promise<T> {
@@ -143,7 +144,7 @@ export default function RootLayout() {
         done = '1'; // AsyncStorage error → assume done, don't block user
       }
 
-      if (!done) {
+      if (!done && !FEATURES.SCREENSHOT_MODE) {
         router.replace('/onboarding' as any);
         return;
       }
