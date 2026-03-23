@@ -113,3 +113,115 @@ jobs:
           name: screenshot-sim-${{ github.sha }}
           path: screenshot-sim.tar.gz
           retention-days: 3
+
+      - name: Boot Simulator & install app
+        run: |
+          set -e
+          APP=$(find ios/build -name "*.app" -type d | head -1)
+          if [ -z "$APP" ]; then
+            echo "ERROR: .app not found in ios/build"
+            exit 1
+          fi
+          echo "App: $APP"
+
+          # Select best available iPhone simulator (priority: largest → smallest)
+          DEVICE=""
+          DEVICE_WIDTH=390
+          for MODEL in "iPhone 17 Pro Max" "iPhone 17 Pro" "iPhone 17" "iPhone Air" "iPhone 16e" "iPhone 16 Pro Max" "iPhone 16 Pro" "iPhone 16" "iPhone 15 Pro Max"; do
+            CANDIDATE=$(xcrun simctl list devices available 2>/dev/null \
+              | grep "$MODEL" \
+              | grep -v "unavailable" \
+              | head -1 \
+              | sed 's/ *(.*//' \
+              | xargs)
+            if [ -n "$CANDIDATE" ]; then
+              DEVICE="$CANDIDATE"
+              echo "Selected: $DEVICE ($MODEL)"
+              case "$MODEL" in
+                "iPhone 17 Pro Max"|"iPhone 16 Pro Max") DEVICE_WIDTH=440 ;;
+                "iPhone 17 Pro") DEVICE_WIDTH=402 ;;
+                "iPhone 17"|"iPhone Air") DEVICE_WIDTH=393 ;;
+                "iPhone 16 Pro") DEVICE_WIDTH=402 ;;
+                "iPhone 16 Pro Max") DEVICE_WIDTH=440 ;;
+                *) DEVICE_WIDTH=390 ;;
+              esac
+              break
+            fi
+          done
+
+          if [ -z "$DEVICE" ]; then
+            echo "ERROR: No suitable iPhone simulator found"
+            xcrun simctl list devices available
+            exit 1
+          fi
+
+          xcrun simctl boot "$DEVICE" || true
+          # Wait for boot (falls back to sleep if -b flag unavailable)
+          xcrun simctl bootstatus "$DEVICE" -b 2>/dev/null || sleep 20
+
+          xcrun simctl install booted "$APP"
+          xcrun simctl privacy booted grant camera com.pixelherbarium.app
+          xcrun simctl privacy booted grant location com.pixelherbarium.app
+          xcrun simctl privacy booted grant photos com.pixelherbarium.app
+
+          echo "DEVICE_WIDTH=$DEVICE_WIDTH" >> $GITHUB_ENV
+
+      - name: Capture App Store screenshots
+        run: |
+          mkdir -p e2e/current
+
+          # Launch app and wait for full initialization (demo data + animation)
+          xcrun simctl launch booted com.pixelherbarium.app
+          echo "Waiting 20s for app to load..."
+          sleep 20
+
+          # Screenshot 1: Home tab (season header + diary grid)
+          xcrun simctl io booted screenshot e2e/current/01-home.png
+          echo "✓ 01-home"
+
+          # Compute tab bar tap coordinates from screen width
+          # Layout: 3 tabs at 1/6, 1/2, 5/6 of width; bar at ~98% screen height
+          W=$DEVICE_WIDTH
+          TAB_HOME=$(( W * 73 / 440 ))
+          TAB_CHECKIN=$(( W / 2 ))
+          TAB_SETTINGS=$(( W * 367 / 440 ))
+          case "$W" in
+            440) TAB_Y=935 ;;
+            402) TAB_Y=853 ;;
+            393) TAB_Y=827 ;;
+            430) TAB_Y=908 ;;
+            *) TAB_Y=820 ;;
+          esac
+          echo "Width=${W}pt  Home=${TAB_HOME},${TAB_Y}  Checkin=${TAB_CHECKIN},${TAB_Y}  Settings=${TAB_SETTINGS},${TAB_Y}"
+
+          # Screenshot 2: Checkin tab (photo step with seasonal CTA)
+          xcrun simctl ui booted tap $TAB_CHECKIN $TAB_Y 2>/dev/null || echo "WARN: tap checkin failed"
+          sleep 4
+          xcrun simctl io booted screenshot e2e/current/02-checkin.png
+          echo "✓ 02-checkin"
+
+          # Screenshot 3: Settings tab
+          xcrun simctl ui booted tap $TAB_SETTINGS $TAB_Y 2>/dev/null || echo "WARN: tap settings failed"
+          sleep 3
+          xcrun simctl io booted screenshot e2e/current/03-settings.png
+          echo "✓ 03-settings"
+
+          # Screenshot 4: Home tab → tap diary card for detail view
+          xcrun simctl ui booted tap $TAB_HOME $TAB_Y 2>/dev/null || echo "WARN: tap home failed"
+          sleep 2
+          CARD_X=$(( W / 2 ))
+          xcrun simctl ui booted tap $CARD_X 500 2>/dev/null || echo "WARN: card tap failed"
+          sleep 3
+          xcrun simctl io booted screenshot e2e/current/04-detail.png
+          echo "✓ 04-detail"
+
+          ls -la e2e/current/*.png 2>/dev/null
+          echo "Total: $(ls e2e/current/*.png 2>/dev/null | wc -l | tr -d ' ') screenshots"
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-screenshots-${{ github.sha }}
+          path: e2e/current/*.png
+          retention-days: 7
