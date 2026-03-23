@@ -81,7 +81,7 @@ jobs:
 
       - name: Build simulator app
         run: |
-          set -e
+          set -eo pipefail
           cd ios
           xcodebuild \
             -workspace app.xcworkspace \
@@ -91,8 +91,8 @@ jobs:
             -derivedDataPath build \
             ONLY_ACTIVE_ARCH=NO \
             CODE_SIGNING_ALLOWED=NO \
-            build 2>&1 | tail -50
-          echo "=== Build complete ==="
+            build 2>&1 | tee /tmp/xcodebuild.log | tail -80
+          echo "=== Build succeeded ==="
 
       - name: Package simulator app
         run: |
