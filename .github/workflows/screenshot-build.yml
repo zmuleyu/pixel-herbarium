@@ -69,8 +69,13 @@ jobs:
           # ReactNativeDependencies bundles folly as a pre-built XCFramework.
           # Clang module caching ignores consumer compiler flags (-DFOLLY_CFG_NO_COROUTINES=1),
           # so we must patch the header files directly after pod install.
+          # Step 1: Replace symlinks with real files (sed -i fails on symlinks)
+          find ios/Pods -name '*.h' -path '*/folly/*' -type l 2>/dev/null | while read f; do
+            cp -L "$f" "$f.tmp" && mv "$f.tmp" "$f"
+          done
+          # Step 2: Patch FOLLY_HAS_COROUTINES checks
           PATCHED=0
-          for f in $(find ios/Pods -name '*.h' -path '*/folly/*' 2>/dev/null); do
+          for f in $(find ios/Pods -name '*.h' -path '*/folly/*' -type f 2>/dev/null); do
             if grep -q '#if FOLLY_HAS_COROUTINES' "$f" 2>/dev/null; then
               sed -i '' 's/#if FOLLY_HAS_COROUTINES/#if 0 \/* FOLLY_HAS_COROUTINES disabled *\//' "$f"
               echo "Patched: $f"
@@ -78,9 +83,6 @@ jobs:
             fi
           done
           echo "Total files patched: $PATCHED"
-          if [ "$PATCHED" -eq 0 ]; then
-            echo "WARNING: No folly headers found with FOLLY_HAS_COROUTINES — may not need patching"
-          fi
 
       - name: Build simulator app
         run: |
