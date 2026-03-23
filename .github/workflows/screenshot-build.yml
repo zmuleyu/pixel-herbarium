@@ -53,13 +53,6 @@ jobs:
           echo "=== Verification ==="
           grep "swift_version" node_modules/expo-modules-core/ExpoModulesCore.podspec
 
-      - name: Enable screenshot mode in .env.local
-        run: |
-          # Metro reads EXPO_PUBLIC_* from .env files, not from the process env directly.
-          # Ensure .env.local has the screenshot mode flag active (uncommented).
-          sed -i '' 's/^# EXPO_PUBLIC_SCREENSHOT_MODE=true/EXPO_PUBLIC_SCREENSHOT_MODE=true/' .env.local
-          grep SCREENSHOT_MODE .env.local
-
       - name: Generate native iOS project
         run: npx expo prebuild --platform ios --clean
 
@@ -186,36 +179,25 @@ jobs:
           xcrun simctl io booted screenshot e2e/current/01-home.png
           echo "✓ 01-home"
 
-          # Compute tab bar tap coordinates from screen width
-          # Layout: 3 tabs at 1/6, 1/2, 5/6 of width; bar at ~98% screen height
+          # iOS 26 simulator: xcrun simctl ui booted tap is unreliable for tab bar.
+          # Use URL scheme navigation instead — directly opens the target route.
           W=$DEVICE_WIDTH
-          TAB_HOME=$(( W * 73 / 440 ))
-          TAB_CHECKIN=$(( W / 2 ))
-          TAB_SETTINGS=$(( W * 367 / 440 ))
-          case "$W" in
-            440) TAB_Y=935 ;;
-            402) TAB_Y=853 ;;
-            393) TAB_Y=827 ;;
-            430) TAB_Y=908 ;;
-            *) TAB_Y=820 ;;
-          esac
-          echo "Width=${W}pt  Home=${TAB_HOME},${TAB_Y}  Checkin=${TAB_CHECKIN},${TAB_Y}  Settings=${TAB_SETTINGS},${TAB_Y}"
 
-          # Screenshot 2: Checkin tab (photo step with seasonal CTA)
-          xcrun simctl ui booted tap $TAB_CHECKIN $TAB_Y 2>/dev/null || echo "WARN: tap checkin failed"
-          sleep 4
+          # Screenshot 2: Checkin tab via URL scheme
+          xcrun simctl openurl booted "pixelherbarium://checkin"
+          sleep 5
           xcrun simctl io booted screenshot e2e/current/02-checkin.png
           echo "✓ 02-checkin"
 
-          # Screenshot 3: Settings tab
-          xcrun simctl ui booted tap $TAB_SETTINGS $TAB_Y 2>/dev/null || echo "WARN: tap settings failed"
-          sleep 3
+          # Screenshot 3: Settings tab via URL scheme
+          xcrun simctl openurl booted "pixelherbarium://settings"
+          sleep 4
           xcrun simctl io booted screenshot e2e/current/03-settings.png
           echo "✓ 03-settings"
 
           # Screenshot 4: Home tab → tap diary card for detail view
-          xcrun simctl ui booted tap $TAB_HOME $TAB_Y 2>/dev/null || echo "WARN: tap home failed"
-          sleep 2
+          xcrun simctl openurl booted "pixelherbarium://home"
+          sleep 3
           CARD_X=$(( W / 2 ))
           xcrun simctl ui booted tap $CARD_X 500 2>/dev/null || echo "WARN: card tap failed"
           sleep 3
