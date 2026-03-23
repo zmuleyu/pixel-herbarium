@@ -9,6 +9,8 @@ export { StampRenderer } from './StampRenderer';
 export { PixelStamp } from './PixelStamp';
 export { SealStamp } from './SealStamp';
 export { MinimalStamp } from './MinimalStamp';
+// Animation
+export { PetalPressAnimation, STAMP_APPROX_SIZE } from './PetalPressAnimation';
 // Orchestration
 export { StampOverlay } from './StampOverlay';
 export { StyleSelector } from './StyleSelector';

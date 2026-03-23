@@ -16,6 +16,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { parseDeepLink } from '@/utils/deep-link';
 import { useScreenshotMode } from '@/hooks/useScreenshotMode';
+import { useScreenshotSequence } from '@/hooks/useScreenshotSequence';
 import { ONBOARDING_KEY } from './onboarding';
 import { FEATURES } from '@/constants/features';
 
@@ -57,6 +58,7 @@ export default function RootLayout() {
   const { session, loading, setSession, setUser, setLoading } = useAuthStore();
   usePushToken();
   useScreenshotMode();
+  useScreenshotSequence();
 
   // Handle push notification taps — navigate to herbarium
   useEffect(() => {

@@ -11,6 +11,8 @@ import { SEASONS, getActiveSeason } from '@/constants/seasons';
 import { GestureStampOverlay } from './GestureStampOverlay';
 import { CustomizationPanel } from './CustomizationPanel';
 import { StyleSelector } from './StyleSelector';
+import { PetalPressAnimation, STAMP_APPROX_SIZE } from './PetalPressAnimation';
+import { StampRenderer } from './StampRenderer';
 import type { FlowerSpot, StampStyleId, StampTransform, CustomOptions } from '@/types/hanami';
 import { DEFAULT_CUSTOM_OPTIONS } from '@/types/hanami';
 import { STAMP_STYLE_MIGRATION, DEFAULT_STAMP_STYLE_ID } from '@/constants/stamp-styles';
@@ -46,6 +48,7 @@ export function StampPreview({
   const [currentTransform, setCurrentTransform] = useState<StampTransform | undefined>(undefined);
   const [isCapturing, setIsCapturing] = useState(false);
   const [photoContainerSize, setPhotoContainerSize] = useState({ width: 0, height: 0 });
+  const [pendingUri, setPendingUri] = useState<string | null>(null);
 
   // Restore preferences
   useEffect(() => {
@@ -114,21 +117,25 @@ export function StampPreview({
     if (busy || !viewShotRef.current) return;
     setBusy(true);
     try {
-      // 1. Settle the transform — currentTransform already updated via onTransformChange
       setIsCapturing(true);
-      // 2. Wait a frame for the static render to complete
       await new Promise<void>(r => requestAnimationFrame(() => r()));
-      // 3. captureRef now captures the static style (not Reanimated UI-thread state)
       const composedUri = await captureRef(viewShotRef, { format: 'png', quality: 1 });
       setIsCapturing(false);
-      onSave(composedUri, stampStyle as StampStyleId, currentTransform);
+      // Trigger animation instead of saving immediately
+      setPendingUri(composedUri);
     } catch {
       setIsCapturing(false);
-      // fallback handled by parent
-    } finally {
       setBusy(false);
     }
-  }, [busy, onSave, stampStyle, currentTransform]);
+  }, [busy, stampStyle, currentTransform]);
+
+  const handleAnimationComplete = useCallback(() => {
+    if (pendingUri) {
+      onSave(pendingUri, stampStyle as StampStyleId, currentTransform);
+      setPendingUri(null);
+    }
+    setBusy(false);
+  }, [pendingUri, onSave, stampStyle, currentTransform]);
 
   return (
     <View style={styles.container}>
@@ -165,6 +172,32 @@ export function StampPreview({
             onTransformChange={setCurrentTransform}
           />
         </View>
+
+        {/* Petal Press animation overlay — plays after capture, before save */}
+        {pendingUri != null && (
+          <PetalPressAnimation
+            stampX={
+              currentTransform
+                ? currentTransform.x + STAMP_APPROX_SIZE / 2
+                : photoContainerSize.width * 0.55 + STAMP_APPROX_SIZE / 2
+            }
+            stampY={
+              currentTransform
+                ? currentTransform.y + STAMP_APPROX_SIZE / 2
+                : photoContainerSize.height * 0.70 + STAMP_APPROX_SIZE / 2
+            }
+            themeColor={season.themeColor}
+            onComplete={handleAnimationComplete}
+          >
+            <StampRenderer
+              styleId={stampStyle}
+              spot={spot}
+              date={date}
+              season={season}
+              customOptions={customOptions}
+            />
+          </PetalPressAnimation>
+        )}
       </View>
 
       {/* Controls */}

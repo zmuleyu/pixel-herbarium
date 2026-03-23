@@ -36,6 +36,10 @@ export const HapticPatterns = {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),
     ),
 
+  // Stamp press moment (Petal Press animation Stage 2)
+  stampPress: () =>
+    safe(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)),
+
   // Share poster saved to photo library
   posterSaved: () =>
     safe(() =>

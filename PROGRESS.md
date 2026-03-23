@@ -2,12 +2,13 @@
 Updated: 2026-03-23
 
 ## 当前阶段
-v1.1.0 app-review Phase A/B PASS · GHA screenshot-build workflow 已改写（xcodebuild 直接构建），待触发新 run
+v1.1.0 app-review Phase C BLOCK · GHA run #23421677574 in_progress（SCREENSHOT_MODE fix：sed解注释.env.local → Metro正确嵌入环境变量）
 
 ## 待办
-- [ ] 触发新 GHA screenshot-build run（`gh workflow run screenshot-build.yml --repo zmuleyu/pixel-herbarium --ref dev`）
-  - 成功 → 下载 IPA → `gh run download <run_id>` → 放入 e2e/current/ → /screenshots compose
-  - 失败 → 读日志继续排查 xcodebuild 配置
+- [ ] 等待 GHA run #23421677574 完成（约15-20min）
+  - 成功 → `gh run download 23421677574 --repo zmuleyu/pixel-herbarium --dir e2e/current` → `/screenshots compose`
+  - 失败 → 检查 `.env.local` sed 是否正确执行（grep SCREENSHOT_MODE 日志行）
+- [x] 触发新 GHA screenshot-build run（已完成，run #23421677574）
 - [ ] app-review Phase C：截图生成后继续（C14 ASC 字段确认、C-jp2 日文检查）
 - [ ] app-review Phase D：production build + Reviewer Run + eas submit
 - [ ] DB migration：apply 026/027/028 到 Supabase production
