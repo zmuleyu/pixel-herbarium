@@ -7,16 +7,19 @@ import { FEATURES } from '@/constants/features';
  * Waits until tabs are mounted (segments[0] === '(tabs)') before starting.
  * CI captures screenshots at known time offsets synced to this schedule.
  *
- * Timeline (from tabs ready, NOT from app launch):
- *   T+0s:  home (already here after auth redirect)
- *   T+5s:  checkin tab
- *   T+10s: settings tab
- *   T+15s: back to home (for detail card tap by CI)
+ * Synced with scripts/local-screenshots.sh capture times:
+ *   Script (from launch): T+15s home, T+30s checkin, T+45s settings, T+60s tap
+ *   Hook (from tabs mount): +17s checkin, +32s settings, +47s home
+ *   Auth bootstrap 3-8s gives 5-12s buffer per capture window.
+ *
+ * With auth=5s: mount@T+5 → checkin@T+22 → settings@T+37 → home@T+52
+ *   T+15 captures home ✓  T+30 captures checkin ✓
+ *   T+45 captures settings ✓  T+60 taps home ✓
  */
 const SCREENSHOT_SEQUENCE = [
-  { tab: '/(tabs)/checkin',  delay: 5000 },
-  { tab: '/(tabs)/settings', delay: 10000 },
-  { tab: '/(tabs)/home',     delay: 15000 },
+  { tab: '/(tabs)/checkin',  delay: 17000 },
+  { tab: '/(tabs)/settings', delay: 32000 },
+  { tab: '/(tabs)/home',     delay: 47000 },
 ] as const;
 
 export function useScreenshotSequence() {
@@ -48,7 +51,7 @@ export function useScreenshotSequence() {
       timers.push(t);
     }
 
-    console.log('[SCREENSHOT_SEQ] Sequence scheduled: checkin@5s, settings@10s, home@15s');
+    console.log('[SCREENSHOT_SEQ] Sequence scheduled: checkin@17s, settings@32s, home@47s');
     return () => timers.forEach(clearTimeout);
   }, [router, segments]);
 }
