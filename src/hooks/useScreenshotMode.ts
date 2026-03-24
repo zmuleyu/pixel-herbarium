@@ -4,6 +4,7 @@ import { useCheckinStore } from '@/stores/checkin-store';
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ONBOARDING_KEY } from '@/hooks/useOnboardingControls';
+import { clearScreenshotSignals } from '@/hooks/utils/screenshotSignal';
 
 /**
  * Hook to inject demo data when SCREENSHOT_MODE is active.
@@ -47,6 +48,7 @@ export function useScreenshotMode() {
 
     return () => {
       globalThis.Date = OriginalDate;
+      clearScreenshotSignals().catch(() => {});
     };
   }, []);
 }

@@ -1,27 +1,24 @@
 import { useEffect, useRef } from 'react';
+import { InteractionManager } from 'react-native';
 import { useRouter, useSegments } from 'expo-router';
 import { FEATURES } from '@/constants/features';
+import { signalAndWait, clearScreenshotSignals } from '@/hooks/utils/screenshotSignal';
 
 /**
- * Auto-navigate through tabs when SCREENSHOT_MODE is active.
- * Waits until tabs are mounted (segments[0] === '(tabs)') before starting.
- * CI captures screenshots at known time offsets synced to this schedule.
+ * Signal-driven screenshot sequence for CI capture.
  *
- * Synced with scripts/local-screenshots.sh capture times:
- *   Script (from launch): T+15s home, T+30s checkin, T+45s settings, T+60s tap
- *   Hook (from tabs mount): +17s checkin, +32s settings, +47s home
- *   Auth bootstrap 3-8s gives 5-12s buffer per capture window.
+ * Replaces the previous setTimeout-based approach that required precise
+ * timing synchronization between the app and CI scripts.
  *
- * With auth=5s: mount@T+5 → checkin@T+22 → settings@T+37 → home@T+52
- *   T+15 captures home ✓  T+30 captures checkin ✓
- *   T+45 captures settings ✓  T+60 taps home ✓
+ * Protocol (per screen):
+ *   1. App navigates to tab and waits for render to settle
+ *   2. App writes a signal file to Documents/
+ *   3. CI detects signal → captures screenshot → deletes signal
+ *   4. App detects deletion → proceeds to next screen
+ *
+ * Outside CI (Expo Go / real device), signals time out after 30s
+ * and the sequence continues — no impact on normal usage.
  */
-const SCREENSHOT_SEQUENCE = [
-  { tab: '/(tabs)/checkin',  delay: 17000 },
-  { tab: '/(tabs)/settings', delay: 32000 },
-  { tab: '/(tabs)/home',     delay: 47000 },
-] as const;
-
 export function useScreenshotSequence() {
   const router = useRouter();
   const segments = useSegments();
@@ -39,19 +36,45 @@ export function useScreenshotSequence() {
     }
 
     started.current = true;
-    console.log('[SCREENSHOT_SEQ] Tabs ready — scheduling navigation');
+    console.log('[SCREENSHOT_SEQ] Tabs ready — starting signal-driven sequence');
 
-    const timers: ReturnType<typeof setTimeout>[] = [];
+    const run = async () => {
+      await clearScreenshotSignals();
 
-    for (const step of SCREENSHOT_SEQUENCE) {
-      const t = setTimeout(() => {
-        console.log(`[SCREENSHOT_SEQ] → ${step.tab}`);
-        router.push(step.tab as any);
-      }, step.delay);
-      timers.push(t);
-    }
+      // Wait for initial render to settle
+      await waitForRender();
 
-    console.log('[SCREENSHOT_SEQ] Sequence scheduled: checkin@17s, settings@32s, home@47s');
-    return () => timers.forEach(clearTimeout);
+      // 01 — Home (already on home tab after auth)
+      await signalAndWait('screenshot_ready_home');
+
+      // 02 — Checkin
+      router.push('/(tabs)/checkin' as any);
+      await waitForRender();
+      await signalAndWait('screenshot_ready_checkin');
+
+      // 03 — Settings
+      router.push('/(tabs)/settings' as any);
+      await waitForRender();
+      await signalAndWait('screenshot_ready_settings');
+
+      // 04 — Back to home for card tap → detail
+      router.push('/(tabs)/home' as any);
+      await waitForRender();
+      await signalAndWait('screenshot_ready_detail');
+
+      console.log('[SCREENSHOT_SEQ] Sequence complete');
+    };
+
+    run().catch(err => console.error('[SCREENSHOT_SEQ] Error:', err));
   }, [router, segments]);
+}
+
+/** Resolve after all pending interactions (animations, layout) are done. */
+function waitForRender(): Promise<void> {
+  return new Promise(resolve =>
+    InteractionManager.runAfterInteractions(() => {
+      // Extra frame to let React commit
+      requestAnimationFrame(() => resolve());
+    }),
+  );
 }
