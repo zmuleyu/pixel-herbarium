@@ -154,12 +154,27 @@ jobs:
           fi
 
           xcrun simctl boot "$UDID" 2>/dev/null || true
-          xcrun simctl bootstatus "$UDID" -b 2>/dev/null || sleep 20
+
+          # Timeout-protected bootstatus (prevents infinite hang)
+          xcrun simctl bootstatus "$UDID" -b 2>/dev/null &
+          BPID=$!
+          ( sleep 60; kill $BPID 2>/dev/null ) &
+          TPID=$!
+          wait $BPID 2>/dev/null || true
+          kill $TPID 2>/dev/null || true
+          sleep 5  # extra settle time
 
           xcrun simctl install "$UDID" "$APP"
           xcrun simctl privacy "$UDID" grant camera com.pixelherbarium.app
           xcrun simctl privacy "$UDID" grant location com.pixelherbarium.app
           xcrun simctl privacy "$UDID" grant photos com.pixelherbarium.app
+
+          # Override status bar: 9:41, full battery, full signal (App Store standard)
+          xcrun simctl status_bar "$UDID" override \
+            --time "9:41" \
+            --batteryState charged --batteryLevel 100 \
+            --wifiBars 3 --cellularMode active --cellularBars 4 \
+            2>/dev/null || echo "WARN: status_bar override not available"
 
           echo "SIM_UDID=$UDID" >> $GITHUB_ENV
 
@@ -208,27 +223,11 @@ jobs:
           }
 
           FAIL=0
-          capture_signal "screenshot_ready_home"     "e2e/current/01-home.png"     60 || FAIL=1
-          capture_signal "screenshot_ready_checkin"  "e2e/current/02-checkin.png"  30 || FAIL=1
-          capture_signal "screenshot_ready_settings" "e2e/current/03-settings.png" 30 || FAIL=1
-
-          # Detail: signal fires when back on home; CI taps card then captures
-          echo "Waiting for screenshot_ready_detail ..."
-          ELAPSED=0
-          while [ $ELAPSED -lt 30 ]; do
-            if [ -f "${SIGNAL_DIR}/screenshot_ready_detail" ]; then
-              sleep 0.5
-              xcrun simctl ui "$SIM_UDID" tap 220 500 2>/dev/null || true
-              sleep 2
-              xcrun simctl io "$SIM_UDID" screenshot "e2e/current/04-detail.png"
-              rm -f "${SIGNAL_DIR}/screenshot_ready_detail"
-              echo "✓ 04-detail.png (${ELAPSED}s)"
-              break
-            fi
-            sleep 1
-            ELAPSED=$((ELAPSED + 1))
-          done
-          [ $ELAPSED -lt 30 ] || { echo "::error::Timeout waiting for screenshot_ready_detail"; FAIL=1; }
+          # 4-screen sequence matching app's useScreenshotSequence.ts
+          capture_signal "screenshot_ready_home"      "e2e/current/01-home.png"      60 || FAIL=1
+          capture_signal "screenshot_ready_checkin"    "e2e/current/02-checkin.png"   30 || FAIL=1
+          capture_signal "screenshot_ready_footprint"  "e2e/current/03-footprint.png" 30 || FAIL=1
+          capture_signal "screenshot_ready_settings"   "e2e/current/04-settings.png"  30 || FAIL=1
 
           ls -la e2e/current/*.png 2>/dev/null
           [ $FAIL -eq 0 ] || exit 1
