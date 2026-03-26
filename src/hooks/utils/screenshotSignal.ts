@@ -3,8 +3,8 @@ import * as FileSystem from 'expo-file-system/legacy';
 const SIGNAL_NAMES = [
   'screenshot_ready_home',
   'screenshot_ready_checkin',
+  'screenshot_ready_footprint',
   'screenshot_ready_settings',
-  'screenshot_ready_detail',
 ] as const;
 
 /**

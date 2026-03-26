@@ -40,6 +40,14 @@ export function useScreenshotMode() {
     // Bypass onboarding gate so CI reaches tab UI directly
     AsyncStorage.setItem(ONBOARDING_KEY, '1').catch(() => {});
 
+    // Mark all guide tooltips as seen so no overlays appear in screenshots
+    AsyncStorage.multiSet([
+      ['guide_seen_stamp', '1'],
+      ['guide_seen_discover', '1'],
+      ['guide_seen_herbarium', '1'],
+      ['guide_seen_map', '1'],
+    ]).catch(() => {});
+
     // Inject demo checkin records
     useCheckinStore.setState({ history: DEMO_CHECKIN_RECORDS });
 

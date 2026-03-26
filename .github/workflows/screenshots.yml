@@ -136,6 +136,16 @@ jobs:
           xcrun simctl privacy "$UDID" grant location "$BUNDLE_ID"
           xcrun simctl privacy "$UDID" grant photos "$BUNDLE_ID"
 
+          # Override status bar: 9:41, full battery, full signal (App Store standard)
+          xcrun simctl status_bar "$UDID" override \
+            --time "9:41" \
+            --batteryState charged \
+            --batteryLevel 100 \
+            --wifiBars 3 \
+            --cellularMode active \
+            --cellularBars 4 \
+            2>/dev/null || echo "WARN: status_bar override not supported on this OS"
+
       # ── Signal-driven screenshot capture ───────────────────────────
       - name: Capture screenshots (signal-driven)
         run: |
@@ -193,42 +203,17 @@ jobs:
 
           FAIL=0
 
-          # 01 — Home
+          # 01 — Home (with emoji placeholder cards)
           capture_screenshot "screenshot_ready_home" "e2e/current/01-home.png" 60 || FAIL=1
 
-          # 02 — Checkin
+          # 02 — Checkin photo step
           capture_screenshot "screenshot_ready_checkin" "e2e/current/02-checkin.png" 30 || FAIL=1
 
-          # 03 — Settings
-          capture_screenshot "screenshot_ready_settings" "e2e/current/03-settings.png" 30 || FAIL=1
+          # 03 — Footprint history grid
+          capture_screenshot "screenshot_ready_footprint" "e2e/current/03-footprint.png" 30 || FAIL=1
 
-          # 04 — Detail (app signals when back on home, CI taps card then captures)
-          echo "Waiting for signal: screenshot_ready_detail ..."
-          ELAPSED=0
-          while [ $ELAPSED -lt 30 ]; do
-            if [ -f "${SIGNAL_DIR}/screenshot_ready_detail" ]; then
-              sleep 0.5
-              # Tap plant card (coordinates from GitHub Variables or defaults)
-              CARD_X="${{ vars.SCREENSHOT_CARD_X }}"
-              CARD_Y="${{ vars.SCREENSHOT_CARD_Y }}"
-              CARD_X="${CARD_X:-220}"
-              CARD_Y="${CARD_Y:-500}"
-              xcrun simctl io "$SIM_UDID" tap "$CARD_X" "$CARD_Y" 2>/dev/null \
-                || xcrun simctl ui "$SIM_UDID" tap "$CARD_X" "$CARD_Y" 2>/dev/null \
-                || echo "WARN: card tap failed (try adjusting SCREENSHOT_CARD_X/Y)"
-              sleep 2
-              xcrun simctl io "$SIM_UDID" screenshot "e2e/current/04-detail.png"
-              rm -f "${SIGNAL_DIR}/screenshot_ready_detail"
-              echo "✓ 04-detail.png captured"
-              break
-            fi
-            sleep 1
-            ELAPSED=$((ELAPSED + 1))
-          done
-          if [ $ELAPSED -ge 30 ]; then
-            echo "::error::Timeout waiting for screenshot_ready_detail"
-            FAIL=1
-          fi
+          # 04 — Settings
+          capture_screenshot "screenshot_ready_settings" "e2e/current/04-settings.png" 30 || FAIL=1
 
           [ $FAIL -eq 0 ] || exit 1
 

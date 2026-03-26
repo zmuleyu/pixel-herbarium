@@ -47,20 +47,20 @@ export function useScreenshotSequence() {
       // 01 — Home (already on home tab after auth)
       await signalAndWait('screenshot_ready_home');
 
-      // 02 — Checkin
+      // 02 — Checkin (photo step, no tooltip in SCREENSHOT_MODE)
       router.push('/(tabs)/checkin' as any);
       await waitForRender();
       await signalAndWait('screenshot_ready_checkin');
 
-      // 03 — Settings
+      // 03 — Footprint (history grid with emoji placeholders)
+      router.push('/(tabs)/footprint' as any);
+      await waitForRender();
+      await signalAndWait('screenshot_ready_footprint');
+
+      // 04 — Settings
       router.push('/(tabs)/settings' as any);
       await waitForRender();
       await signalAndWait('screenshot_ready_settings');
-
-      // 04 — Back to home for card tap → detail
-      router.push('/(tabs)/home' as any);
-      await waitForRender();
-      await signalAndWait('screenshot_ready_detail');
 
       console.log('[SCREENSHOT_SEQ] Sequence complete');
     };

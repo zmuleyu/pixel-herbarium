@@ -1,26 +1,23 @@
 # Progress — pixel-herbarium
-Updated: 2026-03-23
+Updated: 2026-03-26
 
 ## 当前阶段
-v1.1.0 app-review Phase C BLOCK · GHA run #23421677574 in_progress（SCREENSHOT_MODE fix：sed解注释.env.local → Metro正确嵌入环境变量）
+v1.1.0 app-review Phase C 进行中 · 截图已完成(4 PNGs in e2e/current/) · 下一步 compose → ASC upload
 
 ## 待办
-- [ ] 等待 GHA run #23421677574 完成（约15-20min）
-  - 成功 → `gh run download 23421677574 --repo zmuleyu/pixel-herbarium --dir e2e/current` → `/screenshots compose`
-  - 失败 → 检查 `.env.local` sed 是否正确执行（grep SCREENSHOT_MODE 日志行）
-- [x] 触发新 GHA screenshot-build run（已完成，run #23421677574）
-- [ ] app-review Phase C：截图生成后继续（C14 ASC 字段确认、C-jp2 日文检查）
+- [ ] `/screenshots compose` → 选择引擎(appshot/canvas/store-mcp) → 生成营销截图
+- [ ] app-review Phase C：C14 ASC 字段确认、C-jp2 日文检查
 - [ ] app-review Phase D：production build + Reviewer Run + eas submit
 - [ ] DB migration：apply 026/027/028 到 Supabase production
-- [x] Petal Press 盖章动画实装（PetalPressAnimation.tsx，4 阶段 1.2s）
-  - Float Down → Press & Bloom（粒子+光环+触觉）→ Settle → Complete
-  - StampPreview 集成：capture → animation → onSave
-  - haptics.ts 新增 stampPress · 4 tests passing
-  - XHS 视频分析挂起（MCP 线程错误，scrapling 需重启后重试 `69bd239b0000000023022590`）
 - [ ] Layer 3: 弹窗/权限/引导 UI 规范落地
 - [ ] Layer 4: v2 水印编辑器 + 图鉑系统
 
-## 已完成
+## 已完成（本次 session）
+- [x] GHA screenshot-build.yml 修复：signal驱动 + .env.local 注入（04002be）
+- [x] GHA run #23583941082 成功：4 screenshots 下载到 e2e/current/（c4a1467）
+- [x] Claude Code hook 超时加固（4脚本，与 pixel-herbarium 无直接关联）
+
+## 已完成（历史）
 - [x] Task 1.1+1.2：ajisai/himawari/momiji 3季数据（251条）+ migrations 026/027/028 + SPOT_REGISTRY接入
 - [x] app-review Phase A PASS (563 tests) · Phase B PASS
 - [x] B fix：app.json 补 NSPhotoLibraryAddUsageDescription

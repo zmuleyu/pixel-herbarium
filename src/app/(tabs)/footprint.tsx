@@ -44,11 +44,17 @@ function CheckinCard({ record }: { record: CheckinRecord }) {
 
   return (
     <PressableCard style={[styles.card, { borderColor: theme.accent }]}>
-      <Image
-        source={{ uri: record.composedUri }}
-        style={styles.cardImage}
-        resizeMode="cover"
-      />
+      {record.composedUri ? (
+        <Image
+          source={{ uri: record.composedUri }}
+          style={styles.cardImage}
+          resizeMode="cover"
+        />
+      ) : (
+        <View style={[styles.cardImage, styles.cardPlaceholder, { backgroundColor: theme.bgTint }]}>
+          <Text style={styles.cardPlaceholderEmoji}>{season.iconEmoji}</Text>
+        </View>
+      )}
       <View style={[styles.cardFooter, { backgroundColor: theme.bgTint }]}>
         <Text style={styles.cardSpot} numberOfLines={1}>
           {spotName}
@@ -155,6 +161,16 @@ const styles = StyleSheet.create({
   cardImage: {
     width: CARD_SIZE,
     height: CARD_SIZE * (4 / 3),
+  },
+
+  cardPlaceholder: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  cardPlaceholderEmoji: {
+    fontSize: 40,
+    opacity: 0.6,
   },
 
   cardFooter: {
