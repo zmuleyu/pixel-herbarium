@@ -211,7 +211,7 @@ jobs:
             while [ $ELAPSED -lt $TIMEOUT ]; do
               if [ -f "${SIGNAL_DIR}/${SIGNAL}" ]; then
                 sleep 0.5
-                timeout 15 xcrun simctl io "$SIM_UDID" screenshot "$OUTPUT" || true
+                xcrun simctl io "$SIM_UDID" screenshot "$OUTPUT" 2>/dev/null || true
                 rm -f "${SIGNAL_DIR}/${SIGNAL}"
                 echo "✓ $(basename "$OUTPUT") (${ELAPSED}s)"
                 return 0
@@ -220,7 +220,7 @@ jobs:
               ELAPSED=$((ELAPSED + 1))
             done
             echo "::error::Timeout (${TIMEOUT}s) waiting for $SIGNAL"
-            timeout 15 xcrun simctl io "$SIM_UDID" screenshot "$OUTPUT" 2>/dev/null || true
+            screencapture -x "$OUTPUT" 2>/dev/null || true
             return 1
           }
 
