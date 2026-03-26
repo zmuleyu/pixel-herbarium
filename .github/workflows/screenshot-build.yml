@@ -36,6 +36,17 @@ jobs:
 
       - run: npm ci
 
+      - name: Inject screenshot-mode env vars into .env.local
+        run: |
+          cat > .env.local << 'EOF'
+          EXPO_PUBLIC_SCREENSHOT_MODE=true
+          EXPO_PUBLIC_SUPABASE_URL=https://uwdgnueaycatmkzkbxwo.supabase.co
+          EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3ZGdudWVheWNhdG1remtieHdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTEwMTIsImV4cCI6MjA4OTA2NzAxMn0.ShB7IWQCZ1L3OQi53PqbVVNIJmvUSml0t7Dy15g_clg
+          NO_PROXY=localhost,127.0.0.1,::1,0.0.0.0
+          EOF
+          echo "✓ .env.local written:"
+          cat .env.local
+
       - name: Patch node_modules for Xcode 26 compatibility
         run: |
           # 1. Downgrade Swift version: 6.0 -> 5.9 in podspec
