@@ -179,8 +179,10 @@ jobs:
           echo "SIM_UDID=$UDID" >> $GITHUB_ENV
 
       - name: Capture App Store screenshots (signal-driven)
+        timeout-minutes: 5
         run: |
           set -e
+          rm -f e2e/current/*.png 2>/dev/null || true
           mkdir -p e2e/current
           BUNDLE_ID=com.pixelherbarium.app
 
@@ -209,7 +211,7 @@ jobs:
             while [ $ELAPSED -lt $TIMEOUT ]; do
               if [ -f "${SIGNAL_DIR}/${SIGNAL}" ]; then
                 sleep 0.5
-                xcrun simctl io "$SIM_UDID" screenshot "$OUTPUT"
+                timeout 15 xcrun simctl io "$SIM_UDID" screenshot "$OUTPUT" || true
                 rm -f "${SIGNAL_DIR}/${SIGNAL}"
                 echo "✓ $(basename "$OUTPUT") (${ELAPSED}s)"
                 return 0
@@ -218,7 +220,7 @@ jobs:
               ELAPSED=$((ELAPSED + 1))
             done
             echo "::error::Timeout (${TIMEOUT}s) waiting for $SIGNAL"
-            xcrun simctl io "$SIM_UDID" screenshot "$OUTPUT" 2>/dev/null || true
+            timeout 15 xcrun simctl io "$SIM_UDID" screenshot "$OUTPUT" 2>/dev/null || true
             return 1
           }
 
