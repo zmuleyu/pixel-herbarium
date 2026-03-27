@@ -31,6 +31,7 @@ function withTimeout<T>(p: Promise<T>, ms: number, fallback: T): Promise<T> {
  */
 async function checkAndApplyOTA(): Promise<undefined> {
   if (__DEV__) return undefined; // expo-updates not available in dev/Expo Go
+  if (FEATURES.SCREENSHOT_MODE) return undefined; // skip OTA — reload would break screenshot sequence
   try {
     const check = await Updates.checkForUpdateAsync();
     if (!check.isAvailable) return undefined;

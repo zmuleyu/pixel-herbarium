@@ -41,10 +41,14 @@ export function useScreenshotSequence() {
     const run = async () => {
       await clearScreenshotSignals();
 
-      // Wait for initial render to settle
+      // Navigate to home explicitly — don't assume we're already there
+      // (redirect in _layout.tsx may not fire if tabs are already mounted)
+      router.replace('/(tabs)/home' as any);
       await waitForRender();
+      // Extra settle: home uses useStaggeredEntry animations (4 components)
+      await new Promise<void>(resolve => setTimeout(resolve, 500));
 
-      // 01 — Home (already on home tab after auth)
+      // 01 — Home
       await signalAndWait('screenshot_ready_home');
 
       // 02 — Checkin (photo step, no tooltip in SCREENSHOT_MODE)

@@ -41,11 +41,12 @@ export function useScreenshotMode() {
     AsyncStorage.setItem(ONBOARDING_KEY, '1').catch(() => {});
 
     // Mark all guide tooltips as seen so no overlays appear in screenshots
+    // Value must be 'true' to match useGuideState's `value === 'true'` check
     AsyncStorage.multiSet([
-      ['guide_seen_stamp', '1'],
-      ['guide_seen_discover', '1'],
-      ['guide_seen_herbarium', '1'],
-      ['guide_seen_map', '1'],
+      ['guide_seen_stamp', 'true'],
+      ['guide_seen_discover', 'true'],
+      ['guide_seen_herbarium', 'true'],
+      ['guide_seen_map', 'true'],
     ]).catch(() => {});
 
     // Inject demo checkin records
