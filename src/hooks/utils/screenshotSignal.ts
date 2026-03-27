@@ -23,9 +23,13 @@ export async function signalAndWait(
   name: string,
   timeoutMs = 30000,
 ): Promise<void> {
+  if (!FileSystem.documentDirectory) {
+    console.error(`[SCREENSHOT_SIGNAL] documentDirectory is null — cannot write: ${name}`);
+    return;
+  }
   const path = `${FileSystem.documentDirectory}${name}`;
   await FileSystem.writeAsStringAsync(path, Date.now().toString());
-  console.log(`[SCREENSHOT_SIGNAL] Wrote: ${name}`);
+  console.log(`[SCREENSHOT_SIGNAL] Wrote: ${name} → ${path}`);
 
   // Poll until CI deletes the file (= screenshot captured)
   const interval = 500;
@@ -46,6 +50,10 @@ export async function signalAndWait(
 
 /** Remove all signal files. Call at sequence start to clear stale state. */
 export async function clearScreenshotSignals(): Promise<void> {
+  if (!FileSystem.documentDirectory) {
+    console.warn('[SCREENSHOT_SIGNAL] documentDirectory is null — skipping clear');
+    return;
+  }
   await Promise.all(
     SIGNAL_NAMES.map(name =>
       FileSystem.deleteAsync(`${FileSystem.documentDirectory}${name}`, {

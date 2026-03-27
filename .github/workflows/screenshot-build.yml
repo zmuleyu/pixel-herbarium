@@ -178,11 +178,17 @@ jobs:
 
           # Open Simulator.app GUI in background NOW — gives it max time to start
           # before the screenshot step needs it for xcrun simctl io screenshot
-          # Run the binary directly (not via 'open') to avoid blocking
-          echo "Starting Simulator.app GUI in background..."
-          nohup /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/Contents/MacOS/Simulator \
-            -CurrentDeviceUDID "$UDID" >/tmp/simulator-app.log 2>&1 &
-          echo "Simulator.app PID: $!"
+          # IMPORTANT: use xcode-select'd path (not hardcoded /Applications/Xcode.app)
+          XCODE_DEV=$(xcode-select -p)
+          SIM_APP="${XCODE_DEV}/Applications/Simulator.app/Contents/MacOS/Simulator"
+          echo "Starting Simulator.app from: $SIM_APP"
+          if [ -f "$SIM_APP" ]; then
+            nohup "$SIM_APP" -CurrentDeviceUDID "$UDID" >/tmp/simulator-app.log 2>&1 &
+            echo "Simulator.app PID: $!"
+          else
+            echo "WARN: Simulator.app not at expected path, using 'open -a Simulator'"
+            open -a Simulator --args -CurrentDeviceUDID "$UDID" &
+          fi
 
           echo "SIM_UDID=$UDID" >> $GITHUB_ENV
 
@@ -198,13 +204,34 @@ jobs:
           echo "Waiting for Simulator GUI to be ready..."
           sleep 10
 
-          # Launch app (no 'timeout' on macOS — use shell-level background kill guard)
+          # Launch app with timeout guard (simctl launch can hang on Xcode 26)
           echo "Launching app..."
-          xcrun simctl launch "$SIM_UDID" "$BUNDLE_ID" 2>&1 || echo "WARN: app launch returned non-zero (may still be running)"
+          xcrun simctl launch "$SIM_UDID" "$BUNDLE_ID" > /tmp/launch-output.txt 2>&1 &
+          LAUNCH_PID=$!
+          ( sleep 30 && kill $LAUNCH_PID 2>/dev/null && echo "WARN: simctl launch killed after 30s timeout" ) &
+          TIMER_PID=$!
+          if wait $LAUNCH_PID 2>/dev/null; then
+            echo "simctl launch returned successfully"
+          else
+            echo "WARN: simctl launch returned non-zero or was killed"
+          fi
+          kill $TIMER_PID 2>/dev/null || true
+          wait $TIMER_PID 2>/dev/null || true
+          echo "Launch output:"
+          cat /tmp/launch-output.txt 2>/dev/null || echo "  (no output)"
+
+          # Verify app process is running
+          echo "Checking app process..."
+          xcrun simctl spawn "$SIM_UDID" launchctl list 2>/dev/null | grep -i "pixel\|UIKitApp\|com.pixel" | head -5 || echo "  (no matching process found)"
+
           echo "App launched — waiting for app to initialize (auth + navigation)..."
 
           # Cold start in CI: auth check (up to 15s) + OTA check (5s) + navigation
           sleep 30
+
+          # Recheck app is still alive after cold start
+          echo "Rechecking app process after cold start..."
+          xcrun simctl spawn "$SIM_UDID" launchctl list 2>/dev/null | grep -i "pixel\|UIKitApp\|com.pixel" | head -5 || echo "  WARN: app may have crashed during startup"
 
           DATA_DIR=$(xcrun simctl get_app_container "$SIM_UDID" "$BUNDLE_ID" data 2>/dev/null || true)
           RETRY=0
