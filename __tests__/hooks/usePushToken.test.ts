@@ -23,6 +23,15 @@ jest.mock('react-native', () => ({
   Platform: { OS: 'ios' },
 }));
 
+jest.mock('expo-constants', () => ({
+  __esModule: true,
+  default: {
+    expoConfig: {
+      extra: { eas: { projectId: '74427c7e-dba6-4061-9cc9-3651d09fae01' } },
+    },
+  },
+}));
+
 import { renderHook, act } from '@testing-library/react-hooks';
 import * as Notifications from 'expo-notifications';
 import { useAuthStore } from '@/stores/auth-store';
@@ -168,7 +177,7 @@ describe('usePushToken – token registration', () => {
     renderHook(() => usePushToken());
     await act(async () => { await flushPromises(); });
 
-    expect(mockGetToken).toHaveBeenCalledWith({ projectId: 'pixel-herbarium' });
+    expect(mockGetToken).toHaveBeenCalledWith({ projectId: '74427c7e-dba6-4061-9cc9-3651d09fae01' });
   });
 
   it('re-registers when user id changes', async () => {
