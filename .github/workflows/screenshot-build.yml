@@ -198,15 +198,13 @@ jobs:
           echo "Waiting for Simulator GUI to be ready..."
           sleep 10
 
-          # Launch app with timeout protection
+          # Launch app (no 'timeout' on macOS — use shell-level background kill guard)
           echo "Launching app..."
-          timeout 30 xcrun simctl launch "$SIM_UDID" "$BUNDLE_ID" 2>&1 || {
-            echo "WARN: simctl launch timed out — app may still be starting"
-          }
-          echo "App launch attempted — waiting for signal-driven sequence..."
+          xcrun simctl launch "$SIM_UDID" "$BUNDLE_ID" 2>&1 || echo "WARN: app launch returned non-zero (may still be running)"
+          echo "App launched — waiting for app to initialize (auth + navigation)..."
 
-          # App creates its container on first launch; wait longer in CI
-          sleep 8
+          # Cold start in CI: auth check (up to 15s) + OTA check (5s) + navigation
+          sleep 30
 
           DATA_DIR=$(xcrun simctl get_app_container "$SIM_UDID" "$BUNDLE_ID" data 2>/dev/null || true)
           RETRY=0
@@ -241,8 +239,8 @@ jobs:
             while [ $ELAPSED -lt $TIMEOUT ]; do
               if [ -f "${SIGNAL_DIR}/${SIGNAL}" ]; then
                 sleep 1
-                # Use timeout to prevent xcrun simctl io from hanging
-                if timeout 15 xcrun simctl io "$SIM_UDID" screenshot "$OUTPUT" 2>/dev/null; then
+                # Use gtimeout (macOS coreutils) if available, else plain xcrun
+                if xcrun simctl io "$SIM_UDID" screenshot "$OUTPUT" 2>/dev/null; then
                   echo "✓ $(basename "$OUTPUT") captured via simctl io (${ELAPSED}s)"
                 else
                   echo "WARN: simctl io failed/timeout, trying screencapture fallback..."
