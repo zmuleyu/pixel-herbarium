@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { supabase } from '@/services/supabase';
 import { useAuthStore } from '@/stores/auth-store';
@@ -25,8 +26,11 @@ async function registerToken(userId: string) {
     }
     if (finalStatus !== 'granted') return;
 
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+    if (!projectId) return;
+
     const tokenResult = await Notifications.getExpoPushTokenAsync({
-      projectId: 'pixel-herbarium',
+      projectId,
     });
     const token = tokenResult.data;
 
