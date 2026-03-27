@@ -176,24 +176,34 @@ jobs:
             --wifiBars 3 --cellularMode active --cellularBars 4 \
             2>/dev/null || echo "WARN: status_bar override not available"
 
+          # Open Simulator.app GUI in background NOW — gives it max time to start
+          # before the screenshot step needs it for xcrun simctl io screenshot
+          # Run the binary directly (not via 'open') to avoid blocking
+          echo "Starting Simulator.app GUI in background..."
+          nohup /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/Contents/MacOS/Simulator \
+            -CurrentDeviceUDID "$UDID" >/tmp/simulator-app.log 2>&1 &
+          echo "Simulator.app PID: $!"
+
           echo "SIM_UDID=$UDID" >> $GITHUB_ENV
 
       - name: Capture App Store screenshots (signal-driven)
-        timeout-minutes: 10
+        timeout-minutes: 15
         run: |
           set -e
           rm -f e2e/current/*.png 2>/dev/null || true
           mkdir -p e2e/current
           BUNDLE_ID=com.pixelherbarium.app
 
-          # CRITICAL: Open Simulator.app GUI — xcrun simctl io hangs without it
-          echo "Opening Simulator GUI..."
-          open -a Simulator --args -CurrentDeviceUDID "$SIM_UDID"
-          sleep 5
+          # Simulator.app was started in background during Boot step — wait for it
+          echo "Waiting for Simulator GUI to be ready..."
+          sleep 10
 
-          # Launch app
-          xcrun simctl launch "$SIM_UDID" "$BUNDLE_ID"
-          echo "App launched — waiting for signal-driven sequence..."
+          # Launch app with timeout protection
+          echo "Launching app..."
+          timeout 30 xcrun simctl launch "$SIM_UDID" "$BUNDLE_ID" 2>&1 || {
+            echo "WARN: simctl launch timed out — app may still be starting"
+          }
+          echo "App launch attempted — waiting for signal-driven sequence..."
 
           # App creates its container on first launch; wait longer in CI
           sleep 8
