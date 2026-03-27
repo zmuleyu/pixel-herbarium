@@ -1,21 +1,22 @@
 # Progress — pixel-herbarium
-Updated: 2026-03-26
+Updated: 2026-03-27
 
 ## 当前阶段
-v1.1.0 app-review Phase C 进行中 · 截图已完成(4 PNGs in e2e/current/) · 下一步 compose → ASC upload
+v1.1.0 app-review Phase C ✅ 完成 → Phase D 准备中
 
 ## 待办
-- [ ] `/screenshots compose` → 选择引擎(appshot/canvas/store-mcp) → 生成营销截图
-- [ ] app-review Phase C：C14 ASC 字段确认、C-jp2 日文检查
-- [ ] app-review Phase D：production build + Reviewer Run + eas submit
-- [ ] DB migration：apply 026/027/028 到 Supabase production
+- [ ] ⚠️ ASC截图手动排序（用户手动）：01-home→position1, 02-checkin→position2
+- [ ] app-review Phase D：`/app-review --phase D` → production build + Reviewer Run + eas submit
+- [ ] DB migration：apply 026/027/028 到 Supabase production（Sync监督型）
 - [ ] Layer 3: 弹窗/权限/引导 UI 规范落地
 - [ ] Layer 4: v2 水印编辑器 + 图鉑系统
 
 ## 已完成（本次 session）
-- [x] GHA screenshot-build.yml 修复：signal驱动 + .env.local 注入（04002be）
-- [x] GHA run #23583941082 成功：4 screenshots 下载到 e2e/current/（c4a1467）
-- [x] Claude Code hook 超时加固（4脚本，与 pixel-herbarium 无直接关联）
+- [x] GHA simctl launch hang修复 + Simulator.app路径修复（e2deeb5）
+- [x] screenshot-compose.mjs 更新：03-footprint + 删除05-onboarding（0faa6e5）
+- [x] CI run 23640819862 成功：4张截图上传ASC 6.9" slot（已合成1320×2868）
+- [x] docs/screenshot-pipeline.md 创建：264行完整截图管线文档（2d09a80）
+- [x] app-review Phase C 截图验收完成
 
 ## 已完成（历史）
 - [x] Task 1.1+1.2：ajisai/himawari/momiji 3季数据（251条）+ migrations 026/027/028 + SPOT_REGISTRY接入
