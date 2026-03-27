@@ -29,19 +29,14 @@ const SCREENSHOTS = [
     output: 'e2e/composed/canvas/02-checkin.png',
   },
   {
-    input: 'e2e/current/03-stamp.png',
-    title_ja: '世界でひとつの花スタンプ',
-    output: 'e2e/composed/canvas/03-stamp.png',
+    input: 'e2e/current/03-footprint.png',
+    title_ja: 'あなたの花の足跡を一覧で',
+    output: 'e2e/composed/canvas/03-footprint.png',
   },
   {
     input: 'e2e/current/04-settings.png',
     title_ja: 'あなたの花旅をカスタマイズ',
     output: 'e2e/composed/canvas/04-settings.png',
-  },
-  {
-    input: 'e2e/current/05-onboarding.png',
-    title_ja: '季節の花を見つけに行こう',
-    output: 'e2e/composed/canvas/05-onboarding.png',
   },
 ];
 
