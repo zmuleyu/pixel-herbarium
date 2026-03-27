@@ -7,7 +7,7 @@ v1.1.0 app-review Phase C ✅ 完成 → Phase D 准备中
 ## 待办
 - [ ] ⚠️ ASC截图手动排序（用户手动）：01-home→position1, 02-checkin→position2
 - [ ] app-review Phase D：`/app-review --phase D` → production build + Reviewer Run + eas submit
-- [ ] DB migration：apply 026/027/028 到 Supabase production（Sync监督型）
+- [x] DB migration：026/027/028 已推送 Supabase production（351 spots verified）
 - [ ] Layer 3: 弹窗/权限/引导 UI 规范落地
 - [ ] Layer 4: v2 水印编辑器 + 图鉑系统
 
