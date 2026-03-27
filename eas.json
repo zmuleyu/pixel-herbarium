@@ -63,6 +63,10 @@
     },
     "preview-screenshot": {
       "extends": "preview",
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      },
       "env": {
         "EXPO_PUBLIC_SCREENSHOT_MODE": "true",
         "APP_VARIANT": "preview"
