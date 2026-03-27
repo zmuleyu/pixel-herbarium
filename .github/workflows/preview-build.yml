@@ -1,24 +1,31 @@
-name: Preview Build (Reviewer Run)
+name: Preview Build (Direct xcodebuild)
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    name: Build Preview IPA (local, no EAS quota)
+    name: Build Preview IPA
     runs-on: macos-latest
-    timeout-minutes: 90
+    timeout-minutes: 60
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EXPO_PUBLIC_SUPABASE_URL: "https://uwdgnueaycatmkzkbxwo.supabase.co"
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+      APP_VARIANT: "preview"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: dev
 
-      - name: Select Xcode 16
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: '16.2'
+      - name: Select Xcode 26
+        run: |
+          XCODE26=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          LATEST=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+          TARGET="${XCODE26:-$LATEST}"
+          echo "Selecting: $TARGET"
+          sudo xcode-select -s "$TARGET/Contents/Developer"
+          xcodebuild -version
 
       - uses: actions/setup-node@v4
         with:
@@ -27,15 +34,113 @@ jobs:
 
       - run: npm ci
 
-      - name: Build preview IPA locally
+      - name: Patch node_modules for Xcode 26
+        run: bash scripts/patch-xcode26-compat.sh --pre-pod
+
+      - name: Inject env vars
+        run: bash scripts/inject-env.sh preview
+
+      - name: Generate native iOS project
+        run: npx expo prebuild --platform ios --clean
+
+      - name: Install CocoaPods
+        run: cd ios && pod install && cd ..
+
+      - name: Patch folly headers
+        run: bash scripts/patch-xcode26-compat.sh --post-pod
+
+      - name: Import signing credentials
+        env:
+          CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          PROVISIONING_PROFILE: ${{ secrets.ADHOC_PROVISIONING_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
           set -e
-          npx eas build --local \
-            --profile preview \
-            --platform ios \
-            --non-interactive \
-            --output preview.ipa
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          CERT_PATH="$RUNNER_TEMP/certificate.p12"
+          echo "$CERTIFICATE_P12" | base64 --decode > "$CERT_PATH"
+          security import "$CERT_PATH" \
+            -P "$CERTIFICATE_PASSWORD" \
+            -A -t cert -f pkcs12 \
+            -k "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain
+          security default-keychain -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          PP_PATH="$RUNNER_TEMP/profile.mobileprovision"
+          echo "$PROVISIONING_PROFILE" | base64 --decode > "$PP_PATH"
+          PP_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin \
+            <<< "$(security cms -D -i "$PP_PATH")")
+          echo "Provisioning Profile UUID: $PP_UUID"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"$PP_UUID".mobileprovision
+          echo "PP_UUID=$PP_UUID" >> "$GITHUB_ENV"
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
+
+      - name: Archive iOS app
+        run: |
+          set -eo pipefail
+          cd ios
+          xcodebuild archive \
+            -workspace app.xcworkspace \
+            -scheme app \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath "$RUNNER_TEMP/app.xcarchive" \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="68JA8V8NC2" \
+            PROVISIONING_PROFILE_SPECIFIER="$PP_UUID" \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            SWIFT_STRICT_CONCURRENCY=off \
+            OTHER_LDFLAGS='$(inherited) -Wl,-no_warn_duplicate_libraries' \
+            2>&1 | tail -50
+          echo "=== Archive succeeded ==="
+
+      - name: Export IPA (ad-hoc)
+        run: |
+          set -e
+          cat > "$RUNNER_TEMP/ExportOptions.plist" << PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>ad-hoc</string>
+            <key>teamID</key>
+            <string>68JA8V8NC2</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.pixelherbarium.app</key>
+              <string>$PP_UUID</string>
+            </dict>
+            <key>compileBitcode</key>
+            <false/>
+            <key>stripSwiftSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          PLIST
+
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/app.xcarchive" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
+
+          IPA=$(find "$RUNNER_TEMP/export" -name "*.ipa" | head -1)
+          cp "$IPA" preview.ipa
           ls -lh preview.ipa
+
+      - name: Cleanup keychain
+        if: always()
+        run: security delete-keychain "$KEYCHAIN_PATH" 2>/dev/null || true
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
@@ -43,4 +148,4 @@ jobs:
         with:
           name: preview-ipa-${{ github.sha }}
           path: preview.ipa
-          retention-days: 3
+          retention-days: 7
