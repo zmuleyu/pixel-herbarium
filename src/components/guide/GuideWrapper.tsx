@@ -4,6 +4,7 @@ import { View, ViewStyle } from 'react-native';
 import { GuideMeasureProvider, useGuideMeasure } from './GuideMeasureContext';
 import { CoachMark, CoachStep } from './CoachMark';
 import { useGuideState } from '../../hooks/useGuideState';
+import { FEATURES } from '@/constants/features';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -36,6 +37,7 @@ function CoachMarkController({
   overlayVariant,
   delay,
 }: CoachMarkControllerProps) {
+  if (FEATURES.SCREENSHOT_MODE) return null;
   const { seen, loading, markSeen } = useGuideState(featureKey);
   const { getRect } = useGuideMeasure();
   const [visible, setVisible] = useState(false);
