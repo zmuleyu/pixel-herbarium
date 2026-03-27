@@ -179,27 +179,47 @@ jobs:
           echo "SIM_UDID=$UDID" >> $GITHUB_ENV
 
       - name: Capture App Store screenshots (signal-driven)
-        timeout-minutes: 5
+        timeout-minutes: 10
         run: |
           set -e
           rm -f e2e/current/*.png 2>/dev/null || true
           mkdir -p e2e/current
           BUNDLE_ID=com.pixelherbarium.app
 
+          # CRITICAL: Open Simulator.app GUI — xcrun simctl io hangs without it
+          echo "Opening Simulator GUI..."
+          open -a Simulator --args -CurrentDeviceUDID "$SIM_UDID"
+          sleep 5
+
           # Launch app
           xcrun simctl launch "$SIM_UDID" "$BUNDLE_ID"
           echo "App launched — waiting for signal-driven sequence..."
 
-          # App creates its container on first launch; wait briefly
-          sleep 3
+          # App creates its container on first launch; wait longer in CI
+          sleep 8
 
           DATA_DIR=$(xcrun simctl get_app_container "$SIM_UDID" "$BUNDLE_ID" data 2>/dev/null || true)
+          RETRY=0
+          while [ -z "$DATA_DIR" ] && [ $RETRY -lt 10 ]; do
+            sleep 2
+            DATA_DIR=$(xcrun simctl get_app_container "$SIM_UDID" "$BUNDLE_ID" data 2>/dev/null || true)
+            RETRY=$((RETRY + 1))
+          done
           if [ -z "$DATA_DIR" ]; then
-            echo "ERROR: could not get app data container"
+            echo "ERROR: could not get app data container after ${RETRY} retries"
+            # Debug: check if app is running
+            xcrun simctl listapps "$SIM_UDID" 2>/dev/null | grep pixel || echo "App not found in listapps"
             exit 1
           fi
           SIGNAL_DIR="${DATA_DIR}/Documents"
           echo "Signal dir: $SIGNAL_DIR"
+          echo "Data dir: $DATA_DIR"
+
+          # Stream app logs in background for debugging
+          xcrun simctl spawn "$SIM_UDID" log stream \
+            --predicate 'process CONTAINS "app" OR process CONTAINS "pixel"' \
+            --style compact 2>/dev/null > /tmp/app-log.txt &
+          LOG_PID=$!
 
           # Handshake: poll for signal → capture → delete (ack)
           capture_signal() {
@@ -207,31 +227,60 @@ jobs:
             local OUTPUT="$2"
             local TIMEOUT="${3:-60}"
             local ELAPSED=0
-            echo "Waiting for $SIGNAL ..."
+            echo "Waiting for $SIGNAL (timeout: ${TIMEOUT}s)..."
             while [ $ELAPSED -lt $TIMEOUT ]; do
               if [ -f "${SIGNAL_DIR}/${SIGNAL}" ]; then
-                sleep 0.5
-                xcrun simctl io "$SIM_UDID" screenshot "$OUTPUT" 2>/dev/null || true
+                sleep 1
+                # Use timeout to prevent xcrun simctl io from hanging
+                if timeout 15 xcrun simctl io "$SIM_UDID" screenshot "$OUTPUT" 2>/dev/null; then
+                  echo "✓ $(basename "$OUTPUT") captured via simctl io (${ELAPSED}s)"
+                else
+                  echo "WARN: simctl io failed/timeout, trying screencapture fallback..."
+                  screencapture -x "$OUTPUT" 2>/dev/null || true
+                  if [ -f "$OUTPUT" ]; then
+                    echo "✓ $(basename "$OUTPUT") captured via screencapture (${ELAPSED}s)"
+                  fi
+                fi
                 rm -f "${SIGNAL_DIR}/${SIGNAL}"
-                echo "✓ $(basename "$OUTPUT") (${ELAPSED}s)"
                 return 0
+              fi
+              # Debug output every 15s
+              if [ $((ELAPSED % 15)) -eq 0 ] && [ $ELAPSED -gt 0 ]; then
+                echo "  DEBUG [${ELAPSED}s] Signal dir contents:"
+                ls -la "$SIGNAL_DIR" 2>/dev/null || echo "    (dir not found or empty)"
+                echo "  DEBUG [${ELAPSED}s] App process:"
+                xcrun simctl spawn "$SIM_UDID" launchctl list 2>/dev/null | grep -i "pixel\|UIKitApp\|com.pixel" | head -3 || echo "    (no matching process)"
               fi
               sleep 1
               ELAPSED=$((ELAPSED + 1))
             done
             echo "::error::Timeout (${TIMEOUT}s) waiting for $SIGNAL"
+            echo "  Last 20 lines of app log:"
+            tail -20 /tmp/app-log.txt 2>/dev/null || echo "  (no log)"
+            echo "  Signal dir final state:"
+            ls -la "$SIGNAL_DIR" 2>/dev/null || echo "  (not found)"
+            # Fallback: capture whatever is on screen
             screencapture -x "$OUTPUT" 2>/dev/null || true
             return 1
           }
 
           FAIL=0
           # 4-screen sequence matching app's useScreenshotSequence.ts
-          capture_signal "screenshot_ready_home"      "e2e/current/01-home.png"      60 || FAIL=1
-          capture_signal "screenshot_ready_checkin"    "e2e/current/02-checkin.png"   30 || FAIL=1
-          capture_signal "screenshot_ready_footprint"  "e2e/current/03-footprint.png" 30 || FAIL=1
-          capture_signal "screenshot_ready_settings"   "e2e/current/04-settings.png"  30 || FAIL=1
+          # First screen needs longer timeout for cold start in CI
+          capture_signal "screenshot_ready_home"      "e2e/current/01-home.png"      120 || FAIL=1
+          capture_signal "screenshot_ready_checkin"    "e2e/current/02-checkin.png"   60  || FAIL=1
+          capture_signal "screenshot_ready_footprint"  "e2e/current/03-footprint.png" 60  || FAIL=1
+          capture_signal "screenshot_ready_settings"   "e2e/current/04-settings.png"  60  || FAIL=1
 
-          ls -la e2e/current/*.png 2>/dev/null
+          # Cleanup log stream
+          kill $LOG_PID 2>/dev/null || true
+
+          echo ""
+          echo "=== Results ==="
+          ls -la e2e/current/*.png 2>/dev/null || echo "No screenshots found"
+          echo ""
+          echo "=== App log (last 50 lines) ==="
+          tail -50 /tmp/app-log.txt 2>/dev/null || echo "(no log)"
           [ $FAIL -eq 0 ] || exit 1
 
       - name: Upload screenshots
