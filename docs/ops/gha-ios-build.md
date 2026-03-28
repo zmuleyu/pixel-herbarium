@@ -2,7 +2,7 @@
 
 结论：
 - `preview-build.yml` 使用原生 `xcodebuild archive/export` 生成 Ad Hoc IPA。
-- `release.yml` 使用同一原生链路生成 App Store IPA，再执行 `eas submit`。
+- `release.yml` 使用同一原生链路生成 App Store IPA，优先通过 App Store Connect API Key 提交；缺失时回退到 `eas submit`。
 - `screenshot-build.yml` 只走 simulator 路径，不需要 signing。
 - 所有链路均不使用 `eas build --local`。
 
@@ -17,6 +17,9 @@
 | `KEYCHAIN_PASSWORD` | ✅ | 任意随机字符串（`openssl rand -base64 24`） |
 | `EXPO_TOKEN` | ✅ | expo.dev → Account Settings → Access Tokens |
 | `EXPO_APPLE_APP_SPECIFIC_PASSWORD` | ✅ | appleid.apple.com → App-Specific Passwords |
+| `ASC_KEY_ID` | ⏳ 可选优先 | App Store Connect → Users and Access → Keys |
+| `ASC_ISSUER_ID` | ⏳ 可选优先 | App Store Connect API Key 页面 Issuer ID |
+| `ASC_PRIVATE_KEY_BASE64` | ⏳ 可选优先 | `AuthKey_XXXXXX.p8` 执行 `base64 -i AuthKey_XXXXXX.p8 \| pbcopy` |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | ✅ | eas.json 中的 anon key（非 service_role） |
 
 ## 唯一待补的 Secret
@@ -52,7 +55,15 @@
 | `pod install` 失败 | `patch-xcode26-compat.sh --pre-pod` 是否执行 |
 | `xcodebuild archive` signing 报错 | profile UUID 是否与 bundle ID 匹配；profile 是否包含设备 UDID（Ad Hoc） |
 | `xcodebuild archive` folly 编译错误 | `patch-xcode26-compat.sh --post-pod` 是否执行 |
-| `eas submit` 401 | `EXPO_TOKEN` 是否有效；`EXPO_APPLE_APP_SPECIFIC_PASSWORD` 是否过期 |
+| API Key submit 失败 | 检查 `ASC_KEY_ID` / `ASC_ISSUER_ID` / `ASC_PRIVATE_KEY_BASE64` 是否匹配 |
+| `eas submit` 401 | 仅 fallback 场景使用；检查 `EXPO_TOKEN` 和 `EXPO_APPLE_APP_SPECIFIC_PASSWORD` |
+
+## Build Diagnostics
+
+- `preview-build.yml` 和 `release.yml` 都会上传：
+  - `build/*.xcresult`
+  - `build/export-options/*.plist`
+- archive 失败时，优先下载 diagnostics artifact 查看 Xcode 真实错误。
 
 ## Notes
 

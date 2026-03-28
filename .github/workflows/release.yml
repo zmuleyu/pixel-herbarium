@@ -46,6 +46,9 @@ jobs:
       KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
       APPLE_TEAM_ID: 68JA8V8NC2
       EXPO_APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.EXPO_APPLE_APP_SPECIFIC_PASSWORD }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
       BUNDLE_ID: com.pixelherbarium.app
     steps:
       - uses: actions/checkout@v4
@@ -79,9 +82,15 @@ jobs:
           path: production.ipa
           retention-days: 7
 
+      - name: Upload build diagnostics
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-build-diagnostics-${{ github.sha }}
+          path: |
+            build/*.xcresult
+            build/export-options/*.plist
+          retention-days: 7
+
       - name: Submit to App Store Connect
-        run: |
-          npx eas submit \
-            --platform ios \
-            --path production.ipa \
-            --non-interactive
+        run: bash scripts/ios-submit-asc.sh production.ipa

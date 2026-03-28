@@ -74,3 +74,13 @@ jobs:
           name: preview-ipa-${{ github.sha }}
           path: preview.ipa
           retention-days: 7
+
+      - name: Upload build diagnostics
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: preview-build-diagnostics-${{ github.sha }}
+          path: |
+            build/*.xcresult
+            build/export-options/*.plist
+          retention-days: 7
