@@ -71,7 +71,8 @@ bash scripts/ios-patch-verify.sh
   echo "actual_sha=$(git rev-parse HEAD)"
   echo "xcode_version=$(xcodebuild -version | tr '\n' '; ' | sed 's/; $//')"
   echo "sdk_version=$(xcodebuild -showsdks | tr '\n' '; ' | sed 's/; $//')"
-  echo "patches_applied=expo-router,expo-notifications,expo-image-picker,expo-image"
+  echo "patch_source=patch-package"
+  echo "patches_applied=expo-modules-core,expo-router,expo-notifications,expo-image-picker,expo-image"
   echo "patches_verified=ok"
 } | tee "$DIAGNOSTICS_DIR/build-summary.txt"
 

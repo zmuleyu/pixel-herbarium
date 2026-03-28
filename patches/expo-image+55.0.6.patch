@@ -1,0 +1,120 @@
+diff --git a/node_modules/expo-image/ios/ImageModule.swift b/node_modules/expo-image/ios/ImageModule.swift
+index b1b701b..1a785ce 100644
+--- a/node_modules/expo-image/ios/ImageModule.swift
++++ b/node_modules/expo-image/ios/ImageModule.swift
+@@ -134,35 +134,47 @@ public final class ImageModule: Module {
+       }
+ 
+       AsyncFunction("startAnimating") { (view: ImageView) in
+-        if view.isSFSymbolSource {
+-          view.startSymbolAnimation()
+-        } else {
+-          view.sdImageView.startAnimating()
++        DispatchQueue.main.async {
++          if view.isSFSymbolSource {
++            view.startSymbolAnimation()
++          } else {
++            view.sdImageView.startAnimating()
++          }
+         }
+       }
+ 
+       AsyncFunction("stopAnimating") { (view: ImageView) in
+-        if view.isSFSymbolSource {
+-          view.stopSymbolAnimation()
+-        } else {
+-          view.sdImageView.stopAnimating()
++        DispatchQueue.main.async {
++          if view.isSFSymbolSource {
++            view.stopSymbolAnimation()
++          } else {
++            view.sdImageView.stopAnimating()
++          }
+         }
+       }
+ 
+       AsyncFunction("lockResourceAsync") { (view: ImageView) in
+-        view.lockResource = true
++        DispatchQueue.main.async {
++          view.lockResource = true
++        }
+       }
+ 
+       AsyncFunction("unlockResourceAsync") { (view: ImageView) in
+-        view.lockResource = false
++        DispatchQueue.main.async {
++          view.lockResource = false
++        }
+       }
+ 
+       AsyncFunction("reloadAsync") { (view: ImageView) in
+-        view.reload(force: true)
++        DispatchQueue.main.async {
++          view.reload(force: true)
++        }
+       }
+ 
+       OnViewDidUpdateProps { view in
+-        view.reload()
++        DispatchQueue.main.async {
++          view.reload()
++        }
+       }
+     }
+ 
+diff --git a/node_modules/expo-image/ios/ImageView.swift b/node_modules/expo-image/ios/ImageView.swift
+index adcf377..7bed81a 100644
+--- a/node_modules/expo-image/ios/ImageView.swift
++++ b/node_modules/expo-image/ios/ImageView.swift
+@@ -130,8 +130,8 @@ public final class ImageView: ExpoView {
+   }
+ 
+   deinit {
+-    // Cancel pending requests when the view is deallocated.
+-    cancelPendingOperation()
++    pendingOperation?.cancel()
++    pendingOperation = nil
+   }
+ 
+   public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+@@ -664,22 +664,7 @@ public final class ImageView: ExpoView {
+ 
+   @available(iOS 26.0, tvOS 26.0, *)
+   private func applySymbolEffectiOS26(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {
+-    switch effect {
+-    case .drawOn:
+-      switch scope {
+-      case .byLayer: sdImageView.addSymbolEffect(.drawOn.byLayer, options: options)
+-      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOn.wholeSymbol, options: options)
+-      case .none: sdImageView.addSymbolEffect(.drawOn, options: options)
+-      }
+-    case .drawOff:
+-      switch scope {
+-      case .byLayer: sdImageView.addSymbolEffect(.drawOff.byLayer, options: options)
+-      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOff.wholeSymbol, options: options)
+-      case .none: sdImageView.addSymbolEffect(.drawOff, options: options)
+-      }
+-    default:
+-      break
+-    }
++    // Xcode 16.x SDK does not expose iOS 26 draw symbol effects.
+   }
+ 
+   func startSymbolAnimation() {
+@@ -812,7 +797,7 @@ public final class ImageView: ExpoView {
+       return
+     }
+ 
+-    Task {
++    Task { @MainActor in
+       guard let imageAnalyzer = Self.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction() else {
+         return
+       }
+@@ -821,7 +806,6 @@ public final class ImageView: ExpoView {
+       do {
+         let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)
+ 
+-        // Make sure the image haven't changed in the meantime.
+         if image == sdImageView.image {
+           imageAnalysisInteraction.analysis = imageAnalysis
+           imageAnalysisInteraction.preferredInteractionTypes = .automatic
