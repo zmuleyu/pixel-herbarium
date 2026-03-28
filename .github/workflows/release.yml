@@ -1,4 +1,5 @@
 name: Release to App Store
+run-name: Release / ${{ github.ref_name }} / ${{ github.sha }}
 
 on:
   push:
@@ -13,6 +14,10 @@ on:
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
 
 jobs:
   validate:
@@ -50,8 +55,12 @@ jobs:
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
       ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
       BUNDLE_ID: com.pixelherbarium.app
+      EXPECTED_SHA: ${{ github.sha }}
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Select Xcode 16.4
         uses: maxim-lobanov/setup-xcode@v1
@@ -65,13 +74,19 @@ jobs:
 
       - run: npm ci
 
-      - name: Prepare native iOS project
+      - name: Gate 1 - Verify workflow ref
+        run: bash scripts/ios-ref-gate.sh
+
+      - name: Gate 1.5 - Require successful preview on same sha
+        run: bash scripts/ios-preview-gate.sh
+
+      - name: Gate 2 - Prepare native iOS project
         run: bash scripts/ios-build-setup.sh production
 
       - name: Configure signing keychain
         run: bash scripts/ios-keychain-signing.sh
 
-      - name: Build production IPA
+      - name: Gate 3 - Build production IPA
         run: bash scripts/ios-build-archive.sh app-store production.ipa
 
       - name: Upload IPA artifact
@@ -90,7 +105,9 @@ jobs:
           path: |
             build/*.xcresult
             build/export-options/*.plist
+            build/diagnostics/**
           retention-days: 7
+          if-no-files-found: ignore
 
       - name: Submit to App Store Connect
         run: bash scripts/ios-submit-asc.sh production.ipa

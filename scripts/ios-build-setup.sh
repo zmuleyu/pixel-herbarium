@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+source "$PWD/scripts/ios-build-config.sh"
+
+DIAGNOSTICS_DIR="${DIAGNOSTICS_DIR:-$BUILD_OUTPUT_DIR/diagnostics}"
 VARIANT="${1:-preview}"
 SCREENSHOT_MODE="${SCREENSHOT_MODE:-false}"
 PACKAGE_JSON_BAK=""
@@ -16,6 +19,8 @@ trap restore_package_json EXIT
 echo "=== iOS build setup ==="
 echo "Variant: $VARIANT"
 echo "Screenshot mode: $SCREENSHOT_MODE"
+
+mkdir -p "$BUILD_OUTPUT_DIR" "$DIAGNOSTICS_DIR"
 
 bash scripts/inject-env.sh "$VARIANT"
 
@@ -56,5 +61,18 @@ echo "=== Installing CocoaPods ==="
 
 echo "=== Applying post-pod compatibility patches ==="
 bash scripts/patch-xcode26-compat.sh --post-pod
+
+echo "=== Verifying compatibility patches ==="
+bash scripts/ios-patch-verify.sh
+
+{
+  echo "variant=$VARIANT"
+  echo "workflow_sha=${GITHUB_SHA:-unknown}"
+  echo "actual_sha=$(git rev-parse HEAD)"
+  echo "xcode_version=$(xcodebuild -version | tr '\n' '; ' | sed 's/; $//')"
+  echo "sdk_version=$(xcodebuild -showsdks | tr '\n' '; ' | sed 's/; $//')"
+  echo "patches_applied=expo-router,expo-notifications,expo-image-picker,expo-image"
+  echo "patches_verified=ok"
+} | tee "$DIAGNOSTICS_DIR/build-summary.txt"
 
 echo "=== iOS build setup complete ==="

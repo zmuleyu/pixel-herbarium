@@ -1,13 +1,8 @@
 #!/bin/bash
-# patch-xcode26-compat.sh
-# Patches Expo SDK 55 native modules for Xcode 16/26 compatibility
-# Usage:
-#   bash scripts/patch-xcode26-compat.sh --pre-pod
-#   bash scripts/patch-xcode26-compat.sh --post-pod
-#   bash scripts/patch-xcode26-compat.sh
-set -e
+set -euo pipefail
 
 MODE="${1:---all}"
+MARKER_PREFIX="// PH Xcode 16 compatibility patch"
 
 if command -v python3 >/dev/null 2>&1; then
   PYTHON_BIN="python3"
@@ -18,329 +13,223 @@ else
   exit 1
 fi
 
+run_patch() {
+  local target_file="$1"
+  local patch_name="$2"
+  local patch_kind="$3"
+  local search_text="${4:-}"
+  local replace_text="${5:-}"
+  local search_regex="${6:-}"
+  local replace_regex="${7:-}"
+
+  if [[ ! -f "$target_file" ]]; then
+    echo "Missing patch target: $target_file" >&2
+    exit 1
+  fi
+
+  PATCH_FILE="$target_file" \
+  PATCH_NAME="$patch_name" \
+  PATCH_KIND="$patch_kind" \
+  PATCH_SEARCH_TEXT="$search_text" \
+  PATCH_REPLACE_TEXT="$replace_text" \
+  PATCH_SEARCH_REGEX="$search_regex" \
+  PATCH_REPLACE_REGEX="$replace_regex" \
+  PATCH_MARKER_PREFIX="$MARKER_PREFIX" \
+  "$PYTHON_BIN" - <<'PY'
+from pathlib import Path
+import os
+import re
+import sys
+
+path = Path(os.environ["PATCH_FILE"])
+patch_name = os.environ["PATCH_NAME"]
+patch_kind = os.environ["PATCH_KIND"]
+search_text = os.environ.get("PATCH_SEARCH_TEXT", "")
+replace_text = os.environ.get("PATCH_REPLACE_TEXT", "")
+search_regex = os.environ.get("PATCH_SEARCH_REGEX", "")
+replace_regex = os.environ.get("PATCH_REPLACE_REGEX", "")
+marker = f'{os.environ["PATCH_MARKER_PREFIX"]}: {patch_name}'
+
+text = path.read_text(encoding="utf-8")
+if marker in text:
+    sys.exit(0)
+
+if patch_kind == "replace":
+    if search_text not in text:
+        print(f"Patch '{patch_name}' did not match expected text in {path}", file=sys.stderr)
+        sys.exit(1)
+    text = text.replace(search_text, replace_text, 1)
+elif patch_kind == "regex":
+    updated, count = re.subn(search_regex, replace_regex, text, count=1, flags=re.S)
+    if count != 1:
+        print(f"Patch '{patch_name}' did not match expected pattern in {path}", file=sys.stderr)
+        sys.exit(1)
+    text = updated
+else:
+    print(f"Unsupported patch kind: {patch_kind}", file=sys.stderr)
+    sys.exit(1)
+
+path.write_text(text, encoding="utf-8")
+PY
+}
+
 if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
-  echo "=== Patching expo-modules-core (Swift 6.0 -> 5.9) ==="
+  echo "=== Patching expo-modules-core for Xcode 16.x ==="
 
-  PODSPEC="node_modules/expo-modules-core/ExpoModulesCore.podspec"
-  if [ -f "$PODSPEC" ]; then
-    sed -i '' "s/s\.swift_version  = '6\.0'/s.swift_version  = '5.9'/" "$PODSPEC" 2>/dev/null || true
-    grep "swift_version" "$PODSPEC" || true
-  fi
+  run_patch \
+    "node_modules/expo-modules-core/ExpoModulesCore.podspec" \
+    "expo-modules-core swift 5.9" \
+    "replace" \
+    "  s.swift_version  = '6.0'" \
+    "  s.swift_version  = '5.9'\n  // PH Xcode 16 compatibility patch: expo-modules-core swift 5.9"
 
-  HOSTING="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIHostingView.swift"
-  VIRTUAL="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIVirtualView.swift"
-  VIEWDEF="node_modules/expo-modules-core/ios/Core/Views/ViewDefinition.swift"
+  run_patch \
+    "node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIHostingView.swift" \
+    "expo-modules-core hosting @MainActor" \
+    "replace" \
+    ", @MainActor AnyExpoSwiftUIHostingView" \
+    ", AnyExpoSwiftUIHostingView /* PH Xcode 16 compatibility patch: expo-modules-core hosting @MainActor */"
 
-  for f in "$HOSTING" "$VIRTUAL" "$VIEWDEF"; do
-    [ -f "$f" ] || continue
-    sed -i '' 's/, @MainActor AnyExpoSwiftUIHostingView/, AnyExpoSwiftUIHostingView/' "$f" 2>/dev/null || true
-    sed -i '' 's/: @MainActor ExpoSwiftUI\.ViewWrapper/: ExpoSwiftUI.ViewWrapper/' "$f" 2>/dev/null || true
-    sed -i '' 's/extension UIView: @MainActor AnyArgument {/extension UIView: AnyArgument {/' "$f" 2>/dev/null || true
-  done
+  run_patch \
+    "node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIVirtualView.swift" \
+    "expo-modules-core virtual wrapper @MainActor" \
+    "replace" \
+    ": @MainActor ExpoSwiftUI.ViewWrapper" \
+    ": ExpoSwiftUI.ViewWrapper /* PH Xcode 16 compatibility patch: expo-modules-core virtual wrapper @MainActor */"
 
-  echo "=== Patching expo-router toolbar APIs for Xcode 16.x ==="
+  run_patch \
+    "node_modules/expo-modules-core/ios/Core/Views/ViewDefinition.swift" \
+    "expo-modules-core UIView AnyArgument @MainActor" \
+    "replace" \
+    "extension UIView: @MainActor AnyArgument {" \
+    "extension UIView: AnyArgument { // PH Xcode 16 compatibility patch: expo-modules-core UIView AnyArgument @MainActor"
 
-  ROUTER_HOST="node_modules/expo-router/ios/Toolbar/RouterToolbarHostView.swift"
-  ROUTER_ITEM="node_modules/expo-router/ios/Toolbar/RouterToolbarItemView.swift"
-  ROUTER_MODULE="node_modules/expo-router/ios/Toolbar/RouterToolbarModule.swift"
+  echo "=== Patching expo-router for Xcode 16.x ==="
 
-  if [ -f "$ROUTER_HOST" ]; then
-    "$PYTHON_BIN" - <<'PY'
-from pathlib import Path
-path = Path("node_modules/expo-router/ios/Toolbar/RouterToolbarHostView.swift")
-text = path.read_text(encoding="utf-8")
-text = text.replace(
-"""            if #available(iOS 26.0, *) {
-              if let hidesSharedBackground = menu.hidesSharedBackground {
-                item.hidesSharedBackground = hidesSharedBackground
-              }
-              if let sharesBackground = menu.sharesBackground {
-                item.sharesBackground = sharesBackground
-              }
-            }
-""",
-"""            // Xcode 16.x SDK does not expose iOS 26 toolbar background APIs.
-""")
-path.write_text(text, encoding="utf-8")
-PY
-  fi
+  run_patch \
+    "node_modules/expo-router/ios/Toolbar/RouterToolbarHostView.swift" \
+    "expo-router toolbar background" \
+    "replace" \
+    "            if #available(iOS 26.0, *) {\n              if let hidesSharedBackground = menu.hidesSharedBackground {\n                item.hidesSharedBackground = hidesSharedBackground\n              }\n              if let sharesBackground = menu.sharesBackground {\n                item.sharesBackground = sharesBackground\n              }\n            }\n" \
+    "            // PH Xcode 16 compatibility patch: disable expo-router toolbar background APIs.\n"
 
-  if [ -f "$ROUTER_ITEM" ]; then
-    "$PYTHON_BIN" - <<'PY'
-from pathlib import Path
-path = Path("node_modules/expo-router/ios/Toolbar/RouterToolbarItemView.swift")
-text = path.read_text(encoding="utf-8")
-text = text.replace(
-"      item = controller.navigationItem.searchBarPlacementBarButtonItem\n",
-"""      logger?.warn(
-        "[expo-router] Toolbar search bar is unavailable on the current Xcode SDK."
-      )
-      currentBarButtonItem = nil
-      return
-""")
-text = text.replace(
-"""    if #available(iOS 26.0, *) {
-      item.hidesSharedBackground = hidesSharedBackground
-      item.sharesBackground = sharesBackground
-    }
-""",
-"""    // Xcode 16.x SDK does not expose iOS 26 toolbar background APIs.
-""")
-text = text.replace(
-"""    if #available(iOS 26.0, *) {
-      if let badgeConfig = badgeConfiguration {
-        var badge = UIBarButtonItem.Badge.indicator()
-        if let value = badgeConfig.value {
-          badge = .string(value)
-        }
-        if let backgroundColor = badgeConfig.backgroundColor {
-          badge.backgroundColor = backgroundColor
-        }
-        if let foregroundColor = badgeConfig.color {
-          badge.foregroundColor = foregroundColor
-        }
-        if badgeConfig.fontFamily != nil || badgeConfig.fontSize != nil
-          || badgeConfig.fontWeight != nil {
-          let font = RouterFontUtils.convertTitleStyleToFont(
-            TitleStyle(
-              fontFamily: badgeConfig.fontFamily,
-              fontSize: badgeConfig.fontSize,
-              fontWeight: badgeConfig.fontWeight
-            ))
-          badge.font = font
-        }
-        item.badge = badge
-      } else {
-        item.badge = nil
-      }
-    }
-""",
-"""    // Xcode 16.x SDK does not expose iOS 26 toolbar badge APIs.
-""")
-path.write_text(text, encoding="utf-8")
-PY
-  fi
+  run_patch \
+    "node_modules/expo-router/ios/Toolbar/RouterToolbarItemView.swift" \
+    "expo-router toolbar search button" \
+    "replace" \
+    "      item = controller.navigationItem.searchBarPlacementBarButtonItem\n" \
+    "      logger?.warn(\n        \"[expo-router] Toolbar search bar is unavailable on the current Xcode SDK.\"\n      )\n      currentBarButtonItem = nil\n      // PH Xcode 16 compatibility patch: disable expo-router toolbar search button.\n      return\n"
 
-  if [ -f "$ROUTER_MODULE" ]; then
-    "$PYTHON_BIN" - <<'PY'
-from pathlib import Path
-path = Path("node_modules/expo-router/ios/Toolbar/RouterToolbarModule.swift")
-text = path.read_text(encoding="utf-8")
-text = text.replace(
-"""    case .prominent:
-      if #available(iOS 26.0, *) {
-        return .prominent
-      } else {
-        return .done
-      }
-""",
-"""    case .prominent:
-      return .done
-""")
-path.write_text(text, encoding="utf-8")
-PY
-  fi
+  run_patch \
+    "node_modules/expo-router/ios/Toolbar/RouterToolbarItemView.swift" \
+    "expo-router toolbar background item" \
+    "replace" \
+    "    if #available(iOS 26.0, *) {\n      item.hidesSharedBackground = hidesSharedBackground\n      item.sharesBackground = sharesBackground\n    }\n" \
+    "    // PH Xcode 16 compatibility patch: disable expo-router toolbar item background APIs.\n"
 
-  echo "=== Patching expo-notifications DateComponentsSerializer for Xcode 16.x ==="
+  run_patch \
+    "node_modules/expo-router/ios/Toolbar/RouterToolbarItemView.swift" \
+    "expo-router toolbar badge" \
+    "replace" \
+    "    if #available(iOS 26.0, *) {\n      if let badgeConfig = badgeConfiguration {\n        var badge = UIBarButtonItem.Badge.indicator()\n        if let value = badgeConfig.value {\n          badge = .string(value)\n        }\n        if let backgroundColor = badgeConfig.backgroundColor {\n          badge.backgroundColor = backgroundColor\n        }\n        if let foregroundColor = badgeConfig.color {\n          badge.foregroundColor = foregroundColor\n        }\n        if badgeConfig.fontFamily != nil || badgeConfig.fontSize != nil\n          || badgeConfig.fontWeight != nil {\n          let font = RouterFontUtils.convertTitleStyleToFont(\n            TitleStyle(\n              fontFamily: badgeConfig.fontFamily,\n              fontSize: badgeConfig.fontSize,\n              fontWeight: badgeConfig.fontWeight\n            ))\n          badge.font = font\n        }\n        item.badge = badge\n      } else {\n        item.badge = nil\n      }\n    }\n" \
+    "    // PH Xcode 16 compatibility patch: disable expo-router toolbar badge APIs.\n"
 
-  NOTIFICATIONS_DATE_COMPONENTS="node_modules/expo-notifications/ios/ExpoNotifications/Notifications/DateComponentsSerializer.swift"
-  if [ -f "$NOTIFICATIONS_DATE_COMPONENTS" ]; then
-    "$PYTHON_BIN" - <<'PY'
-from pathlib import Path
-import re
-path = Path("node_modules/expo-notifications/ios/ExpoNotifications/Notifications/DateComponentsSerializer.swift")
-text = path.read_text(encoding="utf-8")
-text = re.sub(
-    r'\s*if #available\(iOS 26\.0, \*\) \{\s*serializedComponents\["isRepeatedDay"\] = dateComponents\.isRepeatedDay \?\? false\s*\}\s*',
-    '\n    // Xcode 16.x SDK does not expose iOS 26 DateComponents.isRepeatedDay.\n\n',
-    text,
-    count=1,
-)
-path.write_text(text, encoding="utf-8")
-PY
-  fi
+  run_patch \
+    "node_modules/expo-router/ios/Toolbar/RouterToolbarModule.swift" \
+    "expo-router prominent fallback" \
+    "replace" \
+    "    case .prominent:\n      if #available(iOS 26.0, *) {\n        return .prominent\n      } else {\n        return .done\n      }\n" \
+    "    case .prominent:\n      // PH Xcode 16 compatibility patch: fallback expo-router prominent to done.\n      return .done\n"
 
-  echo "=== Patching expo-image-picker contentType APIs for Xcode 16.x ==="
+  echo "=== Patching expo-notifications for Xcode 16.x ==="
 
-  IMAGE_PICKER_MEDIA_HANDLER="node_modules/expo-image-picker/ios/MediaHandler.swift"
-  if [ -f "$IMAGE_PICKER_MEDIA_HANDLER" ]; then
-    "$PYTHON_BIN" - <<'PY'
-from pathlib import Path
-import re
-path = Path("node_modules/expo-image-picker/ios/MediaHandler.swift")
-text = path.read_text(encoding="utf-8")
-text = re.sub(
-    r'  private func getMimeType\(from asset: PHAsset\?, fileExtension: String\) -> String\? \{\s+let utType: UTType\? = if #available\(iOS 26\.0, \*\) \{\s+asset\?\.contentType \?\? UTType\(filenameExtension: fileExtension\)\s+\} else \{\s+UTType\(filenameExtension: fileExtension\)\s+\}\s+return utType\?\.preferredMIMEType\s+\}',
-    """  private func getMimeType(from asset: PHAsset?, fileExtension: String) -> String? {
-    let utType = UTType(filenameExtension: fileExtension)
-    return utType?.preferredMIMEType
-  }""",
-    text,
-    count=1,
-)
-text = re.sub(
-    r'  private func getMimeType\(from resource: PHAssetResource, fileExtension: String\) -> String\? \{\s+let utType: UTType\? = if #available\(iOS 26\.0, \*\) \{\s+resource\.contentType\s+\} else \{\s+UTType\(resource\.uniformTypeIdentifier\) \?\? UTType\(filenameExtension: fileExtension\)\s+\}\s+return utType\?\.preferredMIMEType\s+\}',
-    """  private func getMimeType(from resource: PHAssetResource, fileExtension: String) -> String? {
-    let utType = UTType(resource.uniformTypeIdentifier) ?? UTType(filenameExtension: fileExtension)
-    return utType?.preferredMIMEType
-  }""",
-    text,
-    count=1,
-)
-path.write_text(text, encoding="utf-8")
-PY
-  fi
+  run_patch \
+    "node_modules/expo-notifications/ios/ExpoNotifications/Notifications/DateComponentsSerializer.swift" \
+    "expo-notifications repeated day" \
+    "replace" \
+    "    if #available(iOS 26.0, *) {\n      serializedComponents[\"isRepeatedDay\"] = dateComponents.isRepeatedDay ?? false\n    }\n\n" \
+    "    // PH Xcode 16 compatibility patch: disable expo-notifications repeated day API.\n\n"
 
-  echo "=== Patching expo-image actor isolation for Xcode 16.x ==="
+  echo "=== Patching expo-image-picker for Xcode 16.x ==="
 
-  EXPO_IMAGE_MODULE="node_modules/expo-image/ios/ImageModule.swift"
-  if [ -f "$EXPO_IMAGE_MODULE" ]; then
-    "$PYTHON_BIN" - <<'PY'
-from pathlib import Path
-import re
-path = Path("node_modules/expo-image/ios/ImageModule.swift")
-text = path.read_text(encoding="utf-8")
-text = re.sub(
-    r'      AsyncFunction\("startAnimating"\) \{ \(view: ImageView\) in\s+if view\.isSFSymbolSource \{\s+view\.startSymbolAnimation\(\)\s+\} else \{\s+view\.sdImageView\.startAnimating\(\)\s+\}\s+\}',
-    """      AsyncFunction("startAnimating") { (view: ImageView) in
-        DispatchQueue.main.async {
-          if view.isSFSymbolSource {
-            view.startSymbolAnimation()
-          } else {
-            view.sdImageView.startAnimating()
-          }
-        }
-      }""",
-    text,
-    count=1,
-)
-text = re.sub(
-    r'      AsyncFunction\("stopAnimating"\) \{ \(view: ImageView\) in\s+if view\.isSFSymbolSource \{\s+view\.stopSymbolAnimation\(\)\s+\} else \{\s+view\.sdImageView\.stopAnimating\(\)\s+\}\s+\}',
-    """      AsyncFunction("stopAnimating") { (view: ImageView) in
-        DispatchQueue.main.async {
-          if view.isSFSymbolSource {
-            view.stopSymbolAnimation()
-          } else {
-            view.sdImageView.stopAnimating()
-          }
-        }
-      }""",
-    text,
-    count=1,
-)
-text = re.sub(
-    r'      AsyncFunction\("lockResourceAsync"\) \{ \(view: ImageView\) in\s+view\.lockResource = true\s+\}',
-    """      AsyncFunction("lockResourceAsync") { (view: ImageView) in
-        DispatchQueue.main.async {
-          view.lockResource = true
-        }
-      }""",
-    text,
-    count=1,
-)
-text = re.sub(
-    r'      AsyncFunction\("unlockResourceAsync"\) \{ \(view: ImageView\) in\s+view\.lockResource = false\s+\}',
-    """      AsyncFunction("unlockResourceAsync") { (view: ImageView) in
-        DispatchQueue.main.async {
-          view.lockResource = false
-        }
-      }""",
-    text,
-    count=1,
-)
-text = re.sub(
-    r'      AsyncFunction\("reloadAsync"\) \{ \(view: ImageView\) in\s+view\.reload\(force: true\)\s+\}',
-    """      AsyncFunction("reloadAsync") { (view: ImageView) in
-        DispatchQueue.main.async {
-          view.reload(force: true)
-        }
-      }""",
-    text,
-    count=1,
-)
-text = re.sub(
-    r'      OnViewDidUpdateProps \{ view in\s+view\.reload\(\)\s+\}',
-    """      OnViewDidUpdateProps { view in
-        DispatchQueue.main.async {
-          view.reload()
-        }
-      }""",
-    text,
-    count=1,
-)
-path.write_text(text, encoding="utf-8")
-PY
-  fi
+  run_patch \
+    "node_modules/expo-image-picker/ios/MediaHandler.swift" \
+    "expo-image-picker asset mime type" \
+    "replace" \
+    "  private func getMimeType(from asset: PHAsset?, fileExtension: String) -> String? {\n    let utType: UTType? = if #available(iOS 26.0, *) {\n      asset?.contentType ?? UTType(filenameExtension: fileExtension)\n    } else {\n      UTType(filenameExtension: fileExtension)\n    }\n    return utType?.preferredMIMEType\n  }\n" \
+    "  private func getMimeType(from asset: PHAsset?, fileExtension: String) -> String? {\n    // PH Xcode 16 compatibility patch: fallback expo-image-picker asset mime type inference.\n    let utType = UTType(filenameExtension: fileExtension)\n    return utType?.preferredMIMEType\n  }\n"
 
-  EXPO_IMAGE_VIEW="node_modules/expo-image/ios/ImageView.swift"
-  if [ -f "$EXPO_IMAGE_VIEW" ]; then
-    "$PYTHON_BIN" - <<'PY'
-from pathlib import Path
-import re
-path = Path("node_modules/expo-image/ios/ImageView.swift")
-text = path.read_text(encoding="utf-8")
-text = text.replace(
-"""  @available(iOS 26.0, tvOS 26.0, *)
-  private func applySymbolEffectiOS26(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {
-    switch effect {
-    case .drawOn:
-      switch scope {
-      case .byLayer: sdImageView.addSymbolEffect(.drawOn.byLayer, options: options)
-      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOn.wholeSymbol, options: options)
-      case .none: sdImageView.addSymbolEffect(.drawOn, options: options)
-      }
-    case .drawOff:
-      switch scope {
-      case .byLayer: sdImageView.addSymbolEffect(.drawOff.byLayer, options: options)
-      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOff.wholeSymbol, options: options)
-      case .none: sdImageView.addSymbolEffect(.drawOff, options: options)
-      }
-    default:
-      break
-    }
-  }
-""",
-"""  @available(iOS 26.0, tvOS 26.0, *)
-  private func applySymbolEffectiOS26(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {
-    // Xcode 16.x SDK does not expose iOS 26 draw symbol effects.
-  }
-""")
-text = re.sub(
-    r'    Task \{\s+guard let imageAnalyzer = Self\.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction\(\) else \{\s+return\s+\}\s+let configuration = ImageAnalyzer\.Configuration\(\[\.text, \.machineReadableCode\]\)\s+do \{\s+let imageAnalysis = try await imageAnalyzer\.analyze\(image, configuration: configuration\)\s+\s+// Make sure the image haven\'t changed in the meantime\.\s+if image == sdImageView\.image \{\s+imageAnalysisInteraction\.analysis = imageAnalysis\s+imageAnalysisInteraction\.preferredInteractionTypes = \.automatic\s+\}\s+\} catch \{\s+log\.error\(error\)\s+\}\s+\}',
-    """    Task { @MainActor in
-      guard let imageAnalyzer = Self.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction() else {
-        return
-      }
-      let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
+  run_patch \
+    "node_modules/expo-image-picker/ios/MediaHandler.swift" \
+    "expo-image-picker resource mime type" \
+    "replace" \
+    "  private func getMimeType(from resource: PHAssetResource, fileExtension: String) -> String? {\n    let utType: UTType? = if #available(iOS 26.0, *) {\n      resource.contentType\n    } else {\n      UTType(resource.uniformTypeIdentifier) ?? UTType(filenameExtension: fileExtension)\n    }\n    return utType?.preferredMIMEType\n  }\n" \
+    "  private func getMimeType(from resource: PHAssetResource, fileExtension: String) -> String? {\n    // PH Xcode 16 compatibility patch: fallback expo-image-picker resource mime type inference.\n    let utType = UTType(resource.uniformTypeIdentifier) ?? UTType(filenameExtension: fileExtension)\n    return utType?.preferredMIMEType\n  }\n"
 
-      do {
-        let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)
+  echo "=== Patching expo-image for Xcode 16.x ==="
 
-        if image == sdImageView.image {
-          imageAnalysisInteraction.analysis = imageAnalysis
-          imageAnalysisInteraction.preferredInteractionTypes = .automatic
-        }
-      } catch {
-        log.error(error)
-      }
-    }
-""",
-    text,
-    count=1,
-    flags=re.S,
-)
-text = re.sub(
-    r'  deinit \{\s+// Cancel pending requests when the view is deallocated\.\s+cancelPendingOperation\(\)\s+\}',
-    """  deinit {
-    pendingOperation?.cancel()
-    pendingOperation = nil
-  }""",
-    text,
-    count=1,
-)
-path.write_text(text, encoding="utf-8")
-PY
-  fi
+  run_patch \
+    "node_modules/expo-image/ios/ImageModule.swift" \
+    "expo-image start animating main thread" \
+    "replace" \
+    "      AsyncFunction(\"startAnimating\") { (view: ImageView) in\n        if view.isSFSymbolSource {\n          view.startSymbolAnimation()\n        } else {\n          view.sdImageView.startAnimating()\n        }\n      }\n" \
+    "      AsyncFunction(\"startAnimating\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: force expo-image startAnimating onto main thread.\n          if view.isSFSymbolSource {\n            view.startSymbolAnimation()\n          } else {\n            view.sdImageView.startAnimating()\n          }\n        }\n      }\n"
+
+  run_patch \
+    "node_modules/expo-image/ios/ImageModule.swift" \
+    "expo-image stop animating main thread" \
+    "replace" \
+    "      AsyncFunction(\"stopAnimating\") { (view: ImageView) in\n        if view.isSFSymbolSource {\n          view.stopSymbolAnimation()\n        } else {\n          view.sdImageView.stopAnimating()\n        }\n      }\n" \
+    "      AsyncFunction(\"stopAnimating\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: force expo-image stopAnimating onto main thread.\n          if view.isSFSymbolSource {\n            view.stopSymbolAnimation()\n          } else {\n            view.sdImageView.stopAnimating()\n          }\n        }\n      }\n"
+
+  run_patch \
+    "node_modules/expo-image/ios/ImageModule.swift" \
+    "expo-image lock resource main thread" \
+    "replace" \
+    "      AsyncFunction(\"lockResourceAsync\") { (view: ImageView) in\n        view.lockResource = true\n      }\n" \
+    "      AsyncFunction(\"lockResourceAsync\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: mutate expo-image lockResource on main thread.\n          view.lockResource = true\n        }\n      }\n"
+
+  run_patch \
+    "node_modules/expo-image/ios/ImageModule.swift" \
+    "expo-image unlock resource main thread" \
+    "replace" \
+    "      AsyncFunction(\"unlockResourceAsync\") { (view: ImageView) in\n        view.lockResource = false\n      }\n" \
+    "      AsyncFunction(\"unlockResourceAsync\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: mutate expo-image lockResource on main thread.\n          view.lockResource = false\n        }\n      }\n"
+
+  run_patch \
+    "node_modules/expo-image/ios/ImageModule.swift" \
+    "expo-image reload main thread" \
+    "replace" \
+    "      AsyncFunction(\"reloadAsync\") { (view: ImageView) in\n        view.reload(force: true)\n      }\n" \
+    "      AsyncFunction(\"reloadAsync\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: force expo-image reloadAsync onto main thread.\n          view.reload(force: true)\n        }\n      }\n"
+
+  run_patch \
+    "node_modules/expo-image/ios/ImageModule.swift" \
+    "expo-image view did update props main thread" \
+    "replace" \
+    "      OnViewDidUpdateProps { view in\n        view.reload()\n      }\n" \
+    "      OnViewDidUpdateProps { view in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: force expo-image prop reload onto main thread.\n          view.reload()\n        }\n      }\n"
+
+  run_patch \
+    "node_modules/expo-image/ios/ImageView.swift" \
+    "expo-image deinit cancel pending operation" \
+    "replace" \
+    "  deinit {\n    // Cancel pending requests when the view is deallocated.\n    cancelPendingOperation()\n  }\n" \
+    "  deinit {\n    // PH Xcode 16 compatibility patch: cancel expo-image pending operation without actor-isolated helper.\n    pendingOperation?.cancel()\n    pendingOperation = nil\n  }\n"
+
+  run_patch \
+    "node_modules/expo-image/ios/ImageView.swift" \
+    "expo-image draw symbol effects" \
+    "replace" \
+    "  @available(iOS 26.0, tvOS 26.0, *)\n  private func applySymbolEffectiOS26(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {\n    switch effect {\n    case .drawOn:\n      switch scope {\n      case .byLayer: sdImageView.addSymbolEffect(.drawOn.byLayer, options: options)\n      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOn.wholeSymbol, options: options)\n      case .none: sdImageView.addSymbolEffect(.drawOn, options: options)\n      }\n    case .drawOff:\n      switch scope {\n      case .byLayer: sdImageView.addSymbolEffect(.drawOff.byLayer, options: options)\n      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOff.wholeSymbol, options: options)\n      case .none: sdImageView.addSymbolEffect(.drawOff, options: options)\n      }\n    default:\n      break\n    }\n  }\n" \
+    "  @available(iOS 26.0, tvOS 26.0, *)\n  private func applySymbolEffectiOS26(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {\n    // PH Xcode 16 compatibility patch: disable expo-image iOS 26 draw symbol effects.\n  }\n"
+
+  run_patch \
+    "node_modules/expo-image/ios/ImageView.swift" \
+    "expo-image analyze image main actor" \
+    "replace" \
+    "    Task {\n      guard let imageAnalyzer = Self.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction() else {\n        return\n      }\n      let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])\n\n      do {\n        let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)\n\n        // Make sure the image haven't changed in the meantime.\n        if image == sdImageView.image {\n          imageAnalysisInteraction.analysis = imageAnalysis\n          imageAnalysisInteraction.preferredInteractionTypes = .automatic\n        }\n      } catch {\n        log.error(error)\n      }\n    }\n" \
+    "    Task { @MainActor in\n      // PH Xcode 16 compatibility patch: expo-image analyze image main actor\n      guard let imageAnalyzer = Self.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction() else {\n        return\n      }\n      let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])\n\n      do {\n        let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)\n\n        if image == sdImageView.image {\n          imageAnalysisInteraction.analysis = imageAnalysis\n          imageAnalysisInteraction.preferredInteractionTypes = .automatic\n        }\n      } catch {\n        log.error(error)\n      }\n    }\n"
 
   echo "Pre-pod patches applied"
 fi
@@ -348,17 +237,17 @@ fi
 if [[ "$MODE" == "--post-pod" || "$MODE" == "--all" ]]; then
   echo "=== Patching folly headers (disable coroutines) ==="
 
-  find ios/Pods -name '*.h' -path '*/folly/*' -type l 2>/dev/null | while read f; do
+  find ios/Pods -name '*.h' -path '*/folly/*' -type l 2>/dev/null | while read -r f; do
     cp -L "$f" "$f.tmp" && mv "$f.tmp" "$f"
   done
 
   PATCHED=0
-  for f in $(find ios/Pods -name '*.h' -path '*/folly/*' -type f 2>/dev/null); do
+  while IFS= read -r f; do
     if grep -q '#if FOLLY_HAS_COROUTINES' "$f" 2>/dev/null; then
-      sed -i '' 's/#if FOLLY_HAS_COROUTINES/#if 0 \/* FOLLY_HAS_COROUTINES disabled *\//' "$f" 2>/dev/null || true
+      sed -i '' 's/#if FOLLY_HAS_COROUTINES/#if 0 \/* PH Xcode 16 compatibility patch: disable folly coroutines *\//' "$f" 2>/dev/null || true
       PATCHED=$((PATCHED + 1))
     fi
-  done
+  done < <(find ios/Pods -name '*.h' -path '*/folly/*' -type f 2>/dev/null)
 
   echo "Folly files patched: $PATCHED"
 fi
