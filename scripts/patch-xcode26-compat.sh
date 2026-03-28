@@ -190,7 +190,7 @@ if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
     "regex" \
     "" \
     "" \
-    "      AsyncFunction\\(\"startAnimating\"\\) \\{ \\(view: ImageView\\) in\\s*if view\\.isSFSymbolSource \\{\\s*view\\.startSymbolAnimation\\(\\)\\s*\\} else \\{\\s*view\\.sdImageView\\.startAnimating\\(\\)\\s*\\}\\s*\\}\\s*" \
+    "      AsyncFunction\\(\"startAnimating\"\\) \\{ \\(view: ImageView\\) in.*?\\n      \\}\\s*" \
     "      AsyncFunction(\"startAnimating\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: force expo-image startAnimating onto main thread.\n          if view.isSFSymbolSource {\n            view.startSymbolAnimation()\n          } else {\n            view.sdImageView.startAnimating()\n          }\n        }\n      }\n"
 
   run_patch \
@@ -199,7 +199,7 @@ if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
     "regex" \
     "" \
     "" \
-    "      AsyncFunction\\(\"stopAnimating\"\\) \\{ \\(view: ImageView\\) in\\s*if view\\.isSFSymbolSource \\{\\s*view\\.stopSymbolAnimation\\(\\)\\s*\\} else \\{\\s*view\\.sdImageView\\.stopAnimating\\(\\)\\s*\\}\\s*\\}\\s*" \
+    "      AsyncFunction\\(\"stopAnimating\"\\) \\{ \\(view: ImageView\\) in.*?\\n      \\}\\s*" \
     "      AsyncFunction(\"stopAnimating\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: force expo-image stopAnimating onto main thread.\n          if view.isSFSymbolSource {\n            view.stopSymbolAnimation()\n          } else {\n            view.sdImageView.stopAnimating()\n          }\n        }\n      }\n"
 
   run_patch \
@@ -208,7 +208,7 @@ if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
     "regex" \
     "" \
     "" \
-    "      AsyncFunction\\(\"lockResourceAsync\"\\) \\{ \\(view: ImageView\\) in\\s*view\\.lockResource = true\\s*\\}\\s*" \
+    "      AsyncFunction\\(\"lockResourceAsync\"\\) \\{ \\(view: ImageView\\) in.*?\\n      \\}\\s*" \
     "      AsyncFunction(\"lockResourceAsync\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: mutate expo-image lockResource on main thread.\n          view.lockResource = true\n        }\n      }\n"
 
   run_patch \
@@ -217,7 +217,7 @@ if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
     "regex" \
     "" \
     "" \
-    "      AsyncFunction\\(\"unlockResourceAsync\"\\) \\{ \\(view: ImageView\\) in\\s*view\\.lockResource = false\\s*\\}\\s*" \
+    "      AsyncFunction\\(\"unlockResourceAsync\"\\) \\{ \\(view: ImageView\\) in.*?\\n      \\}\\s*" \
     "      AsyncFunction(\"unlockResourceAsync\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: mutate expo-image lockResource on main thread.\n          view.lockResource = false\n        }\n      }\n"
 
   run_patch \
@@ -226,7 +226,7 @@ if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
     "regex" \
     "" \
     "" \
-    "      AsyncFunction\\(\"reloadAsync\"\\) \\{ \\(view: ImageView\\) in\\s*view\\.reload\\(force: true\\)\\s*\\}\\s*" \
+    "      AsyncFunction\\(\"reloadAsync\"\\) \\{ \\(view: ImageView\\) in.*?\\n      \\}\\s*" \
     "      AsyncFunction(\"reloadAsync\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: force expo-image reloadAsync onto main thread.\n          view.reload(force: true)\n        }\n      }\n"
 
   run_patch \
