@@ -1,16 +1,16 @@
 #!/bin/bash
 # patch-xcode26-compat.sh
-# Patches Expo SDK 55 native modules for Xcode 26 compatibility
+# Patches Expo SDK 55 native modules for Xcode 16/26 compatibility
 # Usage:
-#   bash scripts/patch-xcode26-compat.sh --pre-pod    # Before pod install
-#   bash scripts/patch-xcode26-compat.sh --post-pod   # After pod install
-#   bash scripts/patch-xcode26-compat.sh              # Both phases
+#   bash scripts/patch-xcode26-compat.sh --pre-pod
+#   bash scripts/patch-xcode26-compat.sh --post-pod
+#   bash scripts/patch-xcode26-compat.sh
 set -e
 
 MODE="${1:---all}"
 
 if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
-  echo "=== Patching expo-modules-core (Swift 6.0 → 5.9) ==="
+  echo "=== Patching expo-modules-core (Swift 6.0 -> 5.9) ==="
 
   PODSPEC="node_modules/expo-modules-core/ExpoModulesCore.podspec"
   if [ -f "$PODSPEC" ]; then
@@ -29,7 +29,110 @@ if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
     sed -i '' 's/extension UIView: @MainActor AnyArgument {/extension UIView: AnyArgument {/' "$f" 2>/dev/null || true
   done
 
-  echo "✓ Pre-pod patches applied"
+  echo "=== Patching expo-router toolbar APIs for Xcode 16.x ==="
+
+  ROUTER_HOST="node_modules/expo-router/ios/Toolbar/RouterToolbarHostView.swift"
+  ROUTER_ITEM="node_modules/expo-router/ios/Toolbar/RouterToolbarItemView.swift"
+  ROUTER_MODULE="node_modules/expo-router/ios/Toolbar/RouterToolbarModule.swift"
+
+  if [ -f "$ROUTER_HOST" ]; then
+    python - <<'PY'
+from pathlib import Path
+path = Path("node_modules/expo-router/ios/Toolbar/RouterToolbarHostView.swift")
+text = path.read_text(encoding="utf-8")
+text = text.replace(
+"""            if #available(iOS 26.0, *) {
+              if let hidesSharedBackground = menu.hidesSharedBackground {
+                item.hidesSharedBackground = hidesSharedBackground
+              }
+              if let sharesBackground = menu.sharesBackground {
+                item.sharesBackground = sharesBackground
+              }
+            }
+""",
+"""            // Xcode 16.x SDK does not expose iOS 26 toolbar background APIs.
+""")
+path.write_text(text, encoding="utf-8")
+PY
+  fi
+
+  if [ -f "$ROUTER_ITEM" ]; then
+    python - <<'PY'
+from pathlib import Path
+path = Path("node_modules/expo-router/ios/Toolbar/RouterToolbarItemView.swift")
+text = path.read_text(encoding="utf-8")
+text = text.replace(
+"      item = controller.navigationItem.searchBarPlacementBarButtonItem\n",
+"""      logger?.warn(
+        "[expo-router] Toolbar search bar is unavailable on the current Xcode SDK."
+      )
+      currentBarButtonItem = nil
+      return
+""")
+text = text.replace(
+"""    if #available(iOS 26.0, *) {
+      item.hidesSharedBackground = hidesSharedBackground
+      item.sharesBackground = sharesBackground
+    }
+""",
+"""    // Xcode 16.x SDK does not expose iOS 26 toolbar background APIs.
+""")
+text = text.replace(
+"""    if #available(iOS 26.0, *) {
+      if let badgeConfig = badgeConfiguration {
+        var badge = UIBarButtonItem.Badge.indicator()
+        if let value = badgeConfig.value {
+          badge = .string(value)
+        }
+        if let backgroundColor = badgeConfig.backgroundColor {
+          badge.backgroundColor = backgroundColor
+        }
+        if let foregroundColor = badgeConfig.color {
+          badge.foregroundColor = foregroundColor
+        }
+        if badgeConfig.fontFamily != nil || badgeConfig.fontSize != nil
+          || badgeConfig.fontWeight != nil {
+          let font = RouterFontUtils.convertTitleStyleToFont(
+            TitleStyle(
+              fontFamily: badgeConfig.fontFamily,
+              fontSize: badgeConfig.fontSize,
+              fontWeight: badgeConfig.fontWeight
+            ))
+          badge.font = font
+        }
+        item.badge = badge
+      } else {
+        item.badge = nil
+      }
+    }
+""",
+"""    // Xcode 16.x SDK does not expose iOS 26 toolbar badge APIs.
+""")
+path.write_text(text, encoding="utf-8")
+PY
+  fi
+
+  if [ -f "$ROUTER_MODULE" ]; then
+    python - <<'PY'
+from pathlib import Path
+path = Path("node_modules/expo-router/ios/Toolbar/RouterToolbarModule.swift")
+text = path.read_text(encoding="utf-8")
+text = text.replace(
+"""    case .prominent:
+      if #available(iOS 26.0, *) {
+        return .prominent
+      } else {
+        return .done
+      }
+""",
+"""    case .prominent:
+      return .done
+""")
+path.write_text(text, encoding="utf-8")
+PY
+  fi
+
+  echo "Pre-pod patches applied"
 fi
 
 if [[ "$MODE" == "--post-pod" || "$MODE" == "--all" ]]; then
@@ -47,5 +150,5 @@ if [[ "$MODE" == "--post-pod" || "$MODE" == "--all" ]]; then
     fi
   done
 
-  echo "✓ Folly files patched: $PATCHED"
+  echo "Folly files patched: $PATCHED"
 fi
