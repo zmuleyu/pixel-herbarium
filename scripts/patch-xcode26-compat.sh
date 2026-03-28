@@ -156,9 +156,11 @@ if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
   run_patch \
     "node_modules/expo-notifications/ios/ExpoNotifications/Notifications/DateComponentsSerializer.swift" \
     "expo-notifications repeated day" \
-    "replace" \
-    "    if #available(iOS 26.0, *) {\n      serializedComponents[\"isRepeatedDay\"] = dateComponents.isRepeatedDay ?? false\n    }\n\n" \
-    "    // PH Xcode 16 compatibility patch: disable expo-notifications repeated day API.\n\n"
+    "regex" \
+    "" \
+    "" \
+    "\\s*if #available\\(iOS 26\\.0, \\*\\) \\{\\s*serializedComponents\\[\"isRepeatedDay\"\\] = dateComponents\\.isRepeatedDay \\?\\? false\\s*\\}\\s*" \
+    "\n    // PH Xcode 16 compatibility patch: disable expo-notifications repeated day API.\n\n"
 
   echo "=== Patching expo-image-picker for Xcode 16.x ==="
 
