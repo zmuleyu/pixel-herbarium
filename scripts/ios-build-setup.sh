@@ -10,6 +10,15 @@ echo "Screenshot mode: $SCREENSHOT_MODE"
 
 bash scripts/inject-env.sh "$VARIANT"
 
+if [[ "$VARIANT" == "production" ]]; then
+  echo "=== Removing Expo dev client modules for production archive ==="
+  rm -rf \
+    node_modules/expo-dev-client \
+    node_modules/expo-dev-launcher \
+    node_modules/expo-dev-menu \
+    node_modules/expo-dev-menu-interface
+fi
+
 if [[ "$SCREENSHOT_MODE" == "true" ]]; then
   cat >> .env.local <<'EOF'
 EXPO_PUBLIC_SCREENSHOT_MODE=true
