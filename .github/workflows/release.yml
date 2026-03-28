@@ -80,6 +80,10 @@ jobs:
       - name: Gate 1.5 - Require successful preview on same sha
         run: bash scripts/ios-preview-gate.sh
 
+      - name: Screenshot consistency check (advisory)
+        run: bash scripts/screenshot-consistency-check.sh
+        continue-on-error: true
+
       - name: Gate 2 - Prepare native iOS project
         run: bash scripts/ios-build-setup.sh production
 

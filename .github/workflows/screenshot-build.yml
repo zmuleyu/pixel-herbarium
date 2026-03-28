@@ -246,12 +246,11 @@ jobs:
           }
 
           FAIL=0
-          # 4-screen sequence matching app's useScreenshotSequence.ts
+          # 3-screen sequence matching app's useScreenshotSequence.ts
           # First screen needs longer timeout for cold start in CI
           capture_signal "screenshot_ready_home"      "e2e/current/01-home.png"      120 || FAIL=1
           capture_signal "screenshot_ready_checkin"    "e2e/current/02-checkin.png"   60  || FAIL=1
-          capture_signal "screenshot_ready_footprint"  "e2e/current/03-footprint.png" 60  || FAIL=1
-          capture_signal "screenshot_ready_settings"   "e2e/current/04-settings.png"  60  || FAIL=1
+          capture_signal "screenshot_ready_settings"   "e2e/current/03-settings.png"  60  || FAIL=1
 
           # Cleanup log stream
           kill $LOG_PID 2>/dev/null || true

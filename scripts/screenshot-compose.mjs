@@ -25,18 +25,13 @@ const SCREENSHOTS = [
   },
   {
     input: 'e2e/current/02-checkin.png',
-    title_ja: '写真で記録、思い出に残る',
-    output: 'e2e/composed/canvas/02-checkin.png',
+    title_ja: '日記で振り返る、花の思い出',
+    output: 'e2e/composed/canvas/02-diary.png',
   },
   {
-    input: 'e2e/current/03-footprint.png',
-    title_ja: 'あなたの花の足跡を一覧で',
-    output: 'e2e/composed/canvas/03-footprint.png',
-  },
-  {
-    input: 'e2e/current/04-settings.png',
+    input: 'e2e/current/03-settings.png',
     title_ja: 'あなたの花旅をカスタマイズ',
-    output: 'e2e/composed/canvas/04-settings.png',
+    output: 'e2e/composed/canvas/03-settings.png',
   },
 ];
 
