@@ -324,7 +324,7 @@ text = re.sub(
         log.error(error)
       }
     }
-    }""",
+""",
     text,
     count=1,
     flags=re.S,
