@@ -3,6 +3,15 @@ set -euo pipefail
 
 VARIANT="${1:-preview}"
 SCREENSHOT_MODE="${SCREENSHOT_MODE:-false}"
+PACKAGE_JSON_BAK=""
+
+restore_package_json() {
+  if [[ -n "$PACKAGE_JSON_BAK" && -f "$PACKAGE_JSON_BAK" ]]; then
+    mv "$PACKAGE_JSON_BAK" package.json
+  fi
+}
+
+trap restore_package_json EXIT
 
 echo "=== iOS build setup ==="
 echo "Variant: $VARIANT"
@@ -11,7 +20,10 @@ echo "Screenshot mode: $SCREENSHOT_MODE"
 bash scripts/inject-env.sh "$VARIANT"
 
 if [[ "$VARIANT" == "production" ]]; then
-  echo "=== Removing Expo dev client modules for production archive ==="
+  echo "=== Removing Expo dev client from production prebuild inputs ==="
+  PACKAGE_JSON_BAK="$(mktemp package.json.XXXXXX.bak)"
+  cp package.json "$PACKAGE_JSON_BAK"
+  node -e "const fs=require('fs');const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));if(pkg.dependencies){delete pkg.dependencies['expo-dev-client'];}fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2)+'\\n');"
   rm -rf \
     node_modules/expo-dev-client \
     node_modules/expo-dev-launcher \
@@ -27,7 +39,11 @@ EOF
 fi
 
 echo "=== Running Expo prebuild ==="
-npx expo prebuild --platform ios --clean
+if [[ "$VARIANT" == "production" ]]; then
+  npx expo prebuild --platform ios --clean --no-install
+else
+  npx expo prebuild --platform ios --clean
+fi
 
 echo "=== Applying pre-pod compatibility patches ==="
 bash scripts/patch-xcode26-compat.sh --pre-pod
