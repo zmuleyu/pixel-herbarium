@@ -167,16 +167,20 @@ if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
   run_patch \
     "node_modules/expo-image-picker/ios/MediaHandler.swift" \
     "expo-image-picker asset mime type" \
-    "replace" \
-    "  private func getMimeType(from asset: PHAsset?, fileExtension: String) -> String? {\n    let utType: UTType? = if #available(iOS 26.0, *) {\n      asset?.contentType ?? UTType(filenameExtension: fileExtension)\n    } else {\n      UTType(filenameExtension: fileExtension)\n    }\n    return utType?.preferredMIMEType\n  }\n" \
-    "  private func getMimeType(from asset: PHAsset?, fileExtension: String) -> String? {\n    // PH Xcode 16 compatibility patch: fallback expo-image-picker asset mime type inference.\n    let utType = UTType(filenameExtension: fileExtension)\n    return utType?.preferredMIMEType\n  }\n"
+    "regex" \
+    "" \
+    "" \
+    "  private func getMimeType\\(from asset: PHAsset\\?, fileExtension: String\\) -> String\\? \\{.*?return utType\\?\\.preferredMIMEType\\s*\\}" \
+    "  private func getMimeType(from asset: PHAsset?, fileExtension: String) -> String? {\n    // PH Xcode 16 compatibility patch: fallback expo-image-picker asset mime type inference.\n    let utType = UTType(filenameExtension: fileExtension)\n    return utType?.preferredMIMEType\n  }"
 
   run_patch \
     "node_modules/expo-image-picker/ios/MediaHandler.swift" \
     "expo-image-picker resource mime type" \
-    "replace" \
-    "  private func getMimeType(from resource: PHAssetResource, fileExtension: String) -> String? {\n    let utType: UTType? = if #available(iOS 26.0, *) {\n      resource.contentType\n    } else {\n      UTType(resource.uniformTypeIdentifier) ?? UTType(filenameExtension: fileExtension)\n    }\n    return utType?.preferredMIMEType\n  }\n" \
-    "  private func getMimeType(from resource: PHAssetResource, fileExtension: String) -> String? {\n    // PH Xcode 16 compatibility patch: fallback expo-image-picker resource mime type inference.\n    let utType = UTType(resource.uniformTypeIdentifier) ?? UTType(filenameExtension: fileExtension)\n    return utType?.preferredMIMEType\n  }\n"
+    "regex" \
+    "" \
+    "" \
+    "  private func getMimeType\\(from resource: PHAssetResource, fileExtension: String\\) -> String\\? \\{.*?return utType\\?\\.preferredMIMEType\\s*\\}" \
+    "  private func getMimeType(from resource: PHAssetResource, fileExtension: String) -> String? {\n    // PH Xcode 16 compatibility patch: fallback expo-image-picker resource mime type inference.\n    let utType = UTType(resource.uniformTypeIdentifier) ?? UTType(filenameExtension: fileExtension)\n    return utType?.preferredMIMEType\n  }"
 
   echo "=== Patching expo-image for Xcode 16.x ==="
 
