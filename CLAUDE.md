@@ -64,3 +64,24 @@ Research materials are in `docs/research/` (competitor, market, platform, data, 
 - `available_window DATERANGE` in plants table controls ★★★ seasonal availability — NULL means always available
 - All text facing users should go through i18next, not hardcoded strings
 - Comments in English, variable names in camelCase
+
+## Agent Collaboration
+
+- Default collaboration flow is file-based, not chat-based.
+- Handoffs must be written to `collab/reviews/build-handoff.md` before another agent continues build or release work.
+- Reviews must be written to `collab/reviews/build-review.md`.
+- For build work:
+  - Codex owns build, signing, workflow, and release execution.
+  - Claude Code follows the active handoff file and records review findings in the review file.
+- When resuming build work, read these first:
+  - `collab/reviews/build-handoff.md`
+  - `collab/reviews/build-review.md`
+- Do not restart strategy discussion if the handoff file already defines the active path.
+- Build and CI debugging uses strong governance after threshold crossing:
+  - switch to low-token mode after `>= 3` consecutive failures on the same pipeline
+  - handle only the first real error per round
+  - download diagnostics before deciding the fix
+  - keep output compressed to conclusion, run id/sha, first error, and next step
+- When the user asks to sync or notify Claude Code, proactively include the standard trigger message pointing to:
+  - `collab/reviews/build-handoff.md`
+  - `collab/reviews/build-review.md`

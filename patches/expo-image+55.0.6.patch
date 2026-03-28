@@ -72,8 +72,8 @@ index adcf377..ef9e47e 100644
    deinit {
 -    // Cancel pending requests when the view is deallocated.
 -    cancelPendingOperation()
-+    pendingOperation?.cancel()
-+    pendingOperation = nil
++    // Swift 6: nonisolated deinit cannot access non-Sendable @MainActor properties.
++    // SDWebImage cancels in-flight operations on deallocation.
    }
  
    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
