@@ -265,6 +265,13 @@
     "emptyTitle": "Take your first photo",
     "emptySub": "Stamp your flower photos\nand start your own flower diary 🌿"
   },
+  "diary": {
+    "totalCheckins": "Check-ins",
+    "spotsVisited": "Spots",
+    "allPhotos": "All Photos",
+    "emptyTitle": "No diary entries yet",
+    "emptySub": "Head to Home and capture your first flower photo"
+  },
   "onboarding": {
     "skip": "Skip",
     "next": "Next",

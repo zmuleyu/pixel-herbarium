@@ -7,6 +7,7 @@
     "profile": "マイページ",
     "home": "ホーム",
     "checkin": "打卡",
+    "diary": "日記",
     "footprint": "足跡",
     "settings": "設定"
   },
@@ -263,6 +264,13 @@
     "diaryCount": "{{count}}枚",
     "emptyTitle": "最初の一枚を撮ってみましょう",
     "emptySub": "お花の写真にスタンプを押して、\nあなただけの花日記を始めましょう 🌿"
+  },
+  "diary": {
+    "totalCheckins": "打卡数",
+    "spotsVisited": "訪問スポット",
+    "allPhotos": "すべての写真",
+    "emptyTitle": "まだ日記がありません",
+    "emptySub": "ホームから最初のお花写真を撮ってみましょう"
   },
   "onboarding": {
     "skip": "スキップ",

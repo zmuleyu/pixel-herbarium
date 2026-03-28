@@ -101,7 +101,8 @@ describe('TabLayout', () => {
     const output = renderToString();
     // All visible tabs should have their i18n label keys (double-escaped in JSON)
     expect(output).toContain('tabs.home');
-    expect(output).toContain('tabs.checkin');
+    // checkin tab now uses tabs.diary label key
+    expect(output).toContain('tabs.diary');
     expect(output).toContain('tabs.settings');
   });
 });
