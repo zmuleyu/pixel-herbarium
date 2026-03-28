@@ -3,6 +3,7 @@
 结论：
 - `preview-build.yml` 使用原生 `xcodebuild archive/export` 生成 Ad Hoc IPA。
 - `release.yml` 使用同一原生链路生成 App Store IPA，优先通过 App Store Connect API Key 提交；缺失时回退到 `eas submit`。
+- macOS runner 固定使用 `Xcode 16.4`，避免 `16.2` 缺失 iOS platform 的问题。
 - `screenshot-build.yml` 只走 simulator 路径，不需要 signing。
 - 所有链路均不使用 `eas build --local`。
 
