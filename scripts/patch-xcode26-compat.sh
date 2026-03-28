@@ -187,64 +187,82 @@ if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
   run_patch \
     "node_modules/expo-image/ios/ImageModule.swift" \
     "expo-image start animating main thread" \
-    "replace" \
-    "      AsyncFunction(\"startAnimating\") { (view: ImageView) in\n        if view.isSFSymbolSource {\n          view.startSymbolAnimation()\n        } else {\n          view.sdImageView.startAnimating()\n        }\n      }\n" \
+    "regex" \
+    "" \
+    "" \
+    "      AsyncFunction\\(\"startAnimating\"\\) \\{ \\(view: ImageView\\) in\\s*if view\\.isSFSymbolSource \\{\\s*view\\.startSymbolAnimation\\(\\)\\s*\\} else \\{\\s*view\\.sdImageView\\.startAnimating\\(\\)\\s*\\}\\s*\\}\\s*" \
     "      AsyncFunction(\"startAnimating\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: force expo-image startAnimating onto main thread.\n          if view.isSFSymbolSource {\n            view.startSymbolAnimation()\n          } else {\n            view.sdImageView.startAnimating()\n          }\n        }\n      }\n"
 
   run_patch \
     "node_modules/expo-image/ios/ImageModule.swift" \
     "expo-image stop animating main thread" \
-    "replace" \
-    "      AsyncFunction(\"stopAnimating\") { (view: ImageView) in\n        if view.isSFSymbolSource {\n          view.stopSymbolAnimation()\n        } else {\n          view.sdImageView.stopAnimating()\n        }\n      }\n" \
+    "regex" \
+    "" \
+    "" \
+    "      AsyncFunction\\(\"stopAnimating\"\\) \\{ \\(view: ImageView\\) in\\s*if view\\.isSFSymbolSource \\{\\s*view\\.stopSymbolAnimation\\(\\)\\s*\\} else \\{\\s*view\\.sdImageView\\.stopAnimating\\(\\)\\s*\\}\\s*\\}\\s*" \
     "      AsyncFunction(\"stopAnimating\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: force expo-image stopAnimating onto main thread.\n          if view.isSFSymbolSource {\n            view.stopSymbolAnimation()\n          } else {\n            view.sdImageView.stopAnimating()\n          }\n        }\n      }\n"
 
   run_patch \
     "node_modules/expo-image/ios/ImageModule.swift" \
     "expo-image lock resource main thread" \
-    "replace" \
-    "      AsyncFunction(\"lockResourceAsync\") { (view: ImageView) in\n        view.lockResource = true\n      }\n" \
+    "regex" \
+    "" \
+    "" \
+    "      AsyncFunction\\(\"lockResourceAsync\"\\) \\{ \\(view: ImageView\\) in\\s*view\\.lockResource = true\\s*\\}\\s*" \
     "      AsyncFunction(\"lockResourceAsync\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: mutate expo-image lockResource on main thread.\n          view.lockResource = true\n        }\n      }\n"
 
   run_patch \
     "node_modules/expo-image/ios/ImageModule.swift" \
     "expo-image unlock resource main thread" \
-    "replace" \
-    "      AsyncFunction(\"unlockResourceAsync\") { (view: ImageView) in\n        view.lockResource = false\n      }\n" \
+    "regex" \
+    "" \
+    "" \
+    "      AsyncFunction\\(\"unlockResourceAsync\"\\) \\{ \\(view: ImageView\\) in\\s*view\\.lockResource = false\\s*\\}\\s*" \
     "      AsyncFunction(\"unlockResourceAsync\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: mutate expo-image lockResource on main thread.\n          view.lockResource = false\n        }\n      }\n"
 
   run_patch \
     "node_modules/expo-image/ios/ImageModule.swift" \
     "expo-image reload main thread" \
-    "replace" \
-    "      AsyncFunction(\"reloadAsync\") { (view: ImageView) in\n        view.reload(force: true)\n      }\n" \
+    "regex" \
+    "" \
+    "" \
+    "      AsyncFunction\\(\"reloadAsync\"\\) \\{ \\(view: ImageView\\) in\\s*view\\.reload\\(force: true\\)\\s*\\}\\s*" \
     "      AsyncFunction(\"reloadAsync\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: force expo-image reloadAsync onto main thread.\n          view.reload(force: true)\n        }\n      }\n"
 
   run_patch \
     "node_modules/expo-image/ios/ImageModule.swift" \
     "expo-image view did update props main thread" \
-    "replace" \
-    "      OnViewDidUpdateProps { view in\n        view.reload()\n      }\n" \
+    "regex" \
+    "" \
+    "" \
+    "      OnViewDidUpdateProps \\{ view in\\s*view\\.reload\\(\\)\\s*\\}\\s*" \
     "      OnViewDidUpdateProps { view in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: force expo-image prop reload onto main thread.\n          view.reload()\n        }\n      }\n"
 
   run_patch \
     "node_modules/expo-image/ios/ImageView.swift" \
     "expo-image deinit cancel pending operation" \
-    "replace" \
-    "  deinit {\n    // Cancel pending requests when the view is deallocated.\n    cancelPendingOperation()\n  }\n" \
+    "regex" \
+    "" \
+    "" \
+    "  deinit \\{\\s*// Cancel pending requests when the view is deallocated\\.\\s*cancelPendingOperation\\(\\)\\s*\\}\\s*" \
     "  deinit {\n    // PH Xcode 16 compatibility patch: cancel expo-image pending operation without actor-isolated helper.\n    pendingOperation?.cancel()\n    pendingOperation = nil\n  }\n"
 
   run_patch \
     "node_modules/expo-image/ios/ImageView.swift" \
     "expo-image draw symbol effects" \
-    "replace" \
-    "  @available(iOS 26.0, tvOS 26.0, *)\n  private func applySymbolEffectiOS26(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {\n    switch effect {\n    case .drawOn:\n      switch scope {\n      case .byLayer: sdImageView.addSymbolEffect(.drawOn.byLayer, options: options)\n      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOn.wholeSymbol, options: options)\n      case .none: sdImageView.addSymbolEffect(.drawOn, options: options)\n      }\n    case .drawOff:\n      switch scope {\n      case .byLayer: sdImageView.addSymbolEffect(.drawOff.byLayer, options: options)\n      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOff.wholeSymbol, options: options)\n      case .none: sdImageView.addSymbolEffect(.drawOff, options: options)\n      }\n    default:\n      break\n    }\n  }\n" \
+    "regex" \
+    "" \
+    "" \
+    "  @available\\(iOS 26\\.0, tvOS 26\\.0, \\*\\)\\s*private func applySymbolEffectiOS26\\(effect: SFSymbolEffectType, scope: SFSymbolEffectScope\\?, options: SymbolEffectOptions\\) \\{.*?\\n  \\}\\s*" \
     "  @available(iOS 26.0, tvOS 26.0, *)\n  private func applySymbolEffectiOS26(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {\n    // PH Xcode 16 compatibility patch: disable expo-image iOS 26 draw symbol effects.\n  }\n"
 
   run_patch \
     "node_modules/expo-image/ios/ImageView.swift" \
     "expo-image analyze image main actor" \
-    "replace" \
-    "    Task {\n      guard let imageAnalyzer = Self.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction() else {\n        return\n      }\n      let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])\n\n      do {\n        let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)\n\n        // Make sure the image haven't changed in the meantime.\n        if image == sdImageView.image {\n          imageAnalysisInteraction.analysis = imageAnalysis\n          imageAnalysisInteraction.preferredInteractionTypes = .automatic\n        }\n      } catch {\n        log.error(error)\n      }\n    }\n" \
+    "regex" \
+    "" \
+    "" \
+    "    Task \\{\\s*guard let imageAnalyzer = Self\\.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction\\(\\) else \\{\\s*return\\s*\\}\\s*let configuration = ImageAnalyzer\\.Configuration\\(\\[\\.text, \\.machineReadableCode\\]\\)\\s*do \\{.*?\\s*\\} catch \\{\\s*log\\.error\\(error\\)\\s*\\}\\s*\\}\\s*" \
     "    Task { @MainActor in\n      // PH Xcode 16 compatibility patch: expo-image analyze image main actor\n      guard let imageAnalyzer = Self.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction() else {\n        return\n      }\n      let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])\n\n      do {\n        let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)\n\n        if image == sdImageView.image {\n          imageAnalysisInteraction.analysis = imageAnalysis\n          imageAnalysisInteraction.preferredInteractionTypes = .automatic\n        }\n      } catch {\n        log.error(error)\n      }\n    }\n"
 
   echo "Pre-pod patches applied"
