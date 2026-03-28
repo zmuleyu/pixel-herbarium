@@ -9,8 +9,10 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 60
     env:
-      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       BUNDLE_ID: com.pixelherbarium.app
+      EXPO_PUBLIC_SUPABASE_URL: https://uwdgnueaycatmkzkbxwo.supabase.co
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+      SCREENSHOT_MODE: "true"
 
     steps:
       # ── Setup ──────────────────────────────────────────────────────
@@ -23,17 +25,6 @@ jobs:
 
       - run: npm ci
 
-      # ── Env var injection (root cause fix for Metro not reading shell env) ──
-      - name: Inject screenshot-mode env vars into .env.local
-        run: |
-          cat > .env.local << 'EOF'
-          EXPO_PUBLIC_SCREENSHOT_MODE=true
-          EXPO_PUBLIC_SUPABASE_URL=https://uwdgnueaycatmkzkbxwo.supabase.co
-          EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3ZGdudWVheWNhdG1remtieHdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTEwMTIsImV4cCI6MjA4OTA2NzAxMn0.ShB7IWQCZ1L3OQi53PqbVVNIJmvUSml0t7Dy15g_clg
-          NO_PROXY=localhost,127.0.0.1,::1,0.0.0.0
-          EOF
-          echo "✓ .env.local written with SCREENSHOT_MODE=true"
-
       # ── Select Xcode ───────────────────────────────────────────────
       - name: Select Xcode 26
         run: |
@@ -44,44 +35,9 @@ jobs:
           sudo xcode-select -s "$TARGET/Contents/Developer"
           xcodebuild -version
 
-      # ── Patch node_modules for Xcode 26 ────────────────────────────
-      - name: Patch expo-modules-core for Xcode 26
-        run: |
-          # Swift 6.0 → 5.9
-          sed -i '' "s/s\.swift_version  = '6\.0'/s.swift_version  = '5.9'/" \
-            node_modules/expo-modules-core/ExpoModulesCore.podspec 2>/dev/null || true
-
-          # Remove @MainActor (Swift 6 syntax)
-          HOSTING="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIHostingView.swift"
-          VIRTUAL="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIVirtualView.swift"
-          VIEWDEF="node_modules/expo-modules-core/ios/Core/Views/ViewDefinition.swift"
-          sed -i '' 's/, @MainActor AnyExpoSwiftUIHostingView/, AnyExpoSwiftUIHostingView/' "$HOSTING" 2>/dev/null || true
-          sed -i '' 's/: @MainActor ExpoSwiftUI\.ViewWrapper/: ExpoSwiftUI.ViewWrapper/' "$VIRTUAL" 2>/dev/null || true
-          sed -i '' 's/extension UIView: @MainActor AnyArgument {/extension UIView: AnyArgument {/' "$VIEWDEF" 2>/dev/null || true
-
-          echo "=== Patch verification ==="
-          grep "swift_version" node_modules/expo-modules-core/ExpoModulesCore.podspec || true
-
       # ── Native build ───────────────────────────────────────────────
-      - name: Expo prebuild
-        run: npx expo prebuild --platform ios --clean
-
-      - name: Pod install
-        run: cd ios && pod install && cd ..
-
-      - name: Patch folly headers
-        run: |
-          find ios/Pods -name '*.h' -path '*/folly/*' -type l 2>/dev/null | while read f; do
-            cp -L "$f" "$f.tmp" && mv "$f.tmp" "$f"
-          done
-          PATCHED=0
-          for f in $(find ios/Pods -name '*.h' -path '*/folly/*' -type f 2>/dev/null); do
-            if grep -q '#if FOLLY_HAS_COROUTINES' "$f" 2>/dev/null; then
-              sed -i '' 's/#if FOLLY_HAS_COROUTINES/#if 0 \/* FOLLY_HAS_COROUTINES disabled *\//' "$f"
-              PATCHED=$((PATCHED + 1))
-            fi
-          done
-          echo "Folly files patched: $PATCHED"
+      - name: Prepare native iOS project
+        run: bash scripts/ios-build-setup.sh development
 
       - name: Build simulator app
         run: |

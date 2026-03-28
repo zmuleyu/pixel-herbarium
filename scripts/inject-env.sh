@@ -1,7 +1,7 @@
 #!/bin/bash
 # inject-env.sh — Write .env.local for GHA builds
-# Usage: bash scripts/inject-env.sh [preview|production]
-set -e
+# Usage: bash scripts/inject-env.sh [preview|production|development]
+set -euo pipefail
 
 VARIANT="${1:-preview}"
 

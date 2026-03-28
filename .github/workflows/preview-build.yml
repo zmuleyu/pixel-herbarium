@@ -8,7 +8,6 @@ on:
         type: boolean
         default: false
 
-# One preview build at a time
 concurrency:
   group: preview-build
   cancel-in-progress: true
@@ -36,12 +35,17 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 90
     env:
-      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EXPO_PUBLIC_SUPABASE_URL: https://uwdgnueaycatmkzkbxwo.supabase.co
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+      IOS_DIST_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+      IOS_DIST_P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+      IOS_PROFILE_BASE64: ${{ secrets.ADHOC_PROVISIONING_PROFILE_BASE64 }}
+      KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      BUNDLE_ID: com.pixelherbarium.app
     steps:
       - uses: actions/checkout@v4
 
-      # Xcode 16.2 — proven stable for eas build --local with Expo SDK 55
-      # (Xcode 26 causes Swift 6 strict concurrency errors in eas-cli-local-build-plugin)
       - name: Select Xcode 16.2
         uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -54,54 +58,14 @@ jobs:
 
       - run: npm ci
 
-      - name: Patch expo-modules-core for Swift 5.9 compatibility
-        run: |
-          # Downgrade swift_version 6.0 → 5.9 in podspec
-          sed -i '' "s/s\.swift_version  = '6\.0'/s.swift_version  = '5.9'/" \
-            node_modules/expo-modules-core/ExpoModulesCore.podspec
+      - name: Prepare native iOS project
+        run: bash scripts/ios-build-setup.sh preview
 
-          # Remove @MainActor from conformance lists (Swift 6 syntax, invalid in 5.9)
-          HOSTING="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIHostingView.swift"
-          VIRTUAL="node_modules/expo-modules-core/ios/Core/Views/SwiftUI/SwiftUIVirtualView.swift"
-          VIEWDEF="node_modules/expo-modules-core/ios/Core/Views/ViewDefinition.swift"
-          sed -i '' 's/, @MainActor AnyExpoSwiftUIHostingView/, AnyExpoSwiftUIHostingView/' "$HOSTING"
-          sed -i '' 's/: @MainActor ExpoSwiftUI\.ViewWrapper/: ExpoSwiftUI.ViewWrapper/' "$VIRTUAL"
-          sed -i '' 's/extension UIView: @MainActor AnyArgument {/extension UIView: AnyArgument {/' "$VIEWDEF"
+      - name: Configure signing keychain
+        run: bash scripts/ios-keychain-signing.sh
 
-          echo "✓ Swift patches applied"
-          grep "swift_version" node_modules/expo-modules-core/ExpoModulesCore.podspec
-
-      - name: Build preview IPA (Ad Hoc, local)
-        run: |
-          set -e
-          npx eas build --local \
-            --profile preview \
-            --platform ios \
-            --non-interactive \
-            --output preview.ipa
-          ls -lh preview.ipa
-
-      - name: Patch folly headers (disable coroutines — post pod install)
-        if: failure()
-        run: |
-          # Fallback: if build failed due to folly coroutines, patch and retry
-          find ios/Pods -name '*.h' -path '*/folly/*' -type l 2>/dev/null | while read f; do
-            cp -L "$f" "$f.tmp" && mv "$f.tmp" "$f"
-          done
-          PATCHED=0
-          for f in $(find ios/Pods -name '*.h' -path '*/folly/*' -type f 2>/dev/null); do
-            if grep -q '#if FOLLY_HAS_COROUTINES' "$f" 2>/dev/null; then
-              sed -i '' 's/#if FOLLY_HAS_COROUTINES/#if 0 \/* disabled *\//' "$f"
-              PATCHED=$((PATCHED + 1))
-            fi
-          done
-          echo "Patched $PATCHED folly files — retrying build..."
-          npx eas build --local \
-            --profile preview \
-            --platform ios \
-            --non-interactive \
-            --output preview.ipa
-          ls -lh preview.ipa
+      - name: Build preview IPA
+        run: bash scripts/ios-build-archive.sh ad-hoc preview.ipa
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
@@ -110,20 +74,3 @@ jobs:
           name: preview-ipa-${{ github.sha }}
           path: preview.ipa
           retention-days: 7
-
-      - name: Install instructions
-        if: success()
-        run: |
-          echo ""
-          echo "╔══════════════════════════════════════════════╗"
-          echo "║          Preview IPA Build Complete          ║"
-          echo "╠══════════════════════════════════════════════╣"
-          echo "║ Profile:   preview (Ad Hoc, internal)        ║"
-          echo "║ Artifact:  preview-ipa-${{ github.sha }}     ║"
-          echo "╠══════════════════════════════════════════════╣"
-          echo "║ Install:                                     ║"
-          echo "║  1. Download preview.ipa from Artifacts      ║"
-          echo "║  2. Use Apple Configurator 2 or             ║"
-          echo "║     ideviceinstaller to sideload             ║"
-          echo "║  3. iOS 16+: Settings → Privacy → Dev Mode  ║"
-          echo "╚══════════════════════════════════════════════╝"
