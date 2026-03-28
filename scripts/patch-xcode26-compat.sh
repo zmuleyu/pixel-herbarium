@@ -9,6 +9,15 @@ set -e
 
 MODE="${1:---all}"
 
+if command -v python3 >/dev/null 2>&1; then
+  PYTHON_BIN="python3"
+elif command -v python >/dev/null 2>&1; then
+  PYTHON_BIN="python"
+else
+  echo "python3 or python is required" >&2
+  exit 1
+fi
+
 if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
   echo "=== Patching expo-modules-core (Swift 6.0 -> 5.9) ==="
 
@@ -36,7 +45,7 @@ if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
   ROUTER_MODULE="node_modules/expo-router/ios/Toolbar/RouterToolbarModule.swift"
 
   if [ -f "$ROUTER_HOST" ]; then
-    python - <<'PY'
+    "$PYTHON_BIN" - <<'PY'
 from pathlib import Path
 path = Path("node_modules/expo-router/ios/Toolbar/RouterToolbarHostView.swift")
 text = path.read_text(encoding="utf-8")
@@ -57,7 +66,7 @@ PY
   fi
 
   if [ -f "$ROUTER_ITEM" ]; then
-    python - <<'PY'
+    "$PYTHON_BIN" - <<'PY'
 from pathlib import Path
 path = Path("node_modules/expo-router/ios/Toolbar/RouterToolbarItemView.swift")
 text = path.read_text(encoding="utf-8")
@@ -113,7 +122,7 @@ PY
   fi
 
   if [ -f "$ROUTER_MODULE" ]; then
-    python - <<'PY'
+    "$PYTHON_BIN" - <<'PY'
 from pathlib import Path
 path = Path("node_modules/expo-router/ios/Toolbar/RouterToolbarModule.swift")
 text = path.read_text(encoding="utf-8")
@@ -128,6 +137,25 @@ text = text.replace(
 """    case .prominent:
       return .done
 """)
+path.write_text(text, encoding="utf-8")
+PY
+  fi
+
+  echo "=== Patching expo-notifications DateComponentsSerializer for Xcode 16.x ==="
+
+  NOTIFICATIONS_DATE_COMPONENTS="node_modules/expo-notifications/ios/ExpoNotifications/Notifications/DateComponentsSerializer.swift"
+  if [ -f "$NOTIFICATIONS_DATE_COMPONENTS" ]; then
+    "$PYTHON_BIN" - <<'PY'
+from pathlib import Path
+import re
+path = Path("node_modules/expo-notifications/ios/ExpoNotifications/Notifications/DateComponentsSerializer.swift")
+text = path.read_text(encoding="utf-8")
+text = re.sub(
+    r'\s*if #available\(iOS 26\.0, \*\) \{\s*serializedComponents\["isRepeatedDay"\] = dateComponents\.isRepeatedDay \?\? false\s*\}\s*',
+    '\n    // Xcode 16.x SDK does not expose iOS 26 DateComponents.isRepeatedDay.\n\n',
+    text,
+    count=1,
+)
 path.write_text(text, encoding="utf-8")
 PY
   fi
