@@ -109,36 +109,46 @@ if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
   run_patch \
     "node_modules/expo-router/ios/Toolbar/RouterToolbarHostView.swift" \
     "expo-router toolbar background" \
-    "replace" \
-    "            if #available(iOS 26.0, *) {\n              if let hidesSharedBackground = menu.hidesSharedBackground {\n                item.hidesSharedBackground = hidesSharedBackground\n              }\n              if let sharesBackground = menu.sharesBackground {\n                item.sharesBackground = sharesBackground\n              }\n            }\n" \
-    "            // PH Xcode 16 compatibility patch: disable expo-router toolbar background APIs.\n"
+    "regex" \
+    "" \
+    "" \
+    "\\s*if #available\\(iOS 26\\.0, \\*\\) \\{\\s*if let hidesSharedBackground = menu\\.hidesSharedBackground \\{\\s*item\\.hidesSharedBackground = hidesSharedBackground\\s*\\}\\s*if let sharesBackground = menu\\.sharesBackground \\{\\s*item\\.sharesBackground = sharesBackground\\s*\\}\\s*\\}\\s*" \
+    "\n            // PH Xcode 16 compatibility patch: disable expo-router toolbar background APIs.\n"
 
   run_patch \
     "node_modules/expo-router/ios/Toolbar/RouterToolbarItemView.swift" \
     "expo-router toolbar search button" \
-    "replace" \
-    "      item = controller.navigationItem.searchBarPlacementBarButtonItem\n" \
-    "      logger?.warn(\n        \"[expo-router] Toolbar search bar is unavailable on the current Xcode SDK.\"\n      )\n      currentBarButtonItem = nil\n      // PH Xcode 16 compatibility patch: disable expo-router toolbar search button.\n      return\n"
+    "regex" \
+    "" \
+    "" \
+    "\\s*item = controller\\.navigationItem\\.searchBarPlacementBarButtonItem\\s*" \
+    "\n      logger?.warn(\n        \"[expo-router] Toolbar search bar is unavailable on the current Xcode SDK.\"\n      )\n      currentBarButtonItem = nil\n      // PH Xcode 16 compatibility patch: disable expo-router toolbar search button.\n      return\n"
 
   run_patch \
     "node_modules/expo-router/ios/Toolbar/RouterToolbarItemView.swift" \
     "expo-router toolbar background item" \
-    "replace" \
-    "    if #available(iOS 26.0, *) {\n      item.hidesSharedBackground = hidesSharedBackground\n      item.sharesBackground = sharesBackground\n    }\n" \
-    "    // PH Xcode 16 compatibility patch: disable expo-router toolbar item background APIs.\n"
+    "regex" \
+    "" \
+    "" \
+    "\\s*if #available\\(iOS 26\\.0, \\*\\) \\{\\s*item\\.hidesSharedBackground = hidesSharedBackground\\s*item\\.sharesBackground = sharesBackground\\s*\\}\\s*" \
+    "\n    // PH Xcode 16 compatibility patch: disable expo-router toolbar item background APIs.\n"
 
   run_patch \
     "node_modules/expo-router/ios/Toolbar/RouterToolbarItemView.swift" \
     "expo-router toolbar badge" \
-    "replace" \
-    "    if #available(iOS 26.0, *) {\n      if let badgeConfig = badgeConfiguration {\n        var badge = UIBarButtonItem.Badge.indicator()\n        if let value = badgeConfig.value {\n          badge = .string(value)\n        }\n        if let backgroundColor = badgeConfig.backgroundColor {\n          badge.backgroundColor = backgroundColor\n        }\n        if let foregroundColor = badgeConfig.color {\n          badge.foregroundColor = foregroundColor\n        }\n        if badgeConfig.fontFamily != nil || badgeConfig.fontSize != nil\n          || badgeConfig.fontWeight != nil {\n          let font = RouterFontUtils.convertTitleStyleToFont(\n            TitleStyle(\n              fontFamily: badgeConfig.fontFamily,\n              fontSize: badgeConfig.fontSize,\n              fontWeight: badgeConfig.fontWeight\n            ))\n          badge.font = font\n        }\n        item.badge = badge\n      } else {\n        item.badge = nil\n      }\n    }\n" \
-    "    // PH Xcode 16 compatibility patch: disable expo-router toolbar badge APIs.\n"
+    "regex" \
+    "" \
+    "" \
+    "\\s*if #available\\(iOS 26\\.0, \\*\\) \\{\\s*if let badgeConfig = badgeConfiguration \\{.*?item\\.badge = badge\\s*\\} else \\{\\s*item\\.badge = nil\\s*\\}\\s*\\}\\s*" \
+    "\n    // PH Xcode 16 compatibility patch: disable expo-router toolbar badge APIs.\n"
 
   run_patch \
     "node_modules/expo-router/ios/Toolbar/RouterToolbarModule.swift" \
     "expo-router prominent fallback" \
-    "replace" \
-    "    case .prominent:\n      if #available(iOS 26.0, *) {\n        return .prominent\n      } else {\n        return .done\n      }\n" \
+    "regex" \
+    "" \
+    "" \
+    "    case \\.prominent:\\s*if #available\\(iOS 26\\.0, \\*\\) \\{\\s*return \\.prominent\\s*\\} else \\{\\s*return \\.done\\s*\\}\\s*" \
     "    case .prominent:\n      // PH Xcode 16 compatibility patch: fallback expo-router prominent to done.\n      return .done\n"
 
   echo "=== Patching expo-notifications for Xcode 16.x ==="
