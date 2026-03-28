@@ -28,37 +28,43 @@ export function useScreenshotSequence() {
     if (!FEATURES.SCREENSHOT_MODE) return;
     if (started.current) return;
 
-    // Wait until tabs are actually mounted
-    const inTabs = segments[0] === '(tabs)';
-    if (!inTabs) {
-      console.log('[SCREENSHOT_SEQ] Waiting for tabs to mount...');
+    // Wait until we are actually on the home tab (not just in tabs).
+    // _layout.tsx redirect fires router.replace('/(tabs)/home') after bootstrap.
+    // We must wait for that redirect to complete before starting the sequence,
+    // otherwise our own router.replace races with it and the screenshot may
+    // capture the wrong tab.
+    const inHome = segments[0] === '(tabs)' && segments[1] === 'home';
+    if (!inHome) {
+      console.log('[SCREENSHOT_SEQ] Waiting for home tab...', segments);
       return;
     }
 
     started.current = true;
-    console.log('[SCREENSHOT_SEQ] Tabs ready — starting signal-driven sequence');
+    console.log('[SCREENSHOT_SEQ] Home tab ready — starting signal-driven sequence');
 
     const run = async () => {
       await clearScreenshotSignals();
 
-      // Navigate to home explicitly — don't assume we're already there
-      // (redirect in _layout.tsx may not fire if tabs are already mounted)
-      router.replace('/(tabs)/home' as any);
+      // Already on home — wait for staggered entry animations to finish
       await waitForRender();
-      // Extra settle: home uses useStaggeredEntry animations (4 components)
-      await new Promise<void>(resolve => setTimeout(resolve, 500));
+      await delay(1500); // CI cold start: LinearGradient + 4 staggered components
 
       // 01 — Home
+      console.log('[SCREENSHOT_SEQ] Signaling home');
       await signalAndWait('screenshot_ready_home');
 
       // 02 — Diary (check-in history as photo diary)
       router.push('/(tabs)/checkin' as any);
       await waitForRender();
+      await delay(500); // stat cards + grid settle
+      console.log('[SCREENSHOT_SEQ] Signaling checkin/diary');
       await signalAndWait('screenshot_ready_checkin');
 
       // 03 — Settings
       router.push('/(tabs)/settings' as any);
       await waitForRender();
+      await delay(500);
+      console.log('[SCREENSHOT_SEQ] Signaling settings');
       await signalAndWait('screenshot_ready_settings');
 
       console.log('[SCREENSHOT_SEQ] Sequence complete');
