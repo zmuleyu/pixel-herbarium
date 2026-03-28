@@ -15,6 +15,7 @@ jest.mock('@/utils/guide-storage', () => ({
   resetAllGuides: jest.fn().mockResolvedValue(undefined),
 }));
 jest.mock('expo-router', () => ({
+  useRouter: () => ({ back: jest.fn(), push: jest.fn(), replace: jest.fn() }),
   Stack: {
     Screen: 'StackScreen',
   },

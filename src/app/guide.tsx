@@ -3,7 +3,7 @@
 // Users can re-watch any feature's coach-mark guide or reset all at once.
 
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
-import { Stack } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { resetGuide, resetAllGuides } from '@/utils/guide-storage';
@@ -17,6 +17,7 @@ const FEATURES = [
 
 export default function GuideScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
 
   async function handleReset(feature: string) {
     await resetGuide(feature);
@@ -29,10 +30,13 @@ export default function GuideScreen() {
   }
 
   return (
-    <>
-      <Stack.Screen options={{ title: t('guide.settings.title') }} />
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <Text style={styles.subtitle}>{t('guide.settings.subtitle')}</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <TouchableOpacity onPress={() => router.back()} style={styles.backRow}>
+        <Text style={styles.backText}>← {t('common.back')}</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.title}>{t('guide.settings.title')}</Text>
+      <Text style={styles.subtitle}>{t('guide.settings.subtitle')}</Text>
 
         {FEATURES.map((f) => (
           <View key={f.key} style={styles.card}>
@@ -48,15 +52,14 @@ export default function GuideScreen() {
           </View>
         ))}
 
-        <TouchableOpacity
-          style={styles.resetAllBtn}
-          onPress={handleResetAll}
-          accessibilityRole="button"
-        >
-          <Text style={styles.resetAllBtnText}>{t('guide.settings.resetAll')}</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </>
+      <TouchableOpacity
+        style={styles.resetAllBtn}
+        onPress={handleResetAll}
+        accessibilityRole="button"
+      >
+        <Text style={styles.resetAllBtnText}>{t('guide.settings.resetAll')}</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
@@ -70,6 +73,13 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xl,
     paddingBottom: spacing.xl,
     gap: spacing.md,
+  },
+  backRow: { alignSelf: 'flex-start' },
+  backText: { color: colors.plantPrimary, fontSize: typography.fontSize.sm },
+  title: {
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.xl,
+    color: colors.text,
   },
   subtitle: {
     fontFamily: typography.fontFamily.body,

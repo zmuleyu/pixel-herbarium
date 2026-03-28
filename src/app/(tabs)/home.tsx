@@ -111,7 +111,8 @@ export default function HomeScreen() {
           {/* Season Header with gradient */}
           <Animated.View style={entryStyle(0)}>
             <LinearGradient
-              colors={[theme.bgTint, colors.background]}
+              colors={[theme.accent, theme.bgTint, colors.background]}
+              locations={[0, 0.5, 1]}
               start={{ x: 0.5, y: 0 }}
               end={{ x: 0.5, y: 1 }}
               style={styles.headerGradient}
@@ -190,6 +191,8 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.display,
     fontSize: typography.fontSize.xxl,
     fontWeight: fontWeight.heavy,
+    textAlign: 'center',
+    letterSpacing: 1,
   },
   dateText: {
     fontSize: typography.fontSize.sm,
