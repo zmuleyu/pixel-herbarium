@@ -160,6 +160,37 @@ path.write_text(text, encoding="utf-8")
 PY
   fi
 
+  echo "=== Patching expo-image-picker contentType APIs for Xcode 16.x ==="
+
+  IMAGE_PICKER_MEDIA_HANDLER="node_modules/expo-image-picker/ios/MediaHandler.swift"
+  if [ -f "$IMAGE_PICKER_MEDIA_HANDLER" ]; then
+    "$PYTHON_BIN" - <<'PY'
+from pathlib import Path
+import re
+path = Path("node_modules/expo-image-picker/ios/MediaHandler.swift")
+text = path.read_text(encoding="utf-8")
+text = re.sub(
+    r'  private func getMimeType\(from asset: PHAsset\?, fileExtension: String\) -> String\? \{\s+let utType: UTType\? = if #available\(iOS 26\.0, \*\) \{\s+asset\?\.contentType \?\? UTType\(filenameExtension: fileExtension\)\s+\} else \{\s+UTType\(filenameExtension: fileExtension\)\s+\}\s+return utType\?\.preferredMIMEType\s+\}',
+    """  private func getMimeType(from asset: PHAsset?, fileExtension: String) -> String? {
+    let utType = UTType(filenameExtension: fileExtension)
+    return utType?.preferredMIMEType
+  }""",
+    text,
+    count=1,
+)
+text = re.sub(
+    r'  private func getMimeType\(from resource: PHAssetResource, fileExtension: String\) -> String\? \{\s+let utType: UTType\? = if #available\(iOS 26\.0, \*\) \{\s+resource\.contentType\s+\} else \{\s+UTType\(resource\.uniformTypeIdentifier\) \?\? UTType\(filenameExtension: fileExtension\)\s+\}\s+return utType\?\.preferredMIMEType\s+\}',
+    """  private func getMimeType(from resource: PHAssetResource, fileExtension: String) -> String? {
+    let utType = UTType(resource.uniformTypeIdentifier) ?? UTType(filenameExtension: fileExtension)
+    return utType?.preferredMIMEType
+  }""",
+    text,
+    count=1,
+)
+path.write_text(text, encoding="utf-8")
+PY
+  fi
+
   echo "Pre-pod patches applied"
 fi
 
