@@ -51,17 +51,12 @@ export function useScreenshotSequence() {
       // 01 — Home
       await signalAndWait('screenshot_ready_home');
 
-      // 02 — Checkin (photo step, no tooltip in SCREENSHOT_MODE)
+      // 02 — Diary (check-in history as photo diary)
       router.push('/(tabs)/checkin' as any);
       await waitForRender();
       await signalAndWait('screenshot_ready_checkin');
 
-      // 03 — Footprint (history grid with emoji placeholders)
-      router.push('/(tabs)/footprint' as any);
-      await waitForRender();
-      await signalAndWait('screenshot_ready_footprint');
-
-      // 04 — Settings
+      // 03 — Settings
       router.push('/(tabs)/settings' as any);
       await waitForRender();
       await signalAndWait('screenshot_ready_settings');
