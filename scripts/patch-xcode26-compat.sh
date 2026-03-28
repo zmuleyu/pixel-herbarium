@@ -199,8 +199,8 @@ if [[ "$MODE" == "--pre-pod" || "$MODE" == "--all" ]]; then
     "regex" \
     "" \
     "" \
-    "      AsyncFunction\\(\"stopAnimating\"\\) \\{ \\(view: ImageView\\) in[\\s\\S]*?\\n      \\}(?=\\n\\n      AsyncFunction\\(\"lockResourceAsync\"\\))" \
-    "      AsyncFunction(\"stopAnimating\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: force expo-image stopAnimating onto main thread.\n          if view.isSFSymbolSource {\n            view.stopSymbolAnimation()\n          } else {\n            view.sdImageView.stopAnimating()\n          }\n        }\n      }\n"
+    "(      AsyncFunction\\(\"stopAnimating\"\\) \\{ \\(view: ImageView\\) in)[\\s\\S]*?(\\n\\s*AsyncFunction\\(\"lockResourceAsync\"\\) \\{ \\(view: ImageView\\) in)" \
+    "      AsyncFunction(\"stopAnimating\") { (view: ImageView) in\n        DispatchQueue.main.async {\n          // PH Xcode 16 compatibility patch: force expo-image stopAnimating onto main thread.\n          if view.isSFSymbolSource {\n            view.stopSymbolAnimation()\n          } else {\n            view.sdImageView.stopAnimating()\n          }\n        }\n      }\n$2"
 
   run_patch \
     "node_modules/expo-image/ios/ImageModule.swift" \
