@@ -66,6 +66,24 @@ jobs:
 
       - run: npm ci
 
+      - name: Check EAS build quota (advisory)
+        run: |
+          COUNT=$(npx eas build:list --platform ios --limit 10 --json 2>/dev/null | \
+            node -e "
+              const d=require('fs').readFileSync('/dev/stdin','utf8');
+              const arr=JSON.parse(d);
+              const now=new Date();
+              const monthStart=new Date(now.getFullYear(),now.getMonth(),1);
+              console.log(arr.filter(b=>new Date(b.createdAt)>=monthStart).length);
+            ")
+          echo "EAS builds this month: $COUNT / 10"
+          if [ "$COUNT" -ge 8 ]; then
+            echo "::warning::EAS Free quota nearly exhausted ($COUNT/10). Use GHA-only path for Dev Build."
+          fi
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        continue-on-error: true
+
       - name: Gate 1 - Verify workflow ref
         run: bash scripts/ios-ref-gate.sh
 

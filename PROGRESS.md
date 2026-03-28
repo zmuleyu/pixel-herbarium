@@ -1,36 +1,32 @@
 # Progress — pixel-herbarium
-Updated: 2026-03-27
+Updated: 2026-03-29
 
 ## 当前阶段
-v1.1.0 app-review Phase C ✅ 完成 → Phase D 准备中
+v1.1.0 build 4 已提交 ASC ✅ → 等 TestFlight 分发 → App Store 审核
 
 ## 待办
-- [ ] ⚠️ ASC截图手动排序（用户手动）：01-home→position1, 02-checkin→position2
-- [ ] app-review Phase D：`/app-review --phase D` → production build + Reviewer Run + eas submit
-- [x] DB migration：026/027/028 已推送 Supabase production（351 spots verified）
+- [ ] ASC build 4 处理完成 → TestFlight 分发给内部测试员验证
+- [ ] TestFlight 验证通过后提交 App Store 审核
+- [ ] preview-build.yml EAS配额预警 step 待 commit + push
+- [ ] Apr 01 EAS 配额重置后执行 `eas build --profile development --platform ios`（装 Dev Build）
+- [ ] 装完 Dev Build 后验证 `npx expo start --dev-client` 热重载正常
 - [ ] Layer 3: 弹窗/权限/引导 UI 规范落地
 - [ ] Layer 4: v2 水印编辑器 + 图鉑系统
 
 ## 已完成（本次 session）
-- [x] GHA simctl launch hang修复 + Simulator.app路径修复（e2deeb5）
-- [x] screenshot-compose.mjs 更新：03-footprint + 删除05-onboarding（0faa6e5）
-- [x] CI run 23640819862 成功：4张截图上传ASC 6.9" slot（已合成1320×2868）
-- [x] docs/screenshot-pipeline.md 创建：264行完整截图管线文档（2d09a80）
-- [x] app-review Phase C 截图验收完成
+- [x] Check-in tab 重写为日记浏览页（DiaryScreen）
+- [x] 拍照向导迁移至 /checkin-wizard（非 tab 路由）
+- [x] guide.tsx 添加自定义返回按钮（Slot 布局下 Stack.Screen 无效）
+- [x] Home 页视觉优化：seasonName 居中 + 3-stop 渐变
+- [x] buildNumber 3→4 + tsc/jest 全绿
+- [x] GHA preview-build + release 全 PASS
+- [x] Submit to ASC 成功（run 23687394903）
+- [x] 三层验证体系文档化（5 个记忆/skill 文件更新 + ios-local-preview-workflow.md 新建）
+- [x] preview-build.yml 新增 EAS 配额预警 step
 
 ## 已完成（历史）
-- [x] Task 1.1+1.2：ajisai/himawari/momiji 3季数据（251条）+ migrations 026/027/028 + SPOT_REGISTRY接入
-- [x] app-review Phase A PASS (563 tests) · Phase B PASS
-- [x] B fix：app.json 补 NSPhotoLibraryAddUsageDescription
-- [x] GHA screenshot-build.yml 创建（dev branch trigger）
-- [x] Swift 6 严格并发修复：expo-build-properties + SWIFT_STRICT_CONCURRENCY=minimal
-- [x] App Icon / Splash / TabBarIcon 品牌化
-- [x] brand.accent #D4537E 双层色系
-- [x] Petal Press brainstorming 完成：spec + context doc + HTML 原型预览 + code review
-- [x] Petal Press 动效实装（2026-03-23）：PetalPressAnimation.tsx + StampPreview 集成 + haptics.stampPress + 4 tests
-
-## 截图恢复命令
-```
-gh run view 23405055269 --repo zmuleyu/pixel-herbarium
-gh run download 23405055269 --repo zmuleyu/pixel-herbarium --dir ~/Downloads/screenshot-ipa
-```
+- [x] v1.1.0 build 3：3个 UI bug 修复 + preview+release PASS + ASC
+- [x] 788→790 tests，104 suites · iOS 构建迁移 GHA 原生 xcodebuild
+- [x] GHA 截图管线修复 + ASC 4 张截图上传
+- [x] app-review Phase A/B/C PASS
+- [x] DB migration 026/027/028 推送生产
