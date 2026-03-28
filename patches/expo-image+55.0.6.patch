@@ -63,7 +63,7 @@ index b1b701b..1a785ce 100644
      }
  
 diff --git a/node_modules/expo-image/ios/ImageView.swift b/node_modules/expo-image/ios/ImageView.swift
-index adcf377..7bed81a 100644
+index adcf377..ef9e47e 100644
 --- a/node_modules/expo-image/ios/ImageView.swift
 +++ b/node_modules/expo-image/ios/ImageView.swift
 @@ -130,8 +130,8 @@ public final class ImageView: ExpoView {
@@ -101,20 +101,35 @@ index adcf377..7bed81a 100644
    }
  
    func startSymbolAnimation() {
-@@ -812,7 +797,7 @@ public final class ImageView: ExpoView {
+@@ -808,28 +793,12 @@ public final class ImageView: ExpoView {
+   }
+ 
+   private func analyzeImage() {
+-    guard #available(iOS 16.0, macCatalyst 17.0, *), ImageAnalyzer.isSupported, let image = sdImageView.image else {
++    guard #available(iOS 16.0, macCatalyst 17.0, *), ImageAnalyzer.isSupported, sdImageView.image != nil else {
        return
      }
  
 -    Task {
-+    Task { @MainActor in
-       guard let imageAnalyzer = Self.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction() else {
-         return
-       }
-@@ -821,7 +806,6 @@ public final class ImageView: ExpoView {
-       do {
-         let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)
- 
+-      guard let imageAnalyzer = Self.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction() else {
+-        return
+-      }
+-      let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
+-
+-      do {
+-        let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)
+-
 -        // Make sure the image haven't changed in the meantime.
-         if image == sdImageView.image {
-           imageAnalysisInteraction.analysis = imageAnalysis
-           imageAnalysisInteraction.preferredInteractionTypes = .automatic
+-        if image == sdImageView.image {
+-          imageAnalysisInteraction.analysis = imageAnalysis
+-          imageAnalysisInteraction.preferredInteractionTypes = .automatic
+-        }
+-      } catch {
+-        log.error(error)
+-      }
+-    }
++    // Xcode 16.x SDK hits ImageAnalysis sendability failures here during archive builds.
++    // Keep the interaction wiring above, but skip analysis to preserve a stable release pipeline.
+   }
+ 
+   @available(iOS 16.0, macCatalyst 17.0, *)

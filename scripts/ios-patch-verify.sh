@@ -93,7 +93,7 @@ assert_contains "$IMAGE_PICKER" "let utType = UTType(filenameExtension: fileExte
 assert_contains "$IMAGE_PICKER" "let utType = UTType(resource.uniformTypeIdentifier) ?? UTType(filenameExtension: fileExtension)" "expo-image-picker resource mime type fallback"
 assert_contains "$IMAGE_MODULE" "DispatchQueue.main.async" "expo-image main thread dispatch"
 assert_contains "$IMAGE_VIEW" "pendingOperation?.cancel()" "expo-image deinit fallback"
-assert_contains "$IMAGE_VIEW" "Task { @MainActor in" "expo-image analyze image main actor"
+assert_contains "$IMAGE_VIEW" "skip analysis to preserve a stable release pipeline." "expo-image analysis disabled for Xcode 16"
 
 assert_absent "$NOTIFICATIONS" "dateComponents.isRepeatedDay" "DateComponents.isRepeatedDay"
 assert_absent "$IMAGE_PICKER" "asset?.contentType" "PHAsset.contentType"
@@ -104,6 +104,7 @@ assert_absent "$ROUTER_HOST" "item.hidesSharedBackground" "hidesSharedBackground
 assert_absent "$ROUTER_ITEM" "item.hidesSharedBackground =" "hidesSharedBackground item"
 assert_absent "$IMAGE_VIEW" "drawOn" "drawOn"
 assert_absent "$IMAGE_VIEW" "drawOff" "drawOff"
+assert_absent "$IMAGE_VIEW" "imageAnalyzer.analyze(" "ImageAnalyzer.analyze invocation"
 
 {
   echo "patch_source=patch-package"
