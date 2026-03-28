@@ -130,7 +130,7 @@ export default function HomeScreen() {
             <Animated.View style={entryStyle(1)}>
               <TouchableOpacity
                 style={styles.ctaButton}
-                onPress={() => router.push('/(tabs)/checkin' as any)}
+                onPress={() => router.push('/checkin-wizard' as any)}
                 activeOpacity={0.85}
               >
                 <Text style={styles.ctaText}>{t('home.captureCta')}</Text>
@@ -156,7 +156,7 @@ export default function HomeScreen() {
           <Text style={styles.emptySub}>{t('home.emptySub')}</Text>
           <TouchableOpacity
             style={[styles.emptyCtaButton, { backgroundColor: colors.blushPink }]}
-            onPress={() => router.push('/(tabs)/checkin' as any)}
+            onPress={() => router.push('/checkin-wizard' as any)}
             activeOpacity={0.85}
           >
             <Text style={styles.emptyCtaText}>{t('home.captureCta')}</Text>

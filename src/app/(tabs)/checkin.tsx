@@ -1,323 +1,261 @@
-// Check-in wizard: photo → spot → preview+share
-// 3-step flow using local state; no navigation between tabs until done.
+// src/app/(tabs)/checkin.tsx
+// Diary tab — displays check-in history as a photo diary.
+// Photo capture is accessed from the Home tab CTA → /checkin-wizard.
 
-import { useState, useRef } from 'react';
-import { GuideWrapper, MeasuredView } from '@/components/guide';
-import { STAMP_STEPS } from '@/constants/guide-steps';
+import { useEffect } from 'react';
 import {
   View,
   Text,
+  FlatList,
+  Image,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
+  Platform,
   Dimensions,
 } from 'react-native';
-
-const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 import { useTranslation } from 'react-i18next';
-import * as MediaLibrary from 'expo-media-library';
-import * as Sharing from 'expo-sharing';
-import { router } from 'expo-router';
-import { colors, typography, spacing, borderRadius, getSeasonTheme } from '@/constants/theme';
+import { useRouter } from 'expo-router';
 import { getActiveSeason } from '@/constants/seasons';
+import {
+  colors,
+  typography,
+  spacing,
+  borderRadius,
+  fontWeight,
+  shadows,
+  getSeasonTheme,
+} from '@/constants/theme';
 import { useCheckinStore } from '@/stores/checkin-store';
-import { useCheckinPhoto } from '@/hooks/useCheckinPhoto';
-import { SpotSelector } from '@/components/checkin/SpotSelector';
-import { StampPreview } from '@/components/stamps';
-import CheckinSuccessOverlay from '@/components/CheckinSuccessOverlay';
-import type { FlowerSpot, SpotsData, StampStyle, StampPosition, StampTransform } from '@/types/hanami';
+import { PressableCard } from '@/components/PressableCard';
 import { loadSpotsData } from '@/services/content-pack';
-import { getPreviousVisitYears } from '@/utils/stamp-position';
+import type { CheckinRecord } from '@/types/hanami';
 
-const SEASON_LABELS: Record<string, string> = {
-  sakura: '春', ajisai: '夏', himawari: '夏', momiji: '秋', tsubaki: '冬',
-};
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const CARD_GAP = 16;
+const CARD_SIZE = (SCREEN_WIDTH - 48) / 2;
 
-/** Simple ID without extra deps */
-function genId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+function formatDateShort(iso: string): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  return `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
-type WizardStep = 'photo' | 'spot' | 'preview';
+function getSpotName(seasonId: string, spotId: number): string {
+  const data = loadSpotsData(seasonId);
+  if (!data) return String(spotId);
+  return data.spots.find((s) => s.id === spotId)?.nameJa ?? String(spotId);
+}
 
-export default function CheckinScreen() {
-  const { t } = useTranslation();
+function DiaryCard({ record }: { record: CheckinRecord }) {
   const season = getActiveSeason();
   const theme = getSeasonTheme(season.id);
-  const { addCheckin, history } = useCheckinStore();
-  const { pickFromCamera, pickFromLibrary, requesting } = useCheckinPhoto();
-
-  const [step, setStep] = useState<WizardStep>('photo');
-  const [photoUri, setPhotoUri] = useState<string | null>(null);
-  const [selectedSpot, setSelectedSpot] = useState<FlowerSpot | null>(null);
-  const [feedback, setFeedback] = useState<string | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [lastStampPosition, setLastStampPosition] = useState<StampPosition>('bottom-right');
-
-  const checkinDate = useRef(new Date());
-
-  const spotsData = loadSpotsData(season.id);
-  const spots: FlowerSpot[] = spotsData?.spots ?? [];
-
-  // ── Photo step handlers ──────────────────────────────────────────────────
-
-  async function handlePickCamera() {
-    const uri = await pickFromCamera();
-    if (uri) {
-      setPhotoUri(uri);
-      setStep('spot');
-    }
-  }
-
-  async function handlePickLibrary() {
-    const uri = await pickFromLibrary();
-    if (uri) {
-      setPhotoUri(uri);
-      setStep('spot');
-    }
-  }
-
-  // ── Spot step handler ────────────────────────────────────────────────────
-
-  function handleSpotSelect(spot: FlowerSpot) {
-    setSelectedSpot(spot);
-    checkinDate.current = new Date();
-    setStep('preview');
-  }
-
-  // ── Preview step handlers ────────────────────────────────────────────────
-
-  async function handleStampShare(composedUri: string) {
-    try {
-      await Sharing.shareAsync(composedUri, { mimeType: 'image/png' });
-    } catch {
-      // share cancelled or failed — silent
-    }
-  }
-
-  async function handleStampSave(
-    composedUri: string,
-    stampStyle: string,
-    stampTransform?: StampTransform,
-  ) {
-    try {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== 'granted') {
-        setFeedback(t('stamp.permissionRequired'));
-        setTimeout(() => setFeedback(null), 2000);
-        return;
-      }
-      await MediaLibrary.saveToLibraryAsync(composedUri);
-      await addCheckin({
-        id: genId(),
-        seasonId: season.id,
-        spotId: selectedSpot!.id,
-        photoUri: photoUri!,
-        composedUri,
-        templateId: stampStyle,
-        timestamp: checkinDate.current.toISOString(),
-        synced: false,
-        stampStyle: stampStyle as StampStyle,
-        stampTransform,
-      });
-      setShowSuccess(true);
-    } catch {
-      setFeedback(t('checkin.saveError'));
-      setTimeout(() => setFeedback(null), 2000);
-    }
-  }
-
-  function handleBack() {
-    if (step === 'spot') setStep('photo');
-    else if (step === 'preview') setStep('spot');
-  }
-
-  // ── Render ───────────────────────────────────────────────────────────────
+  const spotName = getSpotName(record.seasonId, record.spotId);
 
   return (
-    <GuideWrapper featureKey="stamp" steps={STAMP_STEPS} overlayVariant="light">
-    <View testID="checkin.container" style={[styles.container, { backgroundColor: theme.bgTint }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={handleBack}
-          disabled={step === 'photo'}
-        >
-          {step !== 'photo' && (
-            <Text style={[styles.backText, { color: theme.primary }]}>
-              {t('common.back')}
-            </Text>
-          )}
-        </TouchableOpacity>
-
-        <Text style={styles.headerTitle}>
-          {step === 'photo'
-            ? t('checkin.stepPhoto')
-            : step === 'spot'
-            ? t('checkin.stepSpot')
-            : t('checkin.stepPreview')}
-        </Text>
-
-        {/* Spacer to balance back button */}
-        <View style={styles.backBtn} />
-      </View>
-
-      {/* ── Step: Photo ── */}
-      {step === 'photo' && (
-        <View style={styles.photoStep}>
-          <Text style={styles.seasonEmoji}>{season.iconEmoji}</Text>
-          <Text style={styles.seasonCta}>{t(`season.${season.id}.cta`)}</Text>
-          <View style={styles.pickButtons}>
-            <TouchableOpacity
-              style={[styles.pickBtn, { backgroundColor: theme.primary }]}
-              onPress={handlePickCamera}
-              disabled={requesting}
-              activeOpacity={0.8}
-            >
-              {requesting ? (
-                <ActivityIndicator color={colors.white} />
-              ) : (
-                <Text style={styles.pickBtnText}>{t('checkin.pickCamera')}</Text>
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.pickBtn, styles.pickBtnOutline, { borderColor: theme.primary }]}
-              onPress={handlePickLibrary}
-              disabled={requesting}
-              activeOpacity={0.8}
-            >
-              <Text style={[styles.pickBtnText, { color: theme.primary }]}>
-                {t('checkin.pickLibrary')}
-              </Text>
-            </TouchableOpacity>
-          </View>
+    <PressableCard style={[styles.card, { borderColor: theme.accent }]}>
+      {record.composedUri ? (
+        <Image
+          source={{ uri: record.composedUri }}
+          style={styles.cardImage}
+          resizeMode="cover"
+        />
+      ) : (
+        <View style={[styles.cardImage, styles.cardPlaceholder, { backgroundColor: theme.bgTint }]}>
+          <Text style={styles.cardPlaceholderEmoji}>{season.iconEmoji}</Text>
         </View>
       )}
-
-      {/* ── Step: Spot ── */}
-      {step === 'spot' && <SpotSelector spots={spots} onSelect={handleSpotSelect} />}
-
-      {/* ── Step: Preview ── */}
-      {step === 'preview' && photoUri != null && selectedSpot != null && (
-        <>
-          <StampPreview
-            photoUri={photoUri}
-            spot={selectedSpot}
-            date={checkinDate.current}
-            seasonId={season.id}
-            onSave={handleStampSave}
-            onShare={handleStampShare}
-          />
-          {feedback != null && (
-            <Text style={[styles.feedback, { color: theme.primary }]}>{feedback}</Text>
-          )}
-        </>
-      )}
-
-      {/* ── Success overlay (layered feedback) ── */}
-      {showSuccess && selectedSpot != null && (
-        <CheckinSuccessOverlay
-          spot={selectedSpot}
-          seasonLabel={`${checkinDate.current.getFullYear()} ${SEASON_LABELS[season.id] ?? ''}`}
-          isRevisit={history.filter(r => r.spotId === selectedSpot.id).length > 1}
-          checkinCount={new Set(history.map(r => r.spotId)).size}
-          stampPosition={lastStampPosition}
-          previousVisitYears={getPreviousVisitYears(history, selectedSpot.id, season.id)}
-          onDismiss={() => {
-            setShowSuccess(false);
-            router.replace('/(tabs)/home');
-          }}
-        />
-      )}
-    </View>
-    </GuideWrapper>
+      <View style={[styles.cardFooter, { backgroundColor: theme.bgTint }]}>
+        <Text style={styles.cardSpot} numberOfLines={1}>{spotName}</Text>
+        <Text style={styles.cardDate}>{formatDateShort(record.timestamp)}</Text>
+      </View>
+    </PressableCard>
   );
 }
 
-// ── Styles ───────────────────────────────────────────────────────────────────
+export default function DiaryScreen() {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const season = getActiveSeason();
+  const theme = getSeasonTheme(season.id);
+  const history = useCheckinStore((s) => s.history);
+  const loadHistory = useCheckinStore((s) => s.loadHistory);
+
+  useEffect(() => {
+    loadHistory();
+  }, []);
+
+  const uniqueSpots = new Set(history.map((r) => r.spotId)).size;
+
+  return (
+    <FlatList
+      testID="diary.container"
+      style={[styles.container, { backgroundColor: colors.background }]}
+      contentContainerStyle={styles.content}
+      data={history}
+      keyExtractor={(item) => item.id}
+      numColumns={2}
+      columnWrapperStyle={history.length > 0 ? styles.row : undefined}
+      showsVerticalScrollIndicator={false}
+      ListHeaderComponent={
+        <>
+          <Text style={styles.title}>{t('tabs.diary')}</Text>
+
+          {history.length > 0 && (
+            <View style={styles.statsRow}>
+              <View style={[styles.statCard, { borderColor: theme.accent }]}>
+                <Text style={[styles.statNumber, { color: theme.primary }]}>{history.length}</Text>
+                <Text style={styles.statLabel}>{t('diary.totalCheckins')}</Text>
+              </View>
+              <View style={[styles.statCard, { borderColor: theme.accent }]}>
+                <Text style={[styles.statNumber, { color: theme.primary }]}>{uniqueSpots}</Text>
+                <Text style={styles.statLabel}>{t('diary.spotsVisited')}</Text>
+              </View>
+            </View>
+          )}
+
+          {history.length > 0 && (
+            <Text style={styles.sectionTitle}>{t('diary.allPhotos')}</Text>
+          )}
+        </>
+      }
+      renderItem={({ item }) => <DiaryCard record={item} />}
+      ListEmptyComponent={
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyEmoji}>{season.iconEmoji}</Text>
+          <Text style={styles.emptyTitle}>{t('diary.emptyTitle')}</Text>
+          <Text style={styles.emptySub}>{t('diary.emptySub')}</Text>
+          <TouchableOpacity
+            style={[styles.emptyCtaButton, { backgroundColor: theme.accent }]}
+            onPress={() => router.push('/checkin-wizard' as any)}
+            activeOpacity={0.85}
+          >
+            <Text style={[styles.emptyCtaText, { color: theme.primary }]}>
+              {t('home.captureCta')}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      }
+    />
+  );
+}
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  content: {
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.sm,
+    paddingTop: Platform.OS === 'ios' ? 60 : spacing.xl,
+    paddingBottom: spacing.xl,
+    gap: CARD_GAP,
   },
 
-  backBtn: { width: 60 },
-
-  backText: {
+  title: {
     fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.sm,
-  },
-
-  headerTitle: {
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.md,
+    fontSize: typography.fontSize.xxl,
     color: colors.text,
+    marginBottom: spacing.sm,
   },
 
-  // ── Photo step
-
-  photoStep: {
+  statsRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  statCard: {
     flex: 1,
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    paddingVertical: spacing.md,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xl,
-    gap: spacing.lg,
+    gap: 2,
+  },
+  statNumber: {
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.xxl,
+    fontWeight: fontWeight.heavy,
+  },
+  statLabel: {
+    fontSize: typography.fontSize.xs,
+    color: colors.textSecondary,
   },
 
-  seasonEmoji: { fontSize: 56 },
-
-  seasonCta: {
+  sectionTitle: {
     fontFamily: typography.fontFamily.display,
     fontSize: typography.fontSize.lg,
     color: colors.text,
-    textAlign: 'center',
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.sm,
   },
 
-  pickButtons: {
-    width: '100%',
-    gap: spacing.md,
-  },
+  row: { gap: CARD_GAP },
 
-  pickBtn: {
+  card: {
+    width: CARD_SIZE,
     borderRadius: borderRadius.md,
-    paddingVertical: spacing.sm + 2,
+    overflow: 'hidden',
+    borderWidth: 1,
+    ...shadows.card,
+  },
+  cardImage: {
+    width: CARD_SIZE,
+    height: CARD_SIZE * (4 / 3),
+  },
+  cardPlaceholder: {
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 48,
+  },
+  cardPlaceholderEmoji: {
+    fontSize: 40,
+    opacity: 0.6,
+  },
+  cardFooter: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  cardSpot: {
+    flex: 1,
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.xs,
+    color: colors.text,
+  },
+  cardDate: {
+    fontSize: typography.fontSize.xs,
+    color: colors.textSecondary,
+    marginLeft: spacing.xs,
   },
 
-  pickBtnOutline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
+  emptyState: {
+    alignItems: 'center',
+    paddingTop: spacing.xl,
+    gap: spacing.md,
   },
-
-  pickBtnText: {
+  emptyEmoji: { fontSize: 48 },
+  emptyTitle: {
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.lg,
+    color: colors.plantPrimary,
+    fontWeight: fontWeight.semibold,
+    textAlign: 'center',
+  },
+  emptySub: {
+    fontSize: typography.fontSize.sm,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: typography.fontSize.sm * typography.lineHeight,
+  },
+  emptyCtaButton: {
+    borderRadius: borderRadius.md,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    marginTop: spacing.sm,
+    alignItems: 'center',
+  },
+  emptyCtaText: {
     fontFamily: typography.fontFamily.display,
     fontSize: typography.fontSize.md,
-    color: colors.white,
-  },
-
-  // ── Feedback (overlaid above StampPreview actions)
-
-  feedback: {
-    position: 'absolute',
-    bottom: spacing.xl * 2,
-    alignSelf: 'center',
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.sm,
-    textAlign: 'center',
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
+    fontWeight: fontWeight.semibold,
   },
 });
