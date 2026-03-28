@@ -1,17 +1,15 @@
 /**
- * CheckinScreen tests.
- * Uses shallowRender to exercise the component without react-test-renderer.
+ * DiaryScreen tests (src/app/(tabs)/checkin.tsx).
+ * The checkin tab was rewritten as a diary/history browser in v1.1.0 build 4.
+ * Photo capture was moved to checkin-wizard.tsx.
  */
 
 // React Native global — normally defined by Metro bundler
 (global as any).__DEV__ = false;
 
-// ── Mutable mocks (declared before jest.mock) ────────────────────────────────
+// ── Mutable mock state ────────────────────────────────────────────────────────
 
-const mockStep = jest.fn<string, []>(() => 'photo');
-const mockPhotoUri = jest.fn<string | null, []>(() => null);
-const mockSelectedSpot = jest.fn<any, []>(() => null);
-const mockShowSuccess = jest.fn<boolean, []>(() => false);
+const mockHistory = jest.fn<any[], []>(() => []);
 
 // ── jest.mock BEFORE imports ──────────────────────────────────────────────────
 
@@ -35,31 +33,22 @@ jest.mock('@/constants/theme', () => ({
   },
   spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 },
   borderRadius: { sm: 6, md: 12, lg: 20, full: 9999 },
+  fontWeight: { light: '300', regular: '400', semibold: '600', bold: '700', heavy: '800' },
   shadows: {
     card: { shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 4 },
-    cardSubtle: { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
-    cardLifted: { shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.12, shadowRadius: 24, elevation: 6 },
   },
-  getSeasonTheme: () => ({ primary: '#f5d5d0', bgTint: '#fff8f5' }),
+  getSeasonTheme: () => ({ primary: '#e8a5b0', accent: '#f5d5d0', bgTint: '#FFF5F3' }),
 }));
 
 jest.mock('expo-router', () => ({
-  router: { replace: jest.fn(), push: jest.fn() },
-}));
-
-jest.mock('@/hooks/useCheckinPhoto', () => ({
-  useCheckinPhoto: () => ({
-    pickFromCamera: jest.fn(),
-    pickFromLibrary: jest.fn(),
-    requesting: false,
-  }),
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
 }));
 
 jest.mock('@/stores/checkin-store', () => ({
-  useCheckinStore: () => ({
-    addCheckin: jest.fn(),
-    history: [],
-  }),
+  useCheckinStore: (selector?: (s: any) => any) => {
+    const state = { history: mockHistory(), loadHistory: jest.fn() };
+    return selector ? selector(state) : state;
+  },
 }));
 
 jest.mock('@/constants/seasons', () => ({
@@ -68,68 +57,22 @@ jest.mock('@/constants/seasons', () => ({
 
 jest.mock('@/services/content-pack', () => ({
   loadSpotsData: () => ({
-    spots: [{ id: 'spot-1', name: 'Test Spot', lat: 35.0, lng: 139.0 }],
+    spots: [{ id: 1, nameJa: 'テスト公園', lat: 35.0, lng: 139.0 }],
   }),
 }));
 
-jest.mock('@/utils/stamp-position', () => ({
-  getPreviousVisitYears: jest.fn(() => []),
-}));
-
-jest.mock('@/constants/guide-steps', () => ({
-  STAMP_STEPS: [],
-}));
-
-jest.mock('@/components/guide', () => ({
-  GuideWrapper: ({ children }: { children: any }) => children,
-  MeasuredView: ({ children, style }: { children: any; style?: any }) => {
+jest.mock('@/components/PressableCard', () => ({
+  PressableCard: ({ children, style }: any) => {
     const React = jest.requireActual('react');
     const { View } = jest.requireActual('react-native');
     return React.createElement(View, { style }, children);
   },
 }));
 
-jest.mock('@/components/checkin/SpotSelector', () => ({
-  SpotSelector: 'SpotSelector',
-}));
-
-jest.mock('@/components/stamps', () => ({
-  StampPreview: 'StampPreview',
-}));
-
-jest.mock('@/components/CheckinSuccessOverlay', () => 'CheckinSuccessOverlay');
-
-jest.mock('expo-media-library', () => ({
-  requestPermissionsAsync: jest.fn(),
-  saveToLibraryAsync: jest.fn(),
-}));
-
-jest.mock('expo-sharing', () => ({
-  shareAsync: jest.fn(),
-}));
-
-// Override useState to inject mutable mock state for step, photoUri, selectedSpot, showSuccess
-const actualReact = jest.requireActual('react');
-let useStateCalls = 0;
-jest.spyOn(actualReact, 'useState').mockImplementation((init: any) => {
-  const callIndex = useStateCalls++;
-  // CheckinScreen useState call order:
-  // 0: step, 1: photoUri, 2: selectedSpot, 3: feedback, 4: showSuccess, 5: lastStampPosition
-  switch (callIndex) {
-    case 0: return [mockStep(), jest.fn()];
-    case 1: return [mockPhotoUri(), jest.fn()];
-    case 2: return [mockSelectedSpot(), jest.fn()];
-    case 3: return [null, jest.fn()]; // feedback
-    case 4: return [mockShowSuccess(), jest.fn()];
-    case 5: return ['bottom-right', jest.fn()]; // lastStampPosition
-    default: return [init, jest.fn()];
-  }
-});
-
 // ── Imports (after all jest.mock) ─────────────────────────────────────────────
 
 import React from 'react';
-import CheckinScreen from '@/app/(tabs)/checkin';
+import DiaryScreen from '@/app/(tabs)/checkin';
 
 // ── shallowRender helper ──────────────────────────────────────────────────────
 
@@ -150,85 +93,63 @@ function shallowRender(element: any, depth = 10): any {
 }
 
 function renderToString(): string {
-  const element = React.createElement(CheckinScreen);
+  const element = React.createElement(DiaryScreen);
   const tree = shallowRender(element);
   return JSON.stringify(tree);
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('CheckinScreen', () => {
+describe('DiaryScreen (checkin tab)', () => {
   beforeEach(() => {
-    useStateCalls = 0;
-    mockStep.mockReturnValue('photo');
-    mockPhotoUri.mockReturnValue(null);
-    mockSelectedSpot.mockReturnValue(null);
-    mockShowSuccess.mockReturnValue(false);
+    mockHistory.mockReturnValue([]);
   });
 
-  it('renders container', () => {
+  it('renders diary container', () => {
     const output = renderToString();
-    expect(output).toContain('checkin.container');
+    expect(output).toContain('diary.container');
   });
 
-  it('shows step title for photo selection step', () => {
+  it('shows diary title', () => {
     const output = renderToString();
-    expect(output).toContain('checkin.stepPhoto');
+    expect(output).toContain('tabs.diary');
   });
 
-  it('shows camera button', () => {
+  it('shows empty state when no history', () => {
     const output = renderToString();
-    expect(output).toContain('checkin.pickCamera');
+    expect(output).toContain('diary.emptyTitle');
+    expect(output).toContain('diary.emptySub');
   });
 
-  it('shows library button', () => {
+  it('empty state CTA navigates to checkin-wizard', () => {
     const output = renderToString();
-    expect(output).toContain('checkin.pickLibrary');
+    expect(output).toContain('home.captureCta');
   });
 
-  it('shows back button disabled on first step', () => {
+  it('shows stats row when history has entries', () => {
+    mockHistory.mockReturnValue([
+      { id: 'c1', seasonId: 'sakura', spotId: 1, timestamp: '2026-03-28T10:00:00Z', composedUri: null, synced: false },
+      { id: 'c2', seasonId: 'sakura', spotId: 2, timestamp: '2026-03-27T10:00:00Z', composedUri: null, synced: false },
+    ]);
     const output = renderToString();
-    // On photo step, back button is disabled and no back text is rendered
-    expect(output).toContain('"disabled":true');
+    expect(output).toContain('diary.totalCheckins');
+    expect(output).toContain('diary.spotsVisited');
   });
 
-  it('shows spot selector step when photo selected', () => {
-    mockStep.mockReturnValue('spot');
-    mockPhotoUri.mockReturnValue('file:///photo.jpg');
+  it('shows all photos section title when history present', () => {
+    mockHistory.mockReturnValue([
+      { id: 'c1', seasonId: 'sakura', spotId: 1, timestamp: '2026-03-28T10:00:00Z', composedUri: null, synced: false },
+    ]);
     const output = renderToString();
-    expect(output).toContain('SpotSelector');
-    expect(output).toContain('checkin.stepSpot');
+    expect(output).toContain('diary.allPhotos');
   });
 
-  it('shows stamp preview step', () => {
-    mockStep.mockReturnValue('preview');
-    mockPhotoUri.mockReturnValue('file:///photo.jpg');
-    mockSelectedSpot.mockReturnValue({ id: 'spot-1', name: 'Test Spot' });
+  it('renders photo card placeholder when no composedUri', () => {
+    mockHistory.mockReturnValue([
+      { id: 'c1', seasonId: 'sakura', spotId: 1, timestamp: '2026-03-28T10:00:00Z', composedUri: null, synced: false },
+    ]);
     const output = renderToString();
-    expect(output).toContain('StampPreview');
-    expect(output).toContain('checkin.stepPreview');
-  });
-
-  it('shows success overlay after completion', () => {
-    mockStep.mockReturnValue('preview');
-    mockPhotoUri.mockReturnValue('file:///photo.jpg');
-    mockSelectedSpot.mockReturnValue({ id: 'spot-1', name: 'Test Spot' });
-    mockShowSuccess.mockReturnValue(true);
-    const output = renderToString();
-    expect(output).toContain('CheckinSuccessOverlay');
-  });
-
-  it('renders guide wrapper', () => {
-    // GuideWrapper is mocked to pass-through children; the component wraps with it.
-    // We verify the container still renders (GuideWrapper does not block).
-    const output = renderToString();
-    expect(output).toContain('checkin.container');
-  });
-
-  it('shows back text on non-photo steps', () => {
-    mockStep.mockReturnValue('spot');
-    mockPhotoUri.mockReturnValue('file:///photo.jpg');
-    const output = renderToString();
-    expect(output).toContain('common.back');
+    // Season emoji appears in placeholder card
+    expect(output).toContain('🌸');
   });
 });
