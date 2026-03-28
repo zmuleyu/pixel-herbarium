@@ -2,7 +2,7 @@
 
 ## Status
 
-- ready_for_rerun
+- testflight_distributed
 
 ## Mode
 

@@ -27,7 +27,7 @@
 
 ### Conclusion
 
-- fail
+- pass (rerun `23679841200` / SHA `f3a9759`)
 
 ### First Error
 
@@ -54,6 +54,11 @@ After updating the patch file, re-trigger preview on the same SHA (`7e8915e`).
 
 - `patches/expo-image+55.0.6.patch` — deinit hunk updated: replaced 2 property-access lines with 2 comment lines
 - `build-handoff.md` status → `ready_for_rerun`
+
+### Release Run
+
+- release run `23680543119` on SHA `f3a9759` — **PASS** (10m28s, ASC submit ✓)
+- triggered after preview pass confirmation
 
 ### Notes
 
