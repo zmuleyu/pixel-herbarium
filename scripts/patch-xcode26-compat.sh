@@ -191,6 +191,157 @@ path.write_text(text, encoding="utf-8")
 PY
   fi
 
+  echo "=== Patching expo-image actor isolation for Xcode 16.x ==="
+
+  EXPO_IMAGE_MODULE="node_modules/expo-image/ios/ImageModule.swift"
+  if [ -f "$EXPO_IMAGE_MODULE" ]; then
+    "$PYTHON_BIN" - <<'PY'
+from pathlib import Path
+import re
+path = Path("node_modules/expo-image/ios/ImageModule.swift")
+text = path.read_text(encoding="utf-8")
+text = re.sub(
+    r'      AsyncFunction\("startAnimating"\) \{ \(view: ImageView\) in\s+if view\.isSFSymbolSource \{\s+view\.startSymbolAnimation\(\)\s+\} else \{\s+view\.sdImageView\.startAnimating\(\)\s+\}\s+\}',
+    """      AsyncFunction("startAnimating") { (view: ImageView) in
+        DispatchQueue.main.async {
+          if view.isSFSymbolSource {
+            view.startSymbolAnimation()
+          } else {
+            view.sdImageView.startAnimating()
+          }
+        }
+      }""",
+    text,
+    count=1,
+)
+text = re.sub(
+    r'      AsyncFunction\("stopAnimating"\) \{ \(view: ImageView\) in\s+if view\.isSFSymbolSource \{\s+view\.stopSymbolAnimation\(\)\s+\} else \{\s+view\.sdImageView\.stopAnimating\(\)\s+\}\s+\}',
+    """      AsyncFunction("stopAnimating") { (view: ImageView) in
+        DispatchQueue.main.async {
+          if view.isSFSymbolSource {
+            view.stopSymbolAnimation()
+          } else {
+            view.sdImageView.stopAnimating()
+          }
+        }
+      }""",
+    text,
+    count=1,
+)
+text = re.sub(
+    r'      AsyncFunction\("lockResourceAsync"\) \{ \(view: ImageView\) in\s+view\.lockResource = true\s+\}',
+    """      AsyncFunction("lockResourceAsync") { (view: ImageView) in
+        DispatchQueue.main.async {
+          view.lockResource = true
+        }
+      }""",
+    text,
+    count=1,
+)
+text = re.sub(
+    r'      AsyncFunction\("unlockResourceAsync"\) \{ \(view: ImageView\) in\s+view\.lockResource = false\s+\}',
+    """      AsyncFunction("unlockResourceAsync") { (view: ImageView) in
+        DispatchQueue.main.async {
+          view.lockResource = false
+        }
+      }""",
+    text,
+    count=1,
+)
+text = re.sub(
+    r'      AsyncFunction\("reloadAsync"\) \{ \(view: ImageView\) in\s+view\.reload\(force: true\)\s+\}',
+    """      AsyncFunction("reloadAsync") { (view: ImageView) in
+        DispatchQueue.main.async {
+          view.reload(force: true)
+        }
+      }""",
+    text,
+    count=1,
+)
+text = re.sub(
+    r'      OnViewDidUpdateProps \{ view in\s+view\.reload\(\)\s+\}',
+    """      OnViewDidUpdateProps { view in
+        DispatchQueue.main.async {
+          view.reload()
+        }
+      }""",
+    text,
+    count=1,
+)
+path.write_text(text, encoding="utf-8")
+PY
+  fi
+
+  EXPO_IMAGE_VIEW="node_modules/expo-image/ios/ImageView.swift"
+  if [ -f "$EXPO_IMAGE_VIEW" ]; then
+    "$PYTHON_BIN" - <<'PY'
+from pathlib import Path
+import re
+path = Path("node_modules/expo-image/ios/ImageView.swift")
+text = path.read_text(encoding="utf-8")
+text = text.replace(
+"""  @available(iOS 26.0, tvOS 26.0, *)
+  private func applySymbolEffectiOS26(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {
+    switch effect {
+    case .drawOn:
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.drawOn.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOn.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.drawOn, options: options)
+      }
+    case .drawOff:
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.drawOff.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOff.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.drawOff, options: options)
+      }
+    default:
+      break
+    }
+  }
+""",
+"""  @available(iOS 26.0, tvOS 26.0, *)
+  private func applySymbolEffectiOS26(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {
+    // Xcode 16.x SDK does not expose iOS 26 draw symbol effects.
+  }
+""")
+text = re.sub(
+    r'    Task \{\s+guard let imageAnalyzer = Self\.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction\(\) else \{\s+return\s+\}\s+let configuration = ImageAnalyzer\.Configuration\(\[\.text, \.machineReadableCode\]\)\s+do \{\s+let imageAnalysis = try await imageAnalyzer\.analyze\(image, configuration: configuration\)\s+\s+// Make sure the image haven\'t changed in the meantime\.\s+if image == sdImageView\.image \{\s+imageAnalysisInteraction\.analysis = imageAnalysis\s+imageAnalysisInteraction\.preferredInteractionTypes = \.automatic\s+\}\s+\} catch \{\s+log\.error\(error\)\s+\}\s+\}',
+    """    Task { @MainActor in
+      guard let imageAnalyzer = Self.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction() else {
+        return
+      }
+      let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
+
+      do {
+        let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)
+
+        if image == sdImageView.image {
+          imageAnalysisInteraction.analysis = imageAnalysis
+          imageAnalysisInteraction.preferredInteractionTypes = .automatic
+        }
+      } catch {
+        log.error(error)
+      }
+    }
+    }""",
+    text,
+    count=1,
+    flags=re.S,
+)
+text = re.sub(
+    r'  deinit \{\s+// Cancel pending requests when the view is deallocated\.\s+cancelPendingOperation\(\)\s+\}',
+    """  deinit {
+    pendingOperation?.cancel()
+    pendingOperation = nil
+  }""",
+    text,
+    count=1,
+)
+path.write_text(text, encoding="utf-8")
+PY
+  fi
+
   echo "Pre-pod patches applied"
 fi
 
