@@ -182,4 +182,20 @@ describe('HomeScreen', () => {
     // onPress is a function reference, not a serialised string; verify the CTA button exists
     expect(output).toContain('home.captureCta');
   });
+
+  it('shows only one captureCta when history is empty (no duplicate header CTA)', () => {
+    mockStoreState.history = [];
+    const output = renderToString();
+    // Count occurrences: only the empty state CTA should appear, not the header CTA
+    const count = (output.match(/home\.captureCta/g) ?? []).length;
+    expect(count).toBe(1);
+  });
+
+  it('shows header captureCta when history has items', () => {
+    mockStoreState.history = [
+      { id: 'c1', seasonId: 'sakura', spotId: 1, timestamp: '2026-03-20T09:00:00.000Z', composedUri: null },
+    ];
+    const output = renderToString();
+    expect(output).toContain('home.captureCta');
+  });
 });

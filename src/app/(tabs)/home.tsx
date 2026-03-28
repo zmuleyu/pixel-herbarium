@@ -124,16 +124,18 @@ export default function HomeScreen() {
             </LinearGradient>
           </Animated.View>
 
-          {/* 花を撮る CTA */}
-          <Animated.View style={entryStyle(1)}>
-            <TouchableOpacity
-              style={styles.ctaButton}
-              onPress={() => router.push('/(tabs)/checkin' as any)}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.ctaText}>{t('home.captureCta')}</Text>
-            </TouchableOpacity>
-          </Animated.View>
+          {/* 花を撮る CTA — only shown when diary has entries; empty state has its own CTA */}
+          {history.length > 0 && (
+            <Animated.View style={entryStyle(1)}>
+              <TouchableOpacity
+                style={styles.ctaButton}
+                onPress={() => router.push('/(tabs)/checkin' as any)}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.ctaText}>{t('home.captureCta')}</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          )}
 
           {/* Diary section title + count */}
           <Animated.View style={[styles.sectionHeader, entryStyle(2)]}>

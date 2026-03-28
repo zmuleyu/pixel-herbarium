@@ -19,7 +19,7 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => ({
       'guide.next': '次へ',
-      'guide.gotIt': 'わかった',
+      'guide.done': 'わかった',
     }[key] ?? key),
   }),
 }));

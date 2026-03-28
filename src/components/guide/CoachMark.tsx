@@ -129,9 +129,9 @@ export function CoachMark({
           onPress={handleNext}
           activeOpacity={0.85}
           accessibilityRole="button"
-          accessibilityLabel={isLast ? t('guide.gotIt') : t('guide.next')}
+          accessibilityLabel={isLast ? t('guide.done') : t('guide.next')}
         >
-          <Text style={styles.btnText}>{isLast ? t('guide.gotIt') : t('guide.next')}</Text>
+          <Text style={styles.btnText}>{isLast ? t('guide.done') : t('guide.next')}</Text>
         </TouchableOpacity>
       </Animated.View>
     </Animated.View>

@@ -163,9 +163,11 @@ describe('SettingsTabScreen', () => {
     expect(output).toContain('English');
   });
 
-  it('shows privacy policy link', () => {
+  it('shows privacy settings link (privacy policy moved inside privacy screen)', () => {
     const output = renderToString();
-    expect(output).toContain('settings.privacyPolicy');
+    // Privacy Policy link was moved into /privacy screen to consolidate privacy UI.
+    // Settings should still have the Privacy Settings entry.
+    expect(output).toContain('profile.privacySettings');
   });
 
   it('shows sign out button when logged in', () => {

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
@@ -153,6 +154,16 @@ export default function PrivacyScreen() {
           {/* Export data */}
           <TouchableOpacity style={styles.menuRow} onPress={handleExportData} disabled={saving}>
             <Text style={styles.menuText}>{t('privacy.exportData')}</Text>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          {/* Privacy Policy — external link */}
+          <TouchableOpacity
+            style={styles.menuRow}
+            onPress={() => Linking.openURL('https://pixel-herbarium.com/privacy-policy')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.menuText}>{t('settings.privacyPolicy')}</Text>
             <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
 

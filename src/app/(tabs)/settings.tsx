@@ -205,14 +205,6 @@ export default function SettingsTabScreen() {
       <Text style={styles.sectionLabel}>{t('settings.otherSection')}</Text>
       <TouchableOpacity
         style={styles.menuRow}
-        onPress={() => Linking.openURL('https://pixel-herbarium.com/privacy-policy')}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.menuText}>{t('settings.privacyPolicy')}</Text>
-        <Text style={styles.menuArrow}>›</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.menuRow}
         onPress={() => Linking.openURL('mailto:support@pixelherbarium.app')}
         activeOpacity={0.7}
       >
