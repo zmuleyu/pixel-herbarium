@@ -15,14 +15,19 @@
 | `ADHOC_PROVISIONING_PROFILE_BASE64` | ✅ | Apple Developer Portal → Profiles → Ad Hoc → 下载 .mobileprovision → `base64 -i profile.mobileprovision \| pbcopy` |
 | `IOS_APPSTORE_PROFILE_BASE64` | ❌ 待添加 | Apple Developer Portal → Profiles → App Store → 下载 .mobileprovision → `base64 -i profile.mobileprovision \| pbcopy` |
 | `KEYCHAIN_PASSWORD` | ✅ | 任意随机字符串（`openssl rand -base64 24`） |
-| `APPLE_TEAM_ID` | ✅ 已写入 | `68JA8V8NC2`（固定值，来自 app.json） |
 | `EXPO_TOKEN` | ✅ | expo.dev → Account Settings → Access Tokens |
 | `EXPO_APPLE_APP_SPECIFIC_PASSWORD` | ✅ | appleid.apple.com → App-Specific Passwords |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | ✅ | eas.json 中的 anon key（非 service_role） |
 
 ## 唯一待补的 Secret
 
-`IOS_APPSTORE_PROFILE_BASE64`：仅 `release.yml` 需要（production build + submit）。
+固定内置值：
+
+- `APPLE_TEAM_ID=68JA8V8NC2`
+
+唯一待补：
+
+- `IOS_APPSTORE_PROFILE_BASE64`：仅 `release.yml` 需要（production build + submit）。
 
 生成步骤：
 1. Apple Developer Portal → Certificates, IDs & Profiles → Profiles
