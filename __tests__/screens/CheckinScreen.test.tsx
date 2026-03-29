@@ -52,7 +52,12 @@ jest.mock('@/stores/checkin-store', () => ({
 }));
 
 jest.mock('@/constants/seasons', () => ({
-  getActiveSeason: () => ({ id: 'sakura', iconEmoji: '🌸' }),
+  getActiveSeason: () => ({
+    id: 'sakura',
+    iconEmoji: '🌸',
+    nameKey: 'seasons.sakura',
+    dateRange: ['03-20', '04-15'] as [string, string],
+  }),
 }));
 
 jest.mock('@/services/content-pack', () => ({
@@ -85,10 +90,22 @@ function shallowRender(element: any, depth = 10): any {
     return shallowRender(output, depth - 1);
   }
   const children = element.props?.children;
+  // For FlatList-like components, also render list items via renderItem
+  const renderedItems = (element.props?.renderItem && Array.isArray(element.props?.data))
+    ? element.props.data.map((item: any, index: number) =>
+        shallowRender(element.props.renderItem({ item, index }), depth)
+      )
+    : undefined;
+  // Also render ListHeaderComponent if present (it's a React element, not children)
+  const renderedHeader = element.props?.ListHeaderComponent != null
+    ? shallowRender(element.props.ListHeaderComponent, depth)
+    : undefined;
   return {
     type: typeof element.type === 'string' ? element.type : element.type?.name ?? 'Unknown',
     props: { ...element.props, children: undefined },
     children: children != null ? (Array.isArray(children) ? children.map((c: any) => shallowRender(c, depth)) : shallowRender(children, depth)) : undefined,
+    renderedItems,
+    renderedHeader,
   };
 }
 
@@ -151,5 +168,40 @@ describe('DiaryScreen (checkin tab)', () => {
     const output = renderToString();
     // Season emoji appears in placeholder card
     expect(output).toContain('🌸');
+  });
+});
+
+describe('DiaryScreen — redesigned', () => {
+  it('renders season progress banner title key', () => {
+    mockHistory.mockReturnValue([{
+      id: '1', spotId: 1, seasonId: 'sakura',
+      photoUri: '', composedUri: 'file://c.jpg',
+      timestamp: '2026-03-29T00:00:00.000Z',
+    }]);
+    const tree = shallowRender(React.createElement(DiaryScreen));
+    const output = JSON.stringify(tree);
+    expect(output).toContain('diary.seasonBannerTitle');
+  });
+
+  it('renders lastRecord stat label', () => {
+    mockHistory.mockReturnValue([{
+      id: '1', spotId: 1, seasonId: 'sakura',
+      photoUri: '', composedUri: '',
+      timestamp: '2026-03-15T00:00:00.000Z',
+    }]);
+    const tree = shallowRender(React.createElement(DiaryScreen));
+    const output = JSON.stringify(tree);
+    expect(output).toContain('diary.lastRecord');
+  });
+
+  it('renders watermark badge on card with composedUri', () => {
+    mockHistory.mockReturnValue([{
+      id: '1', spotId: 1, seasonId: 'sakura',
+      photoUri: 'file://p.jpg', composedUri: 'file://c.jpg',
+      timestamp: '2026-03-29T00:00:00.000Z',
+    }]);
+    const tree = shallowRender(React.createElement(DiaryScreen));
+    const output = JSON.stringify(tree);
+    expect(output).toContain('diary-card-badge');
   });
 });
