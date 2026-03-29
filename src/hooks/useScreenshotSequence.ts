@@ -43,25 +43,26 @@ export function useScreenshotSequence() {
     const run = async () => {
       await clearScreenshotSignals();
 
-      // 01 — Home: explicitly navigate to home tab first (App may cold-start on any tab),
-      // then wait for home.tsx to emit its signal after mount + animation settle.
+      // 01 — Home: navigate to home tab, wait for animations, then signal CI.
+      // Timeout must exceed CI's cold-start sleep (~50s after app launch)
+      // so the app is still waiting when CI begins polling.
       console.log('[SCREENSHOT_SEQ] Navigating to home tab...');
       router.replace('/(tabs)/home' as any);
-      await delay(3000); // allow home tab to mount + staggered entry animations (2s) + buffer
+      await delay(3000); // allow staggered entry animations (2s) + buffer
       console.log('[SCREENSHOT_SEQ] Waiting for home tab signal...');
-      await signalAndWait('screenshot_ready_home');
+      await signalAndWait('screenshot_ready_home', 120000);
 
       // 02 — Diary (check-in history as photo diary)
       router.push('/(tabs)/checkin' as any);
       await waitForRender();
       await delay(500); // stat cards + grid settle
-      await signalAndWait('screenshot_ready_checkin');
+      await signalAndWait('screenshot_ready_checkin', 60000);
 
       // 03 — Settings
       router.push('/(tabs)/settings' as any);
       await waitForRender();
       await delay(500);
-      await signalAndWait('screenshot_ready_settings');
+      await signalAndWait('screenshot_ready_settings', 60000);
 
       console.log('[SCREENSHOT_SEQ] Sequence complete');
     };
