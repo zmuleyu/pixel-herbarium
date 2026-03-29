@@ -3,12 +3,11 @@ import {
   View,
   Text,
   Animated,
-  FlatList,
+  ScrollView,
   Image,
   TouchableOpacity,
   StyleSheet,
   Platform,
-  Dimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
@@ -25,15 +24,9 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useCheckinStore } from '@/stores/checkin-store';
 import { useStaggeredEntry } from '@/hooks/useStaggeredEntry';
-import { PressableCard } from '@/components/PressableCard';
 import { loadSpotsData } from '@/services/content-pack';
-import type { CheckinRecord } from '@/types/hanami';
 import { FEATURES } from '@/constants/features';
 import { signalAndWait } from '@/hooks/utils/screenshotSignal';
-
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const CARD_GAP = 16;
-const CARD_SIZE = (SCREEN_WIDTH - 48) / 2; // 16 padding each side + 16 gap
 
 function formatJapaneseDate(date: Date): string {
   const m = date.getMonth() + 1;
@@ -55,34 +48,6 @@ function getSpotName(seasonId: string, spotId: number): string {
   return data.spots.find((s) => s.id === spotId)?.nameJa ?? String(spotId);
 }
 
-function CheckinCard({ record }: { record: CheckinRecord }) {
-  const season = getActiveSeason();
-  const theme = getSeasonTheme(season.id);
-  const spotName = getSpotName(record.seasonId, record.spotId);
-
-  return (
-    <PressableCard style={[styles.card, { borderColor: theme.accent }]}>
-      {record.composedUri ? (
-        <Image
-          source={{ uri: record.composedUri }}
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
-      ) : (
-        <View style={[styles.cardImage, styles.cardPlaceholder, { backgroundColor: theme.bgTint }]}>
-          <Text style={styles.cardPlaceholderEmoji}>{season.iconEmoji}</Text>
-        </View>
-      )}
-      <View style={[styles.cardFooter, { backgroundColor: theme.bgTint }]}>
-        <Text style={styles.cardSpot} numberOfLines={1}>
-          {spotName}
-        </Text>
-        <Text style={styles.cardDate}>{formatDateShort(record.timestamp)}</Text>
-      </View>
-    </PressableCard>
-  );
-}
-
 export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -91,7 +56,7 @@ export default function HomeScreen() {
   const history = useCheckinStore((s) => s.history);
   const loadHistory = useCheckinStore((s) => s.loadHistory);
 
-  // Staggered entry: header(0) + cta(1) + section(2) + grid/empty(3)
+  // Staggered entry: header(0) + primaryCTA(1) + secondaryCTA(2) + bottomArea(3)
   const { getStyle: entryStyle } = useStaggeredEntry({ count: 4 });
 
   useEffect(() => {
@@ -99,84 +64,115 @@ export default function HomeScreen() {
   }, []);
 
   // Screenshot mode: emit home signal after mount + staggered animations settle.
-  // This replaces the root-layout router.replace approach which couldn't reliably
-  // switch nested tabs in Expo Router CI cold-start environments.
   useEffect(() => {
     if (!FEATURES.SCREENSHOT_MODE) return;
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       signalAndWait('screenshot_ready_home').catch(() => {});
     }, 2000);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, []);
 
+  const recentRecord = history.length > 0 ? history[0] : null;
+
   return (
-    <FlatList
+    <ScrollView
       testID="home.container"
       style={[styles.container, { backgroundColor: theme.bgTint }]}
       contentContainerStyle={styles.content}
-      data={history}
-      keyExtractor={(item) => item.id}
-      numColumns={2}
-      columnWrapperStyle={history.length > 0 ? styles.row : undefined}
       showsVerticalScrollIndicator={false}
-      ListHeaderComponent={
-        <>
-          {/* Season Header with gradient */}
-          <Animated.View style={entryStyle(0)}>
-            <LinearGradient
-              colors={[theme.accent, theme.bgTint, colors.background]}
-              locations={[0, 0.5, 1]}
-              start={{ x: 0.5, y: 0 }}
-              end={{ x: 0.5, y: 1 }}
-              style={styles.headerGradient}
-            >
-              <Text style={styles.seasonEmoji}>{season.iconEmoji}</Text>
-              <Text style={[styles.seasonName, { color: theme.primary }]}>
-                {t(season.nameKey)}
-              </Text>
-              <Text style={styles.dateText}>{formatJapaneseDate(new Date())}</Text>
-            </LinearGradient>
-          </Animated.View>
+    >
+      {/* 1. Season gradient header */}
+      <Animated.View style={entryStyle(0)}>
+        <LinearGradient
+          colors={[theme.accent, theme.bgTint, colors.background]}
+          locations={[0, 0.5, 1]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.headerGradient}
+        >
+          <Text style={styles.seasonEmoji}>{season.iconEmoji}</Text>
+          <Text style={[styles.seasonName, { color: theme.primary }]}>
+            {t(season.nameKey)}
+          </Text>
+          <Text style={styles.dateText}>{formatJapaneseDate(new Date())}</Text>
+        </LinearGradient>
+      </Animated.View>
 
-          {/* 花を撮る CTA — only shown when diary has entries; empty state has its own CTA */}
-          {history.length > 0 && (
-            <Animated.View style={entryStyle(1)}>
-              <TouchableOpacity
-                style={styles.ctaButton}
-                onPress={() => router.push('/checkin-wizard' as any)}
-                activeOpacity={0.85}
-              >
-                <Text style={styles.ctaText}>{t('home.captureCta')}</Text>
-              </TouchableOpacity>
-            </Animated.View>
-          )}
+      {/* 2. Primary CTA — camera */}
+      <Animated.View style={entryStyle(1)}>
+        <TouchableOpacity
+          style={[styles.primaryCta, { backgroundColor: colors.blushPink }]}
+          onPress={() => router.push('/checkin-wizard' as any)}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.primaryCtaEmoji}>📷</Text>
+          <Text style={[styles.primaryCtaText, { color: colors.plantPrimary }]}>
+            {t('home.captureCta')}
+          </Text>
+        </TouchableOpacity>
+      </Animated.View>
 
-          {/* Diary section title + count */}
-          <Animated.View style={[styles.sectionHeader, entryStyle(2)]}>
-            <Text style={styles.sectionTitle}>{t('home.diaryTitle')}</Text>
-            {history.length > 0 && (
-              <Text style={[styles.sectionCount, { color: theme.primary }]}>
-                {t('home.diaryCount', { count: history.length })}
-              </Text>
-            )}
-          </Animated.View>
-        </>
-      }
-      renderItem={({ item }) => <CheckinCard record={item} />}
-      ListEmptyComponent={
-        <Animated.View style={[styles.emptyState, entryStyle(3)]}>
-          <Text style={styles.emptyTitle}>{t('home.emptyTitle')}</Text>
-          <Text style={styles.emptySub}>{t('home.emptySub')}</Text>
+      {/* 3. Secondary CTA — library */}
+      <Animated.View style={entryStyle(2)}>
+        <TouchableOpacity
+          style={[styles.secondaryCta, { borderColor: colors.blushPink }]}
+          onPress={() => router.push('/(tabs)/diary' as any)}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.secondaryCtaEmoji}>🖼️</Text>
+          <Text style={styles.secondaryCtaText}>
+            {t('home.libraryCtaLabel')}
+          </Text>
+        </TouchableOpacity>
+      </Animated.View>
+
+      {/* 4. Bottom area: recent record or welcome */}
+      <Animated.View style={entryStyle(3)}>
+        {recentRecord ? (
+          /* Recent record preview */
           <TouchableOpacity
-            style={[styles.emptyCtaButton, { backgroundColor: colors.blushPink }]}
-            onPress={() => router.push('/checkin-wizard' as any)}
+            style={[styles.recentCard, { borderColor: theme.accent }]}
+            onPress={() => router.push('/(tabs)/diary' as any)}
             activeOpacity={0.85}
           >
-            <Text style={styles.emptyCtaText}>{t('home.captureCta')}</Text>
+            <Text style={[styles.recentLabel, { color: theme.primary }]}>
+              {t('home.recentRecord')}
+            </Text>
+            <View style={styles.recentRow}>
+              {recentRecord.composedUri ? (
+                <Image
+                  source={{ uri: recentRecord.composedUri }}
+                  style={styles.recentThumb}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View style={[styles.recentThumb, styles.recentThumbPlaceholder, { backgroundColor: theme.bgTint }]}>
+                  <Text style={styles.recentThumbEmoji}>{season.iconEmoji}</Text>
+                </View>
+              )}
+              <View style={styles.recentInfo}>
+                <Text style={styles.recentSpotName} numberOfLines={1}>
+                  {getSpotName(recentRecord.seasonId, recentRecord.spotId)}
+                </Text>
+                <Text style={styles.recentDate}>
+                  {formatDateShort(recentRecord.timestamp)}
+                </Text>
+              </View>
+            </View>
           </TouchableOpacity>
-        </Animated.View>
-      }
-    />
+        ) : (
+          /* Welcome section for new users */
+          <View style={styles.welcomeSection}>
+            <Text style={[styles.welcomeTitle, { color: theme.primary }]}>
+              {t('home.emptyWelcomeTitle')}
+            </Text>
+            <Text style={styles.welcomeSub}>
+              {t('home.emptyWelcomeSub')}
+            </Text>
+          </View>
+        )}
+      </Animated.View>
+    </ScrollView>
   );
 }
 
@@ -186,10 +182,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingTop: Platform.OS === 'ios' ? 60 : spacing.xl,
     paddingBottom: spacing.xl,
-    gap: CARD_GAP,
+    gap: spacing.md,
   },
 
-  // Header gradient
+  // Season gradient header
   headerGradient: {
     alignItems: 'center',
     gap: spacing.xs,
@@ -213,114 +209,106 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.light,
   },
 
-  // CTA button
-  ctaButton: {
-    backgroundColor: colors.blushPink,
-    borderRadius: borderRadius.md,
-    height: 50,
+  // Primary CTA (camera)
+  primaryCta: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.md,
-  },
-  ctaText: {
-    fontSize: 16,
-    fontWeight: fontWeight.bold,
-    color: colors.plantPrimary,
-    fontFamily: typography.fontFamily.display,
-  },
-
-  // Section header
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  sectionTitle: {
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.lg,
-    color: colors.text,
-    fontWeight: fontWeight.bold,
-  },
-  sectionCount: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.display,
-  },
-
-  // Grid row
-  row: {
-    gap: CARD_GAP,
-  },
-
-  // Checkin card
-  card: {
-    width: CARD_SIZE,
+    gap: spacing.sm,
     borderRadius: borderRadius.md,
-    overflow: 'hidden',
-    borderWidth: 1,
+    height: 56,
     ...shadows.card,
   },
-  cardImage: {
-    width: CARD_SIZE,
-    height: CARD_SIZE * (4 / 3),
+  primaryCtaEmoji: { fontSize: 20 },
+  primaryCtaText: {
+    fontSize: typography.fontSize.md,
+    fontWeight: fontWeight.bold,
+    fontFamily: typography.fontFamily.display,
   },
-  cardPlaceholder: {
+
+  // Secondary CTA (library)
+  secondaryCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    borderRadius: borderRadius.md,
+    height: 48,
+    backgroundColor: colors.white,
+    borderWidth: 1.5,
+  },
+  secondaryCtaEmoji: { fontSize: 18 },
+  secondaryCtaText: {
+    fontSize: typography.fontSize.md,
+    fontWeight: fontWeight.semibold,
+    fontFamily: typography.fontFamily.display,
+    color: colors.text,
+  },
+
+  // Recent record card
+  recentCard: {
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    padding: spacing.md,
+    backgroundColor: colors.white,
+    gap: spacing.sm,
+    ...shadows.cardSubtle,
+  },
+  recentLabel: {
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.sm,
+    fontWeight: fontWeight.semibold,
+  },
+  recentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  recentThumb: {
+    width: 64,
+    height: 64,
+    borderRadius: borderRadius.sm,
+    overflow: 'hidden',
+  },
+  recentThumbPlaceholder: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardPlaceholderEmoji: {
-    fontSize: 40,
+  recentThumbEmoji: {
+    fontSize: 28,
     opacity: 0.6,
   },
-  cardFooter: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  cardSpot: {
+  recentInfo: {
     flex: 1,
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.xs,
-    color: colors.text,
+    gap: spacing.xs,
   },
-  cardDate: {
-    fontSize: typography.fontSize.xs,
+  recentSpotName: {
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.md,
+    color: colors.text,
+    fontWeight: fontWeight.semibold,
+  },
+  recentDate: {
+    fontSize: typography.fontSize.sm,
     color: colors.textSecondary,
-    marginLeft: spacing.xs,
   },
 
-  // Empty state
-  emptyState: {
+  // Welcome section
+  welcomeSection: {
     alignItems: 'center',
-    paddingTop: spacing.xl,
-    gap: spacing.md,
+    paddingTop: spacing.lg,
+    gap: spacing.sm,
   },
-  emptyTitle: {
+  welcomeTitle: {
     fontFamily: typography.fontFamily.display,
     fontSize: typography.fontSize.lg,
-    color: colors.plantPrimary,
-    fontWeight: fontWeight.semibold,
+    fontWeight: fontWeight.bold,
     textAlign: 'center',
   },
-  emptySub: {
+  welcomeSub: {
     fontSize: typography.fontSize.sm,
     color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: typography.fontSize.sm * typography.lineHeight,
-  },
-  emptyCtaButton: {
-    borderRadius: borderRadius.md,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.xl,
-    marginTop: spacing.sm,
-    alignItems: 'center',
-  },
-  emptyCtaText: {
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.md,
-    color: colors.plantPrimary,
-    fontWeight: fontWeight.semibold,
   },
 });

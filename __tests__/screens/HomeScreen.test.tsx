@@ -142,26 +142,6 @@ describe('HomeScreen', () => {
     expect(output).toContain('home.captureCta');
   });
 
-  it('shows diary section title', () => {
-    const output = renderToString();
-    expect(output).toContain('home.diaryTitle');
-  });
-
-  it('shows empty state when history is empty', () => {
-    const output = renderToString();
-    expect(output).toContain('home.emptyTitle');
-    expect(output).toContain('home.emptySub');
-  });
-
-  it('shows diary count when history has items', () => {
-    mockStoreState.history = [
-      { id: 'c1', seasonId: 'sakura', spotId: 1, timestamp: '2026-03-20T09:00:00.000Z', composedUri: null },
-      { id: 'c2', seasonId: 'sakura', spotId: 1, timestamp: '2026-03-21T09:00:00.000Z', composedUri: null },
-    ];
-    const output = renderToString();
-    expect(output).toContain('home.diaryCount');
-  });
-
   it('provides loadHistory mock on store shape', () => {
     expect(typeof mockStoreState.loadHistory).toBe('function');
   });
@@ -197,5 +177,50 @@ describe('HomeScreen', () => {
     ];
     const output = renderToString();
     expect(output).toContain('home.captureCta');
+  });
+});
+
+describe('HomeScreen — redesigned', () => {
+  beforeEach(() => {
+    mockStoreState.history = [];
+  });
+
+  it('renders library CTA with correct i18n key', () => {
+    const tree = shallowRender(<HomeScreen />);
+    const output = JSON.stringify(tree);
+    expect(output).toContain('home.libraryCtaLabel');
+  });
+
+  it('shows welcome text when history is empty (new user)', () => {
+    mockStoreState.history = [];
+    const tree = shallowRender(<HomeScreen />);
+    const output = JSON.stringify(tree);
+    expect(output).toContain('home.emptyWelcomeTitle');
+  });
+
+  it('shows recent record preview when history has items', () => {
+    mockStoreState.history = [{
+      id: '1', spotId: 1, seasonId: 'sakura',
+      photoUri: 'file://photo.jpg', composedUri: 'file://composed.jpg',
+      timestamp: '2026-03-29T10:00:00.000Z',
+    }];
+    const tree = shallowRender(<HomeScreen />);
+    const output = JSON.stringify(tree);
+    expect(output).toContain('home.recentRecord');
+  });
+
+  it('does NOT render diary grid (no diaryTitle key)', () => {
+    mockStoreState.history = [
+      { id: '1', spotId: 1, seasonId: 'sakura', photoUri: '', composedUri: '', timestamp: '' },
+    ];
+    const tree = shallowRender(<HomeScreen />);
+    const output = JSON.stringify(tree);
+    expect(output).not.toContain('home.diaryTitle');
+  });
+
+  it('season header is always visible (LinearGradient present)', () => {
+    const tree = shallowRender(<HomeScreen />);
+    const output = JSON.stringify(tree);
+    expect(output).toContain('LinearGradient');
   });
 });
