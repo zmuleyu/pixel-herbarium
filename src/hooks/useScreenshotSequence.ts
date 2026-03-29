@@ -28,26 +28,27 @@ export function useScreenshotSequence() {
     if (!FEATURES.SCREENSHOT_MODE) return;
     if (started.current) return;
 
-    // Wait until we are actually on the home tab (not just in tabs).
-    // _layout.tsx redirect fires router.replace('/(tabs)/home') after bootstrap.
-    // We must wait for that redirect to complete before starting the sequence,
-    // otherwise our own router.replace races with it and the screenshot may
-    // capture the wrong tab.
-    const inHome = segments[0] === '(tabs)' && segments[1] === 'home';
-    if (!inHome) {
-      console.log('[SCREENSHOT_SEQ] Waiting for home tab...', segments);
+    // Wait until tabs are mounted (segments[0] === '(tabs)').
+    // Note: root layout's useSegments() only returns segments up to the
+    // current route group — segments[1] is NOT reliable here.
+    const inTabs = segments[0] === '(tabs)';
+    if (!inTabs) {
+      console.log('[SCREENSHOT_SEQ] Waiting for tabs...', segments);
       return;
     }
 
     started.current = true;
-    console.log('[SCREENSHOT_SEQ] Home tab ready — starting signal-driven sequence');
+    console.log('[SCREENSHOT_SEQ] Tabs ready — starting signal-driven sequence');
 
     const run = async () => {
       await clearScreenshotSignals();
 
-      // Already on home — wait for staggered entry animations to finish
+      // Navigate to home explicitly.
+      // Wait 3s after replace to let _layout.tsx redirect and staggered
+      // entry animations fully settle in CI cold-start environment.
+      router.replace('/(tabs)/home' as any);
+      await delay(3000);
       await waitForRender();
-      await delay(1500); // CI cold start: LinearGradient + 4 staggered components
 
       // 01 — Home
       console.log('[SCREENSHOT_SEQ] Signaling home');
