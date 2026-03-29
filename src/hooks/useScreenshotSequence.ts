@@ -43,9 +43,11 @@ export function useScreenshotSequence() {
     const run = async () => {
       await clearScreenshotSignals();
 
-      // 01 — Home: signal is emitted by home.tsx itself after mount + animation settle.
-      // Root-layout router.replace() cannot reliably switch nested tabs, so we delegate
-      // signaling to the tab component. App cold-starts on home tab via index.tsx redirect.
+      // 01 — Home: explicitly navigate to home tab first (App may cold-start on any tab),
+      // then wait for home.tsx to emit its signal after mount + animation settle.
+      console.log('[SCREENSHOT_SEQ] Navigating to home tab...');
+      router.replace('/(tabs)/home' as any);
+      await delay(3000); // allow home tab to mount + staggered entry animations (2s) + buffer
       console.log('[SCREENSHOT_SEQ] Waiting for home tab signal...');
       await signalAndWait('screenshot_ready_home');
 
