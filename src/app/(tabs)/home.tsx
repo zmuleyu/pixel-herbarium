@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import { useRef } from 'react';
 import { getActiveSeason } from '@/constants/seasons';
 import {
   colors,
@@ -26,8 +25,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useCheckinStore } from '@/stores/checkin-store';
 import { useStaggeredEntry } from '@/hooks/useStaggeredEntry';
 import { loadSpotsData } from '@/services/content-pack';
-import { FEATURES } from '@/constants/features';
-import { signalAndWait } from '@/hooks/utils/screenshotSignal';
 
 function formatJapaneseDate(date: Date): string {
   const m = date.getMonth() + 1;
@@ -63,18 +60,6 @@ export default function HomeScreen() {
   useEffect(() => {
     loadHistory();
   }, []);
-
-  // Screenshot mode: emit home signal only when tab is FOCUSED (visible on screen).
-  // useEffect fires even on pre-mounted tabs; useFocusEffect only fires when tab is active.
-  useFocusEffect(
-    useCallback(() => {
-      if (!FEATURES.SCREENSHOT_MODE) return;
-      const timer = setTimeout(() => {
-        signalAndWait('screenshot_ready_home').catch(() => {});
-      }, 1500);
-      return () => clearTimeout(timer);
-    }, [])
-  );
 
   const recentRecord = history.length > 0 ? history[0] : null;
 
