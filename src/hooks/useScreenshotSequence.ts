@@ -53,14 +53,12 @@ export function useScreenshotSequence() {
       router.push('/(tabs)/checkin' as any);
       await waitForRender();
       await delay(500); // stat cards + grid settle
-      console.log('[SCREENSHOT_SEQ] Signaling checkin/diary');
       await signalAndWait('screenshot_ready_checkin');
 
       // 03 — Settings
       router.push('/(tabs)/settings' as any);
       await waitForRender();
       await delay(500);
-      console.log('[SCREENSHOT_SEQ] Signaling settings');
       await signalAndWait('screenshot_ready_settings');
 
       console.log('[SCREENSHOT_SEQ] Sequence complete');

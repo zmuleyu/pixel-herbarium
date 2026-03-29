@@ -28,6 +28,8 @@ import { useStaggeredEntry } from '@/hooks/useStaggeredEntry';
 import { PressableCard } from '@/components/PressableCard';
 import { loadSpotsData } from '@/services/content-pack';
 import type { CheckinRecord } from '@/types/hanami';
+import { FEATURES } from '@/constants/features';
+import { signalAndWait } from '@/hooks/utils/screenshotSignal';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_GAP = 16;
@@ -94,6 +96,17 @@ export default function HomeScreen() {
 
   useEffect(() => {
     loadHistory();
+  }, []);
+
+  // Screenshot mode: emit home signal after mount + staggered animations settle.
+  // This replaces the root-layout router.replace approach which couldn't reliably
+  // switch nested tabs in Expo Router CI cold-start environments.
+  useEffect(() => {
+    if (!FEATURES.SCREENSHOT_MODE) return;
+    const t = setTimeout(() => {
+      signalAndWait('screenshot_ready_home').catch(() => {});
+    }, 2000);
+    return () => clearTimeout(t);
   }, []);
 
   return (
