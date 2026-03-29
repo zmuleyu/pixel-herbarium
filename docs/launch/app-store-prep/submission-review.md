@@ -115,39 +115,72 @@
 
 ---
 
+## Phase C.5: ASC 配置门
+
+> 这些字段是 ASC 平台层面的提交前置条件，与 Apple 审核规则无关。
+> 详细 checklist → `../checklists/asc-config.md`
+
+- [ ] **CS1** 内容版权：App 信息 → 内容版权（选"是"或"否"）
+- [ ] **CS2** 定价：价格与销售范围 → 添加定价（免费 = $0.00 显式设置）
+- [ ] **CS3** 销售范围：App 供应情况 → 至少 1 个国家/地区
+- [ ] **CS4** 隐私标签：App 隐私 → 问卷已发布（非草稿）
+- [ ] **CS5** 年龄分级：问卷已填写
+- [ ] **CS6** 构建版本：版本页 → 已关联 build
+- [ ] **CS7** 类别：App 信息 → 主要 + 次要
+- [ ] **CS8** URL SSL：技术支持网址 / 营销网址 → SSL 正常
+
+验证：点击"添加以供审核" → 无阻断项弹出 → 则可进入 Phase D
+
+---
+
 ## Phase D: 构建与提交
 
-### D1. Production Build
+> ⚠️ 2026-03-28 起已从 EAS Build 迁移至 GHA 原生 xcodebuild。
+> 完整 GHA 链路文档 → `../RELEASE-WORKFLOW.md` S5
+
+### D0. 前置检查
 
 ```bash
-cd D:/projects/Games/gardern/pixel-herbarium
-npx eas build --profile production --platform ios
+bash scripts/pre-submit/check-secrets.sh    # 12 个 GitHub Secret 完整
+bash scripts/pre-submit/check-version.sh    # buildNumber 递增
+git push origin dev                         # 确认远程 HEAD 同步
 ```
 
-- [ ] 等待完成（~15-30 min）
-- [ ] 确认 build status: finished
-
-### D2. Submit
+### D1. Preview Build（Ad Hoc, ~10 min）
 
 ```bash
-npx eas submit --platform ios --latest
+gh workflow run preview-build.yml --repo zmuleyu/pixel-herbarium --ref dev
+gh run list --repo zmuleyu/pixel-herbarium --workflow preview-build.yml --limit 1
 ```
 
-- [ ] 等待 Apple 处理（10-30 min）
-- [ ] 在 ASC 中确认 build 出现在版本选择列表
+- [ ] Gate1 → Gate2 → Gate3 全 PASS
 
-### D3. 真机最终验证
+### D2. Release Build + ASC Submit（~12 min）
 
-- [ ] 在 production build 上完整走一遍：
+```bash
+# 确认 preview 在当前 SHA PASS 后
+gh workflow run release.yml --repo zmuleyu/pixel-herbarium --ref dev
+```
+
+- [ ] Gate1.5 验证同 SHA preview success
+- [ ] Gate3 产出 app-store IPA
+- [ ] Submit 步骤 xcrun altool 提交 ASC
+
+### D3. 确认 ASC 收到 build
+
+- [ ] App Store Connect → 版本 → 构建版本 → 确认 build 出现
+
+### D4. 真机最终验证
+
+- [ ] 在最新 build 上完整走一遍：
   1. 冷启动 → 无崩溃
-  2. Onboarding 3 slides → 完整展示
-  3. Guest 浏览 → Home/Map/Herbarium/Settings 正常
-  4. Apple Sign In → 登录成功
-  5. 发見タブ → 拍照 → AI 识别 → 结果展示
-  6. 地図タブ → 打卡 → Stamp card 保存
-  7. 分享 → LINE/Instagram/保存到相册
-  8. 断网 → OfflineBanner 显示，不崩溃
-  9. Settings → Privacy → 账号删除可达
+  2. Guest 浏览 → Home/Diary/Settings 正常
+  3. Apple Sign In → 登录成功
+  4. Home → 花を撮る → 选照片 → Stamp Editor → 保存
+  5. Diary → 查看打卡记录
+  6. 分享 → 保存到相册/系统 Share Sheet
+  7. 断网 → 提示友好，不崩溃
+  8. Settings → アカウントを削除 可达
 
 ---
 
