@@ -47,6 +47,8 @@ module.exports = {
         '^@supabase/supabase-js$': '<rootDir>/__mocks__/supabase-js.js',
         '^react-native-url-polyfill/auto$': '<rootDir>/__mocks__/empty.js',
         '^expo-secure-store$': '<rootDir>/__mocks__/empty.js',
+        '^expo-file-system(/.*)?$': '<rootDir>/__mocks__/empty.js',
+        '^react-native-reanimated$': '<rootDir>/__mocks__/react-native-reanimated.js',
       },
       transform: {
         '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx', resolveJsonModule: true } }],
