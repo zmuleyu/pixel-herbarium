@@ -10,7 +10,8 @@ import {
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { useCallback, useRef } from 'react';
 import { getActiveSeason } from '@/constants/seasons';
 import {
   colors,
