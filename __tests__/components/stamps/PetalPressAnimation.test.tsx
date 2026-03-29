@@ -93,4 +93,21 @@ describe('PetalPressAnimation', () => {
     expect(result).toBeTruthy();
     expect(AccessibilityInfo.isReduceMotionEnabled).toBeDefined();
   });
+
+  describe('floatFrom prop', () => {
+    it('accepts floatFrom prop without crashing', () => {
+      const result = (PetalPressAnimation as any)({ ...defaultProps, floatFrom: -60 });
+      expect(result).toBeTruthy();
+    });
+
+    it('renders without floatFrom (backward compatible)', () => {
+      const result = (PetalPressAnimation as any)(defaultProps);
+      expect(result).toBeTruthy();
+    });
+
+    it('accepts floatFrom = 0 (no-op case)', () => {
+      const result = (PetalPressAnimation as any)({ ...defaultProps, floatFrom: 0 });
+      expect(result).toBeTruthy();
+    });
+  });
 });

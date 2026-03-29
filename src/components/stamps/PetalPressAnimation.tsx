@@ -29,6 +29,12 @@ interface PetalPressAnimationProps {
   onComplete: () => void;
   /** StampRenderer output */
   children: React.ReactNode;
+  /**
+   * Optional "花落" (petal-falling) phase: stamp floats down from this Y offset
+   * before the press animation begins. Negative values mean the stamp starts above.
+   * When 0 (default), the existing animation runs unchanged.
+   */
+  floatFrom?: number;
 }
 
 // -- Particle config --
@@ -85,12 +91,15 @@ function PetalParticle({
 }
 
 export function PetalPressAnimation({
-  stampX, stampY, themeColor, onComplete, children,
+  stampX, stampY, themeColor, onComplete, children, floatFrom = 0,
 }: PetalPressAnimationProps) {
   // Stamp animation values
   const stampTranslateY = useSharedValue(-120);
   const stampOpacity = useSharedValue(0);
   const stampScale = useSharedValue(1);
+
+  // floatFrom: additional Y offset for the "花落" float-down phase
+  const floatY = useSharedValue(floatFrom);
 
   // Halo
   const haloScale = useSharedValue(0);
@@ -112,50 +121,62 @@ export function PetalPressAnimation({
         return;
       }
 
-      // Stage 1: Float Down (0–0.3s)
-      stampTranslateY.value = withSpring(0, { damping: 15, stiffness: 90 });
-      stampOpacity.value = withTiming(1, { duration: 200 });
+      const runPressAnimation = () => {
+        // Stage 1: Float Down (0–0.3s)
+        stampTranslateY.value = withSpring(0, { damping: 15, stiffness: 90 });
+        stampOpacity.value = withTiming(1, { duration: 200 });
 
-      // Stage 2→3: Press 0.88 → Bounce 1.02 → Settle 1.0
-      stampScale.value = withDelay(STAGE2_START,
-        withSequence(
-          withTiming(0.88, { duration: 150, easing: Easing.out(Easing.quad) }),
-          withSpring(1.02, { damping: 12, stiffness: 150 }),
-          withSpring(1.0, { damping: 20, stiffness: 100 }),
-        ),
-      );
+        // Stage 2→3: Press 0.88 → Bounce 1.02 → Settle 1.0
+        stampScale.value = withDelay(STAGE2_START,
+          withSequence(
+            withTiming(0.88, { duration: 150, easing: Easing.out(Easing.quad) }),
+            withSpring(1.02, { damping: 12, stiffness: 150 }),
+            withSpring(1.0, { damping: 20, stiffness: 100 }),
+          ),
+        );
 
-      // Halo: expand + fade during Stage 2
-      haloScale.value = withDelay(STAGE2_HAPTIC,
-        withTiming(1.5, { duration: 350, easing: Easing.out(Easing.quad) }),
-      );
-      haloOpacity.value = withDelay(STAGE2_HAPTIC,
-        withSequence(
-          withTiming(0.3, { duration: 100 }),
-          withTiming(0, { duration: 250 }),
-        ),
-      );
+        // Halo: expand + fade during Stage 2
+        haloScale.value = withDelay(STAGE2_HAPTIC,
+          withTiming(1.5, { duration: 350, easing: Easing.out(Easing.quad) }),
+        );
+        haloOpacity.value = withDelay(STAGE2_HAPTIC,
+          withSequence(
+            withTiming(0.3, { duration: 100 }),
+            withTiming(0, { duration: 250 }),
+          ),
+        );
 
-      // Particles: burst outward + fade
-      particleProgress.value = withDelay(STAGE2_HAPTIC,
-        withTiming(1, { duration: 500, easing: Easing.out(Easing.cubic) }),
-      );
-      particleOpacity.value = withDelay(STAGE2_HAPTIC,
-        withSequence(
-          withTiming(1, { duration: 100 }),
-          withDelay(200, withTiming(0, { duration: 200 })),
-        ),
-      );
+        // Particles: burst outward + fade
+        particleProgress.value = withDelay(STAGE2_HAPTIC,
+          withTiming(1, { duration: 500, easing: Easing.out(Easing.cubic) }),
+        );
+        particleOpacity.value = withDelay(STAGE2_HAPTIC,
+          withSequence(
+            withTiming(1, { duration: 100 }),
+            withDelay(200, withTiming(0, { duration: 200 })),
+          ),
+        );
 
-      // Haptic at press moment
-      setTimeout(() => {
-        if (!cancelled) HapticPatterns.stampPress();
-      }, STAGE2_HAPTIC);
+        // Haptic at press moment
+        setTimeout(() => {
+          if (!cancelled) HapticPatterns.stampPress();
+        }, STAGE2_HAPTIC);
 
-      // Stage 4: Complete
-      setTimeout(() => {
-        if (!cancelled) runOnJS(onComplete)();
-      }, TOTAL_DURATION);
+        // Stage 4: Complete
+        setTimeout(() => {
+          if (!cancelled) runOnJS(onComplete)();
+        }, TOTAL_DURATION);
+      };
+
+      if (floatFrom !== 0) {
+        // "花落" phase: float stamp down from floatFrom offset to 0, then press
+        floatY.value = withSpring(0, { stiffness: 60, damping: 14, mass: 1.2 }, (finished) => {
+          if (finished) runOnJS(runPressAnimation)();
+        });
+      } else {
+        // Existing animation path — unchanged
+        runPressAnimation();
+      }
     });
 
     return () => { cancelled = true; };
@@ -165,7 +186,7 @@ export function PetalPressAnimation({
   // -- Animated styles --
   const stampAnimStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateY: stampTranslateY.value },
+      { translateY: stampTranslateY.value + floatY.value },
       { scale: stampScale.value },
     ],
     opacity: stampOpacity.value,
