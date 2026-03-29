@@ -64,14 +64,17 @@ export default function HomeScreen() {
     loadHistory();
   }, []);
 
-  // Screenshot mode: emit home signal after mount + staggered animations settle.
-  useEffect(() => {
-    if (!FEATURES.SCREENSHOT_MODE) return;
-    const timer = setTimeout(() => {
-      signalAndWait('screenshot_ready_home').catch(() => {});
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+  // Screenshot mode: emit home signal only when tab is FOCUSED (visible on screen).
+  // useEffect fires even on pre-mounted tabs; useFocusEffect only fires when tab is active.
+  useFocusEffect(
+    useCallback(() => {
+      if (!FEATURES.SCREENSHOT_MODE) return;
+      const timer = setTimeout(() => {
+        signalAndWait('screenshot_ready_home').catch(() => {});
+      }, 1500);
+      return () => clearTimeout(timer);
+    }, [])
+  );
 
   const recentRecord = history.length > 0 ? history[0] : null;
 
