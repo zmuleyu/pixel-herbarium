@@ -20,6 +20,8 @@
     table { border-collapse: collapse; width: 100%; margin: 1em 0; }
     td, th { border: 1px solid #d4b896; padding: 8px 12px; text-align: left; font-size: 0.9rem; }
     th { background: #f5ede0; }
+    .lang-toggle { margin-bottom: 2em; }
+    .lang-toggle a { color: #2d6a4f; text-decoration: none; margin-right: 1em; }
     .lang-section { margin-top: 3em; padding-top: 2em; border-top: 2px solid #d4b896; }
     footer { margin-top: 3em; color: #7a6b5a; font-size: 0.85rem; }
   </style>
@@ -27,7 +29,7 @@
 <body>
 
 <h1>花図鉑 プライバシーポリシー</h1>
-<p><strong>最終更新日：</strong>2026年3月17日</p>
+<p><strong>最終更新日：</strong>2026年3月29日</p>
 
 <p>本プライバシーポリシーは、花図鉑（Bundle ID: <code>com.pixelherbarium.app</code>）が収集する情報とその取り扱いについて説明します。</p>
 
@@ -45,7 +47,7 @@
 <p>植物を発見したとき、ユーザーが許可した場合のみ、おおよその位置情報（半径 100m 程度に丸め処理）を記録します。位置情報は継続的に追跡されることはありません。</p>
 
 <h3>1.3 カメラ・写真ライブラリ</h3>
-<p>植物の撮影と識別のためにカメラへのアクセスを求めます。Share Poster の保存には写真ライブラリへの書き込みアクセスが必要です。</p>
+<p>花のチェックインウィザードで写真を撮影するためにカメラへのアクセスを求めます。また、フォトライブラリから写真を選択する場合や、スタンプ水印つき写真を保存する場合に写真ライブラリへのアクセスが必要です。撮影・選択した画像はデバイス上でのみ処理され、サーバーには保存されません。</p>
 
 <h3>1.4 プッシュ通知トークン</h3>
 <p>季節の変わり目などの通知を送信するため、デバイストークンを収集します。このトークンは通知目的のみに使用し、第三者と共有しません。</p>
@@ -62,7 +64,18 @@
   <tr><td>Supabase</td><td>データベース・認証</td><td><a href="https://supabase.com/privacy">supabase.com/privacy</a></td></tr>
   <tr><td>Expo</td><td>プッシュ通知</td><td><a href="https://expo.dev/privacy">expo.dev/privacy</a></td></tr>
   <tr><td>Apple</td><td>Sign In with Apple</td><td><a href="https://www.apple.com/legal/privacy/">apple.com/legal/privacy</a></td></tr>
+  <tr><td>Pl@ntNet（Cirad）</td><td>植物識別 AI</td><td><a href="https://plantnet.org/privacy-policy/">plantnet.org/privacy-policy</a></td></tr>
 </table>
+
+<h2>3-1. 外国にある第三者への提供（個人情報保護法第24条）</h2>
+<p>本アプリは以下の外国にある第三者にデータを提供しています：</p>
+<table>
+  <tr><th>提供先</th><th>国</th><th>提供するデータ</th><th>目的</th></tr>
+  <tr><td>Supabase Inc.</td><td>米国（EU も利用）</td><td>アカウント情報・位置情報・利用データ</td><td>データベース・認証</td></tr>
+  <tr><td>Expo Inc.</td><td>米国</td><td>プッシュ通知トークン</td><td>通知配信</td></tr>
+  <tr><td>Pl@ntNet（Cirad）</td><td>フランス・エストニア</td><td>植物の写真（識別時のみ）</td><td>植物種の識別</td></tr>
+</table>
+<p>個人情報保護委員会による評価については、<a href="https://www.ppc.go.jp/">個人情報保護委員会のウェブサイト</a>をご参照ください。</p>
 
 <h2>4. ユーザーの権利</h2>
 <ul>
@@ -79,14 +92,14 @@
 
 <div class="lang-section">
   <h1>Pixel Herbarium Privacy Policy</h1>
-  <p><strong>Last updated:</strong> March 17, 2026</p>
+  <p><strong>Last updated:</strong> March 29, 2026</p>
 
   <h2>1. Information We Collect</h2>
   <p><strong>Account (Sign in with Apple):</strong> Display name and email address, used solely for account identification.</p>
-  <p><strong>Location (Optional):</strong> Approximate location (~100m radius) when discovering plants. Never tracked continuously.</p>
-  <p><strong>Camera / Photos:</strong> Camera for plant identification; photo library write access for saving Share Poster images.</p>
+  <p><strong>Location (Optional):</strong> Approximate location (~100m radius) when selecting a nearby flower spot during check-in. Never tracked continuously.</p>
+  <p><strong>Camera / Photos:</strong> Camera access for the check-in wizard to capture flower photos. Photo library access for selecting existing photos and saving stamped images to your device. Photos are processed on-device only and never uploaded to our servers.</p>
   <p><strong>Push Token:</strong> Device token for seasonal notifications only. Not shared with third parties.</p>
-  <p><strong>Usage Data:</strong> Collection progress and season unlock states for app functionality.</p>
+  <p><strong>Usage Data:</strong> Check-in history and diary records for app functionality.</p>
 
   <h2>2. What We Don't Collect</h2>
   <p>Contacts, call history, financial information, health data, or browsing history.</p>
@@ -97,6 +110,16 @@
     <tr><td>Supabase</td><td>Database &amp; Auth</td><td><a href="https://supabase.com/privacy">supabase.com/privacy</a></td></tr>
     <tr><td>Expo</td><td>Push Notifications</td><td><a href="https://expo.dev/privacy">expo.dev/privacy</a></td></tr>
     <tr><td>Apple</td><td>Sign In</td><td><a href="https://www.apple.com/legal/privacy/">apple.com/legal/privacy</a></td></tr>
+    <tr><td>Pl@ntNet (Cirad)</td><td>Plant identification AI</td><td><a href="https://plantnet.org/privacy-policy/">plantnet.org/privacy-policy</a></td></tr>
+  </table>
+
+  <h2>3-1. International Data Transfers</h2>
+  <p>Your data may be transferred to and processed in countries outside Japan:</p>
+  <table>
+    <tr><th>Recipient</th><th>Country</th><th>Data</th><th>Purpose</th></tr>
+    <tr><td>Supabase Inc.</td><td>United States (EU also used)</td><td>Account, location, usage data</td><td>Database &amp; auth</td></tr>
+    <tr><td>Expo Inc.</td><td>United States</td><td>Push notification token</td><td>Notifications</td></tr>
+    <tr><td>Pl@ntNet (Cirad)</td><td>France / Estonia</td><td>Plant photos (identification only)</td><td>Species identification</td></tr>
   </table>
 
   <h2>4. Your Rights</h2>
