@@ -1,119 +1,140 @@
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
+import { dirname } from 'path';
 
-// --- Configuration ---
+// --- Font Registration ---
 
-const BRAND_BG = '#FFF0F0';       // Unified brand pink-white
-const BORDER_COLOR = '#FFB7C5';   // Sakura pink border
-const TEXT_COLOR = '#1D1D1F';     // Apple-style dark text
-const BORDER_WIDTH = 40;
-const MARGIN = 40;
-const TEXT_AREA_HEIGHT = 200;
-const FONT_SIZE = 80;
-const FONT_FAMILY = 'Yu Gothic Medium';  // Fallback: 'Hiragino Sans', 'Noto Sans JP'
+try {
+  registerFont('C:/Windows/Fonts/YuGothB.ttc', { family: 'Yu Gothic Bold' });
+  registerFont('C:/Windows/Fonts/YuGothR.ttc', { family: 'Yu Gothic Regular' });
+  console.log('Fonts registered: Yu Gothic Bold + Regular');
+} catch (e) {
+  console.warn('WARN: Could not register Yu Gothic .ttc —', e.message);
+}
 
-// Output dimensions: iPhone 6.9" (1320 x 2868)
-const OUTPUT_WIDTH = 1320;
-const OUTPUT_HEIGHT = 2868;
+// --- Configuration (v2: competitive visual upgrade) ---
+
+const BG_COLOR = '#D4537E';                    // brand.accent — high visibility
+const TITLE_COLOR = '#FFFFFF';                  // White, high contrast
+const SUBTITLE_COLOR = 'rgba(255,255,255,0.7)'; // White 70% opacity
+const SCREENSHOT_RADIUS = 40;                   // iOS standard corner radius
+const PADDING = 40;                             // Side padding
+const BOTTOM_PADDING = 24;                      // Bottom breathing room
+
+const TITLE_FONT = 'Yu Gothic Bold';
+const SUBTITLE_FONT = 'Yu Gothic Regular';
+const TITLE_FONT_SIZE = 96;
+const SUBTITLE_FONT_SIZE = 36;
+const TEXT_AREA_RATIO = 0.30;                   // Top 30% for text, bottom 70% for screenshot
+
+// Output: iPhone 6.5" (ASC actual slot for 花図鉑)
+const OUTPUT_WIDTH = 1284;
+const OUTPUT_HEIGHT = 2778;
 
 const SCREENSHOTS = [
   {
     input: 'e2e/current/01-home.png',
-    title_ja: '花めぐりの記録、はじめよう',
+    title: '花に、出会う。',
+    subtitle: '季節の花をスタンプで記録',
     output: 'e2e/composed/canvas/01-home.png',
   },
   {
     input: 'e2e/current/02-checkin.png',
-    title_ja: '日記で振り返る、花の思い出',
+    title: '花の日記。',
+    subtitle: 'チェックインを振り返ろう',
     output: 'e2e/composed/canvas/02-diary.png',
   },
   {
     input: 'e2e/current/03-settings.png',
-    title_ja: 'あなたの花旅をカスタマイズ',
+    title: 'あなた好みに。',
+    subtitle: '言語・通知・プライバシー設定',
     output: 'e2e/composed/canvas/03-settings.png',
   },
 ];
 
+// --- Rounded rect helper ---
+
+function roundedRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
+}
+
 // --- Compose Function ---
 
-async function composeScreenshot({ input, title_ja, output }) {
+async function composeScreenshot({ input, title, subtitle, output }) {
   const canvas = createCanvas(OUTPUT_WIDTH, OUTPUT_HEIGHT);
   const ctx = canvas.getContext('2d');
 
-  // 1. Fill background
-  ctx.fillStyle = BRAND_BG;
+  const textAreaHeight = Math.floor(OUTPUT_HEIGHT * TEXT_AREA_RATIO);
+  const screenshotAreaTop = textAreaHeight;
+  const screenshotAreaHeight = OUTPUT_HEIGHT - screenshotAreaTop - BOTTOM_PADDING;
+
+  // 1. Fill brand background
+  ctx.fillStyle = BG_COLOR;
   ctx.fillRect(0, 0, OUTPUT_WIDTH, OUTPUT_HEIGHT);
 
-  // 2. Draw border
-  ctx.strokeStyle = BORDER_COLOR;
-  ctx.lineWidth = BORDER_WIDTH;
-  ctx.strokeRect(
-    BORDER_WIDTH / 2,
-    BORDER_WIDTH / 2,
-    OUTPUT_WIDTH - BORDER_WIDTH,
-    OUTPUT_HEIGHT - BORDER_WIDTH
-  );
-
-  // 3. Draw marketing text at top
-  ctx.fillStyle = TEXT_COLOR;
-  ctx.font = `${FONT_SIZE}px "${FONT_FAMILY}"`;
+  // 2. Draw title (emotional hook — large, bold, white)
+  ctx.fillStyle = TITLE_COLOR;
+  ctx.font = `bold ${TITLE_FONT_SIZE}px "${TITLE_FONT}"`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(title_ja, OUTPUT_WIDTH / 2, BORDER_WIDTH + TEXT_AREA_HEIGHT / 2);
 
-  // 4. Load and draw screenshot
+  const titleY = textAreaHeight * 0.42;
+  ctx.fillText(title, OUTPUT_WIDTH / 2, titleY);
+
+  // 3. Draw subtitle (functional — smaller, semi-transparent white)
+  ctx.fillStyle = SUBTITLE_COLOR;
+  ctx.font = `${SUBTITLE_FONT_SIZE}px "${SUBTITLE_FONT}"`;
+  const subtitleY = titleY + TITLE_FONT_SIZE * 0.7;
+  ctx.fillText(subtitle, OUTPUT_WIDTH / 2, subtitleY);
+
+  // 4. Load screenshot
   const screenshot = await loadImage(input);
 
-  // Calculate placement: centered below text area with margin
-  const availableWidth = OUTPUT_WIDTH - (BORDER_WIDTH + MARGIN) * 2;
-  const availableHeight = OUTPUT_HEIGHT - BORDER_WIDTH * 2 - TEXT_AREA_HEIGHT - MARGIN * 2;
+  // Calculate screenshot placement: fill width with padding, maintain aspect ratio
+  const availableWidth = OUTPUT_WIDTH - PADDING * 2;
+  const scale = availableWidth / screenshot.width;
+  const drawWidth = availableWidth;
+  const drawHeight = Math.min(screenshot.height * scale, screenshotAreaHeight);
 
-  // Scale to fit while maintaining aspect ratio
-  const scale = Math.min(
-    availableWidth / screenshot.width,
-    availableHeight / screenshot.height
-  );
-  const drawWidth = screenshot.width * scale;
-  const drawHeight = screenshot.height * scale;
+  const drawX = PADDING;
+  const drawY = screenshotAreaTop;
 
-  const drawX = (OUTPUT_WIDTH - drawWidth) / 2;
-  const drawY = BORDER_WIDTH + TEXT_AREA_HEIGHT + MARGIN;
+  // 5. Draw white rounded rect background (separates screenshot from brand color)
+  ctx.fillStyle = '#FFFFFF';
+  roundedRect(ctx, drawX, drawY, drawWidth, drawHeight, SCREENSHOT_RADIUS);
+  ctx.fill();
 
-  // Optional: rounded corners clip for the screenshot
-  const radius = 24;
+  // 6. Clip and draw screenshot with rounded corners
   ctx.save();
-  ctx.beginPath();
-  ctx.moveTo(drawX + radius, drawY);
-  ctx.lineTo(drawX + drawWidth - radius, drawY);
-  ctx.arcTo(drawX + drawWidth, drawY, drawX + drawWidth, drawY + radius, radius);
-  ctx.lineTo(drawX + drawWidth, drawY + drawHeight - radius);
-  ctx.arcTo(drawX + drawWidth, drawY + drawHeight, drawX + drawWidth - radius, drawY + drawHeight, radius);
-  ctx.lineTo(drawX + radius, drawY + drawHeight);
-  ctx.arcTo(drawX, drawY + drawHeight, drawX, drawY + drawHeight - radius, radius);
-  ctx.lineTo(drawX, drawY + radius);
-  ctx.arcTo(drawX, drawY, drawX + radius, drawY, radius);
-  ctx.closePath();
+  roundedRect(ctx, drawX, drawY, drawWidth, drawHeight, SCREENSHOT_RADIUS);
   ctx.clip();
   ctx.drawImage(screenshot, drawX, drawY, drawWidth, drawHeight);
   ctx.restore();
 
-  // 5. Save output
+  // 7. Save output
   const outputDir = dirname(output);
   if (!existsSync(outputDir)) {
     mkdirSync(outputDir, { recursive: true });
   }
-  const buffer = canvas.toBuffer('image/png');
-  writeFileSync(output, buffer);
+  writeFileSync(output, canvas.toBuffer('image/png'));
   console.log(`  Composed: ${output} (${OUTPUT_WIDTH}x${OUTPUT_HEIGHT})`);
 }
 
 // --- Main ---
 
 async function main() {
-  console.log('Screenshot Compose Pipeline');
-  console.log(`  Background: ${BRAND_BG}`);
-  console.log(`  Text color: ${TEXT_COLOR}`);
+  console.log('Screenshot Compose Pipeline v2');
+  console.log(`  Brand color: ${BG_COLOR}`);
   console.log(`  Output: ${OUTPUT_WIDTH}x${OUTPUT_HEIGHT}`);
   console.log('');
 
@@ -123,7 +144,7 @@ async function main() {
   for (const config of SCREENSHOTS) {
     try {
       if (!existsSync(config.input)) {
-        console.log(`  SKIP: ${config.input} (file not found)`);
+        console.log(`  SKIP: ${config.input} (not found)`);
         failed++;
         continue;
       }
@@ -136,9 +157,6 @@ async function main() {
   }
 
   console.log(`\nDone. ${success} composed, ${failed} skipped/failed.`);
-  if (success > 0) {
-    console.log('Output in e2e/composed/canvas/');
-  }
 }
 
 main();

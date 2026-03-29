@@ -24,10 +24,9 @@
 
 ### Guest Mode
 The app supports a **guest-first** experience. After the 3-slide onboarding, users can browse:
-- **Home tab**: Featured sakura spots, bloom status, and personal flower diary
-- **Map tab**: Sakura spot pins across Japan (requires location permission)
-- **Herbarium tab**: Plant collection grid (locked items shown as silhouettes)
-- **Settings tab**: Language, privacy policy, version info
+- **Home tab**: Seasonal header, camera CTA ("花を撮る"), library picker, and recent check-in preview
+- **Diary tab** (日記): Check-in history as photo grid with stats (check-in count, spots visited, last record date)
+- **Settings tab**: Language toggle (日本語/English), privacy policy, usage guide, feedback, data export
 
 ### Login (Required for Full Features)
 To test stamp saving and check-in features, sign in via **Apple Sign In**:
@@ -39,18 +38,17 @@ No separate test credentials are needed — Apple Sign In works directly.
 
 ### Core Feature Walkthrough
 
-**Path A — Sakura Spot Check-in + Stamp Editor (主要機能)**
-1. Open **Map tab** → Allow location when prompted
-2. Tap a sakura spot pin → "打卡する" button appears
-3. Tap "打卡する" → Select photo (camera or library)
+**Path A — Check-in + Stamp Editor (主要機能)**
+1. Open **Home tab** → Tap "花を撮る" CTA (camera) or "ライブラリから選ぶ" (photo library)
+2. **Checkin Wizard** opens → Select a sakura spot from the list
+3. Take or choose a photo
 4. **Stamp Editor** appears: drag the pixel-art stamp to desired position; pinch to resize; rotate with two fingers
-5. Adjust opacity and size with sliders in the bottom panel
-6. Tap "写真に保存" to save to photo library, or share via LINE/Instagram
+5. Tap "写真に保存" to save to photo library, or tap share icon to share via system share sheet
 
-**Path B — Home Diary & Collection**
-1. Open **Home tab** → View personal flower diary cards
-2. Tap any card → View stamp card detail with spot name and date
-3. View collection progress (spots visited / total)
+**Path B — Diary (花の日記)**
+1. Open **Diary tab** (日記) → View check-in stats (打卡数, 訪問スポット, 最後の記録)
+2. Scroll to see all check-in photos in a grid layout
+3. Tap any photo card to view full-size stamp photo
 
 ---
 
@@ -71,10 +69,9 @@ No separate test credentials are needed — Apple Sign In works directly.
 ## Third-Party Login
 
 - **Apple Sign In**: Primary login method ✅
-- **LINE Login**: Optional convenience login for Japan market users
-- **Email/Password**: Available as fallback
+- **LINE Login**: Optional convenience login for Japan market users (via OAuth 2.0)
 
-All login methods are optional — the app is usable in guest mode.
+All login methods are optional — the app is fully usable in guest mode.
 
 ---
 
@@ -89,7 +86,7 @@ All login methods are optional — the app is usable in guest mode.
 ## Additional Notes
 
 - **No In-App Purchases**: v1.1 is entirely free with no IAP or subscriptions.
-- **No User-Generated Content visible to others**: Shared content goes through the OS share sheet to external apps (LINE, Instagram). The in-app city map shows anonymized discovery heat points only.
+- **No User-Generated Content visible to others**: Shared content goes through the OS share sheet to external apps. All check-in data is private to the user.
 - **Encryption**: `ITSAppUsesNonExemptEncryption: false` — standard HTTPS only.
 - **Content Rating**: 4+
 - **Backend**: Supabase (PostgreSQL + PostGIS) hosted in EU region. Cross-border data transfer is disclosed in the privacy policy.
