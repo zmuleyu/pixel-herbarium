@@ -41,6 +41,20 @@ jest.mock('@/constants/theme', () => ({
     cardSubtle: { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
     cardLifted: { shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.12, shadowRadius: 24, elevation: 6 },
   },
+  getSeasonTheme: jest.fn(() => ({
+    primary: '#e8a5b0',
+    accent: '#f5d5d0',
+    bgTint: '#FFF5F3',
+  })),
+}));
+
+jest.mock('@/constants/seasons', () => ({
+  getActiveSeason: jest.fn(() => ({
+    id: 'sakura',
+    nameKey: 'season.spring',
+    iconEmoji: '🌸',
+    dateRange: ['03-01', '04-30'],
+  })),
 }));
 
 jest.mock('expo-router', () => ({
@@ -186,6 +200,41 @@ describe('SettingsTabScreen', () => {
 
   it('shows export data option', () => {
     const output = renderToString();
+    expect(output).toContain('settings.exportData');
+  });
+});
+
+describe('SettingsTabScreen — redesigned', () => {
+  it('renders app identity card testID', () => {
+    const tree = shallowRender(<SettingsTabScreen />);
+    const output = JSON.stringify(tree);
+    expect(output).toContain('settings.appIdentityCard');
+  });
+
+  it('renders version text (settings.version key)', () => {
+    const tree = shallowRender(<SettingsTabScreen />);
+    const output = JSON.stringify(tree);
+    expect(output).toContain('settings.version');
+  });
+
+  it('renders language toggle testID (settings.langToggle)', () => {
+    const tree = shallowRender(<SettingsTabScreen />);
+    const output = JSON.stringify(tree);
+    expect(output).toContain('settings.langToggle');
+  });
+
+  it('renders signOut and deleteData when session exists', () => {
+    mockSession.mockReturnValue({ user: { email: 'a@b.com' } });
+    mockUser.mockReturnValue({ email: 'a@b.com', user_metadata: {} });
+    const tree = shallowRender(<SettingsTabScreen />);
+    const output = JSON.stringify(tree);
+    expect(output).toContain('settings.signOut');
+    expect(output).toContain('settings.deleteData');
+  });
+
+  it('renders exportData in サポート section', () => {
+    const tree = shallowRender(<SettingsTabScreen />);
+    const output = JSON.stringify(tree);
     expect(output).toContain('settings.exportData');
   });
 });

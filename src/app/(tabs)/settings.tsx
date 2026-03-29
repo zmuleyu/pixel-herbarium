@@ -18,7 +18,8 @@ import { setLanguage } from '@/i18n';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCheckinStore } from '@/stores/checkin-store';
 import { supabase } from '@/services/supabase';
-import { colors, typography, spacing, borderRadius } from '@/constants/theme';
+import { colors, typography, spacing, borderRadius, getSeasonTheme } from '@/constants/theme';
+import { getActiveSeason } from '@/constants/seasons';
 
 const LANGUAGES = [
   { code: 'ja' as const, label: '日本語' },
@@ -32,6 +33,9 @@ export default function SettingsTabScreen() {
   const router = useRouter();
   const { session, user } = useAuthStore();
   const appVersion = Constants.expoConfig?.version ?? '1.1.0';
+
+  const season = getActiveSeason();
+  const theme = getSeasonTheme(season.id);
 
   async function handleExport() {
     try {
@@ -119,204 +123,201 @@ export default function SettingsTabScreen() {
       style={styles.container}
       contentContainerStyle={styles.content}
     >
-      <Text style={styles.title}>{t('settings.title')}</Text>
-
-      {/* Section 1: Account */}
-      <Text style={styles.sectionLabel}>{t('settings.accountSection')}</Text>
-      {!session ? (
-        <TouchableOpacity
-          testID="settings.login"
-          style={styles.menuRow}
-          onPress={() => router.push('/(auth)/login' as any)}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.menuText}>{t('settings.login')}</Text>
-          <Text style={styles.menuArrow}>›</Text>
-        </TouchableOpacity>
-      ) : (
-        <View style={styles.menuRow}>
-          <View style={styles.accountInfo}>
-            {displayName ? (
-              <Text style={styles.menuText}>{displayName}</Text>
-            ) : null}
-            {email ? (
-              <Text style={[styles.subText, displayName ? styles.subTextSmall : null]}>
-                {email}
-              </Text>
-            ) : null}
-          </View>
-        </View>
-      )}
-
-      {/* Section 2: Data Management */}
-      <Text style={styles.sectionLabel}>{t('settings.dataSection')}</Text>
-      <TouchableOpacity style={styles.menuRow} onPress={handleExport} activeOpacity={0.7}>
-        <Text style={styles.menuText}>{t('settings.exportData')}</Text>
-        <Text style={styles.menuArrow}>›</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.menuRow} onPress={handleDeleteData} activeOpacity={0.7}>
-        <Text style={[styles.menuText, { color: DESTRUCTIVE_COLOR }]}>
-          {t('settings.deleteData')}
+      {/* App Identity Card */}
+      <View
+        testID="settings.appIdentityCard"
+        style={[styles.identityCard, { backgroundColor: theme.bgTint, borderColor: theme.accent }]}
+      >
+        <Text style={styles.identityEmoji}>{season.iconEmoji}</Text>
+        <Text style={styles.identityName}>Pixel Herbarium</Text>
+        <Text style={styles.identitySubtitle}>{t('settings.title')}</Text>
+        <Text style={styles.identityVersion}>
+          {t('settings.version')} {appVersion} · {t('settings.appCardSeason', { season: t(season.nameKey) })}
         </Text>
-        <Text style={[styles.menuArrow, { color: DESTRUCTIVE_COLOR }]}>›</Text>
-      </TouchableOpacity>
-
-      {/* Section 3: General */}
-      <Text style={styles.sectionLabel}>{t('settings.generalSection')}</Text>
-      <View style={styles.card}>
-        <Text style={styles.cardLabel}>{t('settings.language')}</Text>
-        <View style={styles.langRow}>
-          {LANGUAGES.map((lang) => {
-            const isActive = i18n.language === lang.code;
-            return (
-              <TouchableOpacity
-                key={lang.code}
-                style={[styles.langBtn, isActive && styles.langBtnActive]}
-                onPress={() => setLanguage(lang.code)}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.langBtnText, isActive && styles.langBtnTextActive]}>
-                  {lang.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
       </View>
-      <TouchableOpacity
-        style={styles.menuRow}
-        onPress={() => router.push('/privacy' as any)}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.menuText}>{t('profile.privacySettings')}</Text>
-        <Text style={styles.menuArrow}>›</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.menuRow}
-        onPress={() => router.push('/guide' as any)}
-        accessibilityRole="button"
-        activeOpacity={0.7}
-      >
-        <Text style={styles.menuText}>{t('guide.settings.title')}</Text>
-        <Text style={styles.menuArrow}>›</Text>
-      </TouchableOpacity>
 
-      {/* Section 4: Other */}
-      <Text style={styles.sectionLabel}>{t('settings.otherSection')}</Text>
-      <TouchableOpacity
-        style={styles.menuRow}
-        onPress={() => Linking.openURL('mailto:support@pixelherbarium.app')}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.menuText}>{t('settings.feedback')}</Text>
-        <Text style={styles.menuArrow}>›</Text>
-      </TouchableOpacity>
-      <View style={styles.menuRow}>
-        <Text style={styles.menuText}>{t('settings.version')}</Text>
-        <Text style={styles.versionText}>v{appVersion}</Text>
-      </View>
-      {session && (
-        <>
-          <TouchableOpacity style={styles.menuRow} onPress={handleSignOut} activeOpacity={0.7}>
-            <Text style={[styles.menuText, { color: DESTRUCTIVE_COLOR }]}>
-              {t('settings.signOut')}
-            </Text>
-            <Text style={[styles.menuArrow, { color: DESTRUCTIVE_COLOR }]}>›</Text>
-          </TouchableOpacity>
+      {/* アカウント section */}
+      <Text style={styles.sectionLabel}>{t('settings.accountSection')}</Text>
+      <View style={styles.group}>
+        {!session ? (
           <TouchableOpacity
-            style={styles.menuRow}
-            onPress={handleDeleteAccount}
+            testID="settings.login"
+            style={styles.groupRow}
+            onPress={() => router.push('/(auth)/login' as any)}
             activeOpacity={0.7}
           >
-            <Text style={[styles.menuText, { color: DESTRUCTIVE_COLOR }]}>
-              {t('settings.deleteAccount')}
-            </Text>
-            <Text style={[styles.menuArrow, { color: DESTRUCTIVE_COLOR }]}>›</Text>
+            <Text style={styles.menuText}>{t('settings.login')}</Text>
+            <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
-        </>
-      )}
+        ) : (
+          <View style={styles.groupRow}>
+            <View style={styles.avatarCircle}>
+              <Text style={styles.avatarEmoji}>{season.iconEmoji}</Text>
+            </View>
+            <View style={styles.accountInfo}>
+              {displayName ? <Text style={styles.menuText}>{displayName}</Text> : null}
+              {email ? <Text style={[styles.menuText, displayName ? styles.subTextSmall : null]}>{email}</Text> : null}
+            </View>
+          </View>
+        )}
+        {session && (
+          <>
+            <View style={styles.groupDivider} />
+            <TouchableOpacity style={styles.groupRow} onPress={handleSignOut} activeOpacity={0.7}>
+              <Text style={[styles.menuText, { color: DESTRUCTIVE_COLOR }]}>{t('settings.signOut')}</Text>
+              <Text style={[styles.menuArrow, { color: DESTRUCTIVE_COLOR }]}>›</Text>
+            </TouchableOpacity>
+            <View style={styles.groupDivider} />
+            <TouchableOpacity style={styles.groupRow} onPress={handleDeleteData} activeOpacity={0.7}>
+              <Text style={[styles.menuText, { color: DESTRUCTIVE_COLOR }]}>{t('settings.deleteData')}</Text>
+              <Text style={[styles.menuArrow, { color: DESTRUCTIVE_COLOR }]}>›</Text>
+            </TouchableOpacity>
+            <View style={styles.groupDivider} />
+            <TouchableOpacity style={styles.groupRow} onPress={handleDeleteAccount} activeOpacity={0.7}>
+              <Text style={[styles.menuText, { color: DESTRUCTIVE_COLOR }]}>{t('settings.deleteAccount')}</Text>
+              <Text style={[styles.menuArrow, { color: DESTRUCTIVE_COLOR }]}>›</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
+
+      {/* 一般 section */}
+      <Text style={styles.sectionLabel}>{t('settings.generalSection')}</Text>
+      <View style={styles.group}>
+        <View style={styles.groupRow}>
+          <Text style={styles.menuText}>{t('settings.language')}</Text>
+          <View testID="settings.langToggle" style={styles.langPills}>
+            {LANGUAGES.map((lang) => {
+              const isActive = i18n.language === lang.code;
+              return (
+                <TouchableOpacity
+                  key={lang.code}
+                  style={[styles.langPill, isActive && { backgroundColor: colors.plantPrimary }]}
+                  onPress={() => setLanguage(lang.code)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.langPillText, isActive && styles.langPillTextActive]}>
+                    {lang.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+        <View style={styles.groupDivider} />
+        <TouchableOpacity style={styles.groupRow} onPress={() => router.push('/privacy' as any)} activeOpacity={0.7}>
+          <Text style={styles.menuText}>{t('profile.privacySettings')}</Text>
+          <Text style={styles.menuArrow}>›</Text>
+        </TouchableOpacity>
+        <View style={styles.groupDivider} />
+        <TouchableOpacity style={styles.groupRow} onPress={() => router.push('/guide' as any)} activeOpacity={0.7}>
+          <Text style={styles.menuText}>{t('guide.settings.title')}</Text>
+          <Text style={styles.menuArrow}>›</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* サポート section */}
+      <Text style={styles.sectionLabel}>{t('settings.otherSection')}</Text>
+      <View style={styles.group}>
+        <TouchableOpacity style={styles.groupRow} onPress={() => Linking.openURL('mailto:support@pixelherbarium.app')} activeOpacity={0.7}>
+          <Text style={styles.menuText}>{t('settings.feedback')}</Text>
+          <Text style={styles.menuArrow}>›</Text>
+        </TouchableOpacity>
+        <View style={styles.groupDivider} />
+        <TouchableOpacity testID="settings.exportData" style={styles.groupRow} onPress={handleExport} activeOpacity={0.7}>
+          <Text style={styles.menuText}>{t('settings.exportData')}</Text>
+          <Text style={styles.menuArrow}>›</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
+  container: { flex: 1, backgroundColor: colors.background },
   content: {
-    paddingHorizontal: spacing.xl,
+    paddingHorizontal: spacing.md,
     paddingTop: Platform.OS === 'ios' ? 60 : spacing.xl,
-    gap: spacing.md,
+    gap: spacing.sm,
     paddingBottom: spacing.xl,
   },
-  title: {
+  identityCard: {
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    paddingVertical: spacing.lg,
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
+  },
+  identityEmoji: { fontSize: 32 },
+  identityName: {
     fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.xxl,
+    fontSize: typography.fontSize.lg,
+    fontWeight: '700',
     color: colors.text,
-    marginBottom: spacing.sm,
+  },
+  identitySubtitle: {
+    fontSize: typography.fontSize.xs,
+    color: colors.textSecondary,
+  },
+  identityVersion: {
+    fontSize: typography.fontSize.xs,
+    color: colors.textSecondary,
   },
   sectionLabel: {
     fontSize: typography.fontSize.xs,
     color: colors.textSecondary,
-    textTransform: 'uppercase',
     letterSpacing: 0.8,
-    marginTop: spacing.sm,
-    marginBottom: -spacing.sm / 2,
-    paddingHorizontal: spacing.sm,
+    marginTop: spacing.xs,
+    paddingHorizontal: spacing.xs,
   },
-  card: {
+  group: {
     backgroundColor: colors.white,
     borderRadius: borderRadius.md,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing.md,
-    gap: spacing.sm,
+    overflow: 'hidden',
   },
-  cardLabel: { fontSize: typography.fontSize.sm, color: colors.textSecondary },
-  langRow: { flexDirection: 'row', gap: spacing.sm },
-  langBtn: {
-    flex: 1,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    borderRadius: borderRadius.md,
-    paddingVertical: spacing.sm,
-    alignItems: 'center',
-  },
-  langBtnActive: {
-    backgroundColor: colors.plantPrimary,
-    borderColor: colors.plantPrimary,
-  },
-  langBtnText: {
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.md,
-    color: colors.text,
-  },
-  langBtnTextActive: { color: colors.white },
-  menuRow: {
+  groupRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.white,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
+    minHeight: 44,
+  },
+  groupDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.border,
+    marginHorizontal: spacing.md,
   },
   menuText: { fontSize: typography.fontSize.md, color: colors.text },
   menuArrow: { fontSize: typography.fontSize.lg, color: colors.textSecondary },
-  versionText: { fontSize: typography.fontSize.sm, color: colors.textSecondary },
-  accountInfo: {
-    flex: 1,
-    gap: 2,
+  avatarCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#c1e8d8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.sm,
   },
-  subText: {
-    fontSize: typography.fontSize.md,
+  avatarEmoji: { fontSize: 18 },
+  accountInfo: { flex: 1, gap: 2 },
+  subTextSmall: { fontSize: typography.fontSize.sm, color: colors.textSecondary },
+  langPills: { flexDirection: 'row', gap: spacing.xs },
+  langPill: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  langPillText: {
+    fontFamily: typography.fontFamily.display,
+    fontSize: typography.fontSize.xs,
     color: colors.text,
   },
-  subTextSmall: {
-    fontSize: typography.fontSize.sm,
-    color: colors.textSecondary,
-  },
+  langPillTextActive: { color: colors.white },
 });
