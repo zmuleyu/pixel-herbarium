@@ -43,15 +43,10 @@ export function useScreenshotSequence() {
     const run = async () => {
       await clearScreenshotSignals();
 
-      // Navigate to home explicitly.
-      // Wait 3s after replace to let _layout.tsx redirect and staggered
-      // entry animations fully settle in CI cold-start environment.
-      router.replace('/(tabs)/home' as any);
-      await delay(3000);
-      await waitForRender();
-
-      // 01 — Home
-      console.log('[SCREENSHOT_SEQ] Signaling home');
+      // 01 — Home: signal is emitted by home.tsx itself after mount + animation settle.
+      // Root-layout router.replace() cannot reliably switch nested tabs, so we delegate
+      // signaling to the tab component. App cold-starts on home tab via index.tsx redirect.
+      console.log('[SCREENSHOT_SEQ] Waiting for home tab signal...');
       await signalAndWait('screenshot_ready_home');
 
       // 02 — Diary (check-in history as photo diary)
