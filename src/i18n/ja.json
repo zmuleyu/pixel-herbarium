@@ -263,14 +263,22 @@
     "diaryTitle": "わたしの花日記",
     "diaryCount": "{{count}}枚",
     "emptyTitle": "最初の一枚を撮ってみましょう",
-    "emptySub": "お花の写真にスタンプを押して、\nあなただけの花日記を始めましょう 🌿"
+    "emptySub": "お花の写真にスタンプを押して、\nあなただけの花日記を始めましょう 🌿",
+    "libraryCtaLabel": "ライブラリから選ぶ",
+    "recentRecord": "最近の記録",
+    "goToDiary": "日記へ",
+    "emptyWelcomeTitle": "最初の一枚を撮ってみましょう",
+    "emptyWelcomeSub": "お花の写真にスタンプを押して、あなただけの花日記を始めましょう 🌿"
   },
   "diary": {
     "totalCheckins": "打卡数",
     "spotsVisited": "訪問スポット",
     "allPhotos": "すべての写真",
     "emptyTitle": "まだ日記がありません",
-    "emptySub": "ホームから最初のお花写真を撮ってみましょう"
+    "emptySub": "ホームから最初のお花写真を撮ってみましょう",
+    "seasonBannerTitle": "花散り、その前に",
+    "seasonProgress": "あなたの桜日記 · {{count}}枚の記録",
+    "lastRecord": "最後の記録"
   },
   "onboarding": {
     "skip": "スキップ",
@@ -301,7 +309,8 @@
     "feedback": "フィードバックを送る",
     "signOut": "ログアウト",
     "deleteAccount": "アカウントを削除",
-    "deleteAccountConfirm": "アカウントを完全に削除しますか？\nこの操作は取り消せません。"
+    "deleteAccountConfirm": "アカウントを完全に削除しますか？\nこの操作は取り消せません。",
+    "appCardSeason": "{{season}} 2025"
   },
   "offline": {
     "banner": "📵 オフライン — 接続を確認してください"
