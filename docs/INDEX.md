@@ -58,6 +58,11 @@
 
 | 文件 | 说明 |
 |------|------|
+| [launch/RELEASE-WORKFLOW.md](launch/RELEASE-WORKFLOW.md) | **iOS 全链路发版 SOP**（发版标准流程） |
+| [launch/checklists/pre-release.md](launch/checklists/pre-release.md) | S2 开发验证 checklist（测试/本地/真机/代码质量） |
+| [launch/checklists/asc-config.md](launch/checklists/asc-config.md) | ASC 配置门 checklist（8 必填字段 + 截图 + Review Notes） |
+| [launch/checklists/post-submit.md](launch/checklists/post-submit.md) | 上线后监控 checklist（发布操作 + 首 24h 监控） |
+| [launch/rejection-playbook.md](launch/rejection-playbook.md) | 审核被拒处理 SOP（8 步恢复 + Guideline 速查 + 申诉指南） |
 | [launch/app-store-prep/submission-review.md](launch/app-store-prep/submission-review.md) | **上架审核 Runbook**（提交前必读） |
 | [launch/app-store-prep/](launch/app-store-prep/) | 合规checklist · 隐私政策 · 服务条款 · 截图规格（6文件） |
 | [launch/aso/](launch/aso/) | 元数据(ja/en) · 关键词策略 · LINE/X/打卡推广文案（6文件） |

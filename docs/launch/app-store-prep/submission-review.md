@@ -248,5 +248,5 @@ Resolution Center 回复 OR 提交新 Build
 
 ---
 
-*Created: 2026-03-19 · Last updated: 2026-03-19*
+*Created: 2026-03-19 · Last updated: 2026-03-29*
 *数据来源：App Store Review Guidelines 2026、APPI 2025-2026 合规指南、日本 MSCA 官方文档*
