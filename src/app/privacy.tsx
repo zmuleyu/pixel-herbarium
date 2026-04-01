@@ -29,18 +29,28 @@ export default function PrivacyScreen() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
-    async function load() {
-      const { data } = await (supabase as any)
-        .from('profiles')
-        .select('map_visible, notifications_enabled')
-        .eq('id', user!.id)
-        .single();
-      if (data != null) {
-        setMapVisible(data.map_visible ?? true);
-        setNotificationsEnabled(data.notifications_enabled ?? true);
-      }
+    if (!user) {
       setLoading(false);
+      return;
+    }
+    async function load() {
+      try {
+        const { data, error } = await (supabase as any)
+          .from('profiles')
+          .select('map_visible, notifications_enabled')
+          .eq('id', user!.id)
+          .single();
+        if (error) throw error;
+        if (data != null) {
+          setMapVisible(data.map_visible ?? true);
+          setNotificationsEnabled(data.notifications_enabled ?? true);
+        }
+      } catch (e) {
+        // Network error or missing profile row — use defaults, don't block UI
+        console.warn('Privacy: failed to load profile settings', e);
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, [user?.id]);
@@ -111,7 +121,7 @@ export default function PrivacyScreen() {
   return (
     <View style={styles.container}>
       {/* Back row */}
-      <TouchableOpacity onPress={() => router.back()} style={styles.backRow}>
+      <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/settings' as any)} style={styles.backRow}>
         <Text style={styles.backText}>← {t('common.back')}</Text>
       </TouchableOpacity>
 
