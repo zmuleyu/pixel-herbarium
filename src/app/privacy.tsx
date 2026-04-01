@@ -118,6 +118,14 @@ export default function PrivacyScreen() {
     );
   }
 
+  function handleBack() {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/settings');
+    }
+  }
+
   return (
     <View style={styles.container}>
       {/* Back row */}
