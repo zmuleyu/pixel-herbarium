@@ -4,11 +4,12 @@
 
 ---
 
-## 1. 标准恢复流程（8 步）
+## 1. 标准恢复流程（10 步）
 
 ```
 Step 1  进入 App Store Connect → Resolution Center
         读取完整拒绝原因 + Guideline 编号
+        下载所有审核截图（通常 3-5 张）
         ↓
 Step 2  定位 Guideline
         · 已知原因 → 查本文件「常见 Guideline 速查」表
@@ -18,25 +19,56 @@ Step 3  判断修复范围
         · 仅 Metadata（截图/描述/隐私标签）→ 不需要新 Build
         · 代码改动 → 需要新 Build + 新 buildNumber
         ↓
-Step 4  执行修复
+Step 4  全量扫描同类模式（修代码前必做）
+        · 不要只修 Apple 点名的文件，先 grep 整个 codebase 找同类 pattern
+        · 列出完整清单，确认零遗漏后再动第一行代码
+
+        # 返回按钮类问题
+        grep -rn "router\.back()" src/app/ | grep -v "canGoBack"
+        # loading spinner 类问题
+        grep -rn "setLoading(true)" src/hooks/
+        # 对每一个 grep 结果确认是否有 try/catch/finally 保护
+
+        · 同时用 gemini or other LLM 分析所有审核截图：
+          截图中的每个交互点（按钮/链接/加载）都需要确认已修复
+        ↓
+Step 5  执行修复
         · 代码修复：写失败测试 → 修复实现 → 通过测试
         · Metadata 修复：在 ASC 直接编辑，不提交新 Build
         ↓
-Step 5  验证修复
-        · 运行 /app-review --phase [受影响的阶段]
-        · 真机执行被拒涉及的核心流程
+Step 6  机械验证（提交 build 前必做）
+        # 零同类遗漏
+        grep -rn "router\.back()" src/app/ | grep -v "canGoBack"  # 应为空
+        # 类型检查
+        npx tsc --noEmit                                           # 0 errors
+        # 全量测试
+        npx jest --ci                                             # 全部通过
         ↓
-Step 6  在 Resolution Center 回复（英文）
+Step 7  gemini or other LLM review（提交 build 前必做）
+        · 提供 git diff + 所有审核截图 + 拒审原因给 LLM
+        · 确认以下三点后才能进入 Step 8：
+          □ 每张截图中可见的交互都已修复
+          □ 无同类遗漏模式
+          □ Resolution Center 回复与每个修复点一一对应
+        ↓
+Step 8  在 Resolution Center 起草回复（英文）
         · 使用本文件「英文回复模板」
-        · 说明修改内容 + 验证步骤
+        · 每个 bug 对应一个修复说明 + 验证步骤
+        · 必须包含 Demo Account 凭证
         ↓
-Step 7  迭代记录
-        · 将本次被拒原因 + 修复方案追加到本文件末尾「AHB 历史被拒记录」区块
-        ↓
-Step 8  重新提交
+Step 9  提交新 Build
         · Metadata 修复 → Resolution Center 回复即可触发重审
-        · 代码修复 → 上传新 Build → 重新提交
+        · 代码修复 → 触发 Preview Build → 成功后触发 Release Build
+          → ASC 填写 Demo Account → 提交以供审核
+          → 发送 Resolution Center 回复
+        ↓
+Step 10 迭代记录
+        · 将本次被拒原因 + 修复方案追加到本文件末尾「AHB 历史被拒记录」区块
+        · 更新「常见 Guideline 速查」表（如有新 pattern）
 ```
+
+> **核心原则：Step 4（全量扫描）→ Step 7（LLM review）必须在触发 build 之前完成。
+> 过早触发 build 是最常见的浪费——修两轮 = 两倍时间成本。**
 
 ---
 
@@ -191,10 +223,11 @@ Contact: [Your name and phone number]
 
 > 每次被拒后在此追加记录，供后续参考。
 
-| 日期 | Guideline | 原因摘要 | 修复方案 | 结果 |
-|------|-----------|---------|---------|------|
-| 2026-04-01 | 2.1(a) | ①返回按钮无响应（空 stack）②隐私设置页无限 spinner ③无邮箱注册入口 ④缺少 Demo Account 凭证 | ①`canGoBack()` 守卫 + fallback（privacy/guide）②`finally { setLoading(false) }` ③新增 signup.tsx + login 入口链接 ④ASC Review Notes 补充邮箱/密码 | 已修复，待重新提交审核 |
+| 日期 | Build | Guideline | 原因摘要 | 修复方案 | 教训 |
+|------|-------|-----------|---------|---------|------|
+| 2026-04-01 | build 4 | 2.1(a) | ①返回按钮无响应（空 stack）②隐私设置页无限 spinner ③无邮箱注册入口 ④缺少 Demo Account 凭证 | **第一轮（不完整）**：privacy/guide canGoBack 守卫 + finally loading + 新增 signup.tsx + login 入口 + Demo Account SQL 创建 | 未做全量 grep 扫描，遗漏 6 处 router.back() + 5 个 hook，导致必须打 build 5 |
+| 2026-04-01 | build 5 | 2.1(a) | 同上（补全遗漏） | **第二轮（完整）**：settings/recap/checkin-wizard/friend/plant 共 6 处 router.back() 加 canGoBack() 守卫；usePlantDetail/useHerbarium/useSeasonRecap/useBouquets/useFriends 共 5 个 hook 加 try/catch/finally；signup.tsx 注册后自动登录（demo account 直达 home）；LLM review 确认截图覆盖 | 根因：第一轮修复前未执行全量 pattern 扫描，未做 LLM review。新流程已将两步纳入 Step 4/7 |
 
 ---
 
-*Playbook v1.1 · 2026-04-01*
+*Playbook v1.2 · 2026-04-01*

@@ -2,7 +2,7 @@
 
 > 花図鉑 (Pixel Herbarium) App Store 发版 SOP
 > 基于 v1.1.0 build 4 完整上架经验（2026-03-15 至 3-29）
-> 最后更新: 2026-03-29
+> 最后更新: 2026-04-01（补充拒审二次修复流程 + LLM review 门）
 
 ---
 
@@ -244,12 +244,19 @@ gh run list --repo zmuleyu/pixel-herbarium --workflow release.yml --limit 1
 ### 被拒后快速迭代
 
 ```
-Resolution Center 查看原因 → 定位 Guideline
+Resolution Center 查看原因 → 下载所有审核截图
+    → 定位 Guideline（查 rejection-playbook.md）
+    → 【全量 pattern 扫描】grep 同类问题，列出完整清单
     → 真机 clean install 复现
-    → 修复代码/元数据
-    → S2（tests）→ S5（build）→ S6（重新提交）
-    → Resolution Center 回复修改说明
+    → 修复代码/元数据（覆盖清单所有条目）
+    → S2（tsc + jest 全绿）
+    → 【gemini or other LLM review】diff + 截图 → 确认覆盖完整
+    → 仅 LLM review 通过后 → S5（build）→ S6（重新提交）
+    → Resolution Center 回复（修复点与截图一一对应）
 ```
+
+> **触发 build 的前置门：全量扫描 ✅ + tests 全绿 ✅ + LLM review ✅**
+> 跳过任何一步都可能导致二次被拒，浪费 1-2 天审核等待时间。
 
 ### 仅截图更新
 
@@ -257,7 +264,7 @@ Resolution Center 查看原因 → 定位 Guideline
 
 ---
 
-## 经验复盘 — v1.1.0 教训汇总
+## 经验复盘 — v1.1.0 教训汇总（含 build 5 拒审二次修复）
 
 ### 开发阶段
 
@@ -298,6 +305,15 @@ Resolution Center 查看原因 → 定位 Guideline
 | 内容版权/定价未设置 → 阻断提交 | CS1-CS8 提前逐项确认 |
 | .app 域名 SSL 失效 | 统一使用 pixel-herbarium.com |
 | ASC 截图顺序混乱 | 全删后按文件名顺序重传 |
+
+### 拒审修复阶段（build 5 教训）
+
+| 教训 | 规则 |
+|------|------|
+| 只修 Apple 点名文件，遗漏同类模式 → 必须打第二个 build | 修代码前先 grep 全局同类 pattern，列清单确认零遗漏 |
+| 审核截图未充分分析 → 遗漏截图中可见但未提及的交互 | 下载所有截图，逐张用 LLM 分析，确认每个交互点都已覆盖 |
+| 过早触发 build → 修两轮等两倍审核时间 | 触发 build 的前置门：全量扫描 + tests 全绿 + LLM review 三步全过 |
+| Demo Account 用 SQL 创建须验证 email_confirmed_at | 创建后用 signInWithPassword 验证可直接登录，不依赖邮件确认 |
 
 ---
 
