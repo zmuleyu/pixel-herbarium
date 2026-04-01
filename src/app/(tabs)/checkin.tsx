@@ -203,6 +203,9 @@ export default function DiaryScreen() {
       ListHeaderComponent={
         <>
           <Text style={styles.title}>{t('tabs.diary')}</Text>
+          <Text style={styles.titleSub}>
+            {t(season.nameKey)} · {history.length}{t('diary.totalCheckins')}
+          </Text>
 
           {history.length > 0 && (
             <>
@@ -265,6 +268,10 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.display,
     fontSize: typography.fontSize.xxl,
     color: colors.text,
+  },
+  titleSub: {
+    fontSize: typography.fontSize.sm,
+    color: colors.textSecondary,
     marginBottom: spacing.sm,
   },
 

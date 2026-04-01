@@ -110,6 +110,21 @@ export default function LoginScreen() {
       style={styles.container}
     >
       <View style={styles.inner}>
+        {/* Back button */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/(tabs)/settings' as any);
+            }
+          }}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.backText}>← {t('common.back')}</Text>
+        </TouchableOpacity>
+
         {/* Title */}
         <Text style={styles.title}>{t('auth.appName')}</Text>
         <Text style={styles.subtitle}>{t('auth.tagline')}</Text>
@@ -196,6 +211,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  backButton: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 56 : spacing.lg,
+    left: spacing.md,
+    zIndex: 1,
+    padding: spacing.sm,
+  },
+  backText: {
+    color: colors.plantPrimary,
+    fontSize: typography.fontSize.sm,
   },
   inner: {
     flex: 1,

@@ -263,7 +263,7 @@
   "home": {
     "recentTitle": "Recent Records",
     "noSpotsLoaded": "Loading spot data…",
-    "captureCta": "Capture a Flower 📷",
+    "captureCta": "Capture a Flower",
     "diaryTitle": "My Flower Diary",
     "diaryCount": "{{count}} photos",
     "emptyTitle": "Take your first photo",
@@ -314,7 +314,7 @@
     "signOut": "Sign Out",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirm": "Permanently delete your account?\nThis cannot be undone.",
-    "appCardSeason": "{{season}} 2025"
+    "appCardSeason": "{{season}} {{year}}"
   },
   "offline": {
     "banner": "📵 Offline — Check your connection"

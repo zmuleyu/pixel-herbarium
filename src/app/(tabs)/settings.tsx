@@ -55,7 +55,7 @@ export default function SettingsTabScreen() {
         Alert.alert('', t('settings.exportDataDesc'));
       }
     } catch (e: any) {
-      Alert.alert('Error', e.message ?? 'Export failed');
+      Alert.alert(t('common.error'), e.message ?? t('error.loadFailed'));
     }
   }
 
@@ -63,7 +63,7 @@ export default function SettingsTabScreen() {
     Alert.alert(t('settings.deleteData'), t('settings.deleteDataConfirm'), [
       { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.ok'),
         style: 'destructive',
         onPress: async () => {
           useCheckinStore.setState({ history: [] });
@@ -95,7 +95,7 @@ export default function SettingsTabScreen() {
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Delete',
+          text: t('common.ok'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -106,7 +106,7 @@ export default function SettingsTabScreen() {
               await supabase.auth.signOut();
               router.replace('/(tabs)/home' as any);
             } catch (e: any) {
-              Alert.alert('Error', e.message ?? 'Failed to delete account');
+              Alert.alert(t('common.error'), e.message ?? t('error.loadFailed'));
             }
           },
         },
@@ -129,10 +129,10 @@ export default function SettingsTabScreen() {
         style={[styles.identityCard, { backgroundColor: theme.bgTint, borderColor: theme.accent }]}
       >
         <Text style={styles.identityEmoji}>{season.iconEmoji}</Text>
-        <Text style={styles.identityName}>Pixel Herbarium</Text>
+        <Text style={styles.identityName}>{t('auth.appName')}</Text>
         <Text style={styles.identitySubtitle}>{t('settings.title')}</Text>
         <Text style={styles.identityVersion}>
-          {t('settings.version')} {appVersion} · {t('settings.appCardSeason', { season: t(season.nameKey) })}
+          {t('settings.version')} {appVersion} · {t('settings.appCardSeason', { season: t(season.nameKey), year: new Date().getFullYear() })}
         </Text>
       </View>
 
