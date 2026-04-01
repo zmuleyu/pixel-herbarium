@@ -79,27 +79,42 @@
 
 ---
 
-## 5. App Review Compliance（2026-04-01 新增）
+## 5. CI / Build 环境（触发 Preview Build 前必检）
+
+### 5.1 Xcode SDK 版本
+
+- [ ] **2026-04-28 截止**：所有 build 必须使用 iOS 26 SDK（Xcode 26）
+  - 检查 `.github/workflows/release.yml` 和 `preview-build.yml` 中 `xcode-version` 值
+  - 当前值 `'16.4'`（iOS 18.5 SDK）→ **下次 build 前改为 `'26'`**
+  - 同步确认 `runs-on: macos-latest` runner 已包含 Xcode 26（或改为 `macos-26` 显式指定）
+  - 改完后触发一次 Preview Build 验证 log 中出现 `Xcode 26.x`
+
+> 来源：ITMS-90725 advisory（2026-04-01，build 5 上传后收到）。  
+> Build 5 本身不受影响，**下一个 build 起强制执行**。
+
+---
+
+## 6. App Review Compliance（2026-04-01 新增）
 
 > 根据 v1.1.0 Guideline 2.1(a) 被拒事件新增。提交前必须全部打勾。
 
-### 5.1 Loading 状态安全
+### 6.1 Loading 状态安全
 
 - [ ] 所有含异步操作 + loading 状态的函数，`setLoading(false)` 必须位于 `finally` 块中，不得仅在正常路径末尾调用
 - [ ] 游客用户（`user === null`）的早返回分支，同样必须调用 `setLoading(false)`
 
-### 5.2 返回按钮安全
+### 6.2 返回按钮安全
 
 - [ ] 所有使用 `router.back()` 的 TouchableOpacity，必须先检查 `router.canGoBack()`
 - [ ] `canGoBack()` 为 false 时，提供合理的 fallback（通常为 `router.replace('/(tabs)/settings')`）
 
-### 5.3 注册流程可见性
+### 6.3 注册流程可见性
 
 - [ ] 登录页（`(auth)/login.tsx`）底部有明显的邮箱注册入口（链接到 `(auth)/signup`）
 - [ ] 注册页（`(auth)/signup.tsx`）可以在不预置账号的情况下完成注册流程
 - [ ] 注册按钮在邮箱或密码为空时处于禁用状态
 
-### 5.4 ASC Review Notes & 审核凭证
+### 6.4 ASC Review Notes & 审核凭证
 
 - [ ] ASC → App Review Information → Demo Account：**Username（邮箱）** 和 **Password** 均已填写
 - [ ] Review Notes 中包含邮箱注册的操作路径说明
@@ -107,7 +122,7 @@
 - [ ] Review Notes 的 Notes 字段分别说明了**游客模式**和**登录模式**的测试路径（AHB 有两种账号状态）
 - [ ] 若 App 行为仅在特定地区可用（如日本限定樱花景点），已在 Notes 中说明地区限制原因
 
-### 5.5 新 App vs 版本更新的 Notes 要求
+### 6.5 新 App vs 版本更新的 Notes 要求
 
 > 来源：Apple Developer Forums — Tips from App Review (Dec 2025)
 
@@ -122,4 +137,4 @@
 
 ---
 
-*Checklist v1.1 · 2026-04-01*
+*Checklist v1.2 · 2026-04-01（新增 §5 Xcode SDK 版本检查，ITMS-90725）*
