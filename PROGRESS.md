@@ -19,6 +19,11 @@ v1.1.0 build 5 打包中（GHA run #23828426088，2026-04-01 触发）→ 等待
 - [ ] Layer 3: 弹窗/权限/引导 UI 规范落地
 - [ ] Layer 4: v2 水印编辑器 + 图鉑系统
 
+## 已完成（本次 session 续 — 2026-04-01）
+- [x] git commit 📝 docs（22 files，1d2d859）— launch workflow / rejection playbook / pre-submit scripts 等
+- [x] Supabase Demo Account 创建（17ed8ea1）— review@pixelherbarium.app / ReviewPass2024! / email confirmed ✅
+- [x] GHA build 5 触发（run #23828426088）
+
 ## 已完成（本次 session — 2026-04-01）
 - [x] privacy.tsx — setLoading 移至 finally，guest 分支补调，canGoBack() 守卫提取为 handleBack()
 - [x] guide.tsx — handleBack() + canGoBack() 守卫
