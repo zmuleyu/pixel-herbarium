@@ -82,7 +82,11 @@
     "signIn": "Sign In",
     "lineLogin": "Continue with LINE",
     "lineError": "LINE connection failed. Please try again.",
-    "continueAsGuest": "Continue as Guest"
+    "continueAsGuest": "Continue as Guest",
+    "signUpSuccessTitle": "Registration Complete",
+    "signUpSuccessBody": "A confirmation email has been sent. Please check your inbox.",
+    "passwordTooShort": "Password must be at least 6 characters.",
+    "signUpFailed": "Sign up failed. Please try again."
   },
   "invite": {
     "welcome": "Welcome to Pixel Herbarium\nBeautiful flower encounters\nawait you"

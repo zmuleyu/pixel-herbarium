@@ -82,7 +82,11 @@
     "signIn": "サインイン",
     "lineLogin": "LINEで続ける",
     "lineError": "LINE接続に失敗しました",
-    "continueAsGuest": "ゲストとして続ける"
+    "continueAsGuest": "ゲストとして続ける",
+    "signUpSuccessTitle": "登録完了",
+    "signUpSuccessBody": "確認メールを送りました。メールボックスをご確認ください。",
+    "passwordTooShort": "パスワードは6文字以上で入力してください。",
+    "signUpFailed": "登録に失敗しました。もう一度お試しください。"
   },
   "invite": {
     "welcome": "花めぐりへようこそ\n素敵な花との出会いが\nあなたを待っています"
