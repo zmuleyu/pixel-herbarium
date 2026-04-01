@@ -10,6 +10,10 @@ on:
         description: 'Skip validation (TypeScript + Jest)'
         type: boolean
         default: false
+  workflow_run:
+    workflows: ["Preview Build (Internal Testing)"]
+    types: [completed]
+    branches: [dev]
 
 concurrency:
   group: release-${{ github.ref }}
@@ -22,7 +26,7 @@ permissions:
 jobs:
   validate:
     name: Validate (TypeScript + Jest)
-    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_validate }}
+    if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && !inputs.skip_validate) || github.event_name == 'push' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -55,12 +59,13 @@ jobs:
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
       ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
       BUNDLE_ID: com.pixelherbarium.app
-      EXPECTED_SHA: ${{ github.sha }}
+      EXPECTED_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
       GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
 
       - name: Select Xcode 16.4
         uses: maxim-lobanov/setup-xcode@v1
