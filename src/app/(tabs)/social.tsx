@@ -306,11 +306,16 @@ function ComposeModal({ visible, friends, userId, onSend, onClose }: {
   async function handleSend() {
     if (!selectedFriend || selectedPlants.length < 3) return;
     setSending(true);
-    await onSend(selectedFriend, selectedPlants, message);
-    setSending(false);
-    setSelectedFriend(null);
-    setSelectedPlants([]);
-    setMessage('');
+    try {
+      await onSend(selectedFriend, selectedPlants, message);
+      setSelectedFriend(null);
+      setSelectedPlants([]);
+      setMessage('');
+    } catch (e) {
+      console.warn('ComposeModal: handleSend failed', e);
+    } finally {
+      setSending(false);
+    }
   }
 
   return (

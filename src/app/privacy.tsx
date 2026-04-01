@@ -59,42 +59,57 @@ export default function PrivacyScreen() {
     if (!user || saving) return;
     setMapVisible(value);
     setSaving(true);
-    await (supabase as any)
-      .from('profiles')
-      .update({ map_visible: value, updated_at: new Date().toISOString() })
-      .eq('id', user.id);
-    setSaving(false);
+    try {
+      await (supabase as any)
+        .from('profiles')
+        .update({ map_visible: value, updated_at: new Date().toISOString() })
+        .eq('id', user.id);
+    } catch (e) {
+      console.warn('Privacy: toggleMapVisible failed', e);
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function toggleNotifications(value: boolean) {
     if (!user || saving) return;
     setNotificationsEnabled(value);
     setSaving(true);
-    await (supabase as any)
-      .from('profiles')
-      .update({ notifications_enabled: value, updated_at: new Date().toISOString() })
-      .eq('id', user.id);
-    setSaving(false);
+    try {
+      await (supabase as any)
+        .from('profiles')
+        .update({ notifications_enabled: value, updated_at: new Date().toISOString() })
+        .eq('id', user.id);
+    } catch (e) {
+      console.warn('Privacy: toggleNotifications failed', e);
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function handleExportData() {
     if (!user) return;
     setSaving(true);
-    const { data } = await (supabase as any)
-      .from('discoveries')
-      .select('created_at, latitude, longitude, plants(name_ja, name_latin, rarity)')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
+    try {
+      const { data } = await (supabase as any)
+        .from('discoveries')
+        .select('created_at, latitude, longitude, plants(name_ja, name_latin, rarity)')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
 
-    const json = JSON.stringify(
-      { exported_at: new Date().toISOString(), discoveries: data ?? [] },
-      null,
-      2,
-    );
-    const path = (FileSystem.cacheDirectory ?? '') + 'herbarium_export.json';
-    await FileSystem.writeAsStringAsync(path, json);
-    setSaving(false);
-    await Sharing.shareAsync(path, { mimeType: 'application/json' });
+      const json = JSON.stringify(
+        { exported_at: new Date().toISOString(), discoveries: data ?? [] },
+        null,
+        2,
+      );
+      const path = (FileSystem.cacheDirectory ?? '') + 'herbarium_export.json';
+      await FileSystem.writeAsStringAsync(path, json);
+      await Sharing.shareAsync(path, { mimeType: 'application/json' });
+    } catch (e) {
+      console.warn('Privacy: handleExportData failed', e);
+    } finally {
+      setSaving(false);
+    }
   }
 
   function handleDeleteAccount() {
@@ -185,10 +200,12 @@ export default function PrivacyScreen() {
             <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
 
-          {/* Delete account */}
-          <TouchableOpacity style={styles.deleteRow} onPress={handleDeleteAccount}>
-            <Text style={styles.deleteText}>{t('privacy.deleteAccount')}</Text>
-          </TouchableOpacity>
+          {/* Delete account — only for authenticated users */}
+          {user && (
+            <TouchableOpacity style={styles.deleteRow} onPress={handleDeleteAccount}>
+              <Text style={styles.deleteText}>{t('privacy.deleteAccount')}</Text>
+            </TouchableOpacity>
+          )}
         </>
       )}
     </View>

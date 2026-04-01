@@ -98,14 +98,20 @@ export function useFriends(userId: string): UseFriendsReturn {
   const searchUsers = useCallback(async (query: string) => {
     if (!query.trim()) { setSearchResults([]); return; }
     setSearching(true);
-    const { data } = await (supabase as any)
-      .from('profiles')
-      .select('id, display_name, avatar_seed')
-      .ilike('display_name', `%${query}%`)
-      .neq('id', userId)
-      .limit(20);
-    setSearchResults(data ?? []);
-    setSearching(false);
+    try {
+      const { data } = await (supabase as any)
+        .from('profiles')
+        .select('id, display_name, avatar_seed')
+        .ilike('display_name', `%${query}%`)
+        .neq('id', userId)
+        .limit(20);
+      setSearchResults(data ?? []);
+    } catch (e) {
+      console.warn('useFriends: searchUsers failed', e);
+      setSearchResults([]);
+    } finally {
+      setSearching(false);
+    }
   }, [userId]);
 
   const sendRequest = useCallback(async (addresseeId: string) => {

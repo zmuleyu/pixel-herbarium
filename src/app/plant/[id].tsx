@@ -263,8 +263,13 @@ function DiscoveryRow({ record, onSaveNote, t }: DiscoveryRowProps) {
   async function handleBlur() {
     if (draft === (record.user_note ?? '')) return; // no change
     setSaving(true);
-    await onSaveNote(record.id, draft);
-    setSaving(false);
+    try {
+      await onSaveNote(record.id, draft);
+    } catch (e) {
+      console.warn('DiscoveryRow: handleBlur save failed', e);
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
