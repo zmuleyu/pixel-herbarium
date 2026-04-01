@@ -39,7 +39,7 @@ export default function GuideScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backRow}>
+      <TouchableOpacity onPress={handleBack} style={styles.backRow}>
         <Text style={styles.backText}>← {t('common.back')}</Text>
       </TouchableOpacity>
 
