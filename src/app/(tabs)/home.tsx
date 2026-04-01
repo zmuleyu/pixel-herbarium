@@ -105,7 +105,7 @@ export default function HomeScreen() {
       <Animated.View style={entryStyle(2)}>
         <TouchableOpacity
           style={[styles.secondaryCta, { borderColor: colors.blushPink }]}
-          onPress={() => router.push('/(tabs)/diary' as any)}
+          onPress={() => router.push('/(tabs)/checkin' as any)}
           activeOpacity={0.85}
         >
           <Text style={styles.secondaryCtaEmoji}>🖼️</Text>
@@ -121,7 +121,7 @@ export default function HomeScreen() {
           /* Recent record preview */
           <TouchableOpacity
             style={[styles.recentCard, { borderColor: theme.accent }]}
-            onPress={() => router.push('/(tabs)/diary' as any)}
+            onPress={() => router.push('/(tabs)/checkin' as any)}
             activeOpacity={0.85}
           >
             <Text style={[styles.recentLabel, { color: theme.primary }]}>
