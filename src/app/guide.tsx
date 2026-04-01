@@ -29,6 +29,14 @@ export default function GuideScreen() {
     Alert.alert('', t('guide.settings.resetDone'));
   }
 
+  function handleBack() {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/settings');
+    }
+  }
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <TouchableOpacity onPress={() => router.back()} style={styles.backRow}>
