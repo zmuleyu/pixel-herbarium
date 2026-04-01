@@ -83,9 +83,9 @@ export default function SignUpScreen() {
         />
 
         <TouchableOpacity
-          style={[styles.button, submitting && styles.buttonDisabled]}
+          style={[styles.button, (submitting || !email || !password) && styles.buttonDisabled]}
           onPress={handleSignUp}
-          disabled={submitting}
+          disabled={submitting || !email || !password}
           testID="signup.submit"
         >
           <Text style={styles.buttonText}>{t('auth.signUpEmail')}</Text>
