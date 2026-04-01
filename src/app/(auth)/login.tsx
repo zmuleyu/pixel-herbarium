@@ -181,7 +181,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => router.push('/(auth)/signup')}
+          onPress={() => router.push('/(auth)/signup' as any)}
           testID="auth.goToSignUp"
           style={styles.guestButton}
         >
