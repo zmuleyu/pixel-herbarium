@@ -156,7 +156,7 @@ export function StampPreview({
           <Image
             source={{ uri: photoUri }}
             style={styles.photo}
-            resizeMode="contain"
+            resizeMode="cover"
           />
           <GestureStampOverlay
             styleId={stampStyle}
@@ -179,12 +179,16 @@ export function StampPreview({
             stampX={
               currentTransform
                 ? currentTransform.x + STAMP_APPROX_SIZE / 2
-                : photoContainerSize.width * 0.55 + STAMP_APPROX_SIZE / 2
+                : photoContainerSize.width > 0
+                  ? photoContainerSize.width - 80 / 2 - 16 + STAMP_APPROX_SIZE / 2
+                  : photoContainerSize.width * 0.65 + STAMP_APPROX_SIZE / 2
             }
             stampY={
               currentTransform
                 ? currentTransform.y + STAMP_APPROX_SIZE / 2
-                : photoContainerSize.height * 0.70 + STAMP_APPROX_SIZE / 2
+                : photoContainerSize.height > 0
+                  ? photoContainerSize.height - 80 / 2 - 16 + STAMP_APPROX_SIZE / 2
+                  : photoContainerSize.height * 0.65 + STAMP_APPROX_SIZE / 2
             }
             themeColor={season.themeColor}
             onComplete={handleAnimationComplete}
@@ -236,7 +240,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   photoContainer: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#1a1a1a',
   },
   photo: {
     width: '100%',

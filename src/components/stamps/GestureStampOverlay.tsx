@@ -37,9 +37,9 @@ export function GestureStampOverlay({
 }: Props) {
   const STAMP_SIZE = 80; // approximate stamp width/height for boundary calcs
 
-  // Initial position: bottom-right area
-  const initX = containerWidth * 0.55;
-  const initY = containerHeight * 0.70;
+  // Initial position: lower-right, clearly inside photo area
+  const initX = containerWidth > 0 ? containerWidth - STAMP_SIZE - 16 : 0;
+  const initY = containerHeight > 0 ? containerHeight - STAMP_SIZE - 16 : 0;
 
   const translateX = useSharedValue(initX);
   const translateY = useSharedValue(initY);
