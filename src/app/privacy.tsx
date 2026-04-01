@@ -129,7 +129,7 @@ export default function PrivacyScreen() {
   return (
     <View style={styles.container}>
       {/* Back row */}
-      <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/settings' as any)} style={styles.backRow}>
+      <TouchableOpacity onPress={handleBack} style={styles.backRow}>
         <Text style={styles.backText}>← {t('common.back')}</Text>
       </TouchableOpacity>
 
