@@ -23,6 +23,9 @@ v1.1.0 build 5 打包中（GHA run #23828426088，2026-04-01 触发）→ 等待
 - [x] git commit 📝 docs（22 files，1d2d859）— launch workflow / rejection playbook / pre-submit scripts 等
 - [x] Supabase Demo Account 创建（17ed8ea1）— review@pixelherbarium.app / ReviewPass2024! / email confirmed ✅
 - [x] GHA build 5 触发（run #23828426088）
+- [x] async try/catch/finally 全面修复（privacy/social/plant[id]/useFriends — b2c2c07）
+- [x] UX polish：i18n 应用名/emoji去重/登录返回按钮/日记副标题（ca08dcc）
+- [x] 全局 canGoBack() 守卫 + signup 自动登录（372c486）
 
 ## 已完成（本次 session — 2026-04-01）
 - [x] privacy.tsx — setLoading 移至 finally，guest 分支补调，canGoBack() 守卫提取为 handleBack()
