@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { signUpWithEmail } from '@/services/auth';
+import { signUpWithEmail, signInWithEmail } from '@/services/auth';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 
 export default function SignUpScreen() {
@@ -38,6 +38,16 @@ export default function SignUpScreen() {
     try {
       setSubmitting(true);
       await signUpWithEmail(email, password);
+
+      // Try auto-login: succeeds if email is pre-confirmed (e.g. demo account)
+      try {
+        await signInWithEmail(email, password);
+        router.replace('/(tabs)/home');
+        return;
+      } catch {
+        // Email not yet confirmed — fall through to show confirmation alert
+      }
+
       Alert.alert(
         t('auth.signUpSuccessTitle'),
         t('auth.signUpSuccessBody'),

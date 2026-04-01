@@ -31,6 +31,14 @@ export default function FriendHerbariumScreen() {
   const { plants, collected, loading } = useHerbarium(id ?? '');
   const friendName = name ? decodeURIComponent(name) : null;
 
+  function handleBack() {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/home');
+    }
+  }
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -43,7 +51,7 @@ export default function FriendHerbariumScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
           <Text style={styles.backText}>‹ {t('common.back')}</Text>
         </TouchableOpacity>
         <View style={styles.headerCenter}>

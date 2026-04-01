@@ -34,6 +34,14 @@ export default function RecapScreen() {
   const { user } = useAuthStore();
   const { plants, loading, season } = useSeasonRecap(user?.id ?? '');
 
+  function handleBack() {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/home');
+    }
+  }
+
   const rarest = plants.reduce<RecapPlant | null>((best, p) => {
     if (!best || p.rarity > best.rarity) return p;
     return best;
@@ -51,7 +59,7 @@ export default function RecapScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Back */}
-      <TouchableOpacity onPress={() => router.back()} style={styles.backRow}>
+      <TouchableOpacity onPress={handleBack} style={styles.backRow}>
         <Text style={styles.backText}>← {t('common.back')}</Text>
       </TouchableOpacity>
 

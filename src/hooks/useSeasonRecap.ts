@@ -62,38 +62,43 @@ export function useSeasonRecap(userId: string): UseSeasonRecapReturn {
     setLoading(true);
 
     async function load() {
-      const { data } = await (supabase as any)
-        .from('discoveries')
-        .select(
-          'created_at, plants!inner(id, name_ja, name_latin, rarity, hanakotoba, pixel_sprite_url)',
-        )
-        .eq('user_id', userId)
-        .gte('created_at', season.start.toISOString())
-        .lt('created_at', season.end.toISOString())
-        .order('created_at', { ascending: false });
+      try {
+        const { data } = await (supabase as any)
+          .from('discoveries')
+          .select(
+            'created_at, plants!inner(id, name_ja, name_latin, rarity, hanakotoba, pixel_sprite_url)',
+          )
+          .eq('user_id', userId)
+          .gte('created_at', season.start.toISOString())
+          .lt('created_at', season.end.toISOString())
+          .order('created_at', { ascending: false });
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      const mapped: RecapPlant[] = (data ?? []).map((row: any) => ({
-        id: row.plants.id,
-        name_ja: row.plants.name_ja,
-        name_latin: row.plants.name_latin,
-        rarity: row.plants.rarity,
-        hanakotoba: row.plants.hanakotoba,
-        pixel_sprite_url: row.plants.pixel_sprite_url,
-        discovered_at: row.created_at,
-      }));
+        const mapped: RecapPlant[] = (data ?? []).map((row: any) => ({
+          id: row.plants.id,
+          name_ja: row.plants.name_ja,
+          name_latin: row.plants.name_latin,
+          rarity: row.plants.rarity,
+          hanakotoba: row.plants.hanakotoba,
+          pixel_sprite_url: row.plants.pixel_sprite_url,
+          discovered_at: row.created_at,
+        }));
 
-      // Deduplicate by plant id (keep first/latest discovery)
-      const seen = new Set<number>();
-      const unique = mapped.filter((p) => {
-        if (seen.has(p.id)) return false;
-        seen.add(p.id);
-        return true;
-      });
+        // Deduplicate by plant id (keep first/latest discovery)
+        const seen = new Set<number>();
+        const unique = mapped.filter((p) => {
+          if (seen.has(p.id)) return false;
+          seen.add(p.id);
+          return true;
+        });
 
-      setPlants(unique);
-      setLoading(false);
+        setPlants(unique);
+      } catch (e) {
+        if (!cancelled) console.warn('useSeasonRecap: failed to load', e);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     }
 
     load();

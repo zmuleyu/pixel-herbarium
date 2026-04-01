@@ -46,51 +46,55 @@ export function useBouquets(userId: string): UseBouquetsReturn {
 
     async function load() {
       setLoading(true);
+      try {
+        const { data, error } = await (supabase as any)
+          .from('bouquets')
+          .select(`
+            id, sender_id, receiver_id, plant_ids, message, status, created_at, expires_at,
+            sender:profiles!bouquets_sender_id_fkey(id, display_name, avatar_seed),
+            receiver:profiles!bouquets_receiver_id_fkey(id, display_name, avatar_seed)
+          `)
+          .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+          .order('created_at', { ascending: false });
 
-      const { data, error } = await (supabase as any)
-        .from('bouquets')
-        .select(`
-          id, sender_id, receiver_id, plant_ids, message, status, created_at, expires_at,
-          sender:profiles!bouquets_sender_id_fkey(id, display_name, avatar_seed),
-          receiver:profiles!bouquets_receiver_id_fkey(id, display_name, avatar_seed)
-        `)
-        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
-        .order('created_at', { ascending: false });
+        if (cancelled) return;
+        if (error || !data) return;
 
-      if (cancelled) return;
-      if (error || !data) { setLoading(false); return; }
-
-      // Collect all plant IDs to fetch in one query
-      const allPlantIds: number[] = [];
-      for (const b of data) {
-        for (const pid of (b.plant_ids ?? [])) {
-          if (!allPlantIds.includes(pid)) allPlantIds.push(pid);
+        // Collect all plant IDs to fetch in one query
+        const allPlantIds: number[] = [];
+        for (const b of data) {
+          for (const pid of (b.plant_ids ?? [])) {
+            if (!allPlantIds.includes(pid)) allPlantIds.push(pid);
+          }
         }
+
+        let plantMap = new Map<number, BouquetPlant>();
+        if (allPlantIds.length > 0) {
+          const { data: plants } = await (supabase as any)
+            .from('plants')
+            .select('id, name_ja, name_en, rarity, pixel_sprite_url')
+            .in('id', allPlantIds);
+          for (const p of (plants ?? [])) plantMap.set(p.id, p);
+        }
+
+        if (cancelled) return;
+
+        const enriched: Bouquet[] = (data as any[]).map((b) => ({
+          ...b,
+          plants: (b.plant_ids ?? []).map((pid: number) => plantMap.get(pid)).filter(Boolean),
+        }));
+
+        setInbox(enriched.filter((b) =>
+          b.receiver_id === userId &&
+          b.status === 'pending' &&
+          new Date(b.expires_at) > new Date()
+        ));
+        setSent(enriched.filter((b) => b.sender_id === userId));
+      } catch (e) {
+        if (!cancelled) console.warn('useBouquets: failed to load', e);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-
-      let plantMap = new Map<number, BouquetPlant>();
-      if (allPlantIds.length > 0) {
-        const { data: plants } = await (supabase as any)
-          .from('plants')
-          .select('id, name_ja, name_en, rarity, pixel_sprite_url')
-          .in('id', allPlantIds);
-        for (const p of (plants ?? [])) plantMap.set(p.id, p);
-      }
-
-      if (cancelled) return;
-
-      const enriched: Bouquet[] = (data as any[]).map((b) => ({
-        ...b,
-        plants: (b.plant_ids ?? []).map((pid: number) => plantMap.get(pid)).filter(Boolean),
-      }));
-
-      setInbox(enriched.filter((b) =>
-        b.receiver_id === userId &&
-        b.status === 'pending' &&
-        new Date(b.expires_at) > new Date()
-      ));
-      setSent(enriched.filter((b) => b.sender_id === userId));
-      setLoading(false);
     }
 
     load();

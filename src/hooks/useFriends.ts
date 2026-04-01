@@ -44,50 +44,51 @@ export function useFriends(userId: string): UseFriendsReturn {
 
     async function load() {
       setLoading(true);
+      try {
+        // Fetch all friendships where current user is involved
+        const { data, error } = await (supabase as any)
+          .from('friendships')
+          .select(`
+            id, requester_id, addressee_id, status,
+            requester:profiles!friendships_requester_id_fkey(id, display_name, avatar_seed),
+            addressee:profiles!friendships_addressee_id_fkey(id, display_name, avatar_seed)
+          `)
+          .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`);
 
-      // Fetch all friendships where current user is involved
-      const { data, error } = await (supabase as any)
-        .from('friendships')
-        .select(`
-          id, requester_id, addressee_id, status,
-          requester:profiles!friendships_requester_id_fkey(id, display_name, avatar_seed),
-          addressee:profiles!friendships_addressee_id_fkey(id, display_name, avatar_seed)
-        `)
-        .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`);
+        if (cancelled) return;
+        if (error || !data) return;
 
-      if (cancelled) return;
-      if (error || !data) {
-        setLoading(false);
-        return;
-      }
+        const accepted: Friendship[] = [];
+        const received: Friendship[] = [];
+        const sent: Friendship[] = [];
 
-      const accepted: Friendship[] = [];
-      const received: Friendship[] = [];
-      const sent: Friendship[] = [];
+        for (const row of data) {
+          const iAmRequester = row.requester_id === userId;
+          const friend: Profile = iAmRequester ? row.addressee : row.requester;
+          const entry: Friendship = {
+            id: row.id,
+            requester_id: row.requester_id,
+            addressee_id: row.addressee_id,
+            status: row.status,
+            friend,
+          };
 
-      for (const row of data) {
-        const iAmRequester = row.requester_id === userId;
-        const friend: Profile = iAmRequester ? row.addressee : row.requester;
-        const entry: Friendship = {
-          id: row.id,
-          requester_id: row.requester_id,
-          addressee_id: row.addressee_id,
-          status: row.status,
-          friend,
-        };
-
-        if (row.status === 'accepted') {
-          accepted.push(entry);
-        } else if (row.status === 'pending') {
-          if (iAmRequester) sent.push(entry);
-          else received.push(entry);
+          if (row.status === 'accepted') {
+            accepted.push(entry);
+          } else if (row.status === 'pending') {
+            if (iAmRequester) sent.push(entry);
+            else received.push(entry);
+          }
         }
-      }
 
-      setFriends(accepted);
-      setPendingReceived(received);
-      setPendingSent(sent);
-      setLoading(false);
+        setFriends(accepted);
+        setPendingReceived(received);
+        setPendingSent(sent);
+      } catch (e) {
+        if (!cancelled) console.warn('useFriends: failed to load', e);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     }
 
     load();

@@ -15,10 +15,18 @@ export default function SettingsScreen() {
   const router = useRouter();
   const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 
+  function handleBack() {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/settings' as any);
+    }
+  }
+
   return (
     <View style={styles.container}>
       {/* Back */}
-      <TouchableOpacity onPress={() => router.back()} style={styles.backRow}>
+      <TouchableOpacity onPress={handleBack} style={styles.backRow}>
         <Text style={styles.backText}>← {t('common.back')}</Text>
       </TouchableOpacity>
 

@@ -129,7 +129,11 @@ export default function CheckinWizardScreen() {
 
   function handleBack() {
     if (step === 'photo') {
-      router.back();
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/(tabs)/home');
+      }
     } else if (step === 'spot') {
       setStep('photo');
     } else if (step === 'preview') {

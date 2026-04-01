@@ -57,6 +57,14 @@ export default function PlantDetailScreen() {
   const isCollected = collected.has(plantId);
   const [shareSheetVisible, setShareSheetVisible] = useState(false);
 
+  function handleBack() {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/home');
+    }
+  }
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -69,7 +77,7 @@ export default function PlantDetailScreen() {
     return (
       <View style={styles.center}>
         <Text style={styles.errorText}>{error ?? t('common.notFound')}</Text>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.backBtn} onPress={handleBack}>
           <Text style={styles.backBtnText}>← {t('common.back')}</Text>
         </TouchableOpacity>
       </View>
@@ -87,7 +95,7 @@ export default function PlantDetailScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Back + Share row */}
       <View style={styles.topRow}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={handleBack}>
           <Text style={styles.backBtnText}>← {t('common.back')}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.shareBtn} onPress={() => setShareSheetVisible(true)}>

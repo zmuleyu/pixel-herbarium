@@ -42,46 +42,49 @@ export function useHerbarium(userId: string): UseHerbariumReturn {
     setLoading(true);
 
     async function load() {
-      // Fetch all 60 plants ordered by id
-      const { data: plantRows, error: plantError } = await (supabase as any)
-        .from('plants')
-        .select('id, name_ja, name_en, name_latin, rarity, pixel_sprite_url, hanakotoba, bloom_months')
-        .order('id');
+      try {
+        // Fetch all 60 plants ordered by id
+        const { data: plantRows, error: plantError } = await (supabase as any)
+          .from('plants')
+          .select('id, name_ja, name_en, name_latin, rarity, pixel_sprite_url, hanakotoba, bloom_months')
+          .order('id');
 
-      if (cancelled) return;
-      if (plantError) {
-        setPlants([]);
-        setLoading(false);
-        return;
+        if (cancelled) return;
+        if (plantError) {
+          setPlants([]);
+          return;
+        }
+
+        // Fetch user's collection; join discoveries to get first discovery date
+        const { data: collRows, error: collError } = await (supabase as any)
+          .from('collections')
+          .select('plant_id, discoveries!first_discovery_id(created_at)')
+          .eq('user_id', userId);
+
+        if (cancelled) return;
+
+        const rows: PlantSlot[] = (plantRows ?? []).slice(0, TOTAL_PLANTS);
+        setPlants(rows);
+
+        if (!collError && collRows) {
+          const entries: CollectionEntry[] = (collRows as Array<{
+            plant_id: number;
+            discoveries: { created_at: string } | null;
+          }>).map((row) => ({
+            plant_id: row.plant_id,
+            discovered_at: row.discoveries?.created_at ?? '',
+          }));
+          setCollected(new Set(entries.map((e) => e.plant_id)));
+          setCollectionMap(new Map(entries.map((e) => [e.plant_id, e])));
+        } else {
+          setCollected(new Set());
+          setCollectionMap(new Map());
+        }
+      } catch (e) {
+        if (!cancelled) console.warn('useHerbarium: failed to load', e);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-
-      // Fetch user's collection; join discoveries to get first discovery date
-      const { data: collRows, error: collError } = await (supabase as any)
-        .from('collections')
-        .select('plant_id, discoveries!first_discovery_id(created_at)')
-        .eq('user_id', userId);
-
-      if (cancelled) return;
-
-      const rows: PlantSlot[] = (plantRows ?? []).slice(0, TOTAL_PLANTS);
-      setPlants(rows);
-
-      if (!collError && collRows) {
-        const entries: CollectionEntry[] = (collRows as Array<{
-          plant_id: number;
-          discoveries: { created_at: string } | null;
-        }>).map((row) => ({
-          plant_id: row.plant_id,
-          discovered_at: row.discoveries?.created_at ?? '',
-        }));
-        setCollected(new Set(entries.map((e) => e.plant_id)));
-        setCollectionMap(new Map(entries.map((e) => [e.plant_id, e])));
-      } else {
-        setCollected(new Set());
-        setCollectionMap(new Map());
-      }
-
-      setLoading(false);
     }
 
     load();

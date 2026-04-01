@@ -46,33 +46,37 @@ export function usePlantDetail(plantId: number, userId: string): UsePlantDetailR
     setError(null);
 
     async function load() {
-      const [plantRes, discRes] = await Promise.all([
-        (supabase as any)
-          .from('plants')
-          .select(
-            'id, name_ja, name_en, name_latin, rarity, hanakotoba, flower_meaning, color_meaning, bloom_months, prefectures, pixel_sprite_url, available_window',
-          )
-          .eq('id', plantId)
-          .single(),
-        (supabase as any)
-          .from('discoveries')
-          .select('id, created_at, pixel_url, user_note, city')
-          .eq('user_id', userId)
-          .eq('plant_id', plantId)
-          .order('created_at', { ascending: false }),
-      ]);
+      try {
+        const [plantRes, discRes] = await Promise.all([
+          (supabase as any)
+            .from('plants')
+            .select(
+              'id, name_ja, name_en, name_latin, rarity, hanakotoba, flower_meaning, color_meaning, bloom_months, prefectures, pixel_sprite_url, available_window',
+            )
+            .eq('id', plantId)
+            .single(),
+          (supabase as any)
+            .from('discoveries')
+            .select('id, created_at, pixel_url, user_note, city')
+            .eq('user_id', userId)
+            .eq('plant_id', plantId)
+            .order('created_at', { ascending: false }),
+        ]);
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      if (plantRes.error) {
-        setError(plantRes.error.message);
-        setLoading(false);
-        return;
+        if (plantRes.error) {
+          setError(plantRes.error.message);
+          return;
+        }
+
+        setPlant(plantRes.data);
+        setDiscoveries(discRes.data ?? []);
+      } catch (e) {
+        if (!cancelled) console.warn('usePlantDetail: failed to load', e);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-
-      setPlant(plantRes.data);
-      setDiscoveries(discRes.data ?? []);
-      setLoading(false);
     }
 
     load();
