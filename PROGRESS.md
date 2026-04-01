@@ -2,11 +2,13 @@
 Updated: 2026-04-01
 
 ## 当前阶段
-v1.1.0 build 4 被拒（Guideline 2.1a）→ 代码已全部修复，待打 build 5 + 重新提交
+v1.1.0 build 5 打包中（GHA run #23828426088，2026-04-01 触发）→ 等待 ASC 上传完成后填写 Demo Account 提交审核
 
 ## 待办（重新提交前）
-- [ ] 创建 Supabase Demo Account：`review@pixelherbarium.app`（Supabase Dashboard 或通过 signup 页）
-- [ ] 触发 GHA release.yml 打 build 5（`gh workflow run release.yml --ref dev`）
+- [x] 创建 Supabase Demo Account：`review@pixelherbarium.app` ✅（已通过 SQL 创建，email 已确认，profile 自动生成）
+  - 密码：`ReviewPass2024!`
+- [x] 触发 GHA release.yml 打 build 5 ✅（run #23828426088，in_progress）
+- [ ] 等待 GHA build 5 完成 → 确认 ASC 收到新 build
 - [ ] ASC → App Review Information → Demo Account：填写邮箱 + 密码
 - [ ] Resolution Center 回复修改说明（使用 docs/launch/rejection-playbook.md Section 3 模板）
 - [ ] 提交审核
