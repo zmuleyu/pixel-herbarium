@@ -29,12 +29,28 @@ The app supports a **guest-first** experience. After the 3-slide onboarding, use
 - **Settings tab**: Language toggle (日本語/English), privacy policy, usage guide, feedback, data export
 
 ### Login (Required for Full Features)
-To test stamp saving and check-in features, sign in via **Apple Sign In**:
+
+**Option A — Email/Password (Recommended for review):**
+
+Demo Account:
+- **Email**: `review@pixelherbarium.app`
+- **Password**: `[ASC Demo Account Password に記入済み]`
+
+Steps:
+1. Tap the **Settings** tab → "ログイン"
+2. Tap "メールでサインイン"
+3. Enter the email and password above
+
+**Option B — Apple Sign In:**
 1. Tap the **Settings** tab → "ログイン"
 2. Tap "Appleでサインイン"
 3. Use your Apple reviewer account
 
-No separate test credentials are needed — Apple Sign In works directly.
+**Creating a new account (Email):**
+1. On the login screen, tap "**メールで登録**" at the bottom
+2. Enter an email and a password of at least 6 characters
+3. Tap "メールで登録" to submit
+4. A confirmation email is sent; tap the link to activate the account
 
 ### Core Feature Walkthrough
 
@@ -83,9 +99,24 @@ All login methods are optional — the app is fully usable in guest mode.
 
 ---
 
+## Account States for Review
+
+AHB has two distinct account states. Please test both:
+
+| State | How to enter | Features available |
+|-------|-------------|-------------------|
+| **Guest (no login)** | Skip login on Settings tab, or use app without signing in | Home tab, Diary tab (read-only), Settings tab, privacy policy, usage guide |
+| **Logged in** | Sign in via email/password (Demo Account above) or Apple Sign In | All guest features + stamp saving, check-in history sync, privacy settings, account deletion |
+
+**To switch states during review:** Settings tab → "ログアウト" (logout) returns to guest mode.
+
+---
+
 ## Additional Notes
 
-- **No In-App Purchases**: v1.1 is entirely free with no IAP or subscriptions.
+- **No In-App Purchases**: This app is entirely free with no IAP or subscriptions.
+- **Business model**: Free app, no monetization in current version.
+- **Geographic design intent**: The app is designed for Japan's cherry blossom season. Sakura spot data covers Japan. The app is fully functional outside Japan but spot selection will show Japan locations.
 - **No User-Generated Content visible to others**: Shared content goes through the OS share sheet to external apps. All check-in data is private to the user.
 - **Encryption**: `ITSAppUsesNonExemptEncryption: false` — standard HTTPS only.
 - **Content Rating**: 4+
