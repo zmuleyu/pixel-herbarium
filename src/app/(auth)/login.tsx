@@ -179,6 +179,14 @@ export default function LoginScreen() {
         >
           <Text style={styles.guestText}>{t('auth.continueAsGuest')}</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => router.push('/(auth)/signup')}
+          testID="auth.goToSignUp"
+          style={styles.guestButton}
+        >
+          <Text style={styles.guestText}>{t('auth.signUpEmail')}</Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
