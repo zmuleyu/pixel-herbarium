@@ -1,0 +1,83 @@
+# .claudeignore — pixel-herbarium (AHB) — Expo React Native
+# Updated: 2026-03-23
+
+# ── Dependencies ─────────────────────────────────────────────
+node_modules/
+.pnp/
+.pnp.js
+
+# ── Build outputs ────────────────────────────────────────────
+dist/
+build/
+out/
+.expo/
+.expo-shared/
+ios/build/
+android/build/
+android/.gradle/
+*.apk
+*.ipa
+*.aab
+
+# ── Lock files ───────────────────────────────────────────────
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lockb
+
+# ── Test artifacts ───────────────────────────────────────────
+coverage/
+__snapshots__/
+*.snap
+.nyc_output/
+test-results/
+e2e/baseline/
+e2e/current/
+e2e/diff/
+
+# ── Environment & secrets ────────────────────────────────────
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+secrets/
+
+# ── Caches & temp ────────────────────────────────────────────
+.cache/
+.turbo/
+.metro/
+
+# ── IDE & system ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Large static assets ──────────────────────────────────────
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.mp4
+*.mov
+*.pdf
+assets/images/
+# Keep: assets/fonts/ — referenced in app code
+
+# ── Generated / vendor ───────────────────────────────────────
+*.min.js
+*.min.css
+
+# ── Project-specific: Expo / EAS ─────────────────────────────
+ios/Pods/
+ios/build/
+android/app/build/
+android/.gradle/
