@@ -59,3 +59,31 @@
 - next_action: on the next account switch, recover from handoff.md/review.md/PROGRESS.md/current git diff first; reuse the new continuity doc only as supporting guidance
 - do_not_touch: mobile auth flow, production secrets, embedded credential access in app runtime
 - sync_trigger: use D:\tools\scripts\collab-sync-message.ps1 -ProjectPath D:\projects\Games\pixel-herbarium -Target Claude -Workstream "Claude Code Account Continuity"
+
+## Workstream: Session Sync 2026-04-04
+
+### Freshness
+- status: completed
+- updated_at: 2026-04-04
+- owner: Claude
+- repo: D:\projects\Games\pixel-herbarium
+- branch: dev
+- head_sha: 2528584
+
+### Health
+- priority: low
+- blocker_count: 0
+- failure_class: none
+- scope: workspace cleanup, stability commit, i18n bug fix
+
+### Signals
+- current_conclusion: workspace clean; 806 tests / 106 suites GREEN; typecheck clean; guide system fully implemented and i18n-complete
+- key_files: src/app/guide.tsx; src/i18n/en.json; src/i18n/ja.json; __tests__/screens/GuideScreen.test.tsx; CLAUDE.md; docs/dev/claude-code-account-continuity.md
+- validation: npm run typecheck (clean); npm test (806 pass, 0 fail)
+- blockers: none — Apple review pending since 2026-04-01 (build 5); Layer 3 & 4 features are post-approval
+
+### Queue
+- next_action: await Apple review result; if approved → update rejection-playbook + MEMORY; if rejected → follow rejection-playbook; Layer 3 (permissions/guidance UX) and Layer 4 (watermark editor) start after approval
+- do_not_touch: auth, schema, deploy config, release strategy
+- feat/in-app-guidance branch: stale (11 commits behind dev divergence point, guide components already in dev — can be deleted)
+- sync_trigger: use D:\tools\scripts\collab-sync-message.ps1 -ProjectPath D:\projects\Games\pixel-herbarium -Target Claude -Workstream "Session Sync 2026-04-04"
