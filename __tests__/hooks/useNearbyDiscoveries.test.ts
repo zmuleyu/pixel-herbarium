@@ -26,37 +26,40 @@ const mockFrom = supabase.from as jest.Mock;
 const TOKYO = { latitude: 35.6762, longitude: 139.6503 };
 const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 
-// GeoJSON Point as PostgREST returns it
 function makeGeoJSON(lat: number, lon: number) {
   return { type: 'Point', coordinates: [lon, lat] };
 }
 
-// RPC raw rows (location_fuzzy as GeoJSON)
 const MOCK_RPC_ROWS = [
   {
     id: 'disc-1',
     plant_id: 7,
-    location_fuzzy: makeGeoJSON(35.6770, 139.6510),
-    city: '東京都',
+    location_fuzzy: makeGeoJSON(35.677, 139.651),
+    city: 'Tokyo',
     is_public: true,
     created_at: '2026-04-10T10:00:00Z',
   },
   {
     id: 'disc-2',
     plant_id: 42,
-    location_fuzzy: makeGeoJSON(35.6750, 139.6490),
-    city: '東京都',
+    location_fuzzy: makeGeoJSON(35.675, 139.649),
+    city: 'Tokyo',
     is_public: true,
     created_at: '2026-04-11T09:00:00Z',
   },
 ];
 
 const MOCK_PLANTS = [
-  { id: 7,  name_ja: 'タンポポ',   hanakotoba: '愛の神託', rarity: 1 },
-  { id: 42, name_ja: 'シバザクラ', hanakotoba: '合意',     rarity: 3 },
+  { id: 7, name_ja: 'Campanula', hanakotoba: 'Gratitude', rarity: 1 },
+  { id: 42, name_ja: 'Snowdrop', hanakotoba: 'Hope', rarity: 3 },
 ];
 
-function setupMocks(rpcRows = MOCK_RPC_ROWS, plants = MOCK_PLANTS, rpcError: any = null) {
+function setupMocks(
+  rpcRows = MOCK_RPC_ROWS,
+  plants = MOCK_PLANTS,
+  rpcError: any = null,
+  plantsError: any = null,
+) {
   mockRequestPerm.mockResolvedValue({ status: 'granted' });
   mockGetPosition.mockResolvedValue({
     coords: { latitude: TOKYO.latitude, longitude: TOKYO.longitude, accuracy: 20 },
@@ -65,7 +68,7 @@ function setupMocks(rpcRows = MOCK_RPC_ROWS, plants = MOCK_PLANTS, rpcError: any
 
   const plantsChain = {
     select: jest.fn().mockReturnThis(),
-    in: jest.fn().mockResolvedValue({ data: plants, error: null }),
+    in: jest.fn().mockResolvedValue({ data: plants, error: plantsError }),
   };
   mockFrom.mockReturnValue(plantsChain);
 }
@@ -75,9 +78,10 @@ beforeEach(() => {
   mockFrom.mockReset();
   mockGetPosition.mockReset();
   mockRequestPerm.mockReset();
+  jest.restoreAllMocks();
 });
 
-describe('useNearbyDiscoveries – initial load', () => {
+describe('useNearbyDiscoveries initial load', () => {
   it('starts with loading=true', () => {
     mockRequestPerm.mockReturnValue(new Promise(() => {}));
     const { result } = renderHook(() => useNearbyDiscoveries());
@@ -96,20 +100,20 @@ describe('useNearbyDiscoveries – initial load', () => {
     setupMocks();
     const { result } = renderHook(() => useNearbyDiscoveries());
     await act(async () => { await flushPromises(); });
-    expect(result.current.discoveries[0].latitude).toBeCloseTo(35.6770);
-    expect(result.current.discoveries[0].longitude).toBeCloseTo(139.6510);
+    expect(result.current.discoveries[0].latitude).toBeCloseTo(35.677);
+    expect(result.current.discoveries[0].longitude).toBeCloseTo(139.651);
   });
 
   it('enriches discoveries with plant name, hanakotoba, and rarity', async () => {
     setupMocks();
     const { result } = renderHook(() => useNearbyDiscoveries());
     await act(async () => { await flushPromises(); });
-    const d = result.current.discoveries.find((x) => x.plant_id === 7);
-    expect(d?.plant_name_ja).toBe('タンポポ');
-    expect(d?.hanakotoba).toBe('愛の神託');
-    expect(d?.rarity).toBe(1);
-    const d2 = result.current.discoveries.find((x) => x.plant_id === 42);
-    expect(d2?.rarity).toBe(3);
+    const first = result.current.discoveries.find((item) => item.plant_id === 7);
+    expect(first?.plant_name_ja).toBe('Campanula');
+    expect(first?.hanakotoba).toBe('Gratitude');
+    expect(first?.rarity).toBe(1);
+    const second = result.current.discoveries.find((item) => item.plant_id === 42);
+    expect(second?.rarity).toBe(3);
   });
 
   it('returns correct count of discoveries', async () => {
@@ -121,7 +125,7 @@ describe('useNearbyDiscoveries – initial load', () => {
   });
 });
 
-describe('useNearbyDiscoveries – empty results', () => {
+describe('useNearbyDiscoveries empty results', () => {
   it('returns empty array when no nearby discoveries', async () => {
     setupMocks([], []);
     const { result } = renderHook(() => useNearbyDiscoveries());
@@ -131,7 +135,7 @@ describe('useNearbyDiscoveries – empty results', () => {
   });
 });
 
-describe('useNearbyDiscoveries – error handling', () => {
+describe('useNearbyDiscoveries error handling', () => {
   it('sets loading=false on RPC error', async () => {
     setupMocks([], [], new Error('RPC failed'));
     const { result } = renderHook(() => useNearbyDiscoveries());
@@ -147,20 +151,43 @@ describe('useNearbyDiscoveries – error handling', () => {
     expect(result.current.loading).toBe(false);
     expect(result.current.userLocation).toBeNull();
   });
+
+  it('sets loading=false when permission request throws', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    mockRequestPerm.mockRejectedValue(new Error('permissions unavailable'));
+    const { result } = renderHook(() => useNearbyDiscoveries());
+    await act(async () => { await flushPromises(); });
+    expect(result.current.loading).toBe(false);
+    expect(result.current.discoveries).toHaveLength(0);
+    expect(warn).toHaveBeenCalledWith(
+      'useNearbyDiscoveries: failed to load nearby discoveries',
+      expect.any(Error),
+    );
+  });
+
+  it('falls back to default metadata when plant lookup fails', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    setupMocks(MOCK_RPC_ROWS, [], null, new Error('plants failed'));
+    const { result } = renderHook(() => useNearbyDiscoveries());
+    await act(async () => { await flushPromises(); });
+    expect(result.current.loading).toBe(false);
+    expect(result.current.discoveries[0]?.plant_name_ja).toBe('Unknown');
+    expect(result.current.discoveries[0]?.rarity).toBe(1);
+    expect(warn).toHaveBeenCalledWith(
+      'useNearbyDiscoveries: failed to load plant metadata',
+      expect.any(Error),
+    );
+  });
 });
 
-describe('useNearbyDiscoveries – refresh', () => {
+describe('useNearbyDiscoveries refresh', () => {
   it('re-fetches when refresh() is called', async () => {
     setupMocks();
     const { result } = renderHook(() => useNearbyDiscoveries());
     await act(async () => { await flushPromises(); });
     expect(result.current.discoveries).toHaveLength(2);
 
-    // On refresh return only 1
-    setupMocks(
-      [MOCK_RPC_ROWS[0]],
-      [MOCK_PLANTS[0]],
-    );
+    setupMocks([MOCK_RPC_ROWS[0]], [MOCK_PLANTS[0]]);
     act(() => { result.current.refresh(); });
     await act(async () => { await flushPromises(); });
     expect(result.current.discoveries).toHaveLength(1);

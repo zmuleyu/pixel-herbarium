@@ -26,32 +26,45 @@ export function useProfile(): UseProfileReturn {
 
   useEffect(() => {
     if (!user) {
+      setDisplayName('');
+      setQuotaUsed(0);
       setLoading(false);
       return;
     }
 
     let cancelled = false;
+    setLoading(true);
 
     async function load() {
-      const { data } = await (supabase as any)
-        .from('profiles')
-        .select('display_name')
-        .eq('id', user!.id)
-        .single();
+      try {
+        const { data, error } = await (supabase as any)
+          .from('profiles')
+          .select('display_name')
+          .eq('id', user!.id)
+          .single();
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      if (data?.display_name) {
-        setDisplayName(data.display_name);
-      } else {
-        const fullName = user!.user_metadata?.full_name as string | undefined;
-        setDisplayName(fullName ?? (user!.email ?? '').split('@')[0] ?? '');
+        if (!error && data?.display_name) {
+          setDisplayName(data.display_name);
+        } else {
+          const fullName = user!.user_metadata?.full_name as string | undefined;
+          setDisplayName(fullName ?? (user!.email ?? '').split('@')[0] ?? '');
+        }
+
+        const { remaining } = await checkQuota(user!.id);
+        if (cancelled) return;
+        setQuotaUsed(MONTHLY_QUOTA - remaining);
+      } catch (e) {
+        if (!cancelled) {
+          console.warn('useProfile: failed to load', e);
+          const fullName = user!.user_metadata?.full_name as string | undefined;
+          setDisplayName(fullName ?? (user!.email ?? '').split('@')[0] ?? '');
+          setQuotaUsed(0);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-
-      const { remaining } = await checkQuota(user!.id);
-      if (cancelled) return;
-      setQuotaUsed(MONTHLY_QUOTA - remaining);
-      setLoading(false);
     }
 
     load();
@@ -65,16 +78,21 @@ export function useProfile(): UseProfileReturn {
 
   const updateDisplayName = useCallback(async (name: string) => {
     if (!user || !name.trim()) return;
+    const previous = displayName;
     setUpdating(true);
     const trimmed = name.trim();
-    // Optimistic update
     setDisplayName(trimmed);
-    await (supabase as any)
+    const { error } = await (supabase as any)
       .from('profiles')
       .update({ display_name: trimmed, updated_at: new Date().toISOString() })
       .eq('id', user.id);
+    if (error) {
+      setDisplayName(previous);
+      setUpdating(false);
+      throw error;
+    }
     setUpdating(false);
-  }, [user?.id]);
+  }, [displayName, user?.id]);
 
   const email = user?.email ?? '';
   const avatarUrl = (user?.user_metadata?.avatar_url as string | undefined) ?? null;

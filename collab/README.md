@@ -19,6 +19,17 @@
   - reviewer result
   - first real error
   - one direct recommendation
+- `collab/reviews/handoff.md`
+  - current cross-agent workstream state
+  - validation already seen
+  - current blockers or lack of blockers
+  - direct next action
+- `collab/reviews/review.md`
+  - current review outcome for non-build workstreams
+- `collab/ops/collab-writing-log.md`
+  - handoff and review writing quality notes
+- `collab/ops/collab-issues.md`
+  - collaboration mechanism issues, not product bugs
 
 ## Standard Flow
 
@@ -71,6 +82,18 @@ D:\projects\Games\pixel-herbarium\collab\reviews\build-review.md
 ```
 
 When the user asks to sync or notify Claude Code, include this trigger message proactively instead of waiting for a follow-up request.
+
+For generic cross-agent sync:
+
+```text
+Please sync with the latest work in the current workspace.
+
+Read:
+- collab/reviews/handoff.md
+- collab/reviews/review.md
+- PROGRESS.md
+- current uncommitted git diff
+```
 
 ## Constraints
 

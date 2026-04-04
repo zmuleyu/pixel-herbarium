@@ -1,5 +1,5 @@
 // src/app/checkin-wizard.tsx
-// Photo check-in wizard: photo → spot → preview+share
+// Photo check-in wizard: photo -> spot -> preview+share
 // Navigated to from Home CTA. Not a tab route.
 
 import { useState, useRef } from 'react';
@@ -13,8 +13,6 @@ import {
   ActivityIndicator,
   Dimensions,
 } from 'react-native';
-
-const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 import { useTranslation } from 'react-i18next';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
@@ -30,9 +28,17 @@ import type { FlowerSpot, SpotsData, StampStyle, StampPosition, StampTransform }
 import { loadSpotsData } from '@/services/content-pack';
 import { getPreviousVisitYears } from '@/utils/stamp-position';
 
+const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
+
 const SEASON_LABELS: Record<string, string> = {
-  sakura: '春', ajisai: '夏', himawari: '夏', momiji: '秋', tsubaki: '冬',
+  sakura: 'Spring',
+  ajisai: 'Summer',
+  himawari: 'Summer',
+  momiji: 'Autumn',
+  tsubaki: 'Winter',
 };
+
+const FEEDBACK_TIMEOUT_MS = 2000;
 
 function genId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
@@ -59,7 +65,10 @@ export default function CheckinWizardScreen() {
   const spotsData = loadSpotsData(season.id);
   const spots: FlowerSpot[] = spotsData?.spots ?? [];
 
-  // ── Photo step handlers ──────────────────────────────────────────────────
+  function showFeedback(message: string) {
+    setFeedback(message);
+    setTimeout(() => setFeedback(null), FEEDBACK_TIMEOUT_MS);
+  }
 
   async function handlePickCamera() {
     const uri = await pickFromCamera();
@@ -77,21 +86,18 @@ export default function CheckinWizardScreen() {
     }
   }
 
-  // ── Spot step handler ────────────────────────────────────────────────────
-
   function handleSpotSelect(spot: FlowerSpot) {
     setSelectedSpot(spot);
     checkinDate.current = new Date();
     setStep('preview');
   }
 
-  // ── Preview step handlers ────────────────────────────────────────────────
-
   async function handleStampShare(composedUri: string) {
     try {
       await Sharing.shareAsync(composedUri, { mimeType: 'image/png' });
-    } catch {
-      // share cancelled or failed — silent
+    } catch (error) {
+      console.warn('CheckinWizard: share failed', error);
+      showFeedback(t('common.error'));
     }
   }
 
@@ -103,8 +109,7 @@ export default function CheckinWizardScreen() {
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
-        setFeedback(t('stamp.permissionRequired'));
-        setTimeout(() => setFeedback(null), 2000);
+        showFeedback(t('stamp.permissionRequired'));
         return;
       }
       await MediaLibrary.saveToLibraryAsync(composedUri);
@@ -121,9 +126,9 @@ export default function CheckinWizardScreen() {
         stampTransform,
       });
       setShowSuccess(true);
-    } catch {
-      setFeedback(t('checkin.saveError'));
-      setTimeout(() => setFeedback(null), 2000);
+    } catch (error) {
+      console.warn('CheckinWizard: save failed', error);
+      showFeedback(t('checkin.saveError'));
     }
   }
 
@@ -141,105 +146,95 @@ export default function CheckinWizardScreen() {
     }
   }
 
-  // ── Render ───────────────────────────────────────────────────────────────
-
   return (
     <GuideWrapper featureKey="stamp" steps={STAMP_STEPS} overlayVariant="light">
-    <View testID="checkin-wizard.container" style={[styles.container, { backgroundColor: theme.bgTint }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={handleBack}>
-          <Text style={[styles.backText, { color: theme.primary }]}>
-            {step === 'photo' ? `← ${t('common.back')}` : t('common.back')}
+      <View testID="checkin-wizard.container" style={[styles.container, { backgroundColor: theme.bgTint }]}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backBtn} onPress={handleBack}>
+            <Text style={[styles.backText, { color: theme.primary }]}>
+              {step === 'photo' ? `< ${t('common.back')}` : t('common.back')}
+            </Text>
+          </TouchableOpacity>
+
+          <Text style={styles.headerTitle}>
+            {step === 'photo'
+              ? t('checkin.stepPhoto')
+              : step === 'spot'
+                ? t('checkin.stepSpot')
+                : t('checkin.stepPreview')}
           </Text>
-        </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>
-          {step === 'photo'
-            ? t('checkin.stepPhoto')
-            : step === 'spot'
-            ? t('checkin.stepSpot')
-            : t('checkin.stepPreview')}
-        </Text>
-
-        {/* Spacer to balance back button */}
-        <View style={styles.backBtn} />
-      </View>
-
-      {/* ── Step: Photo ── */}
-      {step === 'photo' && (
-        <View style={styles.photoStep}>
-          <Text style={styles.seasonEmoji}>{season.iconEmoji}</Text>
-          <Text style={styles.seasonCta}>{t(`season.${season.id}.cta`)}</Text>
-          <View style={styles.pickButtons}>
-            <TouchableOpacity
-              style={[styles.pickBtn, { backgroundColor: theme.primary }]}
-              onPress={handlePickCamera}
-              disabled={requesting}
-              activeOpacity={0.8}
-            >
-              {requesting ? (
-                <ActivityIndicator color={colors.white} />
-              ) : (
-                <Text style={styles.pickBtnText}>{t('checkin.pickCamera')}</Text>
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.pickBtn, styles.pickBtnOutline, { borderColor: theme.primary }]}
-              onPress={handlePickLibrary}
-              disabled={requesting}
-              activeOpacity={0.8}
-            >
-              <Text style={[styles.pickBtnText, { color: theme.primary }]}>
-                {t('checkin.pickLibrary')}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <View style={styles.backBtn} />
         </View>
-      )}
 
-      {/* ── Step: Spot ── */}
-      {step === 'spot' && <SpotSelector spots={spots} onSelect={handleSpotSelect} />}
+        {step === 'photo' && (
+          <View style={styles.photoStep}>
+            <Text style={styles.seasonEmoji}>{season.iconEmoji}</Text>
+            <Text style={styles.seasonCta}>{t(`season.${season.id}.cta`)}</Text>
+            <View style={styles.pickButtons}>
+              <TouchableOpacity
+                style={[styles.pickBtn, { backgroundColor: theme.primary }]}
+                onPress={handlePickCamera}
+                disabled={requesting}
+                activeOpacity={0.8}
+              >
+                {requesting ? (
+                  <ActivityIndicator color={colors.white} />
+                ) : (
+                  <Text style={styles.pickBtnText}>{t('checkin.pickCamera')}</Text>
+                )}
+              </TouchableOpacity>
 
-      {/* ── Step: Preview ── */}
-      {step === 'preview' && photoUri != null && selectedSpot != null && (
-        <>
-          <StampPreview
-            photoUri={photoUri}
+              <TouchableOpacity
+                style={[styles.pickBtn, styles.pickBtnOutline, { borderColor: theme.primary }]}
+                onPress={handlePickLibrary}
+                disabled={requesting}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.pickBtnText, { color: theme.primary }]}>
+                  {t('checkin.pickLibrary')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {step === 'spot' && <SpotSelector spots={spots} onSelect={handleSpotSelect} />}
+
+        {step === 'preview' && photoUri != null && selectedSpot != null && (
+          <>
+            <StampPreview
+              photoUri={photoUri}
+              spot={selectedSpot}
+              date={checkinDate.current}
+              seasonId={season.id}
+              onSave={handleStampSave}
+              onShare={handleStampShare}
+            />
+            {feedback != null && (
+              <Text style={[styles.feedback, { color: theme.primary }]}>{feedback}</Text>
+            )}
+          </>
+        )}
+
+        {showSuccess && selectedSpot != null && (
+          <CheckinSuccessOverlay
             spot={selectedSpot}
-            date={checkinDate.current}
-            seasonId={season.id}
-            onSave={handleStampSave}
-            onShare={handleStampShare}
+            seasonLabel={`${checkinDate.current.getFullYear()} ${SEASON_LABELS[season.id] ?? ''}`}
+            isRevisit={history.filter((record) => record.spotId === selectedSpot.id).length > 1}
+            checkinCount={new Set(history.map((record) => record.spotId)).size}
+            stampPosition={lastStampPosition}
+            previousVisitYears={getPreviousVisitYears(history, selectedSpot.id, season.id)}
+            onDismiss={() => {
+              setShowSuccess(false);
+              router.replace('/(tabs)/home');
+            }}
           />
-          {feedback != null && (
-            <Text style={[styles.feedback, { color: theme.primary }]}>{feedback}</Text>
-          )}
-        </>
-      )}
-
-      {/* ── Success overlay ── */}
-      {showSuccess && selectedSpot != null && (
-        <CheckinSuccessOverlay
-          spot={selectedSpot}
-          seasonLabel={`${checkinDate.current.getFullYear()} ${SEASON_LABELS[season.id] ?? ''}`}
-          isRevisit={history.filter(r => r.spotId === selectedSpot.id).length > 1}
-          checkinCount={new Set(history.map(r => r.spotId)).size}
-          stampPosition={lastStampPosition}
-          previousVisitYears={getPreviousVisitYears(history, selectedSpot.id, season.id)}
-          onDismiss={() => {
-            setShowSuccess(false);
-            router.replace('/(tabs)/home');
-          }}
-        />
-      )}
-    </View>
+        )}
+      </View>
     </GuideWrapper>
   );
 }
-
-// ── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -265,8 +260,6 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     color: colors.text,
   },
-
-  // ── Photo step
 
   photoStep: {
     flex: 1,
@@ -308,8 +301,6 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     color: colors.white,
   },
-
-  // ── Feedback
 
   feedback: {
     position: 'absolute',

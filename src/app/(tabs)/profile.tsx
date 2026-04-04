@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
@@ -59,12 +60,23 @@ export default function ProfileScreen() {
               autoFocus
               maxLength={30}
               onSubmitEditing={async () => {
-                await updateDisplayName(draft);
-                setEditing(false);
+                try {
+                  await updateDisplayName(draft);
+                  setEditing(false);
+                } catch (e: any) {
+                  Alert.alert(t('common.error'), e.message ?? t('error.loadFailed'));
+                }
               }}
             />
             <TouchableOpacity
-              onPress={async () => { await updateDisplayName(draft); setEditing(false); }}
+              onPress={async () => {
+                try {
+                  await updateDisplayName(draft);
+                  setEditing(false);
+                } catch (e: any) {
+                  Alert.alert(t('common.error'), e.message ?? t('error.loadFailed'));
+                }
+              }}
               disabled={updating || !draft.trim()}
             >
               {updating

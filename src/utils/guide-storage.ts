@@ -4,11 +4,11 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const KEY_PREFIX = 'guide_seen_';
+export const KEY_PREFIX = 'guide_seen_';
 
-const ALL_FEATURE_KEYS = ['discover', 'stamp', 'herbarium', 'map'] as const;
+export const ALL_GUIDE_FEATURE_KEYS = ['discover', 'stamp', 'herbarium', 'map'] as const;
 
-export type GuideFeatureKey = (typeof ALL_FEATURE_KEYS)[number];
+export type GuideFeatureKey = (typeof ALL_GUIDE_FEATURE_KEYS)[number];
 
 /** Remove the seen flag for a single feature so the guide will show again. */
 export async function resetGuide(featureKey: string): Promise<void> {
@@ -17,6 +17,6 @@ export async function resetGuide(featureKey: string): Promise<void> {
 
 /** Remove seen flags for all known features. */
 export async function resetAllGuides(): Promise<void> {
-  const keys = ALL_FEATURE_KEYS.map((k) => `${KEY_PREFIX}${k}`);
+  const keys = ALL_GUIDE_FEATURE_KEYS.map((k) => `${KEY_PREFIX}${k}`);
   await AsyncStorage.multiRemove(keys);
 }

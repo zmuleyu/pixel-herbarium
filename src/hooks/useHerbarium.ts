@@ -36,7 +36,13 @@ export function useHerbarium(userId: string): UseHerbariumReturn {
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setPlants([]);
+      setCollected(new Set());
+      setCollectionMap(new Map());
+      setLoading(false);
+      return;
+    }
 
     let cancelled = false;
     setLoading(true);

@@ -3,8 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { CheckinRecord } from '@/types/hanami';
 import { FEATURES } from '@/constants/features';
 import { DEMO_CHECKIN_RECORDS } from '@/constants/demo-data';
-
-const STORAGE_KEY = 'ph_checkin_history';
+import { CHECKIN_HISTORY_KEY } from '@/utils/app-storage';
 
 interface CheckinStore {
   history: CheckinRecord[];
@@ -12,6 +11,7 @@ interface CheckinStore {
   loadHistory: () => Promise<void>;
   addCheckin: (record: CheckinRecord) => Promise<void>;
   deleteCheckin: (id: string) => Promise<void>;
+  reset: () => Promise<void>;
 }
 
 export const useCheckinStore = create<CheckinStore>((set, get) => ({
@@ -24,7 +24,7 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
     if (FEATURES.SCREENSHOT_MODE) return;
     set({ loading: true });
     try {
-      const raw = await AsyncStorage.getItem(STORAGE_KEY);
+      const raw = await AsyncStorage.getItem(CHECKIN_HISTORY_KEY);
       const history: CheckinRecord[] = raw ? JSON.parse(raw) : [];
       set({ history, loading: false });
     } catch {
@@ -35,12 +35,17 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
   addCheckin: async (record) => {
     const updated = [record, ...get().history];
     set({ history: updated });
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    await AsyncStorage.setItem(CHECKIN_HISTORY_KEY, JSON.stringify(updated));
   },
 
   deleteCheckin: async (id) => {
     const updated = get().history.filter((r) => r.id !== id);
     set({ history: updated });
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    await AsyncStorage.setItem(CHECKIN_HISTORY_KEY, JSON.stringify(updated));
+  },
+
+  reset: async () => {
+    set({ history: FEATURES.SCREENSHOT_MODE ? DEMO_CHECKIN_RECORDS : [] });
+    await AsyncStorage.removeItem(CHECKIN_HISTORY_KEY);
   },
 }));

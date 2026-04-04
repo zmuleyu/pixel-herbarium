@@ -5,9 +5,7 @@
 jest.mock('@/services/supabase', () => ({
   supabase: {
     from: jest.fn(() => ({
-      insert: jest.fn().mockReturnValue({
-        then: jest.fn((cb: any) => { cb?.(); return Promise.resolve(); }),
-      }),
+      insert: jest.fn().mockResolvedValue({ error: null }),
     })),
   },
 }));
@@ -19,6 +17,7 @@ const mockFrom = supabase.from as jest.Mock;
 
 beforeEach(() => {
   mockFrom.mockClear();
+  jest.restoreAllMocks();
 });
 
 describe('trackEvent', () => {
@@ -58,18 +57,34 @@ describe('trackEvent', () => {
     );
   });
 
-  it('does not throw on insert error (fire-and-forget pattern)', () => {
-    // trackEvent is synchronous — it fires and forgets.
-    // Even if insert returns an error payload, trackEvent never awaits it.
+  it('does not throw on insert error payload and logs a warning', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     mockFrom.mockReturnValueOnce({
-      insert: jest.fn().mockReturnValue({
-        then: jest.fn((cb: any) => { cb?.(); return Promise.resolve(); }),
-      }),
+      insert: jest.fn().mockResolvedValue({ error: new Error('insert failed') }),
     });
 
     expect(() => trackEvent('fail_event')).not.toThrow();
-    // Verify insert was still called despite error scenario
-    const chain = mockFrom.mock.results[0].value;
-    expect(chain.insert).toHaveBeenCalled();
+    await Promise.resolve();
+
+    expect(warn).toHaveBeenCalledWith(
+      'trackEvent: failed to persist analytics event',
+      expect.any(Error),
+    );
+  });
+
+  it('does not throw on rejected insert promise and logs a warning', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    mockFrom.mockReturnValueOnce({
+      insert: jest.fn().mockRejectedValue(new Error('network down')),
+    });
+
+    expect(() => trackEvent('reject_event')).not.toThrow();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(warn).toHaveBeenCalledWith(
+      'trackEvent: unexpected analytics failure',
+      expect.any(Error),
+    );
   });
 });

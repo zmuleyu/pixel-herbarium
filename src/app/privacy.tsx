@@ -57,15 +57,19 @@ export default function PrivacyScreen() {
 
   async function toggleMapVisible(value: boolean) {
     if (!user || saving) return;
+    const previous = mapVisible;
     setMapVisible(value);
     setSaving(true);
     try {
-      await (supabase as any)
+      const { error } = await (supabase as any)
         .from('profiles')
         .update({ map_visible: value, updated_at: new Date().toISOString() })
         .eq('id', user.id);
+      if (error) throw error;
     } catch (e) {
+      setMapVisible(previous);
       console.warn('Privacy: toggleMapVisible failed', e);
+      Alert.alert(t('common.error'), t('error.loadFailed'));
     } finally {
       setSaving(false);
     }
@@ -73,15 +77,19 @@ export default function PrivacyScreen() {
 
   async function toggleNotifications(value: boolean) {
     if (!user || saving) return;
+    const previous = notificationsEnabled;
     setNotificationsEnabled(value);
     setSaving(true);
     try {
-      await (supabase as any)
+      const { error } = await (supabase as any)
         .from('profiles')
         .update({ notifications_enabled: value, updated_at: new Date().toISOString() })
         .eq('id', user.id);
+      if (error) throw error;
     } catch (e) {
+      setNotificationsEnabled(previous);
       console.warn('Privacy: toggleNotifications failed', e);
+      Alert.alert(t('common.error'), t('error.loadFailed'));
     } finally {
       setSaving(false);
     }
@@ -91,11 +99,12 @@ export default function PrivacyScreen() {
     if (!user) return;
     setSaving(true);
     try {
-      const { data } = await (supabase as any)
+      const { data, error } = await (supabase as any)
         .from('discoveries')
         .select('created_at, latitude, longitude, plants(name_ja, name_latin, rarity)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
+      if (error) throw error;
 
       const json = JSON.stringify(
         { exported_at: new Date().toISOString(), discoveries: data ?? [] },
@@ -122,11 +131,16 @@ export default function PrivacyScreen() {
           text: t('common.ok'),
           style: 'destructive',
           onPress: async () => {
-            await (supabase as any)
-              .from('profiles')
-              .update({ deletion_requested_at: new Date().toISOString() })
-              .eq('id', user!.id);
-            await signOut();
+            try {
+              const { error } = await (supabase as any)
+                .from('profiles')
+                .update({ deletion_requested_at: new Date().toISOString() })
+                .eq('id', user!.id);
+              if (error) throw error;
+              await signOut();
+            } catch (e: any) {
+              Alert.alert(t('common.error'), e.message ?? t('error.loadFailed'));
+            }
           },
         },
       ],

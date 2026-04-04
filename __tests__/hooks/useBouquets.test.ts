@@ -75,17 +75,17 @@ function makePlantBatchQuery(data: any[]) {
 }
 
 /** bouquets.insert() resolves */
-function makeInsertQuery() {
+function makeInsertQuery(error: any = null) {
   return {
-    insert: jest.fn().mockResolvedValue({ data: null, error: null }),
+    insert: jest.fn().mockResolvedValue({ data: null, error }),
   };
 }
 
 /** bouquets.update().eq() resolves */
-function makeUpdateQuery() {
+function makeUpdateQuery(error: any = null) {
   return {
     update: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockResolvedValue({ data: null, error: null }),
+    eq: jest.fn().mockResolvedValue({ data: null, error }),
   };
 }
 
@@ -353,5 +353,27 @@ describe('useBouquets – mutations', () => {
 
     expect(expiresMs).toBeGreaterThanOrEqual(before + sevenDaysMs - 1000);
     expect(expiresMs).toBeLessThanOrEqual(after + sevenDaysMs + 1000);
+  });
+
+  it('acceptBouquet rejects and does not refetch on update error', async () => {
+    setupLoad();
+    const { result } = renderHook(() => useBouquets('user-1'));
+    await act(async () => { await flushPromises(); });
+
+    mockFrom.mockReturnValueOnce(makeUpdateQuery({ message: 'update failed' }));
+
+    await expect(result.current.acceptBouquet('b-1')).rejects.toEqual({ message: 'update failed' });
+    expect(mockFrom).toHaveBeenCalledTimes(2);
+  });
+
+  it('sendBouquet rejects and does not refetch on insert error', async () => {
+    setupLoad();
+    const { result } = renderHook(() => useBouquets('user-1'));
+    await act(async () => { await flushPromises(); });
+
+    mockFrom.mockReturnValueOnce(makeInsertQuery({ message: 'insert failed' }));
+
+    await expect(result.current.sendBouquet('user-2', [1, 2, 3], 'hello')).rejects.toEqual({ message: 'insert failed' });
+    expect(mockFrom).toHaveBeenCalledTimes(2);
   });
 });

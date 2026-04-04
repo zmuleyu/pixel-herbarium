@@ -87,6 +87,26 @@ export function ShareSheet({ visible, onClose, plant, discoveryDate, discoveryCi
     });
   }
 
+  function showFeedback(message: string) {
+    setFeedback(message);
+    setTimeout(() => setFeedback(null), 2000);
+  }
+
+  async function recordShare(channel: 'line' | 'other', deepLink: string): Promise<void> {
+    if (!plantId) return;
+    try {
+      const { error } = await supabase.from('share_records').insert({
+        share_type: 'plant',
+        content_id: plantId,
+        channel,
+        deep_link: deepLink,
+      });
+      if (error) throw error;
+    } catch (e) {
+      console.warn('ShareSheet: failed to record share', e);
+    }
+  }
+
   async function handleSave() {
     if (saving) return;
     setSaving(true);
@@ -99,10 +119,10 @@ export function ShareSheet({ visible, onClose, plant, discoveryDate, discoveryCi
       const ref = selected === 'story' ? storyRef : lineRef;
       const uri = await captureRef(ref, { format: 'png', quality: 1 });
       await MediaLibrary.saveToLibraryAsync(uri);
-      setFeedback(t('share.saved'));
-      setTimeout(() => setFeedback(null), 2000);
-    } catch {
-      // Save failed — silent
+      showFeedback(t('share.saved'));
+    } catch (e) {
+      console.warn('ShareSheet: save failed', e);
+      showFeedback(t('common.error'));
     } finally {
       setSaving(false);
     }
@@ -115,8 +135,9 @@ export function ShareSheet({ visible, onClose, plant, discoveryDate, discoveryCi
       const ref = selected === 'story' ? storyRef : lineRef;
       const uri = await captureRef(ref);
       await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: plant.name_ja });
-    } catch {
-      // Share cancelled or failed — silent
+    } catch (e) {
+      console.warn('ShareSheet: share failed', e);
+      showFeedback(t('common.error'));
     } finally {
       setSharing(false);
     }
@@ -138,14 +159,8 @@ export function ShareSheet({ visible, onClose, plant, discoveryDate, discoveryCi
       const canOpenLine = await Linking.canOpenURL(lineUrl);
       if (canOpenLine) {
         await Linking.openURL(lineUrl);
-        // Fire-and-forget share record
         if (plantId) {
-          supabase.from('share_records').insert({
-            share_type: 'plant',
-            content_id: plantId,
-            channel: 'line',
-            deep_link: webDeepLink ?? '',
-          }).then(() => {});
+          await recordShare('line', webDeepLink ?? '');
           trackEvent('line_share', { plant_id: plantId, channel: 'line' });
         }
         return;
@@ -155,15 +170,12 @@ export function ShareSheet({ visible, onClose, plant, discoveryDate, discoveryCi
       const uri = await captureRef(lineRef);
       await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: plant.name_ja });
       if (plantId) {
-        supabase.from('share_records').insert({
-          share_type: 'plant',
-          content_id: plantId,
-          channel: 'other',
-          deep_link: webDeepLink ?? '',
-        }).then(() => {});
+        await recordShare('other', webDeepLink ?? '');
       }
-    } catch {
-      // Cancelled or failed — silent
+      showFeedback(t('share.share'));
+    } catch (e) {
+      console.warn('ShareSheet: LINE share failed', e);
+      showFeedback(t('common.error'));
     } finally {
       setSharingLine(false);
     }

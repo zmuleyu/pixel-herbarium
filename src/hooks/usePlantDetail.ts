@@ -39,7 +39,13 @@ export function usePlantDetail(plantId: number, userId: string): UsePlantDetailR
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!plantId || !userId) return;
+    if (!plantId) {
+      setPlant(null);
+      setDiscoveries([]);
+      setError(null);
+      setLoading(false);
+      return;
+    }
 
     let cancelled = false;
     setLoading(true);
@@ -47,21 +53,22 @@ export function usePlantDetail(plantId: number, userId: string): UsePlantDetailR
 
     async function load() {
       try {
-        const [plantRes, discRes] = await Promise.all([
-          (supabase as any)
-            .from('plants')
-            .select(
-              'id, name_ja, name_en, name_latin, rarity, hanakotoba, flower_meaning, color_meaning, bloom_months, prefectures, pixel_sprite_url, available_window',
-            )
-            .eq('id', plantId)
-            .single(),
-          (supabase as any)
-            .from('discoveries')
-            .select('id, created_at, pixel_url, user_note, city')
-            .eq('user_id', userId)
-            .eq('plant_id', plantId)
-            .order('created_at', { ascending: false }),
-        ]);
+        const plantPromise = (supabase as any)
+          .from('plants')
+          .select(
+            'id, name_ja, name_en, name_latin, rarity, hanakotoba, flower_meaning, color_meaning, bloom_months, prefectures, pixel_sprite_url, available_window',
+          )
+          .eq('id', plantId)
+          .single();
+        const discoveryPromise = userId
+          ? (supabase as any)
+              .from('discoveries')
+              .select('id, created_at, pixel_url, user_note, city')
+              .eq('user_id', userId)
+              .eq('plant_id', plantId)
+              .order('created_at', { ascending: false })
+          : Promise.resolve({ data: [], error: null });
+        const [plantRes, discRes] = await Promise.all([plantPromise, discoveryPromise]);
 
         if (cancelled) return;
 
@@ -85,14 +92,18 @@ export function usePlantDetail(plantId: number, userId: string): UsePlantDetailR
 
   async function updateNote(discoveryId: string, note: string) {
     const trimmed = note.trim();
-    await (supabase as any)
-      .from('discoveries')
-      .update({ user_note: trimmed || null })
-      .eq('id', discoveryId);
-    // Optimistically update local state
+    const previousDiscoveries = discoveries;
     setDiscoveries((prev) =>
       prev.map((d) => d.id === discoveryId ? { ...d, user_note: trimmed || null } : d)
     );
+    const { error } = await (supabase as any)
+      .from('discoveries')
+      .update({ user_note: trimmed || null })
+      .eq('id', discoveryId);
+    if (error) {
+      setDiscoveries(previousDiscoveries);
+      throw error;
+    }
   }
 
   return { plant, discoveries, loading, error, updateNote };

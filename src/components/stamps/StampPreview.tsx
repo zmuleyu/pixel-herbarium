@@ -16,13 +16,14 @@ import { StampRenderer } from './StampRenderer';
 import type { FlowerSpot, StampStyleId, StampTransform, CustomOptions } from '@/types/hanami';
 import { DEFAULT_CUSTOM_OPTIONS } from '@/types/hanami';
 import { STAMP_STYLE_MIGRATION, DEFAULT_STAMP_STYLE_ID } from '@/constants/stamp-styles';
+import {
+  STAMP_CUSTOM_COLOR_KEY,
+  STAMP_DECORATION_KEY,
+  STAMP_EFFECT_TYPE_KEY,
+  STAMP_TEXT_MODE_KEY,
+} from '@/utils/app-storage';
 
 const { width: SCREEN_W } = Dimensions.get('window');
-
-const CUSTOM_COLOR_KEY    = 'stamp_custom_color_preference';
-const EFFECT_TYPE_KEY     = 'stamp_effect_type_preference';
-const TEXT_MODE_KEY       = 'stamp_text_mode_preference';
-const DECORATION_KEY      = 'stamp_decoration_key_preference';
 
 const VALID_STYLE_IDS: string[] = ['classic', 'relief', 'postcard', 'medallion', 'window', 'minimal'];
 
@@ -49,6 +50,7 @@ export function StampPreview({
   const [isCapturing, setIsCapturing] = useState(false);
   const [photoContainerSize, setPhotoContainerSize] = useState({ width: 0, height: 0 });
   const [pendingUri, setPendingUri] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
 
   // Restore preferences
   useEffect(() => {
@@ -58,10 +60,10 @@ export function StampPreview({
         savedColor, savedEffect, savedTextMode, savedDecoration,
       ] = await Promise.all([
         AsyncStorage.getItem(stampConst.storageKey),
-        AsyncStorage.getItem(CUSTOM_COLOR_KEY),
-        AsyncStorage.getItem(EFFECT_TYPE_KEY),
-        AsyncStorage.getItem(TEXT_MODE_KEY),
-        AsyncStorage.getItem(DECORATION_KEY),
+        AsyncStorage.getItem(STAMP_CUSTOM_COLOR_KEY),
+        AsyncStorage.getItem(STAMP_EFFECT_TYPE_KEY),
+        AsyncStorage.getItem(STAMP_TEXT_MODE_KEY),
+        AsyncStorage.getItem(STAMP_DECORATION_KEY),
       ]);
       if (savedStyle) {
         const migrated = STAMP_STYLE_MIGRATION[savedStyle] ?? savedStyle;
@@ -98,16 +100,16 @@ export function StampPreview({
       const next = { ...prev, ...patch };
       // Persist relevant keys (not customTextValue)
       if ('customColor' in patch) {
-        AsyncStorage.setItem(CUSTOM_COLOR_KEY, next.customColor ?? 'undefined');
+        AsyncStorage.setItem(STAMP_CUSTOM_COLOR_KEY, next.customColor ?? 'undefined');
       }
       if ('effectType' in patch) {
-        AsyncStorage.setItem(EFFECT_TYPE_KEY, next.effectType);
+        AsyncStorage.setItem(STAMP_EFFECT_TYPE_KEY, next.effectType);
       }
       if ('textMode' in patch) {
-        AsyncStorage.setItem(TEXT_MODE_KEY, next.textMode);
+        AsyncStorage.setItem(STAMP_TEXT_MODE_KEY, next.textMode);
       }
       if ('decorationKey' in patch) {
-        AsyncStorage.setItem(DECORATION_KEY, next.decorationKey);
+        AsyncStorage.setItem(STAMP_DECORATION_KEY, next.decorationKey);
       }
       return next;
     });
@@ -123,8 +125,10 @@ export function StampPreview({
       setIsCapturing(false);
       // Trigger animation instead of saving immediately
       setPendingUri(composedUri);
-    } catch {
+    } catch (e) {
+      console.warn('StampPreview: capture failed', e);
       setIsCapturing(false);
+      setFeedback(t('common.error'));
       setBusy(false);
     }
   }, [busy, stampStyle, currentTransform]);
@@ -204,6 +208,10 @@ export function StampPreview({
         )}
       </View>
 
+      {feedback ? (
+        <Text style={styles.feedbackText}>{feedback}</Text>
+      ) : null}
+
       {/* Controls */}
       <View style={styles.controls}>
         <StyleSelector
@@ -251,6 +259,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     gap: spacing.sm,
+  },
+  feedbackText: {
+    color: colors.textSecondary,
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: spacing.xs,
   },
   // CTA
   cta: {

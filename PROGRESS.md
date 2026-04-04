@@ -1,5 +1,5 @@
 # Progress — pixel-herbarium [AHB]
-Updated: 2026-04-01
+Updated: 2026-04-02
 
 ## 当前阶段
 v1.1.0 build 5 打包中（GHA run #23828426088，2026-04-01 触发）→ 等待 ASC 上传完成后填写 Demo Account 提交审核
@@ -48,3 +48,8 @@ v1.1.0 build 5 打包中（GHA run #23828426088，2026-04-01 触发）→ 等待
 - [x] 788→790 tests，104 suites · iOS 构建迁移 GHA 原生 xcodebuild
 - [x] GHA 截图管线修复 + ASC 4 张截图上传
 - [x] DB migration 026/027/028 推送生产
+## Sync Updates
+
+- [x] Agent sync protocol upgraded on 2026-04-02; Claude/Codex handoff now relies on `collab/reviews/build-handoff.md` + `collab/reviews/build-review.md` and current git diff
+- [x] Collab sync toolkit v2 added on 2026-04-02; repo-local Claude commands and Codex task index now route to `collab/reviews/handoff.md` + `collab/reviews/review.md`
+- [x] Claude Code old/new account continuity documented on 2026-04-04; repo-local source of truth and trigger files are aligned with the `D:\tools` collab pattern, with `docs/dev/claude-code-account-continuity.md` capturing `claude-code-connect-kit` desktop-boundary findings

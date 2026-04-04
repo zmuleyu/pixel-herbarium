@@ -6,8 +6,7 @@ import { loadSpotsData, getActiveRegion } from '@/services/content-pack';
 import { getBloomStatus } from '@/utils/bloom';
 import type { FlowerSpot } from '@/types/hanami';
 import type { SpotCheckinResult, OfflineCheckinItem } from '@/types/spot';
-
-const OFFLINE_QUEUE_KEY = 'ph_spot_checkin_queue';
+import { SPOT_OFFLINE_QUEUE_KEY } from '@/utils/app-storage';
 
 interface SpotStore {
   spots:    FlowerSpot[];
@@ -72,10 +71,10 @@ export const useSpotStore = create<SpotStore>((set, get) => ({
       return { isNew: is_new_row, isMankai: isPeak };
     } catch {
       // Offline: enqueue for later
-      const raw = await AsyncStorage.getItem(OFFLINE_QUEUE_KEY);
+      const raw = await AsyncStorage.getItem(SPOT_OFFLINE_QUEUE_KEY);
       const queue: OfflineCheckinItem[] = raw ? JSON.parse(raw) : [];
       queue.push({ spot_id: spotId, is_peak: isPeak, bloom_status: status, queued_at: new Date().toISOString() });
-      await AsyncStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+      await AsyncStorage.setItem(SPOT_OFFLINE_QUEUE_KEY, JSON.stringify(queue));
       throw new Error('offline');
     }
   },
@@ -88,7 +87,7 @@ export const useSpotStore = create<SpotStore>((set, get) => ({
   }),
 
   flushOfflineQueue: async () => {
-    const raw = await AsyncStorage.getItem(OFFLINE_QUEUE_KEY);
+    const raw = await AsyncStorage.getItem(SPOT_OFFLINE_QUEUE_KEY);
     if (!raw) return;
     const queue: OfflineCheckinItem[] = JSON.parse(raw);
     const failed: OfflineCheckinItem[] = [];
@@ -110,9 +109,9 @@ export const useSpotStore = create<SpotStore>((set, get) => ({
     }
 
     if (failed.length === 0) {
-      await AsyncStorage.removeItem(OFFLINE_QUEUE_KEY);
+      await AsyncStorage.removeItem(SPOT_OFFLINE_QUEUE_KEY);
     } else {
-      await AsyncStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(failed));
+      await AsyncStorage.setItem(SPOT_OFFLINE_QUEUE_KEY, JSON.stringify(failed));
     }
   },
 }));

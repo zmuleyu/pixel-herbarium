@@ -108,7 +108,7 @@ export function useBouquets(userId: string): UseBouquetsReturn {
   ) => {
     const expires = new Date();
     expires.setDate(expires.getDate() + 7);
-    await (supabase as any).from('bouquets').insert({
+    const { error } = await (supabase as any).from('bouquets').insert({
       sender_id: userId,
       receiver_id: receiverId,
       plant_ids: plantIds,
@@ -116,16 +116,19 @@ export function useBouquets(userId: string): UseBouquetsReturn {
       status: 'pending',
       expires_at: expires.toISOString(),
     });
+    if (error) throw error;
     setTick((t) => t + 1);
   }, [userId]);
 
   const acceptBouquet = useCallback(async (bouquetId: string) => {
-    await (supabase as any).from('bouquets').update({ status: 'accepted' }).eq('id', bouquetId);
+    const { error } = await (supabase as any).from('bouquets').update({ status: 'accepted' }).eq('id', bouquetId);
+    if (error) throw error;
     setTick((t) => t + 1);
   }, []);
 
   const declineBouquet = useCallback(async (bouquetId: string) => {
-    await (supabase as any).from('bouquets').update({ status: 'declined' }).eq('id', bouquetId);
+    const { error } = await (supabase as any).from('bouquets').update({ status: 'declined' }).eq('id', bouquetId);
+    if (error) throw error;
     setTick((t) => t + 1);
   }, []);
 

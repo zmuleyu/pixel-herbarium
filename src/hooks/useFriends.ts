@@ -115,25 +115,28 @@ export function useFriends(userId: string): UseFriendsReturn {
   }, [userId]);
 
   const sendRequest = useCallback(async (addresseeId: string) => {
-    await (supabase as any)
+    const { error } = await (supabase as any)
       .from('friendships')
       .insert({ requester_id: userId, addressee_id: addresseeId, status: 'pending' });
+    if (error) throw error;
     setTick((t) => t + 1);
   }, [userId]);
 
   const acceptRequest = useCallback(async (friendshipId: string) => {
-    await (supabase as any)
+    const { error } = await (supabase as any)
       .from('friendships')
       .update({ status: 'accepted' })
       .eq('id', friendshipId);
+    if (error) throw error;
     setTick((t) => t + 1);
   }, []);
 
   const declineRequest = useCallback(async (friendshipId: string) => {
-    await (supabase as any)
+    const { error } = await (supabase as any)
       .from('friendships')
       .update({ status: 'rejected' })
       .eq('id', friendshipId);
+    if (error) throw error;
     setTick((t) => t + 1);
   }, []);
 

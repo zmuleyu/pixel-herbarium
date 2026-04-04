@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -36,6 +36,7 @@ export function GestureStampOverlay({
   onTransformChange,
 }: Props) {
   const STAMP_SIZE = 80; // approximate stamp width/height for boundary calcs
+  const hasInitialized = useRef(false);
 
   // Initial position: lower-right, clearly inside photo area
   const initX = containerWidth > 0 ? containerWidth - STAMP_SIZE - 16 : 0;
@@ -45,6 +46,34 @@ export function GestureStampOverlay({
   const translateY = useSharedValue(initY);
   const scale = useSharedValue(1.0);
   const rotation = useSharedValue(0);
+
+  useEffect(() => {
+    if (hasInitialized.current || staticTransform) return;
+    if (containerWidth <= 0 || containerHeight <= 0) return;
+
+    translateX.value = initX;
+    translateY.value = initY;
+    scale.value = 1;
+    rotation.value = 0;
+    hasInitialized.current = true;
+    onTransformChange?.({
+      x: initX,
+      y: initY,
+      scale: 1,
+      rotation: 0,
+    });
+  }, [
+    containerHeight,
+    containerWidth,
+    initX,
+    initY,
+    onTransformChange,
+    rotation,
+    scale,
+    staticTransform,
+    translateX,
+    translateY,
+  ]);
 
   // Pan gesture — drag freely within container bounds
   const panGesture = Gesture.Pan()

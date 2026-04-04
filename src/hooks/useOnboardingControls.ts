@@ -11,8 +11,8 @@ import {
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
-
-export const ONBOARDING_KEY = 'onboarding_done_v1';
+import { ONBOARDING_KEY } from '@/utils/app-storage';
+export { ONBOARDING_KEY } from '@/utils/app-storage';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 

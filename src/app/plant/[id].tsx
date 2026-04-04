@@ -237,6 +237,7 @@ export default function PlantDetailScreen() {
         }}
         discoveryDate={discoveries[0]?.created_at}
         discoveryCity={discoveries[0]?.city ?? undefined}
+        plantId={String(plant.id)}
       />
     </ScrollView>
   );

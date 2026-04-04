@@ -13,13 +13,13 @@ import { useTranslation } from 'react-i18next';
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setLanguage } from '@/i18n';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCheckinStore } from '@/stores/checkin-store';
 import { supabase } from '@/services/supabase';
 import { colors, typography, spacing, borderRadius, getSeasonTheme } from '@/constants/theme';
 import { getActiveSeason } from '@/constants/seasons';
+import { clearAppStorage } from '@/utils/app-storage';
 
 const LANGUAGES = [
   { code: 'ja' as const, label: '日本語' },
@@ -66,9 +66,13 @@ export default function SettingsTabScreen() {
         text: t('common.ok'),
         style: 'destructive',
         onPress: async () => {
-          useCheckinStore.setState({ history: [] });
-          await AsyncStorage.clear();
-          Alert.alert('', t('settings.deleteDataDone'));
+          try {
+            await useCheckinStore.getState().reset();
+            await clearAppStorage();
+            Alert.alert('', t('settings.deleteDataDone'));
+          } catch (e: any) {
+            Alert.alert(t('common.error'), e.message ?? t('error.loadFailed'));
+          }
         },
       },
     ]);
@@ -101,8 +105,8 @@ export default function SettingsTabScreen() {
             try {
               const { error } = await supabase.functions.invoke('delete-account');
               if (error) throw error;
-              useCheckinStore.setState({ history: [] });
-              await AsyncStorage.clear();
+              await useCheckinStore.getState().reset();
+              await clearAppStorage();
               await supabase.auth.signOut();
               router.replace('/(tabs)/home' as any);
             } catch (e: any) {

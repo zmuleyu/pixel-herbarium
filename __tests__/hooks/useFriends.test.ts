@@ -67,17 +67,17 @@ function makeSearchQuery(data: any[]) {
 }
 
 /** friendships.insert() resolves */
-function makeInsertQuery() {
+function makeInsertQuery(error: any = null) {
   return {
-    insert: jest.fn().mockResolvedValue({ data: null, error: null }),
+    insert: jest.fn().mockResolvedValue({ data: null, error }),
   };
 }
 
 /** friendships.update().eq() resolves */
-function makeUpdateQuery() {
+function makeUpdateQuery(error: any = null) {
   return {
     update: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockResolvedValue({ data: null, error: null }),
+    eq: jest.fn().mockResolvedValue({ data: null, error }),
   };
 }
 
@@ -281,5 +281,29 @@ describe('useFriends – mutations', () => {
     });
 
     expect(result.current.loading).toBe(false);
+  });
+
+  it('sendRequest rejects and does not refetch when insert returns error', async () => {
+    mockFrom
+      .mockReturnValueOnce(makeFriendshipQuery([]))
+      .mockReturnValueOnce(makeInsertQuery({ message: 'insert failed' }));
+
+    const { result } = renderHook(() => useFriends('user-1'));
+    await act(async () => { await flushPromises(); });
+
+    await expect(result.current.sendRequest('user-2')).rejects.toEqual({ message: 'insert failed' });
+    expect(mockFrom).toHaveBeenCalledTimes(2);
+  });
+
+  it('acceptRequest rejects and does not refetch when update returns error', async () => {
+    mockFrom
+      .mockReturnValueOnce(makeFriendshipQuery([]))
+      .mockReturnValueOnce(makeUpdateQuery({ message: 'update failed' }));
+
+    const { result } = renderHook(() => useFriends('user-1'));
+    await act(async () => { await flushPromises(); });
+
+    await expect(result.current.acceptRequest('f-1')).rejects.toEqual({ message: 'update failed' });
+    expect(mockFrom).toHaveBeenCalledTimes(2);
   });
 });

@@ -6,7 +6,7 @@ import { supabase } from '@/services/supabase';
 import { useAuthStore } from '@/stores/auth-store';
 
 // Registers the device's Expo push token with Supabase on sign-in.
-// Safe to call repeatedly — upsert prevents duplicates.
+// Safe to call repeatedly because upsert prevents duplicates.
 export function usePushToken() {
   const { user } = useAuthStore();
 
@@ -34,13 +34,15 @@ async function registerToken(userId: string) {
     });
     const token = tokenResult.data;
 
-    await (supabase as any)
+    const { error } = await (supabase as any)
       .from('push_tokens')
       .upsert(
         { user_id: userId, token, platform: Platform.OS, updated_at: new Date().toISOString() },
         { onConflict: 'user_id,token' },
       );
-  } catch {
-    // Push token registration is non-critical — swallow errors silently
+    if (error) throw error;
+  } catch (e) {
+    // Push token registration is non-critical.
+    console.warn('usePushToken: failed to register token', e);
   }
 }

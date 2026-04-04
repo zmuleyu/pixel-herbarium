@@ -10,6 +10,7 @@ import {
   Modal,
   ScrollView,
   Platform,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -91,9 +92,13 @@ function FriendsPanel({ friends, userId, onVisit }: {
   }
 
   async function handleSend(profile: Profile) {
-    await friends.sendRequest(profile.id);
-    setQuery('');
-    friends.searchUsers('');
+    try {
+      await friends.sendRequest(profile.id);
+      setQuery('');
+      friends.searchUsers('');
+    } catch (e: any) {
+      Alert.alert(t('common.error'), e.message ?? t('error.loadFailed'));
+    }
   }
 
   const sentIds = new Set(friends.pendingSent.map((f) => f.addressee_id));
@@ -140,10 +145,28 @@ function FriendsPanel({ friends, userId, onVisit }: {
             <View key={f.id} style={styles.row}>
               <AvatarCircle seed={f.friend.avatar_seed} name={f.friend.display_name} size={40} />
               <Text style={[styles.rowText, { flex: 1 }]}>{f.friend.display_name}</Text>
-              <TouchableOpacity style={styles.smallBtn} onPress={() => friends.acceptRequest(f.id)}>
+              <TouchableOpacity
+                style={styles.smallBtn}
+                onPress={async () => {
+                  try {
+                    await friends.acceptRequest(f.id);
+                  } catch (e: any) {
+                    Alert.alert(t('common.error'), e.message ?? t('error.loadFailed'));
+                  }
+                }}
+              >
                 <Text style={styles.smallBtnText}>{t('social.accept')}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.smallBtn, styles.smallBtnSecondary]} onPress={() => friends.declineRequest(f.id)}>
+              <TouchableOpacity
+                style={[styles.smallBtn, styles.smallBtnSecondary]}
+                onPress={async () => {
+                  try {
+                    await friends.declineRequest(f.id);
+                  } catch (e: any) {
+                    Alert.alert(t('common.error'), e.message ?? t('error.loadFailed'));
+                  }
+                }}
+              >
                 <Text style={[styles.smallBtnText, styles.smallBtnTextSecondary]}>{t('social.decline')}</Text>
               </TouchableOpacity>
             </View>
@@ -190,7 +213,25 @@ function BouquetsPanel({ bouquets, userId, friends }: {
         <>
           <Text style={styles.sectionTitle}>{t('social.inboxTitle')}</Text>
           {bouquets.inbox.map((b) => (
-            <BouquetCard key={b.id} bouquet={b} isReceiver onAccept={() => bouquets.acceptBouquet(b.id)} onDecline={() => bouquets.declineBouquet(b.id)} />
+            <BouquetCard
+              key={b.id}
+              bouquet={b}
+              isReceiver
+              onAccept={async () => {
+                try {
+                  await bouquets.acceptBouquet(b.id);
+                } catch (e: any) {
+                  Alert.alert(t('common.error'), e.message ?? t('error.loadFailed'));
+                }
+              }}
+              onDecline={async () => {
+                try {
+                  await bouquets.declineBouquet(b.id);
+                } catch (e: any) {
+                  Alert.alert(t('common.error'), e.message ?? t('error.loadFailed'));
+                }
+              }}
+            />
           ))}
         </>
       )}
@@ -212,8 +253,13 @@ function BouquetsPanel({ bouquets, userId, friends }: {
         friends={friends}
         userId={userId}
         onSend={async (receiverId, plantIds, message) => {
-          await bouquets.sendBouquet(receiverId, plantIds, message);
-          setShowCompose(false);
+          try {
+            await bouquets.sendBouquet(receiverId, plantIds, message);
+            setShowCompose(false);
+          } catch (e: any) {
+            Alert.alert(t('common.error'), e.message ?? t('error.loadFailed'));
+            throw e;
+          }
         }}
         onClose={() => setShowCompose(false)}
       />
