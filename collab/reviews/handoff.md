@@ -157,6 +157,6 @@ Please re-verify:
 If approved, update collab/reviews/review.md status to `approved_with_notes`.
 
 ### Queue
-- next_action: Claude confirms the top-edge audit extension scope in repo files; after confirmation, Codex patches confirmed candidate pages, reruns `npm run typecheck` and `npm test`, then requests a final Claude confirmation that the same rejection class is covered before build 6 proceeds
+- next_action: Codex patches the 4 confirmed candidate tab pages (footprint, herbarium, map, profile) with `useSafeAreaInsets()`, reruns `npm run typecheck` and `npm test`, then requests a final Claude sign-off before EAS Build 6 triggers
 - do_not_touch: auth logic, Supabase config, native entitlements
 - sync_trigger: use D:\tools\scripts\collab-sync-message.ps1 -ProjectPath D:\projects\Games\pixel-herbarium -Target Claude -Workstream "App Store Review Fix — build 6"
