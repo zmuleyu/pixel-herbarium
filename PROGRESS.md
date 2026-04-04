@@ -14,8 +14,10 @@ v1.1.0 build 5 打包中（GHA run #23828426088，2026-04-01 触发）→ 等待
 - [x] Resolution Center 回复修改说明 ✅（4项修复 1741字回复已发送，2026-04-01）
 - [x] 提交审核 ✅
 
-## 待办（等待审核中）
-- [ ] 等待 Apple 重新审核结果（build 5 已提交，2026-04-01）
+## 待办（build 6 准备）
+- [ ] 触发 EAS Build 6（Claude sign-off 完成，2026-04-04）
+- [ ] 等待 ASC 处理 build 6 → 切换 build（5 → 6）→ 重新提交审核
+- [ ] 等待 Apple 重新审核结果（build 6）
 
 ## 待办（审核通过后）
 - [ ] 更新 rejection-playbook.md 历史记录"结果"列为"审核通过"

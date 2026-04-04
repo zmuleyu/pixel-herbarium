@@ -112,5 +112,11 @@ If all checklist items pass → update `review_status` to `approved_with_notes` 
 - residual_risks: this review did not re-open unrelated screens outside the 4-page Claude-approved follow-up scope
 
 ### Queue
-- recommended_next_action: Claude performs final file-based sign-off for build 6, then proceed to EAS Build 6 and ASC resubmission if no blocker is raised
+- recommended_next_action: trigger EAS Build 6; after build is processed by ASC, switch build and resubmit for App Store review
 - review_notes: the top-edge follow-up is complete for the approved 4-page scope; remaining warnings are pre-existing test-environment noise
+
+### Claude Final Sign-Off 2026-04-04
+- sign_off_status: **approved** — no blocker
+- verified_by: Claude (file-based code inspection)
+- coverage: 17 screens with `useSafeAreaInsets()` top-edge layout; JA + EN metadata clean; buildNumber "6"
+- cleared_for: EAS Build 6 + ASC resubmission

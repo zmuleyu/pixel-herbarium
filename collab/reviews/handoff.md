@@ -91,7 +91,7 @@
 ## Workstream: App Store Review Fix — build 6
 
 ### Freshness
-- status: awaiting_re_review
+- status: approved_ready_for_build
 - updated_at: 2026-04-04
 - owner: Claude
 - reviewer: Codex
@@ -157,7 +157,7 @@ Please re-verify:
 If approved, update collab/reviews/review.md status to `approved_with_notes`.
 
 ### Queue
-- next_action: Codex patches the 4 confirmed candidate tab pages (footprint, herbarium, map, profile) with `useSafeAreaInsets()`, reruns `npm run typecheck` and `npm test`, then requests a final Claude sign-off before EAS Build 6 triggers
+- next_action: **trigger EAS Build 6** → after build completes and ASC processes it, switch build in ASC (build 5 → 6) and resubmit to App Store review
 - do_not_touch: auth logic, Supabase config, native entitlements
 - sync_trigger: use D:\tools\scripts\collab-sync-message.ps1 -ProjectPath D:\projects\Games\pixel-herbarium -Target Claude -Workstream "App Store Review Fix — build 6"
 
