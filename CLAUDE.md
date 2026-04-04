@@ -68,8 +68,18 @@ Research materials are in `docs/research/` (competitor, market, platform, data, 
 ## Agent Collaboration
 
 - Default collaboration flow is file-based, not chat-based.
+- Generic cross-agent source of truth lives in:
+  - `collab/reviews/handoff.md`
+  - `collab/reviews/review.md`
+  - `collab/ops/collab-writing-log.md`
+  - `collab/ops/collab-issues.md`
 - Handoffs must be written to `collab/reviews/build-handoff.md` before another agent continues build or release work.
 - Reviews must be written to `collab/reviews/build-review.md`.
+- When resuming non-build work, read these first:
+  - `collab/reviews/handoff.md`
+  - `collab/reviews/review.md`
+  - `PROGRESS.md`
+  - current git diff
 - For build work:
   - Codex owns build, signing, workflow, and release execution.
   - Claude Code follows the active handoff file and records review findings in the review file.
@@ -82,6 +92,14 @@ Research materials are in `docs/research/` (competitor, market, platform, data, 
   - handle only the first real error per round
   - download diagnostics before deciding the fix
   - keep output compressed to conclusion, run id/sha, first error, and next step
+- For Claude Code old/new account continuity work:
+  - keep the repo handoff files as the only durable source of truth across account switches
+  - use `docs/dev/claude-code-account-continuity.md` for project-local constraints and findings
+  - treat `D:\tools\claude-code-connect-kit` as a desktop/local bridge reference, not a mobile-app auth pattern
+  - do not read or expose Claude credential contents inside the React Native app
 - When the user asks to sync or notify Claude Code, proactively include the standard trigger message pointing to:
-  - `collab/reviews/build-handoff.md`
-  - `collab/reviews/build-review.md`
+  - `collab/reviews/handoff.md`
+  - `collab/reviews/review.md`
+  - for build or release work, also include:
+    - `collab/reviews/build-handoff.md`
+    - `collab/reviews/build-review.md`
