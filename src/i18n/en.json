@@ -424,7 +424,8 @@
       "featureDiscover": "Discover",
       "featureStamp": "Stamp",
       "featureHerbarium": "Herbarium",
-      "featureMap": "Map"
+      "featureMap": "Map",
+      "rewatch": "Watch again"
     }
   },
   "customize": {
