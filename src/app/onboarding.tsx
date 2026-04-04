@@ -12,6 +12,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { useOnboardingControls, ONBOARDING_KEY } from '@/hooks/useOnboardingControls';
 
@@ -41,6 +42,7 @@ const SLIDE_CONFIG = [
 
 export default function OnboardingScreen() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   const slides = [
     { title: t('onboarding.slide1Title'), body: t('onboarding.slide1Body') },
@@ -56,7 +58,7 @@ export default function OnboardingScreen() {
   return (
     <View style={styles.container}>
       {/* Header: Skip (left) | Step counter (right) */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + spacing.md }]}>
         <TouchableOpacity
           testID="onboarding.skip"
           onPress={finish}
@@ -177,7 +179,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.xl,
-    paddingTop: Platform.OS === 'ios' ? 60 : spacing.xl,
     paddingBottom: spacing.sm,
   },
   skipBtn: {

@@ -13,6 +13,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/services/supabase';
 import { signOut } from '@/services/auth';
@@ -21,6 +22,7 @@ import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 export default function PrivacyScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
 
   const [mapVisible, setMapVisible] = useState(true);
@@ -156,7 +158,7 @@ export default function PrivacyScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top + spacing.md }]}>
       {/* Back row */}
       <TouchableOpacity onPress={handleBack} style={styles.backRow}>
         <Text style={styles.backText}>← {t('common.back')}</Text>
@@ -227,7 +229,7 @@ export default function PrivacyScreen() {
 }
 
 const styles = StyleSheet.create({
-  container:  { flex: 1, backgroundColor: colors.background, paddingHorizontal: spacing.xl, paddingTop: spacing.xl, gap: spacing.md },
+  container:  { flex: 1, backgroundColor: colors.background, paddingHorizontal: spacing.xl, gap: spacing.md },
 
   backRow:    { alignSelf: 'flex-start' },
   backText:   { color: colors.plantPrimary, fontSize: typography.fontSize.sm },

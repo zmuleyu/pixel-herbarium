@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, typography, spacing, borderRadius, getSeasonTheme } from '@/constants/theme';
 import { getActiveSeason } from '@/constants/seasons';
 import { useCheckinStore } from '@/stores/checkin-store';
@@ -48,6 +49,7 @@ type WizardStep = 'photo' | 'spot' | 'preview';
 
 export default function CheckinWizardScreen() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const season = getActiveSeason();
   const theme = getSeasonTheme(season.id);
   const { addCheckin, history } = useCheckinStore();
@@ -149,7 +151,7 @@ export default function CheckinWizardScreen() {
   return (
     <GuideWrapper featureKey="stamp" steps={STAMP_STEPS} overlayVariant="light">
       <View testID="checkin-wizard.container" style={[styles.container, { backgroundColor: theme.bgTint }]}>
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
           <TouchableOpacity style={styles.backBtn} onPress={handleBack}>
             <Text style={[styles.backText, { color: theme.primary }]}>
               {step === 'photo' ? `< ${t('common.back')}` : t('common.back')}
@@ -244,7 +246,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
     paddingBottom: spacing.sm,
   },
 

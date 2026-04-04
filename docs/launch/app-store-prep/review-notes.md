@@ -41,10 +41,13 @@ Steps:
 2. Tap "メールでサインイン"
 3. Enter the email and password above
 
-**Option B — Apple Sign In:**
+**Option B — Apple Sign In (on the Login screen, not the Sign Up screen):**
 1. Tap the **Settings** tab → "ログイン"
-2. Tap "Appleでサインイン"
-3. Use your Apple reviewer account
+2. On the **Login screen**, the "Sign in with Apple" button appears at the **top of the form**, above the email fields
+3. Tap "Appleでサインイン"
+4. Use your Apple reviewer account
+
+> **Note:** Apple Sign In is on the **Login screen** only. The Sign Up screen (`/(auth)/signup`) is for email/password registration only. Apple Sign In handles both new and existing accounts — users do not need the Sign Up screen to create an Apple-authenticated account.
 
 **Creating a new account (Email):**
 1. On the login screen, tap "**メールで登録**" at the bottom
@@ -84,7 +87,7 @@ Steps:
 
 ## Third-Party Login
 
-- **Apple Sign In**: Primary login method ✅
+- **Apple Sign In**: Available on the **Login screen** (not the Sign Up screen). Handles both new and existing accounts. ✅
 - **LINE Login**: Optional convenience login for Japan market users (via OAuth 2.0)
 
 All login methods are optional — the app is fully usable in guest mode.

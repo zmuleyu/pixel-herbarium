@@ -22,6 +22,7 @@ import {
   getSeasonTheme,
 } from '@/constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCheckinStore } from '@/stores/checkin-store';
 import { useStaggeredEntry } from '@/hooks/useStaggeredEntry';
 import { loadSpotsData } from '@/services/content-pack';
@@ -49,6 +50,7 @@ function getSpotName(seasonId: string, spotId: number): string {
 export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const season = getActiveSeason();
   const theme = getSeasonTheme(season.id);
   const history = useCheckinStore((s) => s.history);
@@ -67,7 +69,7 @@ export default function HomeScreen() {
     <ScrollView
       testID="home.container"
       style={[styles.container, { backgroundColor: theme.bgTint }]}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.md }]}
       showsVerticalScrollIndicator={false}
     >
       {/* 1. Season gradient header */}
@@ -169,7 +171,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   content: {
     paddingHorizontal: spacing.md,
-    paddingTop: Platform.OS === 'ios' ? 60 : spacing.xl,
     paddingBottom: spacing.xl,
     gap: spacing.md,
   },

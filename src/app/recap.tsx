@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '@/stores/auth-store';
 import { useSeasonRecap, type RecapPlant } from '@/hooks/useSeasonRecap';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
@@ -31,6 +32,7 @@ const SEASON_EMOJIS: Record<string, string> = {
 export default function RecapScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
   const { plants, loading, season } = useSeasonRecap(user?.id ?? '');
 
@@ -57,7 +59,7 @@ export default function RecapScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.md }]}>
       {/* Back */}
       <TouchableOpacity onPress={handleBack} style={styles.backRow}>
         <Text style={styles.backText}>← {t('common.back')}</Text>
@@ -150,7 +152,7 @@ function PlantThumb({ plant, onPress }: { plant: RecapPlant; onPress: () => void
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  content:   { padding: spacing.md, paddingBottom: Platform.OS === 'ios' ? 40 : spacing.xl, alignItems: 'center' },
+  content:   { paddingHorizontal: spacing.md, paddingBottom: Platform.OS === 'ios' ? 40 : spacing.xl, alignItems: 'center' },
 
   backRow:   { alignSelf: 'flex-start', marginBottom: spacing.sm },
   backText:  { color: colors.plantPrimary, fontSize: typography.fontSize.sm },

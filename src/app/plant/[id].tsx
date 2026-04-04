@@ -19,6 +19,7 @@ import { SeasonPhaseIndicator } from '@/components/SeasonPhaseIndicator';
 import { usePlantDetail } from '@/hooks/usePlantDetail';
 import { useHerbarium } from '@/hooks/useHerbarium';
 import { useAuthStore } from '@/stores/auth-store';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { RARITY_LABELS } from '@/constants/plants';
 import { getPlantGradientColors } from '@/utils/plant-gradient';
@@ -49,6 +50,7 @@ export default function PlantDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { t, i18n } = useTranslation();
+  const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
 
   const plantId = Number(id);
@@ -75,7 +77,7 @@ export default function PlantDetailScreen() {
 
   if (error || !plant) {
     return (
-      <View style={styles.center}>
+      <View style={[styles.center, { paddingTop: insets.top }]}>
         <Text style={styles.errorText}>{error ?? t('common.notFound')}</Text>
         <TouchableOpacity style={styles.backBtn} onPress={handleBack}>
           <Text style={styles.backBtnText}>← {t('common.back')}</Text>
@@ -92,7 +94,7 @@ export default function PlantDetailScreen() {
   const heroImageUri = discoveries[0]?.pixel_url ?? plant.pixel_sprite_url;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.md }]}>
       {/* Back + Share row */}
       <View style={styles.topRow}>
         <TouchableOpacity onPress={handleBack}>
@@ -305,7 +307,7 @@ function DiscoveryRow({ record, onSaveNote, t }: DiscoveryRowProps) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  content:   { padding: spacing.md, paddingBottom: Platform.OS === 'ios' ? 40 : spacing.xl, alignItems: 'center' },
+  content:   { paddingHorizontal: spacing.md, paddingBottom: Platform.OS === 'ios' ? 40 : spacing.xl, alignItems: 'center' },
   center:    { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
 
   topRow:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', marginBottom: spacing.sm },

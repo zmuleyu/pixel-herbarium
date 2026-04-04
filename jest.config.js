@@ -20,6 +20,7 @@ module.exports = {
         '^@react-native-community/slider$': '<rootDir>/__mocks__/empty.js',
         '^expo-haptics$': '<rootDir>/__mocks__/expo-haptics.js',
         '^react-native-svg$': '<rootDir>/__mocks__/react-native-svg.js',
+        '^react-native-safe-area-context$': '<rootDir>/__mocks__/react-native-safe-area-context.js',
       },
       transform: {
         '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx', resolveJsonModule: true } }],
@@ -49,6 +50,7 @@ module.exports = {
         '^expo-secure-store$': '<rootDir>/__mocks__/empty.js',
         '^expo-file-system(/.*)?$': '<rootDir>/__mocks__/empty.js',
         '^react-native-reanimated$': '<rootDir>/__mocks__/react-native-reanimated.js',
+        '^react-native-safe-area-context$': '<rootDir>/__mocks__/react-native-safe-area-context.js',
       },
       transform: {
         '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx', resolveJsonModule: true } }],

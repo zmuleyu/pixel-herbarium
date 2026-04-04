@@ -11,12 +11,14 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { signUpWithEmail, signInWithEmail } from '@/services/auth';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 
 export default function SignUpScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -65,7 +67,7 @@ export default function SignUpScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
-      <View style={styles.inner}>
+      <View style={[styles.inner, { paddingTop: insets.top + spacing.md }]}>
         <TouchableOpacity onPress={handleBack} style={styles.backRow}>
           <Text style={styles.backText}>← {t('common.back')}</Text>
         </TouchableOpacity>
@@ -113,7 +115,6 @@ const styles = StyleSheet.create({
   inner: {
     flex: 1,
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
     gap: spacing.md,
   },
   backRow: { alignSelf: 'flex-start', marginBottom: spacing.md },

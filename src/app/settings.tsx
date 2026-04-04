@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
 import { setLanguage } from '@/i18n';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
@@ -13,6 +14,7 @@ const LANGUAGES = [
 export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 
   function handleBack() {
@@ -24,7 +26,7 @@ export default function SettingsScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top + spacing.md }]}>
       {/* Back */}
       <TouchableOpacity onPress={handleBack} style={styles.backRow}>
         <Text style={styles.backText}>← {t('common.back')}</Text>
@@ -75,7 +77,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     paddingHorizontal: spacing.xl,
-    paddingTop: Platform.OS === 'ios' ? 60 : spacing.xl,
     gap: spacing.md,
   },
 

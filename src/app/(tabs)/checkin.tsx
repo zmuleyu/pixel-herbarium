@@ -25,6 +25,7 @@ import {
   shadows,
   getSeasonTheme,
 } from '@/constants/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCheckinStore } from '@/stores/checkin-store';
 import { PressableCard } from '@/components/PressableCard';
 import { loadSpotsData } from '@/services/content-pack';
@@ -179,6 +180,7 @@ const cardBadgeStyles = StyleSheet.create({
 export default function DiaryScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const season = getActiveSeason();
   const theme = getSeasonTheme(season.id);
   const history = useCheckinStore((s) => s.history);
@@ -194,7 +196,7 @@ export default function DiaryScreen() {
     <FlatList
       testID="diary.container"
       style={[styles.container, { backgroundColor: colors.background }]}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.md }]}
       data={history}
       keyExtractor={(item) => item.id}
       numColumns={2}
@@ -259,7 +261,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   content: {
     paddingHorizontal: spacing.md,
-    paddingTop: Platform.OS === 'ios' ? 60 : spacing.xl,
     paddingBottom: spacing.xl,
     gap: CARD_GAP,
   },

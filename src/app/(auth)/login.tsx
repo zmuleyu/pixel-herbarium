@@ -12,6 +12,7 @@ import {
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { signInWithApple, signInWithEmail, signInWithLine, confirmLinkLine } from '@/services/auth';
 import { trackEvent } from '@/services/analytics';
 import { useAuthStore } from '@/stores/auth-store';
@@ -21,6 +22,7 @@ export default function LoginScreen() {
   const { t } = useTranslation();
   const { setError } = useAuthStore();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -112,7 +114,7 @@ export default function LoginScreen() {
       <View style={styles.inner}>
         {/* Back button */}
         <TouchableOpacity
-          style={styles.backButton}
+          style={[styles.backButton, { top: insets.top + spacing.xs }]}
           onPress={() => {
             if (router.canGoBack()) {
               router.back();
@@ -214,7 +216,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? 56 : spacing.lg,
     left: spacing.md,
     zIndex: 1,
     padding: spacing.sm,

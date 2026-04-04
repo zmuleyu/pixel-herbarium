@@ -19,6 +19,7 @@ import { useCheckinStore } from '@/stores/checkin-store';
 import { supabase } from '@/services/supabase';
 import { colors, typography, spacing, borderRadius, getSeasonTheme } from '@/constants/theme';
 import { getActiveSeason } from '@/constants/seasons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { clearAppStorage } from '@/utils/app-storage';
 
 const LANGUAGES = [
@@ -31,6 +32,7 @@ const DESTRUCTIVE_COLOR = '#ff3b30';
 export default function SettingsTabScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { session, user } = useAuthStore();
   const appVersion = Constants.expoConfig?.version ?? '1.1.0';
 
@@ -125,7 +127,7 @@ export default function SettingsTabScreen() {
     <ScrollView
       testID="settings.container"
       style={styles.container}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.md }]}
     >
       {/* App Identity Card */}
       <View
@@ -241,7 +243,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: {
     paddingHorizontal: spacing.md,
-    paddingTop: Platform.OS === 'ios' ? 60 : spacing.xl,
     gap: spacing.sm,
     paddingBottom: spacing.xl,
   },
