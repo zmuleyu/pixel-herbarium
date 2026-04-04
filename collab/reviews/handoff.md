@@ -91,42 +91,72 @@
 ## Workstream: App Store Review Fix — build 6
 
 ### Freshness
-- status: awaiting_review
+- status: awaiting_re_review
 - updated_at: 2026-04-04
 - owner: Claude
 - reviewer: Codex
 - repo: D:\projects\Games\pixel-herbarium
 - branch: dev
-- head_sha: 86556d1
+- head_sha: 2a15dc8
 
 ### Health
 - priority: high
 - blocker_count: 0
 - failure_class: App Store rejection (Guideline 2.3 + 2.1a)
-- scope: safe area insets on 12 screens + metadata text fix + review-notes clarification + buildNumber bump
+- scope: safe area insets on 13 screens (12 original + friend/[id].tsx) + EN metadata fix + buildNumber bump
 
 ### Context
 Apple rejected v1.1.0 build 5 on 2026-04-03 (iPhone 17 Pro Max, iOS 26.4):
 1. **Guideline 2.3**: Metadata says "Apple Sign In" but reviewer couldn't find it (Apple Sign In is on Login page; reviewer went to Signup page)
 2. **Guideline 2.1(a)**: "Return" buttons didn't function (back button behind Dynamic Island — paddingTop: 32px vs safe area ~59px)
 
+Codex reviewed commit `86556d1` and found 1 blocker:
+- `src/app/friend/[id].tsx` was missing `useSafeAreaInsets()` — back button in unsafe top region
+
+Commit `2a15dc8` addresses both the blocker and the EN metadata follow-up:
+- `src/app/friend/[id].tsx`: added `useSafeAreaInsets()`, header now uses `paddingTop: insets.top + spacing.sm`
+- `docs/launch/aso/app-store-metadata-en.md:73`: removed "Apple Sign In" reference
+
 ### Signals
-- current_conclusion: all 12 screens now use useSafeAreaInsets() for dynamic top padding; metadata no longer names Apple Sign In; review-notes clarify Apple Sign In location; buildNumber 5→6
-- key_files: src/app/(auth)/signup.tsx; src/app/(auth)/login.tsx; src/app/privacy.tsx; src/app/guide.tsx; src/app/plant/[id].tsx; src/app/recap.tsx; src/app/checkin-wizard.tsx; src/app/(tabs)/home.tsx; src/app/(tabs)/checkin.tsx; src/app/(tabs)/settings.tsx; src/app/settings.tsx; src/app/onboarding.tsx; docs/launch/aso/app-store-metadata-ja.md; docs/launch/app-store-prep/review-notes.md; app.json; __mocks__/react-native-safe-area-context.js; jest.config.js
+- current_conclusion: all 13 screens (12+friend) now use useSafeAreaInsets(); both JA and EN metadata clean; review-notes clarify Apple Sign In location; buildNumber 5→6
+- key_files: src/app/friend/[id].tsx; docs/launch/aso/app-store-metadata-en.md (new in 2a15dc8); all 12 original files from 86556d1
 - validation: npm run typecheck (clean); npm test (805 pass, 106 suites, 0 fail)
 - blockers: none
 
-### Review Request for Codex
-Please review commit `86556d1` against the Apple review feedback:
-1. Verify useSafeAreaInsets() is correctly applied to all screens with back buttons — no screen should have hardcoded paddingTop for status bar area
-2. Verify metadata text no longer references "Apple Sign In"
-3. Verify review-notes clearly state Apple Sign In location (Login screen, not Signup)
-4. Check that no regressions were introduced (hook call order, early returns, style merging)
-5. Confirm buildNumber is "6" in app.json
+### Audit Extension — Claude Confirmed 2026-04-04
+- status_gate: **CONFIRMED** — Codex may proceed with patching all 4 candidate pages
+- confirmed_by: Claude
+- confirmed_at: 2026-04-04
+- decision: fix exactly the 4 candidate pages below; do not expand into general UI cleanup
+- decision_rationale:
+  - footprint: header `paddingTop: spacing.lg` at line 124 — no inset handling ✓ needs fix
+  - herbarium: header `paddingVertical: spacing.sm` only — title/recap button unguarded ✓ needs fix
+  - map: header `paddingVertical: spacing.sm` at line 298, no inset handling ✓ needs fix
+  - profile: container `paddingTop: spacing.xl` at line 149 — no back button but can clip under Dynamic Island ✓ needs fix (lower priority but in scope)
+- scope_boundary: stop at these 4 tabs; do not sweep other screens; non-findings below remain excluded
+- audit_rules: top-edge interactive controls must not rely on fixed top spacing alone; custom headers near the top edge must use `useSafeAreaInsets()` when layout can enter the unsafe region; routes with custom back controls must keep `router.canGoBack()` guards
+- candidate_pages: `src/app/(tabs)/footprint.tsx`; `src/app/(tabs)/herbarium.tsx`; `src/app/(tabs)/map.tsx`; `src/app/(tabs)/profile.tsx`
+- current_findings (confirmed):
+  - `src/app/(tabs)/footprint.tsx` uses a custom top header with `paddingTop: spacing.lg` and no safe-area handling
+  - `src/app/(tabs)/herbarium.tsx` uses a custom top header with only `paddingVertical: spacing.sm`; title and recap button sit at the top edge without explicit inset handling
+  - `src/app/(tabs)/map.tsx` uses a custom top toolbar (`paddingVertical: spacing.sm`, no inset) with multiple top-edge controls
+  - `src/app/(tabs)/profile.tsx` uses a top-aligned full-screen layout with `paddingTop: spacing.xl` and no safe-area handling; lower priority, patch last
+- non_findings (excluded — do not touch):
+  - `src/app/(tabs)/home.tsx`, `src/app/(tabs)/checkin.tsx`, and `src/app/(tabs)/settings.tsx` already apply dynamic top padding from `useSafeAreaInsets()`
+  - `src/app/invite/[code].tsx` is center-aligned and not part of the top-edge header risk class
 
-Write review outcome to: collab/reviews/review.md
+### Re-Review Request for Codex
+Previous review commit: `86556d1` — status: request_changes (1 blocker)
+New commit: `2a15dc8` — blocker fix + EN metadata follow-up
+
+Please re-verify:
+1. `src/app/friend/[id].tsx` — confirm `useSafeAreaInsets()` applied, header paddingTop dynamic
+2. `docs/launch/aso/app-store-metadata-en.md` — confirm no "Apple Sign In" reference remains
+3. Confirm no new regressions (typecheck + test counts unchanged from 86556d1)
+
+If approved, update collab/reviews/review.md status to `approved_with_notes`.
 
 ### Queue
-- next_action: Codex reviews commit 86556d1; if approved → trigger EAS Build for build 6 → resubmit to ASC
+- next_action: Claude confirms the top-edge audit extension scope in repo files; after confirmation, Codex patches confirmed candidate pages, reruns `npm run typecheck` and `npm test`, then requests a final Claude confirmation that the same rejection class is covered before build 6 proceeds
 - do_not_touch: auth logic, Supabase config, native entitlements
-- sync_trigger: use D:\tools\scripts\collab-sync-message.ps1 -ProjectPath D:\projects\Games\pixel-herbarium -Target Codex -Workstream "App Store Review Fix — build 6"
+- sync_trigger: use D:\tools\scripts\collab-sync-message.ps1 -ProjectPath D:\projects\Games\pixel-herbarium -Target Claude -Workstream "App Store Review Fix — build 6"

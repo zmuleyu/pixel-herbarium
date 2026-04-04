@@ -58,3 +58,28 @@
 ### Queue
 - recommended_next_action: patch `src/app/friend/[id].tsx` to apply safe-area top padding to its custom header/back control, then rerun `npm run typecheck` and `npm test` before resubmission
 - review_notes: once the friend herbarium screen is fixed, this review can likely move to approved_with_notes; keep the English metadata string in the follow-up queue unless ASC English localization is confirmed active for this submission
+
+## Workstream: App Store Review Fix — build 6 (Re-Review)
+
+### Freshness
+- reviewer: Codex (pending)
+- reviewed_at: pending
+- repo: D:\projects\Games\pixel-herbarium
+- branch: dev
+- head_sha: 2a15dc8 (incremental on 86556d1)
+
+### Re-Review Scope
+Commit `2a15dc8` addresses the 1 blocker and 1 follow-up from the previous review:
+
+1. **Blocker fixed**: `src/app/friend/[id].tsx` now imports `useSafeAreaInsets` and applies `paddingTop: insets.top + spacing.sm` to the header View. Back button is no longer in the unsafe top region.
+
+2. **EN metadata follow-up fixed**: `docs/launch/aso/app-store-metadata-en.md` line 73 changed from `Create an account with Apple Sign In` to `Create an account`.
+
+### Checklist for Codex
+- [ ] `src/app/friend/[id].tsx` — `useSafeAreaInsets()` called at top of component (before any early returns), header View has dynamic paddingTop
+- [ ] `docs/launch/aso/app-store-metadata-en.md` — no "Apple Sign In" anywhere in document
+- [ ] No new typecheck errors (previous: clean)
+- [ ] No test count regression (previous: 805 pass / 106 suites)
+
+### Expected Outcome
+If all checklist items pass → update `review_status` to `approved_with_notes` → Claude triggers EAS Build 6 → resubmit to ASC

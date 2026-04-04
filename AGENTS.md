@@ -41,6 +41,20 @@
 - Claude Code should use `.claude/commands/sync-collab.md` and `.claude/commands/check-collab.md` when present.
 - Codex should use `docs/codex-task-index.md` plus `D:\tools\scripts\collab-sync-message.ps1` and `D:\tools\scripts\collab-check.ps1`.
 
+## After Completing a Review
+After writing the review outcome to `collab/reviews/review.md`, run the following to update the machine-readable state (required for automated monitoring):
+
+```powershell
+powershell -File D:\tools\scripts\collab-state-update.ps1 `
+  -ProjectPath "D:\projects\Games\pixel-herbarium" `
+  -Workstream "<exact workstream name from handoff.md>" `
+  -Status approved        # or: changes_requested
+```
+
+Valid status values: `idle` | `in_progress` | `awaiting_codex_review` | `awaiting_claude_review` | `changes_requested` | `approved` | `completed`
+
+The `collab-watch` cron task polls `collab/state.json` every 2h and surfaces stale awaiting items to Claude on session start.
+
 ## Boundaries
 ### Always do
 - Keep changes scoped to this project.
