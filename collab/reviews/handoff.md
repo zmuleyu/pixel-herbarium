@@ -87,3 +87,46 @@
 - do_not_touch: auth, schema, deploy config, release strategy
 - feat/in-app-guidance branch: stale (11 commits behind dev divergence point, guide components already in dev — can be deleted)
 - sync_trigger: use D:\tools\scripts\collab-sync-message.ps1 -ProjectPath D:\projects\Games\pixel-herbarium -Target Claude -Workstream "Session Sync 2026-04-04"
+
+## Workstream: App Store Review Fix — build 6
+
+### Freshness
+- status: awaiting_review
+- updated_at: 2026-04-04
+- owner: Claude
+- reviewer: Codex
+- repo: D:\projects\Games\pixel-herbarium
+- branch: dev
+- head_sha: 86556d1
+
+### Health
+- priority: high
+- blocker_count: 0
+- failure_class: App Store rejection (Guideline 2.3 + 2.1a)
+- scope: safe area insets on 12 screens + metadata text fix + review-notes clarification + buildNumber bump
+
+### Context
+Apple rejected v1.1.0 build 5 on 2026-04-03 (iPhone 17 Pro Max, iOS 26.4):
+1. **Guideline 2.3**: Metadata says "Apple Sign In" but reviewer couldn't find it (Apple Sign In is on Login page; reviewer went to Signup page)
+2. **Guideline 2.1(a)**: "Return" buttons didn't function (back button behind Dynamic Island — paddingTop: 32px vs safe area ~59px)
+
+### Signals
+- current_conclusion: all 12 screens now use useSafeAreaInsets() for dynamic top padding; metadata no longer names Apple Sign In; review-notes clarify Apple Sign In location; buildNumber 5→6
+- key_files: src/app/(auth)/signup.tsx; src/app/(auth)/login.tsx; src/app/privacy.tsx; src/app/guide.tsx; src/app/plant/[id].tsx; src/app/recap.tsx; src/app/checkin-wizard.tsx; src/app/(tabs)/home.tsx; src/app/(tabs)/checkin.tsx; src/app/(tabs)/settings.tsx; src/app/settings.tsx; src/app/onboarding.tsx; docs/launch/aso/app-store-metadata-ja.md; docs/launch/app-store-prep/review-notes.md; app.json; __mocks__/react-native-safe-area-context.js; jest.config.js
+- validation: npm run typecheck (clean); npm test (805 pass, 106 suites, 0 fail)
+- blockers: none
+
+### Review Request for Codex
+Please review commit `86556d1` against the Apple review feedback:
+1. Verify useSafeAreaInsets() is correctly applied to all screens with back buttons — no screen should have hardcoded paddingTop for status bar area
+2. Verify metadata text no longer references "Apple Sign In"
+3. Verify review-notes clearly state Apple Sign In location (Login screen, not Signup)
+4. Check that no regressions were introduced (hook call order, early returns, style merging)
+5. Confirm buildNumber is "6" in app.json
+
+Write review outcome to: collab/reviews/review.md
+
+### Queue
+- next_action: Codex reviews commit 86556d1; if approved → trigger EAS Build for build 6 → resubmit to ASC
+- do_not_touch: auth logic, Supabase config, native entitlements
+- sync_trigger: use D:\tools\scripts\collab-sync-message.ps1 -ProjectPath D:\projects\Games\pixel-herbarium -Target Codex -Workstream "App Store Review Fix — build 6"
