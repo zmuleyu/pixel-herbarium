@@ -11,6 +11,7 @@ import {
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuthStore } from '@/stores/auth-store';
 import { useHerbarium } from '@/hooks/useHerbarium';
@@ -21,6 +22,7 @@ import { TOTAL_PLANTS } from '@/constants/plants';
 export default function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
   const { email, displayName, avatarUrl, quotaUsed, quotaTotal, loading, updating, handleSignOut, updateDisplayName } = useProfile();
   const { collected } = useHerbarium(user?.id ?? '');
@@ -41,7 +43,7 @@ export default function ProfileScreen() {
   const collectFraction = collected.size / TOTAL_PLANTS;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top + spacing.lg }]}>
       {/* Avatar */}
       <View style={styles.avatarSection}>
         {avatarUrl ? (
@@ -146,7 +148,7 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container:      { flex: 1, backgroundColor: colors.background, alignItems: 'center', paddingTop: spacing.xl, paddingHorizontal: spacing.xl, gap: spacing.lg },
+  container:      { flex: 1, backgroundColor: colors.background, alignItems: 'center', paddingHorizontal: spacing.xl, gap: spacing.lg },
   center:         { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' },
 
   // Avatar section

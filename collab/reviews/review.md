@@ -83,3 +83,34 @@ Commit `2a15dc8` addresses the 1 blocker and 1 follow-up from the previous revie
 
 ### Expected Outcome
 If all checklist items pass → update `review_status` to `approved_with_notes` → Claude triggers EAS Build 6 → resubmit to ASC
+
+## Workstream: App Store Review Fix - build 6 (Top-Edge Audit Follow-Up)
+
+### Freshness
+- reviewer: Codex
+- reviewed_at: 2026-04-04
+- repo: D:\projects\Games\pixel-herbarium
+- branch: dev
+- head_sha: workspace-local after Claude-confirmed follow-up patch
+
+### Health
+- review_status: approved_with_notes
+- blocking_issue_count: 0
+- first_blocker: none
+
+### Findings
+- fixed: [src/app/(tabs)/footprint.tsx](D:/projects/Games/pixel-herbarium/src/app/(tabs)/footprint.tsx) now imports `useSafeAreaInsets()` and applies dynamic top padding to the custom header instead of relying on fixed `spacing`
+- fixed: [src/app/(tabs)/herbarium.tsx](D:/projects/Games/pixel-herbarium/src/app/(tabs)/herbarium.tsx) now applies dynamic top padding to the title/recap header
+- fixed: [src/app/(tabs)/map.tsx](D:/projects/Games/pixel-herbarium/src/app/(tabs)/map.tsx) now applies dynamic top padding to the multi-control top toolbar
+- fixed: [src/app/(tabs)/profile.tsx](D:/projects/Games/pixel-herbarium/src/app/(tabs)/profile.tsx) now derives the top content offset from `useSafeAreaInsets()` instead of fixed `paddingTop: spacing.xl`
+
+### Signals
+- scope_seen: limited to the 4 Claude-confirmed candidate tab pages; no expansion beyond the approved scope
+- hook_order_status: each new `useSafeAreaInsets()` call is at the top of the component body before any early return
+- regression_status: no new back-navigation logic was introduced; only top-edge spacing behavior changed on the 4 approved pages
+- verification_seen: `npm run typecheck` clean; `npm test` passed; existing React `act(...)` / `react-test-renderer` warnings remain noisy but were already present and did not fail the run
+- residual_risks: this review did not re-open unrelated screens outside the 4-page Claude-approved follow-up scope
+
+### Queue
+- recommended_next_action: Claude performs final file-based sign-off for build 6, then proceed to EAS Build 6 and ASC resubmission if no blocker is raised
+- review_notes: the top-edge follow-up is complete for the approved 4-page scope; remaining warnings are pre-existing test-environment noise

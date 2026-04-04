@@ -1,1 +1,4 @@
 {"date":"2026-03-28","task":"screens-r1-home-footprint","tests":18,"passed":18,"duration_s":5,"agent":"codex","file":"__tests__/screens/HomeScreen.test.tsx,__tests__/screens/FootprintScreen.test.tsx","status":"pass"}
+{"ts":"2026-04-04T23:14:33.6537484+08:00","event":"state_update","project":"pixel-herbarium","workstream":"App Store Review Fix — build 6","status":"awaiting_codex_review"}
+{"ts":"2026-04-04T23:16:50.0332862+08:00","event":"state_update","project":"pixel-herbarium","workstream":"App Store Review Fix — build 6","status":"awaiting_codex_review"}
+{"ts":"2026-04-04T23:17:49.3343492+08:00","event":"state_update","project":"pixel-herbarium","workstream":"App Store Review Fix — build 6","status":"approved"}

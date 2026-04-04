@@ -15,6 +15,7 @@ import { GuideWrapper, MeasuredView } from '@/components/guide';
 import { HERBARIUM_STEPS } from '@/constants/guide-steps';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHerbarium, type PlantSlot } from '@/hooks/useHerbarium';
 import { resolvePlantImage } from '@/utils/plant-image';
 import { useHerbariumFilter, FILTER_OPTIONS } from '@/hooks/useHerbariumFilter';
@@ -40,6 +41,7 @@ const RARITY_COLORS: Record<number, string> = {
 
 export default function HerbariumScreen() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
   const router = useRouter();
   const { plants, collected, loading } = useHerbarium(user?.id ?? '');
@@ -77,7 +79,7 @@ export default function HerbariumScreen() {
     <GuideWrapper featureKey="herbarium" steps={HERBARIUM_STEPS} overlayVariant="light">
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
         <Text style={styles.headerTitle}>{t('herbarium.title')}</Text>
         <View style={styles.headerRight}>
           <Text style={styles.headerProgress}>

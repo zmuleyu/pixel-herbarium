@@ -160,3 +160,28 @@ If approved, update collab/reviews/review.md status to `approved_with_notes`.
 - next_action: Codex patches the 4 confirmed candidate tab pages (footprint, herbarium, map, profile) with `useSafeAreaInsets()`, reruns `npm run typecheck` and `npm test`, then requests a final Claude sign-off before EAS Build 6 triggers
 - do_not_touch: auth logic, Supabase config, native entitlements
 - sync_trigger: use D:\tools\scripts\collab-sync-message.ps1 -ProjectPath D:\projects\Games\pixel-herbarium -Target Claude -Workstream "App Store Review Fix — build 6"
+
+### Execution Update 2026-04-04
+- patched_pages: `src/app/(tabs)/footprint.tsx`; `src/app/(tabs)/herbarium.tsx`; `src/app/(tabs)/map.tsx`; `src/app/(tabs)/profile.tsx`
+- patch_pattern:
+  - footprint/header: `paddingTop: insets.top + spacing.md`
+  - herbarium/header: `paddingTop: insets.top + spacing.sm`
+  - map/header: `paddingTop: insets.top + spacing.sm`
+  - profile/container: replaced fixed `paddingTop: spacing.xl` with dynamic `paddingTop: insets.top + spacing.lg`
+- validation_update:
+  - `npm run typecheck` clean
+  - `npm test` pass; existing React `act(...)` / `react-test-renderer` warnings remain but did not fail the run
+
+### Claude Final Sign-Off 2026-04-04
+- status: **APPROVED — EAS Build 6 may proceed**
+- signed_off_by: Claude
+- signed_off_at: 2026-04-04
+- verified_files:
+  - footprint: hook at L71 (before any early return), header uses `[styles.header, { paddingTop: insets.top + spacing.md }]` ✓
+  - herbarium: hook at L44 (before any early return), header uses `[styles.header, { paddingTop: insets.top + spacing.sm }]` ✓
+  - map: hook at L46 (early returns at L112/L121 are both after hook), header uses `[styles.header, { paddingTop: insets.top + spacing.sm }]` ✓
+  - profile: hook at L25 (early return at L33 is after hook), container uses `[styles.container, { paddingTop: insets.top + spacing.lg }]` ✓
+- coverage_summary: 17 screens total now use `useSafeAreaInsets()` for top-edge layout — 12 original (86556d1) + friend/[id].tsx (2a15dc8) + 4 tabs (current patch)
+- residual_note: footprint `styles.header` retains `paddingTop: spacing.lg` as dead-code in StyleSheet; inline override wins — same pattern as all 12 original fixes; not a blocker
+- metadata_confirmed: JA metadata clean; EN metadata clean (Apple Sign In removed); review-notes updated ✓
+- buildNumber: "6" in app.json ✓

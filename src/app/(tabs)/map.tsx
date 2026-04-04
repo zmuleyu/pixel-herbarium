@@ -11,6 +11,7 @@ import { GuideWrapper, MeasuredView } from '@/components/guide';
 import { MAP_STEPS } from '@/constants/guide-steps';
 import MapView, { Marker, Callout, Heatmap, PROVIDER_DEFAULT } from 'react-native-maps';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useNearbyDiscoveries, type NearbyDiscovery } from '@/hooks/useNearbyDiscoveries';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
@@ -42,6 +43,7 @@ const RARITY_COLORS: Record<number, string> = {
 
 export default function MapScreen() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const { discoveries, userLocation, loading, refresh } = useNearbyDiscoveries();
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [mapLayer, setMapLayer]       = useState<'discoveries' | 'spots'>('discoveries');
@@ -136,7 +138,7 @@ export default function MapScreen() {
       <GuideWrapper featureKey="map" steps={MAP_STEPS} overlayVariant="light">
       <View style={styles.container}>
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
           <MeasuredView measureKey="map.layerToggle" style={styles.layerToggle}>
             <TouchableOpacity
               style={[styles.toggleBtn, mapLayer === 'discoveries' && styles.toggleBtnActive]}

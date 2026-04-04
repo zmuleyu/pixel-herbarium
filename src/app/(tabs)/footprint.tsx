@@ -11,6 +11,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, typography, spacing, borderRadius, fontWeight, shadows, getSeasonTheme } from '@/constants/theme';
 import { getActiveSeason } from '@/constants/seasons';
 import { useCheckinStore } from '@/stores/checkin-store';
@@ -67,6 +68,7 @@ function CheckinCard({ record }: { record: CheckinRecord }) {
 
 export default function FootprintScreen() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const season = getActiveSeason();
   const theme = getSeasonTheme(season.id);
   const router = useRouter();
@@ -79,7 +81,7 @@ export default function FootprintScreen() {
   return (
     <View testID="footprint.container" style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + spacing.md }]}>
         <Text style={styles.title}>{t('footprint.title')}</Text>
         {history.length > 0 && (
           <Text style={[styles.count, { color: theme.primary }]}>
