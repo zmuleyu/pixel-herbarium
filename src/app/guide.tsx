@@ -55,7 +55,7 @@ export default function GuideScreen() {
               onPress={() => handleReset(f.key)}
               accessibilityRole="button"
             >
-              <Text style={styles.resetBtnText}>もう一度見る</Text>
+              <Text style={styles.resetBtnText}>{t('guide.settings.rewatch')}</Text>
             </TouchableOpacity>
           </View>
         ))}

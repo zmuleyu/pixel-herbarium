@@ -87,8 +87,7 @@ describe('GuideScreen', () => {
 
   it('shows reset single guide button', () => {
     const output = renderToString();
-    // Each feature card has a reset button with Japanese text
-    expect(output).toContain('\u3082\u3046\u4e00\u5ea6\u898b\u308b');
+    expect(output).toContain('guide.settings.rewatch');
   });
 
   it('shows reset all guides button', () => {

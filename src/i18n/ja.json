@@ -424,7 +424,8 @@
       "featureDiscover": "発見機能",
       "featureStamp": "スタンプ機能",
       "featureHerbarium": "花図鉑",
-      "featureMap": "マップ機能"
+      "featureMap": "マップ機能",
+      "rewatch": "もう一度見る"
     }
   },
   "customize": {
