@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHerbarium } from '@/hooks/useHerbarium';
 import { colors, typography, spacing, borderRadius } from '@/constants/theme';
 import { GRID_COLUMNS, TOTAL_PLANTS } from '@/constants/plants';
@@ -28,6 +29,7 @@ export default function FriendHerbariumScreen() {
   const { id, name } = useLocalSearchParams<{ id: string; name?: string }>();
   const router = useRouter();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const { plants, collected, loading } = useHerbarium(id ?? '');
   const friendName = name ? decodeURIComponent(name) : null;
 
@@ -50,7 +52,7 @@ export default function FriendHerbariumScreen() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
         <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
           <Text style={styles.backText}>‹ {t('common.back')}</Text>
         </TouchableOpacity>

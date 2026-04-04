@@ -70,7 +70,7 @@ Share stamped photos directly to LINE, Instagram, or Twitter. A photo with a sta
 
 GUEST MODE — START INSTANTLY
 
-No login required. Open the app and start checking in as a guest. Create an account with Apple Sign In to save your history to the cloud.
+No login required. Open the app and start checking in as a guest. Create an account to save your history to the cloud.
 
 
 WHY HANAZUKAN
